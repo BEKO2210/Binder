@@ -13,7 +13,7 @@ exception when others then
 end;
 $$;
 
-select plan(28);
+select plan(29);
 
 select set_config('request.jwt.claims','{"role":"service_role"}',true);
 
