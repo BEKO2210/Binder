@@ -183,7 +183,7 @@ function PhotoTile({ item, index, total, busy, onLeft, onRight, onPrimary, onRem
       <View style={{ padding: theme.spacing.x3, gap: theme.spacing.x2 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}><View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: statusTone }} /><BinderText variant="caption" style={{ color: statusTone }}>{statusCopy}</BinderText></View>
         {item.position === 0 ? <BinderText variant="micro" tone="accent">PRIMARY</BinderText> : item.moderationStatus === 'approved' ? <BinderButton label="Make primary" variant="ghost" disabled={busy} onPress={onPrimary} /> : null}
-        <BinderText variant="caption" tone="muted">{Math.max(1, Math.round(item.byteSize / 1024))} KB · {item.width}×{item.height}</BinderText>
+        <BinderText variant="caption" tone="muted">{Math.max(1, Math.round(item.byteSize / 1024))} KB · {item.width} by {item.height}</BinderText>
         {item.moderationReason ? <BinderText variant="caption" tone="destructive">{item.moderationReason}</BinderText> : null}
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <BinderIconButton name="back" size={19} accessibilityLabel={`Move photo ${index + 1} left`} disabled={busy || index === 0} onPress={onLeft} />
