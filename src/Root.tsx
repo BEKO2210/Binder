@@ -2,9 +2,9 @@ import type { Session } from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import DiscoveryDeck from '../App';
 import { supabase } from './lib/supabase';
 import AuthScreen from './screens/AuthScreen';
+import DiscoveryScreen from './screens/DiscoveryScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
 import ProfileScreen from './screens/ProfileScreen';
 
@@ -88,7 +88,7 @@ export default function Root() {
         </Pressable>
       </View>
       <View style={styles.content}>
-        {tab === 'discover' ? <DiscoveryDeck /> : <ProfileScreen userId={session.user.id} />}
+        {tab === 'discover' ? <DiscoveryScreen /> : <ProfileScreen userId={session.user.id} />}
       </View>
     </View>
   );
