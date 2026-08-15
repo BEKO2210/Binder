@@ -1,6 +1,6 @@
 {
   "name": "binder",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "main": "index.ts",
   "scripts": {
@@ -19,6 +19,7 @@
     "expo-image-manipulator": "~57.0.5",
     "expo-image-picker": "~57.0.5",
     "expo-location": "~57.0.5",
+    "expo-notifications": "~57.0.6",
     "expo-status-bar": "~57.0.1",
     "react": "19.2.3",
     "react-native": "0.86.2",
