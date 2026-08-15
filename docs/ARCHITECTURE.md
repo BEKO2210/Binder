@@ -2,163 +2,203 @@
 
 ## Client
 
-Android-first React Native app via Expo SDK 57. iOS remains possible from the same codebase.
+Binder is Android-first React Native via Expo SDK 57; iOS remains possible from the same codebase.
 
-`App.tsx` must export `src/Root`; CI verifies this exact entrypoint so Auth and 18+ onboarding cannot be bypassed by accidentally mounting a feature screen directly.
+`App.tsx` must export `src/Root`; CI locks this entrypoint so Auth, the legal gate and onboarding cannot be bypassed by accidentally mounting a feature screen directly.
 
-The authenticated root exposes three areas: Discover, Matches and Profile. Opening an active match replaces the tab shell with the conversation screen until the user returns or the conversation is ended.
+Authenticated flow is fail-closed:
 
-Discovery removes a card only after `record_decision` succeeds. Chat follows the same durable-first rule: a message bubble is treated as sent only after `send_message` confirms it server-side. Network retry reuses the same `client_message_id`.
+1. resolve Supabase session
+2. load the current server legal-policy versions
+3. require explicit Terms & Community Rules + Privacy acceptance when the current versions are not accepted
+4. only then resolve onboarding state
+5. expose Discover / Matches / Profile
 
-Location access remains foreground-only. Raw coordinates are sent only to `set_my_location`; discovery returns rounded distance, never another user's coordinates.
+A network or policy-state error never falls through into onboarding or normal UGC screens.
+
+Discovery removes a card only after `record_decision` succeeds. Chat is durable-first too: a message is considered sent only after `send_message` confirms it server-side. Retry reuses the same `client_message_id`.
+
+Location remains foreground-only. Raw coordinates go only to `set_my_location`; discovery returns rounded distance, never another user's coordinates.
 
 ## Backend
 
-Binder uses Supabase Postgres, Auth, Storage and Realtime. The mobile client contains only a publishable credential and has no service-role secret.
+Binder uses Supabase Postgres, Auth, Storage and Realtime. The mobile client contains only a publishable credential and no service-role secret.
 
 ### Public tables
 
-- `profiles` — public-facing profile fields
-- `user_private` — birth date and exact PostGIS location; self-readable only
+- `profiles` — user-facing profile fields
+- `user_private` — raw birth date + exact PostGIS location; self-readable only
 - `user_preferences` — discovery preferences
-- `profile_media` — metadata for private Storage objects
+- `profile_media` — private Storage metadata + moderation state
+- `legal_acceptances` — accepted Terms/Privacy versions for the authenticated user
 - `decisions` — immutable `bind` / `pass` decisions
-- `matches` — canonical pair row, status `active`, `blocked` or `unmatched`
+- `matches` — canonical pair row with `active`, `blocked` or `unmatched` state
 - `messages` — persisted match messages with idempotent client IDs
-- `match_read_state` — per-user read watermark for an active match
-- `device_tokens` — push tokens owned by the currently authenticated account
-- `blocks` — directional block action with reciprocal effects
-- `reports` — append-only user reports
+- `match_read_state` — per-user read watermark
+- `device_tokens` — push token owned by the currently authenticated account
+- `blocks` — directional block with reciprocal product effects
+- `reports` — append-only safety reports
 
 ### Private tables
 
+- `private.account_safety` — `active`, `suspended`, `deletion_requested`
+- `private.moderation_cases` — prioritized photo/report review queue
+- `private.moderation_actions` — immutable operator action log
 - `private.match_events` — exactly-once match-created outbox
 - `private.push_outbox` — exactly-once `new_match` / `new_message` delivery jobs
-- `private.report_context` — moderation snapshot of the reported profile and optional message
+- `private.report_context` — evidence snapshot of reported profile/message context
 
-## Security boundary
+No normal authenticated client can read moderation cases/actions or directly mutate moderation state.
 
-RLS and SQL privileges are separate gates.
+## Legal / UGC invariant
 
-Clients cannot directly insert messages, write match status, insert reports, or insert device tokens. Conversation mutations go through a narrow RPC surface that validates `auth.uid()`, match membership, current state and inputs.
+Profile text, profile media and messages are UGC. The current legal-policy versions therefore form a server-side precondition, not merely an app checkbox.
 
-Relevant public RPCs:
+`accept_legal_terms(terms_version, privacy_version)` only accepts exactly the versions currently declared by the backend. Direct INSERT into `legal_acceptances` is not granted to clients.
 
-- `get_public_profile(target_user_id)` — safe profile projection
-- `distance_to_user(target_user_id)` — server-calculated rounded distance
-- `get_discovery_batch(limit)` — filtered discovery projection
-- `record_decision(target_user_id, decision)` — decision/match mutation
-- `get_my_matches()` — safe active-match inbox projection
-- `send_message(match_id, client_message_id, body)` — only message write path
-- `mark_match_read(match_id)` — member-only read watermark
-- `unmatch(match_id)` — terminal conversation transition
-- `report_user(...)` — validated report context + optional block
-- `register_push_token(token, platform)` / `unregister_push_token(token)` — token ownership boundary
+Before creating or replacing profile UGC or sending a new message, the server requires:
 
-Server helpers and outboxes remain in the non-exposed `private` schema.
+- authenticated caller
+- account status `active`
+- current Terms version accepted
+- current Privacy version accepted
+
+The app mirrors this with `LegalGateScreen`, but the database remains authoritative.
+
+## Account-safety invariant
+
+Every Auth user receives one `private.account_safety` row.
+
+A transition away from `active` is terminal for normal product visibility at that moment:
+
+- profile `onboarding_complete` becomes false
+- active matches become `unmatched`
+- device tokens are disabled
+- discovery/profile projection logic rejects the account
+- new UGC writes are rejected
+
+The safety transition and sender-wide message mutation share the sender advisory-lock domain so account restriction cannot race around a new message commit.
+
+`prepare_account_deletion()` performs immediate product deactivation. Full account removal is completed by the authenticated `delete-account` Edge Function, which removes profile-media objects and then deletes the Supabase Auth user with an admin-only credential held server-side.
+
+The public external deletion resource remains available even when the app is no longer installed.
+
+## Media moderation invariant
+
+New or replaced profile media is always forced to `pending` by a server trigger. A client cannot self-assign `approved`, `rejected` or `removed`.
+
+Each new/replaced media item creates a private `photo_review` moderation case. Other users can receive only approved profile media. The owner can still read their own pending/rejected state and see the status in Profile.
+
+`private.moderate_case(...)` is service-role only and supports explicit operator outcomes such as approve/reject/remove media, dismiss/warn, or suspend an account. Every terminal moderation decision writes an immutable `private.moderation_actions` record.
+
+## Reporting / moderation invariant
+
+`report_user(...)` validates target, match and optional message relationships, stores the user-facing report and snapshots relevant evidence into `private.report_context`.
+
+Every report also creates a private moderation case. Priority is deterministic: underage concerns are highest priority, followed by violence, sexual content, harassment and normal/default reports.
+
+`p_block=true` inserts the block within the same server RPC transaction. The reported/blocked person is not given the reporter identity through the product.
+
+Discovery also exposes a pre-match report+block surface so a user does not need to match before reaching safety controls.
 
 ## Discovery and match invariants
 
-Discovery requires completed onboarding, fresh locations, reciprocal preference compatibility, distance compatibility, a primary photo, no block, no prior viewer decision and no active match.
+Discovery requires:
 
-One ordered user pair has at most one durable decision. Mutual matching is database-owned.
+- both accounts active
+- both current legal versions accepted
+- completed onboarding
+- fresh locations
+- reciprocal preference compatibility
+- reciprocal age compatibility
+- distance compatibility
+- approved primary media for both sides
+- no block
+- no prior viewer decision
+- no active pair match
 
-For reciprocal binds, the canonical user pair is serialized with a transaction-scoped Postgres advisory lock before the reciprocal check. A unique `(user_low,user_high)` match identity prevents duplicate matches; serialization additionally prevents the zero-match race where simultaneous transactions cannot see each other's uncommitted decision.
+Mutual matching remains database-owned. The canonical user pair is serialized with a transaction advisory lock before reciprocal decision checks. A unique `(user_low,user_high)` identity prevents duplicates; serialization also prevents the simultaneous zero-match race.
 
-An AFTER INSERT trigger creates one `private.match_events(..., 'created')` row. A uniqueness constraint makes this event exactly-once for the match.
+An AFTER INSERT trigger creates one private match-created event, protected by uniqueness.
 
 ## Conversation invariant
 
-Normal chat exists only for an active match.
+Normal chat exists only for an active match between active/current-policy accounts.
 
-`messages` has no authenticated INSERT privilege. `send_message` validates membership and active status, then serializes against both abuse and lifecycle races:
+`messages` has no authenticated INSERT privilege. `send_message`:
 
-1. resolve an already-committed `(sender_id, client_message_id)` retry if it exists
-2. acquire a sender-wide transaction advisory lock
-3. re-check the idempotency key after waiting for that lock
-4. lock the match row with `FOR UPDATE`
-5. require the caller to be a member and the match to still be `active`
-6. enforce sender-wide 20/minute and 300/hour limits
-7. insert exactly one message
+1. resolves an existing `(sender_id, client_message_id)` retry
+2. acquires the sender-wide advisory lock
+3. rechecks the retry key
+4. requires active account + current legal acceptance
+5. locks the match row
+6. requires active membership and an active/current-policy peer
+7. enforces sender-wide 20/minute + 300/hour limits
+8. inserts exactly one message
 
-The sender-wide lock matters because the rate limit spans all conversations, not one match. Parallel sends across different chats cannot each observe a stale count and collectively exceed the limit.
-
-The match row lock serializes send with Unmatch/Block. If Send wins, it commits before the terminal transition can lock the match. If Unmatch/Block wins, the later send sees a non-active match and is rejected.
-
-Terminal match timestamps use `clock_timestamp()` after the row lock is acquired, representing the actual transition moment rather than PostgreSQL's transaction-start `now()` value.
-
-## Message idempotency invariant
-
-`messages` has `UNIQUE(sender_id, client_message_id)`.
-
-The client creates a cryptographically random UUID once per send attempt and preserves it across retry. `send_message` checks the key both before and after waiting on locks. Multiple simultaneous retries therefore resolve to one persisted message and one message outbox event.
-
-Changing the payload while reusing the same client ID is rejected.
+The match row lock serializes Send against Unmatch/Block. Terminal transitions use `clock_timestamp()` so `ended_at` reflects the actual transition after lock acquisition rather than PostgreSQL transaction-start time.
 
 ## Realtime invariant
 
-`public.messages` is included in the `supabase_realtime` publication.
+`public.messages` is in the `supabase_realtime` publication. The client subscribes to Postgres Changes filtered by `match_id`, but Realtime is only transport: message SELECT RLS remains the read authority.
 
-The client subscribes to Postgres Changes filtered by `match_id`. Delivery remains constrained by the same message SELECT RLS: only members of the currently active match can read rows.
+## Push boundary
 
-Realtime is transport, not authority. A received event is merely a notification of an already committed database row.
+Match/message commits create private push-outbox jobs from database triggers, never from client claims. Token ownership moves to the currently authenticated account when the same device token is re-registered.
 
-## Read-state invariant
+End-to-end remote push delivery is not yet claimed. A real EAS project ID, Android/iOS credentials and dispatcher remain an external release gate.
 
-Unread count includes every incoming message when no read state exists. Once `match_read_state` exists, only incoming rows newer than `last_read_at` count.
+## Dependency / runtime separation
 
-This intentionally avoids using match creation time as a fallback boundary: PostgreSQL transaction timestamps can be equal for a freshly-created match and its first message.
+The mobile app and Supabase Edge Functions are different runtimes:
 
-## Unmatch and block invariant
+- Expo/React Native code is checked by TypeScript + Android Metro bundle
+- `supabase/functions/**` is excluded from mobile `tsc`
+- the account-deletion Edge Function is independently checked by Deno using its local `deno.json`
 
-`unmatch(match_id)` is member-only and idempotent. It changes an active match to `unmatched` and records `ended_at` at the actual terminal transition.
-
-Block is stronger than discovery, matching and messaging. Block insertion uses the canonical pair serialization inherited from Phase 2; any active match becomes `blocked` immediately. Blocked/unmatched conversations disappear through RLS and inbox queries.
-
-## Reporting invariant
-
-A report can target a profile interaction or a message in a match shared by reporter and reported user.
-
-`report_user` validates the relationship between report target, match and optional message. It stores the user-facing report plus a private moderation snapshot containing the reported profile and, when supplied, the reported message body. `p_block=true` inserts the block in the same RPC transaction.
-
-Clients cannot read `private.report_context` or moderation internals.
-
-## Push invariant and current boundary
-
-Match creation and message insertion create private push-outbox jobs from database triggers, never from client claims. Partial unique indexes ensure one job per recipient/match or recipient/message.
-
-Push token registration is opt-in. Re-registering the same device token moves ownership to the currently authenticated account so a previous account on the device does not remain the notification owner.
-
-The repository and database **do not yet claim end-to-end remote push delivery**. A real Expo/EAS project ID, platform credentials and a server dispatcher still have to be connected. Realtime chat does not depend on that external setup.
-
-## Location model
-
-Exact coordinates live only in `user_private.location` as PostGIS geography. Discovery uses server-side spatial predicates and returns approximate kilometers. Exact coordinates must never enter analytics, match events, message payloads, report snapshots or push payloads.
+Production npm audit is evaluated by leaf advisory severity. New unapproved High/Critical advisories fail CI; the current exact Metro `image-size` build-tool advisory chain is documented rather than hidden by a blanket audit bypass.
 
 ## Verification gates
 
-Phase 3 CI replays all migrations from an empty Supabase database and runs:
+Phase 4 replays every migration from an empty local Supabase database and runs:
 
-- 77 pgTAP assertions across Phases 1–3
+- **108 pgTAP assertions** across identity, matching, conversation, legal/safety and moderation
 - Phase 2 reciprocal-bind concurrency regression
-- 12 simultaneous retries of one message: required result 1 message / 1 push job
-- 8 independent send-vs-unmatch races: no duplicate and no post-end message
-- 24 simultaneous sends by one user across two matches: exactly 20 accepted / 20 push jobs
-- Binder-schema database lint with errors failing CI
-- production-entrypoint verification
-- TypeScript compile
-- Android Expo/Metro bundle export
+- 12 concurrent retries of one message → exactly one message / one push job
+- 8 send-vs-unmatch races → no duplicate or post-end messages
+- 24 parallel cross-chat sends by one sender → exactly 20 accepted / 20 push jobs
+- Binder-owned schema lint with error-level failures
+- app entrypoint contract
+- public policy-site contract
+- Phase 4 safety-wiring contract
+- advisory-level production dependency audit
+- Deno Edge Function typecheck
+- strict TypeScript compile
+- Android Expo/Metro bundle
+
+## Deployment sequencing
+
+Phase 4 is intentionally not deployed to the production Binder Supabase project before the compatible app branch is approved. The mandatory legal gate is a breaking backend contract for older Phase 3 clients.
+
+Safe order after explicit approval:
+
+1. merge the compatible Phase 4 code
+2. apply the tested Phase 4 migrations
+3. deploy the verified account-deletion Edge Function
+4. regenerate TypeScript database types from the live schema
+5. verify production advisors/grants and post-merge CI
+6. publish/verify GitHub Pages and release-store configuration
 
 ## Scaling path
 
-Phase 0: local interaction proof. *(frozen)*
+Phase 0: interaction proof. *(frozen)*
 
 Phase 1: Auth + profiles + Storage + privacy boundary. *(merged)*
 
 Phase 2: live discovery + decisions + atomic matches. *(merged)*
 
-Phase 3: match inbox + persisted Realtime chat + unread state + unmatch/block/report + push outbox groundwork. *(verified on development branch)*
+Phase 3: inbox + Realtime chat + unread state + unmatch/block/report + push groundwork. *(merged)*
 
-Phase 4: moderation operations, deletion/retention, broader abuse controls and adversarial safety gates.
+Phase 4: legal UGC gate + moderation + account deletion + public safety policies + expanded adversarial gates. *(development branch)*
 
 Phase 5: real beta testers, crash/performance hardening and ranking instrumentation.
