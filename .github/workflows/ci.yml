@@ -47,7 +47,7 @@ jobs:
           cache-hash: ${{ hashFiles('supabase/functions/**/deno.json') }}
 
       - name: Typecheck Edge Functions
-        run: deno check supabase/functions/delete-account/index.ts
+        run: deno check --config supabase/functions/delete-account/deno.json supabase/functions/delete-account/index.ts
 
       - name: TypeScript
         run: npm run typecheck
