@@ -96,7 +96,14 @@ select set_config('request.jwt.claims','{"role":"service_role"}',true);
 select is((select count(*) from private.beta_server_events where event_name='first_message_sent'),1::bigint,'First message funnel event is server-authored exactly once');
 
 select set_config('request.jwt.claims','{"sub":"f1111111-1111-4111-8111-111111111111","role":"authenticated"}',true); set local role authenticated;
-select public.report_user('f2222222-2222-4222-8222-222222222222','other','Beta report',null,null,false);
+select public.report_user(
+  'f2222222-2222-4222-8222-222222222222',
+  'other',
+  'Beta report',
+  (select id from public.matches where 'f1111111-1111-4111-8111-111111111111'::uuid in (user_low,user_high) and 'f2222222-2222-4222-8222-222222222222'::uuid in (user_low,user_high)),
+  null,
+  false
+);
 select is(public.set_beta_diagnostics(false),false,'User can opt out again');
 reset role;
 select set_config('request.jwt.claims','{"role":"service_role"}',true);
