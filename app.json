@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "Binder",
+    "slug": "binder",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "android": {
+      "package": "de.beko2210.binder",
+      "adaptiveIcon": {
+        "backgroundColor": "#0B0B0F"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "de.beko2210.binder",
+      "supportsTablet": false
+    }
+  }
+}
