@@ -9,6 +9,8 @@ import {
   StyleSheet,
   Text,
   View,
+  type StyleProp,
+  type ViewStyle,
 } from 'react-native';
 
 type Profile = {
@@ -165,19 +167,18 @@ export default function App() {
       <View style={styles.deck}>
         {!profile ? (
           <View style={styles.emptyCard}>
-            <Text style={styles.emptyEyebrow}>THAT'S THE DECK</Text>
+            <Text style={styles.eyebrow}>THAT'S THE DECK</Text>
             <Text style={styles.emptyTitle}>You reached the end.</Text>
-            <Text style={styles.emptyCopy}>
-              In production, Binder will fetch the next ranked batch without exposing exact user locations.
+            <Text style={styles.secondaryCopy}>
+              Production discovery will fetch ranked batches without exposing exact user locations.
             </Text>
-            <Pressable style={styles.restartButton} onPress={restartDeck}>
-              <Text style={styles.restartText}>Replay demo profiles</Text>
+            <Pressable style={styles.lightButton} onPress={restartDeck}>
+              <Text style={styles.lightButtonText}>Replay demo profiles</Text>
             </Pressable>
           </View>
         ) : (
           <>
             {nextProfile ? <ProfileCard profile={nextProfile} style={styles.backCard} /> : null}
-
             <Animated.View
               {...panResponder.panHandlers}
               style={[
@@ -192,8 +193,8 @@ export default function App() {
               ]}
             >
               <ProfileCard profile={profile} />
-              <Animated.View style={[styles.vote, styles.likeVote, { opacity: likeOpacity }]}>
-                <Text style={styles.likeVoteText}>BIND</Text>
+              <Animated.View style={[styles.vote, styles.bindVote, { opacity: likeOpacity }]}>
+                <Text style={styles.bindVoteText}>BIND</Text>
               </Animated.View>
               <Animated.View style={[styles.vote, styles.passVote, { opacity: passOpacity }]}>
                 <Text style={styles.passVoteText}>PASS</Text>
@@ -204,42 +205,22 @@ export default function App() {
       </View>
 
       <View style={styles.actions}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Pass profile"
-          disabled={!profile}
-          onPress={() => swipe('left')}
-          style={({ pressed }) => [styles.actionButton, styles.passButton, pressed && styles.pressed]}
-        >
-          <Text style={styles.passAction}>×</Text>
-        </Pressable>
-
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Like profile"
-          disabled={!profile}
-          onPress={() => swipe('right')}
-          style={({ pressed }) => [styles.actionButton, styles.bindButton, pressed && styles.pressed]}
-        >
-          <Text style={styles.bindAction}>♥</Text>
-        </Pressable>
+        <ActionButton label="×" accessibilityLabel="Pass profile" kind="pass" onPress={() => swipe('left')} disabled={!profile} />
+        <ActionButton label="♥" accessibilityLabel="Like profile" kind="bind" onPress={() => swipe('right')} disabled={!profile} />
       </View>
-
       <Text style={styles.hint}>Drag a card or use the buttons</Text>
 
       {match ? (
         <View style={styles.matchOverlay}>
           <View style={styles.matchPanel}>
-            <Text style={styles.matchEyebrow}>IT'S A BIND</Text>
+            <Text style={styles.eyebrow}>IT'S A BIND</Text>
             <Text style={styles.matchTitle}>You and {match.name} like each other.</Text>
-            <Text style={styles.matchCopy}>
-              Mutual interest creates the conversation. No random DMs.
-            </Text>
-            <Pressable style={styles.matchPrimary} onPress={() => setMatch(null)}>
-              <Text style={styles.matchPrimaryText}>Keep discovering</Text>
+            <Text style={styles.secondaryCopy}>Mutual interest creates the conversation. No random DMs.</Text>
+            <Pressable style={styles.bindCta} onPress={() => setMatch(null)}>
+              <Text style={styles.bindCtaText}>Keep discovering</Text>
             </Pressable>
-            <Pressable style={styles.matchSecondary} onPress={() => setMatch(null)}>
-              <Text style={styles.matchSecondaryText}>Open chat later</Text>
+            <Pressable style={styles.secondaryButton} onPress={() => setMatch(null)}>
+              <Text style={styles.secondaryButtonText}>Open chat later</Text>
             </Pressable>
           </View>
         </View>
@@ -248,7 +229,38 @@ export default function App() {
   );
 }
 
-function ProfileCard({ profile, style }: { profile: Profile; style?: object }) {
+function ActionButton({
+  label,
+  accessibilityLabel,
+  kind,
+  onPress,
+  disabled,
+}: {
+  label: string;
+  accessibilityLabel: string;
+  kind: 'pass' | 'bind';
+  onPress: () => void;
+  disabled: boolean;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      disabled={disabled}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.actionButton,
+        kind === 'bind' ? styles.bindButton : styles.passButton,
+        pressed && styles.pressed,
+        disabled && styles.disabled,
+      ]}
+    >
+      <Text style={kind === 'bind' ? styles.bindAction : styles.passAction}>{label}</Text>
+    </Pressable>
+  );
+}
+
+function ProfileCard({ profile, style }: { profile: Profile; style?: StyleProp<ViewStyle> }) {
   return (
     <View style={[styles.card, style]}>
       <ImageBackground source={{ uri: profile.photo }} style={styles.photo} imageStyle={styles.photoImage}>
@@ -275,11 +287,7 @@ function ProfileCard({ profile, style }: { profile: Profile; style?: object }) {
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#0B0B0F',
-    paddingTop: 52,
-  },
+  screen: { flex: 1, backgroundColor: '#0B0B0F', paddingTop: 52 },
   header: {
     height: 78,
     paddingHorizontal: 22,
@@ -287,17 +295,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  brand: {
-    color: '#F7F7F2',
-    fontSize: 22,
-    fontWeight: '900',
-    letterSpacing: 4,
-  },
-  subtitle: {
-    color: '#8D8D96',
-    fontSize: 12,
-    marginTop: 4,
-  },
+  brand: { color: '#F7F7F2', fontSize: 22, fontWeight: '900', letterSpacing: 4 },
+  subtitle: { color: '#8D8D96', fontSize: 12, marginTop: 4 },
   counter: {
     minWidth: 54,
     alignItems: 'center',
@@ -307,55 +306,23 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 10,
   },
-  counterNumber: {
-    color: '#C7FF4A',
-    fontWeight: '900',
-    fontSize: 16,
-  },
-  counterLabel: {
-    color: '#73737D',
-    fontSize: 8,
-    fontWeight: '800',
-    letterSpacing: 1.2,
-  },
-  deck: {
-    flex: 1,
-    marginHorizontal: 16,
-    marginTop: 4,
-    marginBottom: 12,
-    justifyContent: 'center',
-  },
-  animatedCard: {
-    ...StyleSheet.absoluteFillObject,
-  },
+  counterNumber: { color: '#C7FF4A', fontWeight: '900', fontSize: 16 },
+  counterLabel: { color: '#73737D', fontSize: 8, fontWeight: '800', letterSpacing: 1.2 },
+  deck: { flex: 1, marginHorizontal: 16, marginTop: 4, marginBottom: 12, justifyContent: 'center' },
+  animatedCard: { ...StyleSheet.absoluteFill },
   card: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: 28,
     overflow: 'hidden',
     backgroundColor: '#18181E',
     borderWidth: 1,
     borderColor: '#2A2A32',
   },
-  backCard: {
-    transform: [{ scale: 0.965 }, { translateY: 10 }],
-    opacity: 0.62,
-  },
-  photo: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  photoImage: {
-    borderRadius: 28,
-  },
-  photoShade: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.18)',
-  },
-  cardContent: {
-    padding: 22,
-    paddingTop: 150,
-    backgroundColor: 'rgba(0,0,0,0.42)',
-  },
+  backCard: { transform: [{ scale: 0.965 }, { translateY: 10 }], opacity: 0.62 },
+  photo: { flex: 1, justifyContent: 'flex-end' },
+  photoImage: { borderRadius: 28 },
+  photoShade: { ...StyleSheet.absoluteFill, backgroundColor: 'rgba(0,0,0,0.18)' },
+  cardContent: { padding: 22, paddingTop: 150, backgroundColor: 'rgba(0,0,0,0.42)' },
   distancePill: {
     alignSelf: 'flex-start',
     backgroundColor: 'rgba(12,12,15,0.78)',
@@ -364,33 +331,11 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     marginBottom: 9,
   },
-  distanceText: {
-    color: '#E7E7E2',
-    fontSize: 11,
-    fontWeight: '700',
-  },
-  name: {
-    color: '#FFFFFF',
-    fontSize: 34,
-    fontWeight: '900',
-    letterSpacing: -1,
-  },
-  age: {
-    fontWeight: '500',
-  },
-  bio: {
-    color: '#E2E2DE',
-    fontSize: 14,
-    lineHeight: 20,
-    marginTop: 7,
-    maxWidth: '92%',
-  },
-  tags: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 7,
-    marginTop: 13,
-  },
+  distanceText: { color: '#E7E7E2', fontSize: 11, fontWeight: '700' },
+  name: { color: '#FFFFFF', fontSize: 34, fontWeight: '900', letterSpacing: -1 },
+  age: { fontWeight: '500' },
+  bio: { color: '#E2E2DE', fontSize: 14, lineHeight: 20, marginTop: 7, maxWidth: '92%' },
+  tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 7, marginTop: 13 },
   tag: {
     backgroundColor: 'rgba(255,255,255,0.13)',
     borderWidth: 1,
@@ -399,48 +344,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
   },
-  tagText: {
-    color: '#FFFFFF',
-    fontSize: 11,
-    fontWeight: '700',
-  },
-  vote: {
-    position: 'absolute',
-    top: 28,
-    borderWidth: 3,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-  },
-  likeVote: {
-    left: 24,
-    borderColor: '#C7FF4A',
-    transform: [{ rotate: '-8deg' }],
-  },
-  passVote: {
-    right: 24,
-    borderColor: '#FF5A76',
-    transform: [{ rotate: '8deg' }],
-  },
-  likeVoteText: {
-    color: '#C7FF4A',
-    fontSize: 24,
-    fontWeight: '900',
-    letterSpacing: 2,
-  },
-  passVoteText: {
-    color: '#FF5A76',
-    fontSize: 24,
-    fontWeight: '900',
-    letterSpacing: 2,
-  },
-  actions: {
-    height: 76,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 24,
-  },
+  tagText: { color: '#FFFFFF', fontSize: 11, fontWeight: '700' },
+  vote: { position: 'absolute', top: 28, borderWidth: 3, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 7 },
+  bindVote: { left: 24, borderColor: '#C7FF4A', transform: [{ rotate: '-8deg' }] },
+  passVote: { right: 24, borderColor: '#FF5A76', transform: [{ rotate: '8deg' }] },
+  bindVoteText: { color: '#C7FF4A', fontSize: 24, fontWeight: '900', letterSpacing: 2 },
+  passVoteText: { color: '#FF5A76', fontSize: 24, fontWeight: '900', letterSpacing: 2 },
+  actions: { height: 76, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 24 },
   actionButton: {
     width: 62,
     height: 62,
@@ -449,37 +359,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
   },
-  passButton: {
-    backgroundColor: '#15151B',
-    borderColor: '#34343E',
-  },
-  bindButton: {
-    backgroundColor: '#C7FF4A',
-    borderColor: '#C7FF4A',
-  },
-  passAction: {
-    color: '#FF6A83',
-    fontSize: 37,
-    fontWeight: '300',
-    lineHeight: 41,
-  },
-  bindAction: {
-    color: '#111216',
-    fontSize: 28,
-    fontWeight: '900',
-  },
-  pressed: {
-    transform: [{ scale: 0.94 }],
-    opacity: 0.85,
-  },
-  hint: {
-    textAlign: 'center',
-    color: '#666670',
-    fontSize: 11,
-    paddingBottom: 20,
-  },
+  passButton: { backgroundColor: '#15151B', borderColor: '#34343E' },
+  bindButton: { backgroundColor: '#C7FF4A', borderColor: '#C7FF4A' },
+  passAction: { color: '#FF6A83', fontSize: 37, fontWeight: '300', lineHeight: 41 },
+  bindAction: { color: '#111216', fontSize: 28, fontWeight: '900' },
+  pressed: { transform: [{ scale: 0.94 }], opacity: 0.85 },
+  disabled: { opacity: 0.42 },
+  hint: { textAlign: 'center', color: '#666670', fontSize: 11, paddingBottom: 20 },
   matchOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(5,5,8,0.84)',
     alignItems: 'center',
     justifyContent: 'center',
@@ -494,49 +382,15 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     padding: 26,
   },
-  matchEyebrow: {
-    color: '#C7FF4A',
-    fontWeight: '900',
-    letterSpacing: 3,
-    fontSize: 12,
-  },
-  matchTitle: {
-    color: '#FFFFFF',
-    fontSize: 30,
-    lineHeight: 35,
-    fontWeight: '900',
-    letterSpacing: -1,
-    marginTop: 10,
-  },
-  matchCopy: {
-    color: '#A3A3AD',
-    fontSize: 14,
-    lineHeight: 21,
-    marginTop: 12,
-    marginBottom: 22,
-  },
-  matchPrimary: {
-    backgroundColor: '#C7FF4A',
-    borderRadius: 16,
-    paddingVertical: 15,
-    alignItems: 'center',
-  },
-  matchPrimaryText: {
-    color: '#101115',
-    fontWeight: '900',
-    fontSize: 14,
-  },
-  matchSecondary: {
-    paddingVertical: 14,
-    alignItems: 'center',
-  },
-  matchSecondaryText: {
-    color: '#B8B8C0',
-    fontWeight: '700',
-    fontSize: 13,
-  },
+  eyebrow: { color: '#C7FF4A', fontWeight: '900', letterSpacing: 3, fontSize: 12 },
+  matchTitle: { color: '#FFFFFF', fontSize: 30, lineHeight: 35, fontWeight: '900', letterSpacing: -1, marginTop: 10 },
+  secondaryCopy: { color: '#A3A3AD', fontSize: 14, lineHeight: 21, marginTop: 12, marginBottom: 22 },
+  bindCta: { backgroundColor: '#C7FF4A', borderRadius: 16, paddingVertical: 15, alignItems: 'center' },
+  bindCtaText: { color: '#101115', fontWeight: '900', fontSize: 14 },
+  secondaryButton: { paddingVertical: 14, alignItems: 'center' },
+  secondaryButtonText: { color: '#B8B8C0', fontWeight: '700', fontSize: 13 },
   emptyCard: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: 28,
     backgroundColor: '#15151B',
     borderWidth: 1,
@@ -544,36 +398,7 @@ const styles = StyleSheet.create({
     padding: 28,
     justifyContent: 'center',
   },
-  emptyEyebrow: {
-    color: '#C7FF4A',
-    fontWeight: '900',
-    fontSize: 11,
-    letterSpacing: 2.4,
-  },
-  emptyTitle: {
-    color: '#FFFFFF',
-    fontSize: 31,
-    fontWeight: '900',
-    letterSpacing: -1,
-    marginTop: 10,
-  },
-  emptyCopy: {
-    color: '#9A9AA4',
-    fontSize: 14,
-    lineHeight: 21,
-    marginTop: 12,
-    marginBottom: 22,
-  },
-  restartButton: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#F2F2ED',
-    borderRadius: 14,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  restartText: {
-    color: '#111216',
-    fontSize: 13,
-    fontWeight: '900',
-  },
+  emptyTitle: { color: '#FFFFFF', fontSize: 31, fontWeight: '900', letterSpacing: -1, marginTop: 10 },
+  lightButton: { alignSelf: 'flex-start', backgroundColor: '#F2F2ED', borderRadius: 14, paddingHorizontal: 16, paddingVertical: 12 },
+  lightButtonText: { color: '#111216', fontSize: 13, fontWeight: '900' },
 });
