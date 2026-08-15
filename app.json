@@ -4,7 +4,8 @@
     "slug": "binder",
     "version": "0.5.0",
     "orientation": "portrait",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#090A0F",
     "plugins": [
       [
         "expo-location",
@@ -18,12 +19,24 @@
           "defaultChannel": "messages",
           "color": "#C7FF4A"
         }
-      ]
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "node_modules/@expo-google-fonts/manrope/400Regular/Manrope_400Regular.ttf",
+            "node_modules/@expo-google-fonts/manrope/500Medium/Manrope_500Medium.ttf",
+            "node_modules/@expo-google-fonts/manrope/700Bold/Manrope_700Bold.ttf",
+            "node_modules/@expo-google-fonts/manrope/800ExtraBold/Manrope_800ExtraBold.ttf"
+          ]
+        }
+      ],
+      "expo-system-ui"
     ],
     "android": {
       "package": "de.beko2210.binder",
       "adaptiveIcon": {
-        "backgroundColor": "#0B0B0F"
+        "backgroundColor": "#090A0F"
       }
     },
     "ios": {
