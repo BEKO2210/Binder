@@ -6,11 +6,13 @@ Binder is a relationship-first dating product. The interaction can feel as immed
 
 We do not copy proprietary Tinder code, private APIs, trademarks, artwork or pixel-identical screens. We reproduce useful public product behavior through an independent implementation.
 
-## Launch rule: genuinely free
+## Product rule: genuinely free
 
-At launch, every feature we ship is available without payment. We do not show fake locked buttons, blurred likes, upgrade nags or "coming Pro" banners.
+Binder is one free product. There is no Pro, Premium, Supporter or paid feature tier in the product roadmap.
 
-If Binder later introduces paid plans, existing promises must not silently change. Monetization should add scale, convenience or optional visibility features instead of deliberately damaging the free core.
+We do not show fake locked buttons, blurred likes, upgrade nags, paid boosts or "coming Pro" banners. Matching, messaging, safety, notifications, settings, themes and profile media remain product capabilities rather than paywall candidates.
+
+Future roadmap decisions may improve quality, scale, accessibility, localization, safety or operations, but the product must not deliberately degrade the free experience to manufacture an upgrade path.
 
 ## Core loop
 
@@ -22,7 +24,7 @@ If Binder later introduces paid plans, existing promises must not silently chang
 6. Only matched users can start a normal conversation.
 7. Either side can unmatch, block or report.
 
-## MVP feature set
+## Required product set
 
 ### P0 — required before public users
 
@@ -43,30 +45,29 @@ If Binder later introduces paid plans, existing promises must not silently chang
 - Basic admin moderation queue
 - Rate limits and abuse controls
 
-### P1 — after the core is stable
+### P1 — product completion and reliability
 
+- Professional shared visual system
+- Multi-photo profile management with client-side compression and moderation state
+- Profile and app settings
+- Push notifications with user preferences and quiet hours
 - Profile prompts
 - Read receipts / typing state only if privacy trade-off is accepted
-- Explore-style interest lanes using our own taxonomy and UI
-- Photo verification / liveness provider
-- Push notifications
 - Better ranking from reciprocal preference signals
 - Pause profile / incognito controls
+- Accessibility, localization and real-device reliability work
 
-### P2 — possible later monetization
+### P2 — post-launch quality
 
-Nothing in P2 is visible in the initial product.
+- Explore-style interest lanes using our own taxonomy and UI
+- Photo verification / liveness provider if the privacy trade-off is acceptable
+- Additional discovery controls and filters where they improve match relevance
+- Network/offline resilience
+- Storage and media efficiency
+- Moderation and anti-abuse automation
+- Ranking improvements based on measured healthy outcomes
 
-Potential future additions:
-
-- Additional discovery controls
-- Travel mode
-- Undo
-- Optional profile visibility boost
-- Advanced filters
-- Supporter plan
-
-Paid design must be reviewed against safety, fairness and marketplace policies before release.
+None of these items create a paid tier.
 
 ## Deliberate differences from Tinder
 
@@ -74,7 +75,7 @@ Paid design must be reviewed against safety, fairness and marketplace policies b
 - Ranking optimizes for reciprocal relevance and healthy conversations, not raw swipe volume.
 - Exact location is never displayed or returned to another client.
 - No random direct messages before a match.
-- No artificial scarcity in the initial free launch.
+- No artificial scarcity or paid ranking boost.
 - Safety actions are first-class domain operations, not UI-only flags.
 
 ## Product metrics

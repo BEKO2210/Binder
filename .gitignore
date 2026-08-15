@@ -2,6 +2,8 @@ node_modules/
 .expo/
 dist/
 web-build/
+android/
+ios/
 .env
 .env.*
 !.env.example
@@ -15,3 +17,12 @@ yarn-error.log*
 *.p12
 *.key
 *.mobileprovision
+
+# Deterministically materialized by scripts/materialize-brand-assets.mjs
+assets/brand/icon.png
+assets/brand/adaptive-foreground.png
+assets/brand/monochrome.png
+assets/brand/splash-icon.png
+
+# Prepared only for the static GitHub Pages artifact
+site/assets/
