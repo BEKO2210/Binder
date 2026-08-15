@@ -1,7 +1,7 @@
 begin;
 create extension if not exists pgtap;
 create or replace function pg_temp.did_error(statement text) returns boolean language plpgsql as $$ begin execute statement; return false; exception when others then return true; end $$;
-select plan(22);
+select plan(21);
 
 insert into auth.users(id,aud,role,email,raw_app_meta_data,raw_user_meta_data,created_at,updated_at) values
 ('a1111111-1111-4111-8111-111111111111','authenticated','authenticated','phase4-a@binder.test','{}','{}',now(),now()),
@@ -28,6 +28,7 @@ select is((select moderation_status from public.profile_media where user_id=auth
 select ok(pg_temp.did_error($sql$update public.profile_media set moderation_status='approved' where user_id=auth.uid()$sql$),'Client cannot self-approve media');
 select public.finalize_my_onboarding(); select public.set_my_location(48.90,9.19); reset role;
 select is((select count(*) from private.moderation_cases where source_type='photo_review' and subject_user_id='a1111111-1111-4111-8111-111111111111'),1::bigint,'Photo upload enters moderation queue');
+select set_config('request.jwt.claims','{"role":"service_role"}',true);
 update public.profile_media set moderation_status='approved',moderated_at=clock_timestamp() where user_id='a1111111-1111-4111-8111-111111111111';
 
 select set_config('request.jwt.claims','{"sub":"b2222222-2222-4222-8222-222222222222","role":"authenticated"}',true); set local role authenticated;
@@ -39,11 +40,13 @@ select public.finalize_my_onboarding(); select public.set_my_location(48.80,9.18
 
 select set_config('request.jwt.claims','{"sub":"a1111111-1111-4111-8111-111111111111","role":"authenticated"}',true); set local role authenticated;
 select is((select count(*) from public.get_discovery_batch(20) where target_user_id='b2222222-2222-4222-8222-222222222222'),0::bigint,'Pending photo blocks discovery exposure'); reset role;
+select set_config('request.jwt.claims','{"role":"service_role"}',true);
 update public.profile_media set moderation_status='approved',moderated_at=clock_timestamp() where user_id='b2222222-2222-4222-8222-222222222222';
-set local role authenticated;
+select set_config('request.jwt.claims','{"sub":"a1111111-1111-4111-8111-111111111111","role":"authenticated"}',true); set local role authenticated;
 select is((select count(*) from public.get_discovery_batch(20) where target_user_id='b2222222-2222-4222-8222-222222222222'),1::bigint,'Approved photo restores discovery eligibility');
 select public.report_user('b2222222-2222-4222-8222-222222222222','harassment','Safety test',null,null,false);
 reset role;
+select set_config('request.jwt.claims','{"role":"service_role"}',true);
 select is((select count(*) from private.moderation_cases where source_type='report' and subject_user_id='b2222222-2222-4222-8222-222222222222'),1::bigint,'Report creates moderation case');
 select is((select priority from private.moderation_cases where source_type='report' and subject_user_id='b2222222-2222-4222-8222-222222222222' order by id desc limit 1),70::smallint,'Harassment report receives elevated priority');
 select ok(not has_table_privilege('authenticated','private.moderation_cases','select'),'Moderation queue is not client-readable');
@@ -58,9 +61,12 @@ insert into public.matches(user_low,user_high,status) values(least('a1111111-111
 select set_config('request.jwt.claims','{"sub":"a1111111-1111-4111-8111-111111111111","role":"authenticated"}',true); set local role authenticated;
 select ok(public.prepare_account_deletion(),'Deletion preparation succeeds');
 select ok(public.prepare_account_deletion(),'Deletion preparation is idempotent'); reset role;
+select set_config('request.jwt.claims','{"role":"service_role"}',true);
 select is((select status from private.account_safety where user_id='a1111111-1111-4111-8111-111111111111'),'deletion_requested','Deletion immediately changes account safety state');
 select is((select onboarding_complete from public.profiles where user_id='a1111111-1111-4111-8111-111111111111'),false,'Deletion immediately hides the profile');
 select is((select status from public.matches where 'a1111111-1111-4111-8111-111111111111'::uuid in (user_low,user_high) order by created_at desc limit 1),'unmatched','Deletion closes active matches');
 select is((select enabled from public.device_tokens where user_id='a1111111-1111-4111-8111-111111111111'),false,'Deletion disables push delivery');
-select ok(not private.can_view_profile('a1111111-1111-4111-8111-111111111111'),'Restricted account is not publicly viewable without self context');
+select set_config('request.jwt.claims','{"sub":"c3333333-3333-4333-8333-333333333333","role":"authenticated"}',true); set local role authenticated;
+select ok(not private.can_view_profile('a1111111-1111-4111-8111-111111111111'),'Restricted account is not publicly viewable');
+reset role;
 select * from finish(); rollback;
