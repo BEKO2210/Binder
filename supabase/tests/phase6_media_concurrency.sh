@@ -98,10 +98,7 @@ if [[ "$BAD_POSITIONS" != '0' ]]; then
   exit 1
 fi
 
-psql "$DB_URL" -X -v ON_ERROR_STOP=1 >/dev/null <<SQL
-select set_config('request.jwt.claims','{"role":"service_role"}',false);
-delete from auth.users where id='${USER_ID}'::uuid;
-delete from storage.objects where bucket_id='profile-media' and name like '${USER_ID}/%';
-SQL
-
+# Do not issue direct DELETEs against storage.objects here. Supabase deliberately
+# rejects them to prevent orphaned objects. This test runs inside an ephemeral
+# local stack that is destroyed by the workflow after assertions complete.
 echo "PASS: ${ATTEMPTS} concurrent uploads -> exactly 6 slots; concurrent reorders -> one complete serial order."
