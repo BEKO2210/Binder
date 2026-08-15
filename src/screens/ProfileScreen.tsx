@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { recordBetaEvent } from '../lib/beta';
 import { pickAndPrepareProfileImage } from '../lib/images';
 import { replaceProfileImage, signedProfileImageUrl } from '../lib/media';
 import {
@@ -15,7 +16,7 @@ import {
 import { supabase } from '../lib/supabase';
 import { GENDERS, INTERESTS, type Gender } from '../lib/validation';
 
-export default function ProfileScreen({ userId }: { userId: string }) {
+export default function ProfileScreen({ userId, onOpenBeta }: { userId: string; onOpenBeta: () => void }) {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
@@ -35,6 +36,7 @@ export default function ProfileScreen({ userId }: { userId: string }) {
   }, [userId]);
 
   async function load() {
+    const startedAt = Date.now();
     setLoading(true);
     setMessage('');
     try {
@@ -57,8 +59,10 @@ export default function ProfileScreen({ userId }: { userId: string }) {
       setDistance(String(preferenceResult.data.max_distance_km));
       setMediaState(primaryMedia);
       setPhotoUrl(primaryMedia?.storage_path ? await signedProfileImageUrl(primaryMedia.storage_path) : '');
+      void recordBetaEvent('profile_load', 'profile', { durationMs: Date.now() - startedAt, outcome: 'ok' });
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Could not load profile.');
+      void recordBetaEvent('profile_load', 'profile', { durationMs: Date.now() - startedAt, outcome: 'error' });
     } finally {
       setLoading(false);
     }
@@ -187,6 +191,12 @@ export default function ProfileScreen({ userId }: { userId: string }) {
 
       <Pressable disabled={busy} onPress={save} style={styles.primary}>{busy ? <ActivityIndicator color="#101115" /> : <Text style={styles.primaryText}>Save profile</Text>}</Pressable>
 
+      <Pressable accessibilityRole="button" onPress={onOpenBeta} style={({ pressed }) => [styles.betaCard, pressed && styles.betaCardPressed]}>
+        <View style={styles.betaTop}><Text style={styles.betaLabel}>PHASE 5 · BETA PROGRAM</Text><Text style={styles.betaArrow}>→</Text></View>
+        <Text style={styles.betaTitle}>Diagnostics you control. Feedback we can use.</Text>
+        <Text style={styles.betaCopy}>Review privacy-preserving ranking measurements, opt into technical diagnostics, and send private product feedback.</Text>
+      </Pressable>
+
       <View style={styles.accountSection}>
         <Text style={styles.accountEyebrow}>ACCOUNT CONTROL</Text>
         <Text style={styles.accountTitle}>Rules, privacy and exit.</Text>
@@ -249,7 +259,8 @@ const styles = StyleSheet.create({
   chip: { borderRadius: 999, borderWidth: 1, borderColor: '#30303A', backgroundColor: '#17171D', paddingHorizontal: 12, paddingVertical: 9 }, chipActive: { backgroundColor: '#C7FF4A', borderColor: '#C7FF4A' }, chipText: { color: '#B1B1BA', fontSize: 12, fontWeight: '800' }, chipTextActive: { color: '#111216' },
   row: { flexDirection: 'row', gap: 8, marginTop: 20 }, small: { flex: 1 }, smallLabel: { color: '#757580', fontSize: 10, marginBottom: 5 }, smallInput: { color: '#FFFFFF', textAlign: 'center', backgroundColor: '#17171D', borderWidth: 1, borderColor: '#2B2B34', borderRadius: 13, paddingVertical: 12 },
   message: { color: '#D9D9DF', lineHeight: 19, marginTop: 16 }, primary: { height: 54, borderRadius: 17, backgroundColor: '#C7FF4A', alignItems: 'center', justifyContent: 'center', marginTop: 20 }, primaryText: { color: '#101115', fontWeight: '900' },
-  accountSection: { borderTopWidth: 1, borderTopColor: '#282B34', marginTop: 44, paddingTop: 30 }, accountEyebrow: { color: '#777E89', fontSize: 10, fontWeight: '900', letterSpacing: 1.8 }, accountTitle: { color: '#F7F8F3', fontSize: 25, fontWeight: '900', marginTop: 8 }, accountCopy: { color: '#858B96', fontSize: 12, lineHeight: 18, marginTop: 7, marginBottom: 16 },
+  betaCard: { marginTop: 28, borderRadius: 22, borderWidth: 1, borderColor: '#45562A', backgroundColor: '#141912', padding: 18 }, betaCardPressed: { backgroundColor: '#1A2115' }, betaTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }, betaLabel: { color: '#9BBC54', fontSize: 9, fontWeight: '900', letterSpacing: 1.5 }, betaArrow: { color: '#C7FF4A', fontSize: 18, fontWeight: '800' }, betaTitle: { color: '#F2F5EB', fontSize: 18, lineHeight: 22, fontWeight: '900', marginTop: 12 }, betaCopy: { color: '#9FA990', fontSize: 12, lineHeight: 18, marginTop: 6 },
+  accountSection: { borderTopWidth: 1, borderTopColor: '#282B34', marginTop: 36, paddingTop: 30 }, accountEyebrow: { color: '#777E89', fontSize: 10, fontWeight: '900', letterSpacing: 1.8 }, accountTitle: { color: '#F7F8F3', fontSize: 25, fontWeight: '900', marginTop: 8 }, accountCopy: { color: '#858B96', fontSize: 12, lineHeight: 18, marginTop: 7, marginBottom: 16 },
   accountLink: { minHeight: 52, borderBottomWidth: 1, borderBottomColor: '#272A33', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }, accountLinkText: { color: '#D4D7DC', fontWeight: '800', fontSize: 13 }, accountArrow: { color: '#7D838E', fontSize: 16 },
   signOut: { height: 50, alignItems: 'center', justifyContent: 'center', marginTop: 8, borderRadius: 14, borderWidth: 1, borderColor: '#30343E' }, signOutText: { color: '#D7D9DE', fontWeight: '800' },
   dangerZone: { marginTop: 24, borderRadius: 22, borderWidth: 1, borderColor: '#5A2A35', backgroundColor: '#181015', padding: 18 }, dangerLabel: { color: '#FF718B', fontSize: 9, fontWeight: '900', letterSpacing: 1.6 }, dangerTitle: { color: '#FFF1F4', fontSize: 19, fontWeight: '900', marginTop: 7 }, dangerCopy: { color: '#A98B92', fontSize: 12, lineHeight: 18, marginTop: 7 }, deleteButton: { height: 50, borderRadius: 14, backgroundColor: '#FF5A76', alignItems: 'center', justifyContent: 'center', marginTop: 16 }, deleteText: { color: '#240A0F', fontWeight: '900' },
