@@ -6,7 +6,7 @@ Status: **not yet executed**. This file is an evidence template, not a claim tha
 
 | Field | Evidence |
 |---|---|
-| EAS project ID | pending |
+| EAS project ID | `167de5e7-e72f-4fcd-bc7c-379513ff2b21` (provided; account ownership verification pending) |
 | Android application ID | `de.beko2210.binder` |
 | EAS build profile / build ID | pending |
 | FCM v1 service credential present in EAS | pending |
