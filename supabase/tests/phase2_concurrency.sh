@@ -22,6 +22,11 @@ union all
 select user_b, 'authenticated', 'authenticated', 'race-b-' || pair_no || '@binder.test', '{}'::jsonb, '{}'::jsonb, now(), now()
 from public._phase2_concurrency_pairs;
 
+insert into public.legal_acceptances (user_id, terms_version, privacy_version)
+select user_a, '2026-08-15', '2026-08-15' from public._phase2_concurrency_pairs
+union all
+select user_b, '2026-08-15', '2026-08-15' from public._phase2_concurrency_pairs;
+
 insert into public.profiles (user_id, first_name, bio, gender, interests, onboarding_complete)
 select user_a, 'RaceA' || pair_no, '', 'woman', array['Coffee','Music'], false
 from public._phase2_concurrency_pairs
@@ -62,6 +67,14 @@ from public._phase2_concurrency_pairs
 union all
 select user_b, user_b::text || '/race.webp', 0, 800, 1080, 100, 'image/webp'
 from public._phase2_concurrency_pairs;
+
+update public.profile_media
+set moderation_status = 'approved', moderated_at = clock_timestamp()
+where user_id in (
+  select user_a from public._phase2_concurrency_pairs
+  union all
+  select user_b from public._phase2_concurrency_pairs
+);
 
 update public.profiles
 set onboarding_complete = true
