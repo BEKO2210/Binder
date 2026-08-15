@@ -36,5 +36,8 @@ jobs:
       - name: Stress conversation races
         run: bash supabase/tests/phase3_concurrency.sh
 
+      - name: Stress sender-wide rate limit
+        run: bash supabase/tests/phase3_rate_concurrency.sh
+
       - name: Lint Binder schemas
         run: supabase db lint --schema public,private --level error --fail-on error
