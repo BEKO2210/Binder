@@ -77,16 +77,23 @@ export const motion = {
   deliberate: 240,
 } as const;
 
+export const fontFamilies = {
+  regular: 'Manrope_400Regular',
+  medium: 'Manrope_500Medium',
+  bold: 'Manrope_700Bold',
+  extraBold: 'Manrope_800ExtraBold',
+} as const;
+
 export const typography = {
-  displayXL: { fontSize: 40, lineHeight: 44, fontWeight: '900' as const, letterSpacing: -1.4 },
-  displayL: { fontSize: 34, lineHeight: 38, fontWeight: '900' as const, letterSpacing: -1.0 },
-  heading: { fontSize: 26, lineHeight: 31, fontWeight: '800' as const, letterSpacing: -0.45 },
-  title: { fontSize: 20, lineHeight: 25, fontWeight: '800' as const, letterSpacing: -0.2 },
-  bodyL: { fontSize: 17, lineHeight: 25, fontWeight: '500' as const },
-  body: { fontSize: 15, lineHeight: 22, fontWeight: '500' as const },
-  label: { fontSize: 13, lineHeight: 17, fontWeight: '700' as const },
-  caption: { fontSize: 11, lineHeight: 15, fontWeight: '600' as const },
-  micro: { fontSize: 10, lineHeight: 13, fontWeight: '800' as const, letterSpacing: 1.2 },
+  displayXL: { fontFamily: fontFamilies.extraBold, fontSize: 40, lineHeight: 44, letterSpacing: -1.4 },
+  displayL: { fontFamily: fontFamilies.extraBold, fontSize: 34, lineHeight: 38, letterSpacing: -1.0 },
+  heading: { fontFamily: fontFamilies.extraBold, fontSize: 26, lineHeight: 31, letterSpacing: -0.45 },
+  title: { fontFamily: fontFamilies.bold, fontSize: 20, lineHeight: 25, letterSpacing: -0.2 },
+  bodyL: { fontFamily: fontFamilies.medium, fontSize: 17, lineHeight: 25 },
+  body: { fontFamily: fontFamilies.regular, fontSize: 15, lineHeight: 22 },
+  label: { fontFamily: fontFamilies.bold, fontSize: 13, lineHeight: 17 },
+  caption: { fontFamily: fontFamilies.medium, fontSize: 11, lineHeight: 15 },
+  micro: { fontFamily: fontFamilies.extraBold, fontSize: 10, lineHeight: 13, letterSpacing: 1.2 },
 } as const;
 
 export type BinderTheme = {
