@@ -19,7 +19,8 @@ reset role;
 
 insert into storage.objects(bucket_id,name,owner,owner_id,metadata) values
 ('profile-media','a1111111-1111-4111-8111-111111111111/p4.webp','a1111111-1111-4111-8111-111111111111','a1111111-1111-4111-8111-111111111111','{"mimetype":"image/webp","size":100}'::jsonb),
-('profile-media','b2222222-2222-4222-8222-222222222222/p4.webp','b2222222-2222-4222-8222-222222222222','b2222222-2222-4222-8222-222222222222','{"mimetype":"image/webp","size":100}'::jsonb);
+('profile-media','b2222222-2222-4222-8222-222222222222/p4.webp','b2222222-2222-4222-8222-222222222222','b2222222-2222-4222-8222-222222222222','{"mimetype":"image/webp","size":100}'::jsonb),
+('profile-media','c3333333-3333-4333-8333-333333333333/p4.webp','c3333333-3333-4333-8333-333333333333','c3333333-3333-4333-8333-333333333333','{"mimetype":"image/webp","size":100}'::jsonb);
 
 select set_config('request.jwt.claims','{"sub":"a1111111-1111-4111-8111-111111111111","role":"authenticated"}',true); set local role authenticated;
 select public.complete_my_onboarding('Alpha','1992-01-01','woman','Alpha bio',array['Coffee'],array['man'],18::smallint,60::smallint,100::smallint);
@@ -52,9 +53,14 @@ select is((select priority from private.moderation_cases where source_type='repo
 select ok(not has_table_privilege('authenticated','private.moderation_cases','select'),'Moderation queue is not client-readable');
 select ok(not has_table_privilege('authenticated','public.legal_acceptances','insert'),'Legal acceptance cannot be forged with direct table insert');
 
--- Fully prepare Gamma so a terminal account transition has real product state to shut down.
+-- Gamma is a fully valid onboarded account so deletion proves a real active state is closed.
 insert into public.legal_acceptances(user_id,terms_version,privacy_version) values('c3333333-3333-4333-8333-333333333333','2026-08-15','2026-08-15');
-insert into public.profiles(user_id,first_name,bio,gender,onboarding_complete) values('c3333333-3333-4333-8333-333333333333','Gamma','G','nonbinary',true);
+insert into public.profiles(user_id,first_name,bio,gender,onboarding_complete) values('c3333333-3333-4333-8333-333333333333','Gamma','G','nonbinary',false);
+insert into public.user_private(user_id,birth_date) values('c3333333-3333-4333-8333-333333333333','1991-01-01');
+insert into public.user_preferences(user_id,interested_in,min_age,max_age,max_distance_km) values('c3333333-3333-4333-8333-333333333333',array['woman'],18,60,100);
+insert into public.profile_media(user_id,storage_path,position,width,height,byte_size,mime_type) values('c3333333-3333-4333-8333-333333333333','c3333333-3333-4333-8333-333333333333/p4.webp',0,1080,1080,100,'image/webp');
+update public.profile_media set moderation_status='approved',moderated_at=clock_timestamp() where user_id='c3333333-3333-4333-8333-333333333333';
+update public.profiles set onboarding_complete=true where user_id='c3333333-3333-4333-8333-333333333333';
 insert into public.device_tokens(user_id,token,platform,enabled) values('a1111111-1111-4111-8111-111111111111','ExponentPushToken[phase4-delete-token]','android',true);
 insert into public.matches(user_low,user_high,status) values(least('a1111111-1111-4111-8111-111111111111'::uuid,'c3333333-3333-4333-8333-333333333333'::uuid),greatest('a1111111-1111-4111-8111-111111111111'::uuid,'c3333333-3333-4333-8333-333333333333'::uuid),'active');
 
