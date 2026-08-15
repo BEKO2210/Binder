@@ -6,7 +6,7 @@ Binder is an independent implementation. It does not use Tinder source code, pri
 
 ## Current status
 
-Phase 0 is frozen as the last stable interaction proof. Phase 1 is complete on the `phase/1-identity` development branch and remains unmerged until explicitly approved.
+Phase 0 is frozen. Phase 1 is merged to `main` as the stable identity baseline. Phase 2 is complete on the `phase/2-matching` development branch and remains unmerged until explicitly approved.
 
 Phase 1 includes:
 
@@ -20,11 +20,34 @@ Phase 1 includes:
 - safe server projections for calculated age and distance
 - reciprocal block visibility rules and report storage
 - strict RLS plus a reduced SQL privilege allowlist
-- generated Supabase TypeScript schema types
-- Android Expo bundle verification in CI
-- local Supabase migration replay, 16 pgTAP privacy/RLS tests and app-schema DB lint in CI
 
-The discovery deck still uses demo profiles. Real candidate discovery, swipe persistence and atomic mutual matching belong to Phase 2.
+Phase 2 adds:
+
+- live foreground-location discovery instead of demo profiles
+- server-side reciprocal gender, age and distance filtering
+- stale-location rejection and rounded kilometer output only
+- persistent immutable `Bind` / `Pass` decisions
+- no direct client writes to decision or match tables
+- canonical `(user_low, user_high)` match identity with a database unique constraint
+- pair-level transaction serialization before reciprocal decision checks
+- exactly-once private `match_created` outbox event generation
+- block operations serialized on the same pair lock and active matches deactivated immediately
+- private profile photos delivered through short-lived signed URLs
+- Supabase TypeScript types generated from the live Phase 2 database
+
+## Verification
+
+The Phase 2 development branch is gated by:
+
+- TypeScript compile
+- Android Expo/Metro bundle export
+- complete local Supabase migration replay from an empty database
+- 40 pgTAP assertions across Phase 1 and Phase 2
+- a parallel race test with 8 independent reciprocal pairs / 16 concurrent database sessions
+- two additional concurrent idempotency retry rounds
+- database lint restricted to Binder-owned `public` and `private` schemas
+
+The concurrency invariant is strict: 8 simultaneous reciprocal pairs must produce exactly 16 decisions, 8 matches and 8 private match-created events. Retry rounds must not increase any of those counts.
 
 ## Run it
 
@@ -55,9 +78,9 @@ npm start
 ## Build phases
 
 0. **Interaction proof** — swipe deck and local mutual-match state. *(frozen)*
-1. **Identity** — Supabase Auth, 18+ onboarding, profile editor, compressed photo storage, privacy/RLS gates. *(verified on development branch)*
-2. **Matching** — server-side discovery, decisions and atomic mutual matches. *(next)*
-3. **Conversation** — realtime chat, notifications, unmatch, block and report flows.
+1. **Identity** — Supabase Auth, 18+ onboarding, profile editor, compressed photo storage, privacy/RLS gates. *(merged to main)*
+2. **Matching** — server-side discovery, persistent decisions and race-safe atomic mutual matches. *(verified on development branch)*
+3. **Conversation** — realtime chat, notifications, unmatch, block and report flows. *(next)*
 4. **Safety gate** — moderation, rate limits, deletion and broader adversarial tests.
 5. **Beta** — real testers, ranking instrumentation and crash/performance hardening.
 6. **Monetization later** — only after the free core has real usage and retention data.
@@ -81,9 +104,9 @@ Current visual direction: dark, editorial, high contrast, lime accent. This is a
 
 ## Backend
 
-Binder currently uses Supabase Postgres + Auth + Storage with Row Level Security. The app contains only the publishable client credential. Raw birth dates and exact coordinates remain private; public profile data and distance are projected server-side.
+Binder uses Supabase Postgres + Auth + Storage with Row Level Security. The app contains only the publishable client credential. Raw birth dates and exact coordinates remain private; candidate generation, calculated age, distance and match creation are server-side.
 
-Phase 2 will add atomic swipe/match persistence in Postgres so simultaneous reciprocal likes create exactly one match record and one downstream match event.
+Phase 2 is already deployed to the Binder Supabase project, while the app code remains isolated on its development branch until the repository merge is explicitly approved.
 
 ## License
 

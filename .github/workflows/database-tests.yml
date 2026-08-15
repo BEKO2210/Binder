@@ -11,7 +11,7 @@ permissions:
 jobs:
   database-tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 14
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -29,6 +29,9 @@ jobs:
 
       - name: Run pgTAP database tests
         run: supabase test db
+
+      - name: Stress atomic mutual matches
+        run: bash supabase/tests/phase2_concurrency.sh
 
       - name: Lint Binder schemas
         run: supabase db lint --schema public,private --level error --fail-on error
