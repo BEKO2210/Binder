@@ -70,8 +70,8 @@ export async function recordBetaEvent(
   if (!diagnosticsEnabled) return false;
 
   const platform = Platform.OS === 'ios' ? 'ios' : 'android';
-  const durationMs = options.durationMs === undefined ? undefined : Math.max(0, Math.min(120000, Math.round(options.durationMs)));
-  const value = options.value === undefined ? undefined : Math.max(0, Math.min(1000, Math.round(options.value)));
+  const durationMs = options.durationMs === undefined ? null : Math.max(0, Math.min(120000, Math.round(options.durationMs)));
+  const value = options.value === undefined ? null : Math.max(0, Math.min(1000, Math.round(options.value)));
 
   try {
     const { data, error } = await betaRpc<boolean>('record_beta_client_event', {
