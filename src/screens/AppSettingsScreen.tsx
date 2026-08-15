@@ -4,8 +4,16 @@ import { ScrollView, Switch, View } from 'react-native';
 import { BinderButton, BinderCard, BinderChip, BinderIconButton, BinderInput, BinderText, ScreenState, SectionHeader } from '../components/ui';
 import { getBetaSettings, setBetaDiagnostics } from '../lib/beta';
 import { useBinderHaptics } from '../theme/haptics';
-import { accentThemes, type AccentThemeId, type MotionPreference } from '../theme/tokens';
+import type { AccentThemeId, MotionPreference } from '../theme/tokens';
 import { useBinderTheme } from '../theme/ThemeProvider';
+
+const ACCENT_OPTIONS: { id: AccentThemeId; label: string }[] = [
+  { id: 'lime', label: 'Binder Lime' },
+  { id: 'blue', label: 'Electric Blue' },
+  { id: 'violet', label: 'Violet' },
+  { id: 'coral', label: 'Coral' },
+  { id: 'ice', label: 'Ice' },
+];
 
 export default function AppSettingsScreen({ onClose }: { onClose: () => void }) {
   const { theme, settings, hydrated, updateSettings, updateNotifications, updateQuietHours, resetSettings } = useBinderTheme();
@@ -43,7 +51,7 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
 
       <SettingsSection title="Accent" copy="Only primary/trust accents change. Warning and destructive colors stay fixed.">
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>
-          {(Object.keys(accentThemes) as AccentThemeId[]).map((id) => <BinderChip key={id} label={accentThemes[id].label} selected={settings.accentTheme === id} onPress={() => { void updateSettings({ accentTheme: id }); void haptic('selection'); }} />)}
+          {ACCENT_OPTIONS.map((option) => <BinderChip key={option.id} label={option.label} selected={settings.accentTheme === option.id} onPress={() => { void updateSettings({ accentTheme: option.id }); void haptic('selection'); }} />)}
         </View>
       </SettingsSection>
 
