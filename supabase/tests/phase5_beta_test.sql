@@ -1,7 +1,7 @@
 begin;
 create extension if not exists pgtap;
 create or replace function pg_temp.did_error(statement text) returns boolean language plpgsql as $$ begin execute statement; return false; exception when others then return true; end $$;
-select plan(34);
+select plan(33);
 
 insert into auth.users(id,aud,role,email,raw_app_meta_data,raw_user_meta_data,created_at,updated_at) values
 ('f1111111-1111-4111-8111-111111111111','authenticated','authenticated','beta-a@binder.test','{}','{}',now(),now()),
@@ -18,9 +18,8 @@ select ok(has_index('private','moderation_cases','moderation_cases_media_id_idx'
 select ok(has_index('private','moderation_cases','moderation_cases_report_id_idx'),'Phase 4 report FK receives covering index');
 
 select set_config('request.jwt.claims','{"sub":"f1111111-1111-4111-8111-111111111111","role":"authenticated"}',true); set local role authenticated;
-select is((select privacy_version from public.get_legal_gate()),'2026-08-15-beta1','Phase 5 changes the privacy disclosure version');
-select ok(pg_temp.did_error($sql$select public.accept_legal_terms('2026-08-15','2026-08-15')$sql$),'Old privacy acceptance cannot bypass Phase 5 disclosure');
-select public.accept_legal_terms('2026-08-15','2026-08-15-beta1');
+select is((select privacy_version from public.get_legal_gate()),'2026-08-15','Beta instrumentation remains inside the initial pre-user privacy-policy version');
+select public.accept_legal_terms('2026-08-15','2026-08-15');
 select is((select diagnostics_enabled from public.get_beta_settings()),false,'Beta settings expose diagnostics off by default');
 select is((select client_retention_days from public.get_beta_settings()),30::smallint,'Client diagnostic retention contract is 30 days');
 select is(public.record_beta_client_event('10000000-0000-4000-8000-000000000001','20000000-0000-4000-8000-000000000001','app_session','app',10,1,'ok','android','0.5.0'),false,'Disabled diagnostics drop client event');
@@ -33,13 +32,12 @@ reset role;
 select is((select count(*) from private.beta_feedback where user_id='f1111111-1111-4111-8111-111111111111'),1::bigint,'Feedback is stored privately');
 select is((select count(*) from private.beta_client_events where user_id='f1111111-1111-4111-8111-111111111111'),1::bigint,'Exactly one diagnostic event exists after retry');
 
--- B cannot create UGC/feedback before accepting the current Phase 5 privacy version.
 select set_config('request.jwt.claims','{"sub":"f2222222-2222-4222-8222-222222222222","role":"authenticated"}',true); set local role authenticated;
 select ok(pg_temp.did_error($sql$select public.submit_beta_feedback('bug',3::smallint,'x')$sql$),'Feedback requires current legal/privacy acceptance');
-select public.accept_legal_terms('2026-08-15','2026-08-15-beta1');
+select public.accept_legal_terms('2026-08-15','2026-08-15');
 reset role;
 select set_config('request.jwt.claims','{"sub":"f3333333-3333-4333-8333-333333333333","role":"authenticated"}',true); set local role authenticated;
-select public.accept_legal_terms('2026-08-15','2026-08-15-beta1');
+select public.accept_legal_terms('2026-08-15','2026-08-15');
 reset role;
 
 insert into public.profiles(user_id,first_name,bio,gender,interests,onboarding_complete) values
@@ -72,7 +70,7 @@ select is((select count(*) from information_schema.columns where table_schema='p
 select set_config('request.jwt.claims','{"sub":"f1111111-1111-4111-8111-111111111111","role":"authenticated"}',true); set local role authenticated;
 select is((select count(*) from public.get_discovery_batch(20)),2::bigint,'Discovery returns two compatible candidates');
 reset role;
-select is((select candidate_count from private.discovery_batches where viewer_id='f1111111-1111-4111-8111-111111111111' order by created_at desc limit 1),2::smallint,'Discovery batch records only candidate count and ranking variant');
+select is((select candidate_count from private.discovery_batches where viewer_id='f1111111-1111-4111-8111-111111111111' order by created_at desc limit 1),2::smallint,'Discovery batch records candidate count and ranking variant');
 select is((select position from private.discovery_impressions where viewer_id='f1111111-1111-4111-8111-111111111111' and candidate_id='f2222222-2222-4222-8222-222222222222' order by created_at desc limit 1),1::smallint,'Higher interest overlap ranks before a closer lower-overlap profile');
 select is((select distance_bucket_km from private.discovery_impressions where viewer_id='f1111111-1111-4111-8111-111111111111' and candidate_id='f2222222-2222-4222-8222-222222222222' order by created_at desc limit 1),10::smallint,'Ranking telemetry coarsens distance to a 10 km bucket');
 
