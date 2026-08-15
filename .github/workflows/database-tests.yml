@@ -29,3 +29,6 @@ jobs:
 
       - name: Run pgTAP database tests
         run: supabase test db
+
+      - name: Lint database
+        run: supabase db lint --level error
