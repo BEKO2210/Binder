@@ -56,6 +56,62 @@ export type Database = {
         }
         Relationships: []
       }
+      device_tokens: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          id: string
+          platform: string
+          token: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          platform: string
+          token: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          platform?: string
+          token?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      match_read_state: {
+        Row: {
+          last_read_at: string
+          match_id: string
+          user_id: string
+        }
+        Insert: {
+          last_read_at?: string
+          match_id: string
+          user_id: string
+        }
+        Update: {
+          last_read_at?: string
+          match_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_read_state_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       matches: {
         Row: {
           created_at: string
@@ -82,6 +138,41 @@ export type Database = {
           user_low?: string
         }
         Relationships: []
+      }
+      messages: {
+        Row: {
+          body: string
+          client_message_id: string
+          created_at: string
+          id: string
+          match_id: string
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          client_message_id: string
+          created_at?: string
+          id?: string
+          match_id: string
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          client_message_id?: string
+          created_at?: string
+          id?: string
+          match_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profile_media: {
         Row: {
@@ -266,6 +357,21 @@ export type Database = {
           target_user_id: string
         }[]
       }
+      get_my_matches: {
+        Args: never
+        Returns: {
+          age: number
+          bio: string
+          first_name: string
+          last_message_at: string
+          last_message_body: string
+          match_id: string
+          matched_at: string
+          other_user_id: string
+          primary_photo_path: string
+          unread_count: number
+        }[]
+      }
       get_public_profile: {
         Args: { target_user_id: string }
         Returns: {
@@ -277,6 +383,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      mark_match_read: { Args: { p_match_id: string }; Returns: undefined }
       record_decision: {
         Args: { p_decision: string; p_target_user_id: string }
         Returns: {
@@ -287,10 +394,41 @@ export type Database = {
           target_user_id: string
         }[]
       }
+      register_push_token: {
+        Args: { p_platform: string; p_token: string }
+        Returns: undefined
+      }
+      report_user: {
+        Args: {
+          p_block?: boolean
+          p_details?: string
+          p_match_id?: string
+          p_message_id?: string
+          p_reason: string
+          p_reported_id: string
+        }
+        Returns: string
+      }
+      send_message: {
+        Args: {
+          p_body: string
+          p_client_message_id: string
+          p_match_id: string
+        }
+        Returns: {
+          body: string
+          created_at: string
+          id: string
+          match_id: string
+          sender_id: string
+        }[]
+      }
       set_my_location: {
         Args: { latitude: number; longitude: number }
         Returns: undefined
       }
+      unmatch: { Args: { p_match_id: string }; Returns: boolean }
+      unregister_push_token: { Args: { p_token: string }; Returns: undefined }
       update_my_profile: {
         Args: {
           p_bio: string
