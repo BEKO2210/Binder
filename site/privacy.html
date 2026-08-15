@@ -1,1 +1,53 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090A0F"><title>Privacy — Binder</title><link rel="stylesheet" href="styles.css"></head><body><header class="nav"><div class="wrap navin"><a class="brand" href="./">BINDER<span>.</span></a><nav class="links"><a class="navlink" href="terms.html">Terms</a><a class="btn secondary" href="delete-account.html">Account control</a></nav></div></header><main class="legal"><div class="kicker">Privacy</div><h1>What Binder needs — and what it does not expose.</h1><p class="intro">This policy describes Binder’s current beta architecture. It should be updated whenever production data practices or processors change.</p><p class="meta">Effective: 15 August 2026 · Contact: nullmesh@protonmail.com</p><div class="callout"><strong>Core privacy boundary.</strong> Other Binder users do not receive your raw birth date or exact latitude/longitude. Binder derives age and rounded distance server-side.</div><h2>Data we process</h2><p><strong>Account:</strong> authentication identifiers such as email and Supabase Auth metadata.</p><p><strong>Private eligibility data:</strong> birth date and current location used to enforce 18+ access and discovery distance.</p><p><strong>Profile and UGC:</strong> first name, bio, gender, interests, profile photos and messages you choose to create.</p><p><strong>Safety data:</strong> blocks, reports, report context snapshots, moderation state and abuse-control events.</p><p><strong>Device data:</strong> an Expo push token may be stored only if notifications are enabled in a configured build.</p><h2>Why we use it</h2><ul><li>authenticate your account;</li><li>enforce adult-only onboarding and discovery preferences;</li><li>calculate candidate eligibility and rounded distance;</li><li>store and deliver matched conversations;</li><li>prevent abuse, investigate reports and enforce blocks;</li><li>operate account deletion and security controls.</li></ul><h2>Infrastructure</h2><p>Binder currently uses Supabase for authentication, Postgres data, private file storage and realtime delivery. Expo infrastructure may be used for remote notifications when production push is enabled. Binder does not sell personal data to advertisers.</p><h2>Location</h2><p>Binder requests foreground location for discovery. Exact coordinates are stored privately for server-side distance checks and are not returned to another user. Background location is not part of the current product.</p><h2>Retention and deletion</h2><p>When you request account deletion, Binder is designed to remove account-associated product data and authentication identity. Certain safety or fraud-prevention records may need limited retention where legally justified; retained records should be minimized and separated from normal product use.</p><p>Use the <a href="delete-account.html">account deletion page</a> or the in-app account controls to initiate deletion.</p><h2>Your choices</h2><p>You can update profile information in the app, deny location permission, disable push notifications, block or report another user, unmatch, and request account deletion.</p><h2>Contact</h2><p>Privacy questions: <a href="mailto:nullmesh@protonmail.com">nullmesh@protonmail.com</a>.</p></main><footer class="footer"><div class="wrap footerin"><span>© 2026 Binder</span><div class="footlinks"><a href="./">Home</a><a href="terms.html">Terms</a><a href="delete-account.html">Delete account</a></div></div></footer></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#090A0F">
+  <title>Privacy — Binder</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="nav"><div class="wrap navin"><a class="brand" href="./">BINDER<span>.</span></a><nav class="links"><a class="navlink" href="terms.html">Terms</a><a class="btn secondary" href="delete-account.html">Account control</a></nav></div></header>
+<main class="legal">
+  <div class="kicker">Privacy</div>
+  <h1>What Binder needs — and what it does not expose.</h1>
+  <p class="intro">This policy describes Binder’s current beta architecture, including first-party ranking measurement and optional technical diagnostics.</p>
+  <p class="meta">Effective: 15 August 2026 · Contact: nullmesh@protonmail.com</p>
+  <div class="callout"><strong>Core privacy boundary.</strong> Other Binder users do not receive your raw birth date or exact latitude/longitude. Binder derives age and rounded distance server-side. Binder does not use third-party advertising analytics in the current beta.</div>
+
+  <h2>Data we process</h2>
+  <p><strong>Account:</strong> authentication identifiers such as email and Supabase Auth metadata.</p>
+  <p><strong>Private eligibility data:</strong> birth date and current location used to enforce 18+ access and discovery distance.</p>
+  <p><strong>Profile and UGC:</strong> first name, bio, gender, interests, profile photos and messages you choose to create.</p>
+  <p><strong>Safety data:</strong> blocks, reports, report context snapshots, moderation state and abuse-control events.</p>
+  <p><strong>Device data:</strong> an Expo push token may be stored only if notifications are enabled in a configured build.</p>
+  <p><strong>Beta ranking measurement:</strong> Binder can record the accounts involved in a discovery impression, rank position, shared-interest count, a coarse 10-km distance bucket and the later Bind/Pass result. Exact coordinates, profile text, message text and media paths are not copied into this ranking measurement.</p>
+  <p><strong>Optional client diagnostics:</strong> if you explicitly enable Beta Diagnostics, Binder may record a fixed technical event or screen name, duration, a small count, success/error outcome, Android/iOS and app version. This channel does not accept free-form metadata, profile/message content, exact location, contact data, raw exception messages or stack traces.</p>
+
+  <h2>Why we use it</h2>
+  <ul><li>authenticate your account;</li><li>enforce adult-only onboarding and discovery preferences;</li><li>calculate candidate eligibility and rounded distance;</li><li>store and deliver matched conversations;</li><li>prevent abuse, investigate reports and enforce blocks;</li><li>measure whether discovery ordering and the core matching funnel work;</li><li>diagnose beta load-time or render problems when optional diagnostics are enabled;</li><li>operate account deletion and security controls.</li></ul>
+
+  <h2>Beta measurement choices</h2>
+  <p>Core ranking and funnel measurement is generated by Binder’s own server from product actions and remains private from other users. Optional client diagnostics are separate and start disabled. You can enable or disable them in <strong>Profile → Beta Program</strong>. Disabling them deletes the existing optional client-diagnostic rows for your account.</p>
+  <p>Current retention targets are 30 days for optional client diagnostics and 90 days for discovery ranking observations. Private beta feedback and content-free server funnel records may be kept for up to 180 days while the beta is evaluated.</p>
+
+  <h2>Infrastructure</h2>
+  <p>Binder currently uses Supabase for authentication, Postgres data, private file storage, realtime delivery and first-party beta measurement. Expo infrastructure may be used for remote notifications when production push is enabled. Binder does not sell personal data to advertisers.</p>
+
+  <h2>Location</h2>
+  <p>Binder requests foreground location for discovery. Exact coordinates are stored privately for server-side distance checks and are not returned to another user. Ranking measurement uses a coarse 10-km distance bucket instead of copying exact coordinates. Background location is not part of the current product.</p>
+
+  <h2>Retention and deletion</h2>
+  <p>When you request account deletion, Binder is designed to remove account-associated product data, authentication identity and account-linked beta measurement through database cascade. Certain safety or fraud-prevention records may need limited retention where legally justified; retained records should be minimized and separated from normal product use.</p>
+  <p>Use the <a href="delete-account.html">account deletion page</a> or the in-app account controls to initiate deletion.</p>
+
+  <h2>Your choices</h2>
+  <p>You can update profile information in the app, deny location permission, disable push notifications, enable or disable optional Beta Diagnostics, submit private beta feedback, block or report another user, unmatch, and request account deletion.</p>
+
+  <h2>Contact</h2>
+  <p>Privacy questions: <a href="mailto:nullmesh@protonmail.com">nullmesh@protonmail.com</a>.</p>
+</main>
+<footer class="footer"><div class="wrap footerin"><span>© 2026 Binder</span><div class="footlinks"><a href="./">Home</a><a href="terms.html">Terms</a><a href="delete-account.html">Delete account</a></div></div></footer>
+</body>
+</html>

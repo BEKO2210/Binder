@@ -39,6 +39,9 @@ jobs:
       - name: Verify Phase 4 safety contract
         run: node scripts/verify-safety-contract.mjs
 
+      - name: Verify Phase 5 beta contract
+        run: node scripts/verify-phase5-contract.mjs
+
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
@@ -54,3 +57,6 @@ jobs:
 
       - name: Android Expo bundle
         run: npm run bundlecheck
+
+      - name: Report Android export size
+        run: node scripts/report-bundle-size.mjs

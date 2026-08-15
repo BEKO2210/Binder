@@ -1,5 +1,6 @@
 import * as Crypto from 'expo-crypto';
 
+import { recordBetaEvent } from './beta';
 import { supabase } from './supabase';
 import type { Database } from '../types/database';
 
@@ -39,35 +40,60 @@ async function signProfilePhoto(storagePath: string | null | undefined): Promise
 }
 
 export async function fetchMatches(): Promise<MatchSummary[]> {
-  const { data, error } = await supabase.rpc('get_my_matches');
-  if (error) throw error;
+  const startedAt = Date.now();
+  try {
+    const { data, error } = await supabase.rpc('get_my_matches');
+    if (error) throw error;
 
-  return Promise.all(
-    (data ?? []).map(async (match) => ({
-      matchId: match.match_id,
-      otherUserId: match.other_user_id,
-      firstName: match.first_name,
-      age: match.age,
-      bio: match.bio,
-      photoUrl: await signProfilePhoto(match.primary_photo_path),
-      matchedAt: match.matched_at,
-      lastMessageBody: match.last_message_body ?? null,
-      lastMessageAt: match.last_message_at ?? null,
-      unreadCount: Number(match.unread_count ?? 0),
-    })),
-  );
+    const matches = await Promise.all(
+      (data ?? []).map(async (match) => ({
+        matchId: match.match_id,
+        otherUserId: match.other_user_id,
+        firstName: match.first_name,
+        age: match.age,
+        bio: match.bio,
+        photoUrl: await signProfilePhoto(match.primary_photo_path),
+        matchedAt: match.matched_at,
+        lastMessageBody: match.last_message_body ?? null,
+        lastMessageAt: match.last_message_at ?? null,
+        unreadCount: Number(match.unread_count ?? 0),
+      })),
+    );
+
+    void recordBetaEvent('matches_load', 'matches', {
+      durationMs: Date.now() - startedAt,
+      value: matches.length,
+      outcome: matches.length === 0 ? 'empty' : 'ok',
+    });
+    return matches;
+  } catch (error) {
+    void recordBetaEvent('matches_load', 'matches', { durationMs: Date.now() - startedAt, outcome: 'error' });
+    throw error;
+  }
 }
 
 export async function fetchMessages(matchId: string): Promise<Message[]> {
-  const { data, error } = await supabase
-    .from('messages')
-    .select('id, match_id, sender_id, client_message_id, body, created_at')
-    .eq('match_id', matchId)
-    .order('created_at', { ascending: true })
-    .order('id', { ascending: true });
+  const startedAt = Date.now();
+  try {
+    const { data, error } = await supabase
+      .from('messages')
+      .select('id, match_id, sender_id, client_message_id, body, created_at')
+      .eq('match_id', matchId)
+      .order('created_at', { ascending: true })
+      .order('id', { ascending: true });
 
-  if (error) throw error;
-  return data ?? [];
+    if (error) throw error;
+    const messages = data ?? [];
+    void recordBetaEvent('chat_load', 'chat', {
+      durationMs: Date.now() - startedAt,
+      value: messages.length,
+      outcome: messages.length === 0 ? 'empty' : 'ok',
+    });
+    return messages;
+  } catch (error) {
+    void recordBetaEvent('chat_load', 'chat', { durationMs: Date.now() - startedAt, outcome: 'error' });
+    throw error;
+  }
 }
 
 export function createClientMessageId(): string {

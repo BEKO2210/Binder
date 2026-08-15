@@ -1,11 +1,14 @@
 import type { Session } from '@supabase/supabase-js';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import BinderErrorBoundary from './components/BinderErrorBoundary';
+import { initializeBetaDiagnostics, recordBetaEvent } from './lib/beta';
 import { supabase } from './lib/supabase';
 import type { MatchSummary } from './lib/conversation';
 import { getLegalGate, type LegalGate } from './lib/safety';
 import AuthScreen from './screens/AuthScreen';
+import BetaScreen from './screens/BetaScreen';
 import ChatScreen from './screens/ChatScreen';
 import DiscoveryScreen from './screens/DiscoveryScreen';
 import LegalGateScreen from './screens/LegalGateScreen';
@@ -16,6 +19,14 @@ import ProfileScreen from './screens/ProfileScreen';
 type Tab = 'discover' | 'matches' | 'profile';
 
 export default function Root() {
+  return (
+    <BinderErrorBoundary>
+      <BinderApp />
+    </BinderErrorBoundary>
+  );
+}
+
+function BinderApp() {
   const [session, setSession] = useState<Session | null | undefined>(undefined);
   const [legalGate, setLegalGate] = useState<LegalGate | null | undefined>(undefined);
   const [legalRefreshKey, setLegalRefreshKey] = useState(0);
@@ -24,6 +35,8 @@ export default function Root() {
   const [tab, setTab] = useState<Tab>('discover');
   const [activeMatch, setActiveMatch] = useState<MatchSummary | null>(null);
   const [matchesRefreshKey, setMatchesRefreshKey] = useState(0);
+  const [betaOpen, setBetaOpen] = useState(false);
+  const appSessionRecorded = useRef(false);
 
   useEffect(() => {
     let active = true;
@@ -40,7 +53,9 @@ export default function Root() {
       setOnboardingComplete(undefined);
       setLoadError('');
       setActiveMatch(null);
+      setBetaOpen(false);
       setTab('discover');
+      appSessionRecorded.current = false;
     });
 
     return () => {
@@ -56,17 +71,23 @@ export default function Root() {
     }
 
     let active = true;
+    const startedAt = Date.now();
     setLegalGate(undefined);
     setLoadError('');
 
+    void initializeBetaDiagnostics();
+
     getLegalGate()
       .then((gate) => {
-        if (active) setLegalGate(gate);
+        if (!active) return;
+        setLegalGate(gate);
+        void recordBetaEvent('legal_gate_load', 'legal', { durationMs: Date.now() - startedAt, outcome: 'ok' });
       })
       .catch((error: unknown) => {
         if (!active) return;
         setLoadError(error instanceof Error ? error.message : 'Could not verify Binder policy state.');
         setLegalGate(null);
+        void recordBetaEvent('legal_gate_load', 'legal', { durationMs: Date.now() - startedAt, outcome: 'error' });
       });
 
     return () => {
@@ -98,6 +119,12 @@ export default function Root() {
       active = false;
     };
   }, [session?.user.id, legalGate?.accepted]);
+
+  useEffect(() => {
+    if (!session || legalGate?.accepted !== true || onboardingComplete !== true || appSessionRecorded.current) return;
+    appSessionRecorded.current = true;
+    void recordBetaEvent('app_session', 'app', { outcome: 'ok', value: 1 });
+  }, [session?.user.id, legalGate?.accepted, onboardingComplete]);
 
   if (session === undefined) return <LoadingScreen message={loadError || 'Loading Binder…'} />;
   if (!session) return <AuthScreen />;
@@ -139,6 +166,8 @@ export default function Root() {
     );
   }
 
+  if (betaOpen) return <BetaScreen onClose={() => setBetaOpen(false)} />;
+
   if (activeMatch) {
     return (
       <ChatScreen
@@ -179,7 +208,7 @@ export default function Root() {
             onOpenMatch={(match) => setActiveMatch(match)}
           />
         ) : null}
-        {tab === 'profile' ? <ProfileScreen userId={session.user.id} /> : null}
+        {tab === 'profile' ? <ProfileScreen userId={session.user.id} onOpenBeta={() => setBetaOpen(true)} /> : null}
       </View>
     </View>
   );
