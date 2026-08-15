@@ -102,12 +102,6 @@ export default function DiscoveryScreen() {
     }
   }
 
-  useEffect(() => {
-    if (!loading && !decisionPending && profiles.length === 0 && !error) {
-      void loadDiscovery(false);
-    }
-  }, [profiles.length, loading, decisionPending, error]);
-
   const panResponder = useMemo(
     () =>
       PanResponder.create({
