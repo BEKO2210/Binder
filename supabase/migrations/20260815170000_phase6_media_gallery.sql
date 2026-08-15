@@ -168,7 +168,7 @@ begin
   end if;
 
   select p.onboarding_complete into profile_complete from public.profiles p where p.user_id = uid;
-  if pg_catalog.coalesce(profile_complete, false) then
+  if coalesce(profile_complete, false) then
     select pm.moderation_status into first_status from public.profile_media pm where pm.id = p_media_ids[1] and pm.user_id = uid;
     if first_status is distinct from 'approved' then
       raise exception 'A completed profile can only make an approved photo primary.' using errcode = '23514';
@@ -205,7 +205,7 @@ begin
   if not found then raise exception 'Profile photo not found.' using errcode = '22023'; end if;
 
   select p.onboarding_complete into profile_complete from public.profiles p where p.user_id = uid;
-  if pg_catalog.coalesce(profile_complete, false) and target_status <> 'approved' then
+  if coalesce(profile_complete, false) and target_status <> 'approved' then
     raise exception 'A completed profile can only make an approved photo primary.' using errcode = '23514';
   end if;
 
@@ -243,11 +243,11 @@ begin
 
   select count(*) into media_count from public.profile_media pm where pm.user_id = uid;
   select p.onboarding_complete into profile_complete from public.profiles p where p.user_id = uid;
-  if pg_catalog.coalesce(profile_complete, false) and media_count <= 1 then
+  if coalesce(profile_complete, false) and media_count <= 1 then
     raise exception 'A completed profile must keep at least one profile photo.' using errcode = '23514';
   end if;
 
-  if removing.position = 0 and pg_catalog.coalesce(profile_complete, false) then
+  if removing.position = 0 and coalesce(profile_complete, false) then
     select pm.id into replacement_id
     from public.profile_media pm
     where pm.user_id = uid and pm.id <> removing.id and pm.moderation_status = 'approved'
