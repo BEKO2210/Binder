@@ -33,5 +33,8 @@ jobs:
       - name: Stress atomic mutual matches
         run: bash supabase/tests/phase2_concurrency.sh
 
+      - name: Stress conversation races
+        run: bash supabase/tests/phase3_concurrency.sh
+
       - name: Lint Binder schemas
         run: supabase db lint --schema public,private --level error --fail-on error
