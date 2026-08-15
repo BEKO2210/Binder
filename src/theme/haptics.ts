@@ -1,4 +1,5 @@
 import * as Haptics from 'expo-haptics';
+import { useCallback } from 'react';
 
 import { useBinderTheme } from './ThemeProvider';
 
@@ -7,7 +8,7 @@ export type BinderHaptic = 'selection' | 'bind' | 'match' | 'warning' | 'destruc
 export function useBinderHaptics() {
   const { settings } = useBinderTheme();
 
-  return async (kind: BinderHaptic) => {
+  return useCallback(async (kind: BinderHaptic) => {
     if (!settings.hapticsEnabled) return;
     try {
       if (kind === 'selection') {
@@ -30,5 +31,5 @@ export function useBinderHaptics() {
     } catch {
       // Haptics are enhancement only. Product actions never depend on vibration support.
     }
-  };
+  }, [settings.hapticsEnabled]);
 }

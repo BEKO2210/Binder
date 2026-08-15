@@ -1,0 +1,56 @@
+import { readFileSync } from 'node:fs';
+
+const migration = readFileSync('supabase/migrations/20260815222359_phase7_push_reliability.sql','utf8');
+const worker = readFileSync('supabase/functions/dispatch-push/index.ts','utf8');
+const notifications = readFileSync('src/lib/notifications.ts','utf8');
+const root = readFileSync('src/Root.tsx','utf8');
+const chat = readFileSync('src/screens/ChatScreen.tsx','utf8');
+const app = JSON.parse(readFileSync('app.json','utf8'));
+const eas = JSON.parse(readFileSync('eas.json','utf8'));
+const activation = readFileSync('docs/PHASE7-PRODUCTION-RUNBOOK.md','utf8');
+const failures = [];
+
+const requiredMigrationContracts = [
+  'notification_preferences',
+  'push_deliveries',
+  'unique (outbox_id, token_snapshot)',
+  'for update skip locked',
+  'token_ownership_changed',
+  'private.evaluate_push_gate',
+  "p_error_code = 'DeviceNotRegistered'",
+  "status = 'dead'",
+  'private.push_retry_at',
+  'private.recover_stale_push_claims',
+  'get_match_messages_page',
+];
+for (const contract of requiredMigrationContracts) if (!migration.includes(contract)) failures.push(`Phase 7 migration missing: ${contract}`);
+if ((migration.match(/private\.evaluate_push_gate\(/g) ?? []).length < 3) failures.push('Eligibility/preferences gate is not rechecked at expansion and immediate delivery claim');
+if (!migration.includes("p_kind <> 'safety_alert'")) failures.push('Safety/quiet-hours policy is not explicit');
+
+for (const contract of ['push/send','push/getReceipts','x-binder-dispatch-secret','record_push_ticket','record_push_receipt','ReceiptUnavailable']) {
+  if (!worker.includes(contract)) failures.push(`Dispatcher missing: ${contract}`);
+}
+if (/message(?:_|\.)body/i.test(worker)) failures.push('Dispatcher references message body/UGC');
+if (!migration.includes('Open Binder to continue the conversation.')) failures.push('Dispatcher generic message copy is not frozen');
+
+for (const contract of ['addPushTokenListener','getExpoPushTokenAsync','AndroidNotificationVisibility.PRIVATE','notificationChannelId','parseNotificationRoute','UUID_PATTERN','syncNotificationPreferences','loadNotificationPreferences']) {
+  if (!notifications.includes(contract)) failures.push(`Client notification runtime missing: ${contract}`);
+}
+if (!root.includes('observeNotificationResponses') || !root.includes('fetchMatches')) failures.push('Root does not validate and resolve notification navigation against server matches');
+if (!chat.includes("AppState.addEventListener('change'") || !chat.includes('fetchMessagesPage') || !chat.includes('Load earlier messages')) failures.push('Chat reconnect/pagination contract is incomplete');
+for (const forbidden of [/\bpro\b/i, /\bpremium\b/i, /\bboost\b/i, /\bpaywall\b/i, /\bpurchase\b/i]) {
+  if (forbidden.test([migration, worker, notifications, root, chat].join('\n'))) failures.push(`Monetization surface is forbidden in Phase 7 runtime: ${forbidden}`);
+}
+if (app.expo?.scheme !== 'binder') failures.push('Binder deep-link scheme is missing');
+if (app.expo?.plugins?.flat?.().includes('expo-notifications') !== true) failures.push('Expo notifications plugin is missing');
+if (eas.build?.preview?.distribution !== 'internal' || eas.build?.preview?.android?.buildType !== 'apk') failures.push('Two-device EAS preview APK profile is missing');
+if (eas.build?.production?.android?.buildType !== 'app-bundle') failures.push('Android EAS production profile is missing');
+for (const contract of ['FCM v1','Supabase Cron','Vault-held dispatch secret','PHASE7-DEVICE-MATRIX.md']) {
+  if (!activation.includes(contract)) failures.push(`Production activation gate missing: ${contract}`);
+}
+
+if (failures.length) {
+  console.error(failures.join('\n'));
+  process.exit(1);
+}
+console.log('Binder Phase 7 push + communication contract PASS');

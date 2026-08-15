@@ -41,6 +41,16 @@ const brandComponent = readFileSync('src/components/ui/BinderBrand.tsx', 'utf8')
 if (!brandComponent.includes("require('../../../assets/brand/icon.png')")) failures.push('BinderBrand does not render the production icon asset');
 if (/">B<\/BinderText>/.test(brandComponent)) failures.push('legacy text-only B brand tile is still present');
 
+const generator = readFileSync('scripts/materialize-brand-assets.mjs', 'utf8');
+const brandReadme = readFileSync('assets/brand/README.md', 'utf8');
+for (const contract of ['const heads = insideCircle', 'leftBond', 'rightBond', 'bindingKnot']) {
+  if (!generator.includes(contract)) failures.push(`canonical two-person bond geometry missing: ${contract}`);
+}
+if (!brandReadme.includes('two people') || !brandReadme.includes('interlocking rounded bodies')) {
+  failures.push('brand documentation does not freeze the two-person interlocking-bond meaning');
+}
+if (/gradient|shadow/i.test(generator)) failures.push('canonical logo generator must stay flat and shadow-free');
+
 if (failures.length) {
   console.error(failures.join('\n'));
   process.exit(1);

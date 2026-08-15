@@ -2,6 +2,7 @@
   "expo": {
     "name": "Binder",
     "slug": "binder",
+    "scheme": "binder",
     "version": "0.5.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
@@ -17,9 +18,10 @@
       [
         "expo-notifications",
         {
-          "defaultChannel": "messages",
+          "defaultChannel": "binder_new_message_sound_vibrate_v1",
           "icon": "./assets/brand/monochrome.png",
-          "color": "#C7FF4A"
+          "color": "#C7FF4A",
+          "enableBackgroundRemoteNotifications": false
         }
       ],
       [

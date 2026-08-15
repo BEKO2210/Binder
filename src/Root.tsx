@@ -5,7 +5,17 @@ import { Pressable, View } from 'react-native';
 import BinderErrorBoundary from './components/BinderErrorBoundary';
 import { BinderIcon, BinderText, ScreenState, type BinderIconName } from './components/ui';
 import { initializeBetaDiagnostics, recordBetaEvent } from './lib/beta';
-import type { MatchSummary } from './lib/conversation';
+import { fetchMatches, type MatchSummary } from './lib/conversation';
+import {
+  observeForegroundNotifications,
+  observeNotificationResponses,
+  observePushTokenRotation,
+  loadNotificationPreferences,
+  refreshPushRegistration,
+  setNotificationForegroundContext,
+  syncNotificationPreferences,
+  type NotificationRoute,
+} from './lib/notifications';
 import { getLegalGate, type LegalGate } from './lib/safety';
 import { supabase } from './lib/supabase';
 import AppSettingsScreen from './screens/AppSettingsScreen';
@@ -18,6 +28,7 @@ import MatchesScreen from './screens/MatchesScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ProfileSettingsScreen from './screens/ProfileSettingsScreen';
+import { useBinderHaptics } from './theme/haptics';
 import { BinderThemeProvider, useBinderTheme } from './theme/ThemeProvider';
 
 type Tab = 'discover' | 'matches' | 'profile';
@@ -28,7 +39,8 @@ export default function Root() {
 }
 
 function BinderApp() {
-  const { theme } = useBinderTheme();
+  const { theme, settings, hydrated, updateSettings } = useBinderTheme();
+  const haptic = useBinderHaptics();
   const [session, setSession] = useState<Session | null | undefined>(undefined);
   const [legalGate, setLegalGate] = useState<LegalGate | null | undefined>(undefined);
   const [legalRefreshKey, setLegalRefreshKey] = useState(0);
@@ -38,13 +50,15 @@ function BinderApp() {
   const [profileRoute, setProfileRoute] = useState<ProfileRoute>('home');
   const [activeMatch, setActiveMatch] = useState<MatchSummary | null>(null);
   const [matchesRefreshKey, setMatchesRefreshKey] = useState(0);
+  const [pendingNotificationRoute, setPendingNotificationRoute] = useState<NotificationRoute | null>(null);
+  const [notificationPreferencesReadyFor, setNotificationPreferencesReadyFor] = useState<string | null>(null);
   const appSessionRecorded = useRef(false);
 
   useEffect(() => {
     let active = true;
     supabase.auth.getSession().then(({ data, error }) => { if (!active) return; if (error) setLoadError(error.message); setSession(data.session); });
     const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      setSession(nextSession); setLegalGate(undefined); setOnboardingComplete(undefined); setLoadError(''); setActiveMatch(null); setProfileRoute('home'); setTab('discover'); appSessionRecorded.current = false;
+      setSession(nextSession); setLegalGate(undefined); setOnboardingComplete(undefined); setNotificationPreferencesReadyFor(null); setLoadError(''); setActiveMatch(null); setProfileRoute('home'); setTab('discover'); appSessionRecorded.current = false;
     });
     return () => { active = false; data.subscription.unsubscribe(); };
   }, []);
@@ -67,6 +81,91 @@ function BinderApp() {
     if (!session || legalGate?.accepted !== true || onboardingComplete !== true || appSessionRecorded.current) return;
     appSessionRecorded.current = true; void recordBetaEvent('app_session', 'app', { outcome: 'ok', value: 1 });
   }, [session?.user.id, legalGate?.accepted, onboardingComplete]);
+
+  useEffect(() => observeNotificationResponses(setPendingNotificationRoute), []);
+
+  useEffect(() => {
+    if (!session || legalGate?.accepted !== true || onboardingComplete !== true || !hydrated) {
+      setNotificationPreferencesReadyFor(null);
+      return;
+    }
+    let active = true;
+    void loadNotificationPreferences()
+      .then(async (remote) => {
+        if (!active) return;
+        if (remote) await updateSettings(remote);
+        if (active) setNotificationPreferencesReadyFor(session.user.id);
+      })
+      .catch(() => {
+        if (active) setNotificationPreferencesReadyFor(null);
+      });
+    return () => { active = false; };
+  }, [session?.user.id, legalGate?.accepted, onboardingComplete, hydrated]);
+
+  useEffect(() => {
+    setNotificationForegroundContext({
+      activeMatchId: activeMatch?.matchId ?? null,
+      sound: settings.notifications.sound,
+      vibration: settings.notifications.vibration,
+    });
+  }, [activeMatch?.matchId, settings.notifications.sound, settings.notifications.vibration]);
+
+  useEffect(() => observeForegroundNotifications((category, route) => {
+    if (category === 'new_match' || category === 'new_message') setMatchesRefreshKey((value) => value + 1);
+    if (category === 'new_message' && route?.screen === 'chat' && route.matchId === activeMatch?.matchId) return;
+    if (!settings.notifications.vibration) return;
+    if (category === 'new_match') void haptic('match');
+    else if (category === 'safety_alert') void haptic('warning');
+    else if (category === 'new_message') void haptic('selection');
+  }), [activeMatch?.matchId, haptic, settings.notifications.vibration]);
+
+  useEffect(() => {
+    if (!session || notificationPreferencesReadyFor !== session.user.id) return;
+    const quietTimePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
+    if (!quietTimePattern.test(settings.quietHours.start) || !quietTimePattern.test(settings.quietHours.end)) return;
+    const timer = setTimeout(() => {
+      void syncNotificationPreferences(settings).catch(() => undefined);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [session?.user.id, notificationPreferencesReadyFor, settings]);
+
+  useEffect(() => {
+    if (!session || legalGate?.accepted !== true || onboardingComplete !== true || !settings.notifications.enabled) return;
+    void refreshPushRegistration().catch(() => undefined);
+    return observePushTokenRotation();
+  }, [session?.user.id, legalGate?.accepted, onboardingComplete, settings.notifications.enabled]);
+
+  useEffect(() => {
+    if (!pendingNotificationRoute || !session || legalGate?.accepted !== true || onboardingComplete !== true) return;
+    const route = pendingNotificationRoute;
+    setPendingNotificationRoute(null);
+    if (route.screen === 'matches') {
+      setActiveMatch(null);
+      setTab('matches');
+      setMatchesRefreshKey((value) => value + 1);
+      return;
+    }
+    if (route.screen === 'profile') {
+      setActiveMatch(null);
+      setProfileRoute('home');
+      setTab('profile');
+      return;
+    }
+    let active = true;
+    void fetchMatches().then((matches) => {
+      if (!active) return;
+      const target = matches.find((match) => match.matchId === route.matchId);
+      if (target) setActiveMatch(target);
+      else {
+        setActiveMatch(null);
+        setTab('matches');
+        setMatchesRefreshKey((value) => value + 1);
+      }
+    }).catch(() => {
+      if (active) setTab('matches');
+    });
+    return () => { active = false; };
+  }, [pendingNotificationRoute, session?.user.id, legalGate?.accepted, onboardingComplete]);
 
   if (session === undefined) return <ScreenState kind="loading" message={loadError || 'Loading Binder…'} />;
   if (!session) return <AuthScreen />;

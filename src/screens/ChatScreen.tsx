@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, FlatList, KeyboardAvoidingView, Platform, Pressable, TextInput, View } from 'react-native';
+import { Alert, AppState, FlatList, KeyboardAvoidingView, Platform, Pressable, TextInput, View } from 'react-native';
 
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderText, ScreenState } from '../components/ui';
 import {
   blockUser,
   createClientMessageId,
-  fetchMessages,
+  fetchMessagesPage,
   markMatchRead,
   reportUser,
   sendMessage,
@@ -42,6 +42,8 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
+  const [hasMore, setHasMore] = useState(false);
+  const [loadingOlder, setLoadingOlder] = useState(false);
   const [composer, setComposer] = useState('');
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState('');
@@ -53,44 +55,113 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   const [reportMessageId, setReportMessageId] = useState<string | null>(null);
   const [reporting, setReporting] = useState(false);
 
-  function mergeMessage(next: Message) {
+  function mergeMessages(next: Message[]) {
     setMessages((current) => {
-      if (current.some((message) => message.id === next.id)) return current;
-      return [...current, next].sort((a, b) => {
+      const byId = new Map(current.map((message) => [message.id, message]));
+      for (const message of next) byId.set(message.id, message);
+      return [...byId.values()].sort((a, b) => {
         const time = a.created_at.localeCompare(b.created_at);
         return time === 0 ? a.id.localeCompare(b.id) : time;
       });
     });
   }
 
+  function mergeMessage(next: Message) { mergeMessages([next]); }
+
   useEffect(() => {
     let active = true;
-    async function load() {
-      setLoading(true);
+    let unsubscribe: (() => void) | null = null;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
+    let retryAttempt = 0;
+    let appIsActive = AppState.currentState === 'active';
+
+    async function load(initial: boolean) {
+      if (initial) setLoading(true);
       setLoadError('');
       try {
-        const rows = await fetchMessages(match.matchId);
+        const page = await fetchMessagesPage(match.matchId);
         if (!active) return;
-        setMessages(rows);
+        mergeMessages(page.messages);
+        setHasMore(page.hasMore);
         await markMatchRead(match.matchId);
       } catch (nextError) {
         if (active) setLoadError(nextError instanceof Error ? nextError.message : 'Could not load conversation.');
       } finally {
-        if (active) setLoading(false);
+        if (active && initial) setLoading(false);
       }
     }
-    void load();
-    const unsubscribe = subscribeToMessages(
-      match.matchId,
-      (message) => {
-        if (!active) return;
-        mergeMessage(message);
-        if (message.sender_id !== currentUserId) void markMatchRead(match.matchId).catch(() => undefined);
-      },
-      (message) => { if (active) setLoadError(message); },
-    );
-    return () => { active = false; unsubscribe(); };
+
+    function connect() {
+      if (!active || !appIsActive) return;
+      if (retryTimer) {
+        clearTimeout(retryTimer);
+        retryTimer = null;
+      }
+      unsubscribe?.();
+      unsubscribe = subscribeToMessages(
+        match.matchId,
+        (message) => {
+          if (!active) return;
+          retryAttempt = 0;
+          mergeMessage(message);
+          if (message.sender_id !== currentUserId) void markMatchRead(match.matchId).catch(() => undefined);
+        },
+        (message) => {
+          if (!active) return;
+          setLoadError(message);
+          unsubscribe?.();
+          const delay = Math.min(15_000,1_000 * 2 ** retryAttempt);
+          retryAttempt += 1;
+          retryTimer = setTimeout(() => {
+            retryTimer = null;
+            connect();
+          },delay);
+        },
+      );
+    }
+
+    void load(true);
+    connect();
+    const appState = AppState.addEventListener('change',(state) => {
+      if (!active) return;
+      appIsActive = state === 'active';
+      if (state === 'active') {
+        retryAttempt = 0;
+        if (retryTimer) clearTimeout(retryTimer);
+        void load(false);
+        connect();
+      } else {
+        if (retryTimer) {
+          clearTimeout(retryTimer);
+          retryTimer = null;
+        }
+        unsubscribe?.();
+        unsubscribe = null;
+      }
+    });
+    return () => {
+      active = false;
+      if (retryTimer) clearTimeout(retryTimer);
+      unsubscribe?.();
+      appState.remove();
+    };
   }, [currentUserId, match.matchId]);
+
+  async function loadOlder() {
+    const oldest = messages[0];
+    if (!oldest || loadingOlder || !hasMore) return;
+    setLoadingOlder(true);
+    setLoadError('');
+    try {
+      const page = await fetchMessagesPage(match.matchId,oldest);
+      mergeMessages(page.messages);
+      setHasMore(page.hasMore);
+    } catch (error) {
+      setLoadError(error instanceof Error ? error.message : 'Could not load earlier messages.');
+    } finally {
+      setLoadingOlder(false);
+    }
+  }
 
   const trimmedComposer = composer.trim();
   const canSend = trimmedComposer.length > 0 && trimmedComposer.length <= 2000 && !sending;
@@ -194,15 +265,16 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ flexGrow: 1, padding: theme.spacing.x4, gap: theme.spacing.x2 }}
           showsVerticalScrollIndicator={false}
+          ListHeaderComponent={hasMore ? <BinderButton label="Load earlier messages" variant="ghost" loading={loadingOlder} onPress={() => void loadOlder()} style={{ marginBottom: theme.spacing.x3 }} /> : null}
           ListEmptyComponent={<ScreenState kind="empty" icon="matches" title="You matched." message="Normal chat opens only after mutual interest. Say something real." />}
           renderItem={({ item }) => {
             const mine = item.sender_id === currentUserId;
             return (
               <Pressable disabled={mine} onLongPress={() => openReport(item.id)} style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: '82%' }}>
                 <View style={{ paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x3, borderRadius: theme.radii.control, backgroundColor: mine ? theme.accent.accent : theme.colors.surfaceElevated, borderWidth: mine ? 0 : 1, borderColor: theme.colors.borderSubtle }}>
-                  <BinderText variant="body" style={{ color: mine ? theme.accent.foreground : theme.colors.textPrimary }}>{item.body}</BinderText>
+                  <BinderText selectable variant="body" style={{ color: mine ? theme.accent.foreground : theme.colors.textPrimary }}>{item.body}</BinderText>
                 </View>
-                {!mine ? <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1, marginLeft: theme.spacing.x2 }}>Hold to report</BinderText> : null}
+                <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1, marginLeft: theme.spacing.x2 }}>{mine ? 'Sent' : 'Hold to report'}</BinderText>
               </Pressable>
             );
           }}

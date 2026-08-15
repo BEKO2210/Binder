@@ -1,6 +1,8 @@
 name: Binder Database Tests
 
 on:
+  push:
+    branches: ['phase/**']
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -33,6 +35,8 @@ jobs:
         run: bash supabase/tests/phase3_rate_concurrency.sh
       - name: Stress six-photo gallery races
         run: bash supabase/tests/phase6_media_concurrency.sh
+      - name: Stress push dispatcher claims
+        run: bash supabase/tests/phase7_push_concurrency.sh
       - name: Lint Binder schemas
         run: supabase db lint --schema public,private --level error --fail-on error
 

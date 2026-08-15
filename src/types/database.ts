@@ -61,6 +61,8 @@ export type Database = {
           created_at: string
           enabled: boolean
           id: string
+          installation_id: string
+          last_registered_at: string
           platform: string
           token: string
           updated_at: string
@@ -70,6 +72,8 @@ export type Database = {
           created_at?: string
           enabled?: boolean
           id?: string
+          installation_id: string
+          last_registered_at?: string
           platform: string
           token: string
           updated_at?: string
@@ -79,10 +83,63 @@ export type Database = {
           created_at?: string
           enabled?: boolean
           id?: string
+          installation_id?: string
+          last_registered_at?: string
           platform?: string
           token?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      notification_preferences: {
+        Row: {
+          enabled: boolean
+          messages: boolean
+          moderation: boolean
+          new_matches: boolean
+          product: boolean
+          quiet_end: string
+          quiet_hours_enabled: boolean
+          quiet_start: string
+          safety: boolean
+          sound: boolean
+          timezone: string
+          updated_at: string
+          user_id: string
+          vibration: boolean
+        }
+        Insert: {
+          enabled?: boolean
+          messages?: boolean
+          moderation?: boolean
+          new_matches?: boolean
+          product?: boolean
+          quiet_end?: string
+          quiet_hours_enabled?: boolean
+          quiet_start?: string
+          safety?: boolean
+          sound?: boolean
+          timezone?: string
+          updated_at?: string
+          user_id: string
+          vibration?: boolean
+        }
+        Update: {
+          enabled?: boolean
+          messages?: boolean
+          moderation?: boolean
+          new_matches?: boolean
+          product?: boolean
+          quiet_end?: string
+          quiet_hours_enabled?: boolean
+          quiet_start?: string
+          safety?: boolean
+          sound?: boolean
+          timezone?: string
+          updated_at?: string
+          user_id?: string
+          vibration?: boolean
         }
         Relationships: []
       }
@@ -423,6 +480,26 @@ export type Database = {
           unread_count: number
         }[]
       }
+      get_match_messages_page: {
+        Args: {
+          p_before_created_at?: string
+          p_before_id?: string
+          p_limit?: number
+          p_match_id: string
+        }
+        Returns: {
+          body: string
+          client_message_id: string
+          created_at: string
+          id: string
+          match_id: string
+          sender_id: string
+        }[]
+      }
+      get_my_notification_preferences: {
+        Args: never
+        Returns: Database["public"]["Tables"]["notification_preferences"]["Row"][]
+      }
       get_my_primary_media_state: {
         Args: never
         Returns: {
@@ -469,8 +546,8 @@ export type Database = {
         }[]
       }
       register_push_token: {
-        Args: { p_platform: string; p_token: string }
-        Returns: undefined
+        Args: { p_installation_id: string; p_platform: string; p_token: string }
+        Returns: string
       }
       report_user: {
         Args: {
@@ -498,6 +575,23 @@ export type Database = {
         }[]
       }
       set_beta_diagnostics: { Args: { p_enabled: boolean }; Returns: boolean }
+      set_my_notification_preferences: {
+        Args: {
+          p_enabled: boolean
+          p_messages: boolean
+          p_moderation: boolean
+          p_new_matches: boolean
+          p_product: boolean
+          p_quiet_end: string
+          p_quiet_hours_enabled: boolean
+          p_quiet_start: string
+          p_safety: boolean
+          p_sound: boolean
+          p_timezone: string
+          p_vibration: boolean
+        }
+        Returns: Database["public"]["Tables"]["notification_preferences"]["Row"][]
+      }
       set_my_location: {
         Args: { latitude: number; longitude: number }
         Returns: undefined
@@ -508,6 +602,7 @@ export type Database = {
       }
       unmatch: { Args: { p_match_id: string }; Returns: boolean }
       unregister_push_token: { Args: { p_token: string }; Returns: undefined }
+      unregister_push_installation: { Args: { p_installation_id: string }; Returns: undefined }
       update_my_profile: {
         Args: {
           p_bio: string

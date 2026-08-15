@@ -3,6 +3,7 @@ import { ScrollView, Switch, View } from 'react-native';
 
 import { BinderButton, BinderCard, BinderChip, BinderIconButton, BinderInput, BinderText, ScreenState, SectionHeader } from '../components/ui';
 import { getBetaSettings, setBetaDiagnostics } from '../lib/beta';
+import { disablePushNotifications, enablePushNotifications } from '../lib/notifications';
 import { useBinderHaptics } from '../theme/haptics';
 import type { AccentThemeId, MotionPreference } from '../theme/tokens';
 import { useBinderTheme } from '../theme/ThemeProvider';
@@ -35,12 +36,41 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
     finally { setDiagnosticsLoading(false); }
   }
 
+  async function togglePush(next: boolean) {
+    setMessage('');
+    try {
+      if (!next) {
+        await disablePushNotifications();
+        await updateNotifications({ enabled: false });
+        setMessage('Push notifications are off on this installation.');
+        return;
+      }
+      const result = await enablePushNotifications();
+      if (result.status === 'registered') {
+        await updateNotifications({ enabled: true });
+        setMessage('Push notifications are active on this installation.');
+      } else if (result.status === 'denied') {
+        await updateNotifications({ enabled: false });
+        setMessage('Android notification permission is denied. You can allow Binder in system settings.');
+      } else if (result.status === 'missing-project-id') {
+        await updateNotifications({ enabled: false });
+        setMessage('This build is not connected to its EAS project yet.');
+      } else if (result.status === 'offline') {
+        setMessage('Could not reach the push service. Try again when you are online.');
+      } else {
+        setMessage('Remote push is available only in an Android or iOS development/release build.');
+      }
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Could not update push notifications.');
+    }
+  }
+
   if (!hydrated) return <ScreenState kind="loading" message="Loading app settings…" />;
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.canvas }} contentContainerStyle={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x4, paddingBottom: theme.spacing.x16 }}>
       <BinderIconButton name="back" accessibilityLabel="Back to profile" onPress={onClose} />
-      <SectionHeader eyebrow="APP SETTINGS" title="Make Binder feel right." copy="Visual preferences never change safety colors. Notification controls are ready for Phase 7 push delivery." />
+      <SectionHeader eyebrow="APP SETTINGS" title="Make Binder feel right." copy="Visual preferences never change safety colors. Push delivery rules are enforced by Binder's server." />
 
       <SettingsSection title="Appearance" copy="Follow your device or keep Binder dark.">
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>
@@ -63,8 +93,8 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
         </View>
       </SettingsSection>
 
-      <SettingsSection title="Notifications" copy="These preferences become delivery rules when real push is enabled in Phase 7.">
-        <SwitchRow label="Notifications" value={settings.notifications.enabled} onValueChange={(value) => void updateNotifications({ enabled: value })} />
+      <SettingsSection title="Notifications" copy="Permission applies to this installation. Categories, sound and vibration follow your Binder account and are rechecked server-side before every send.">
+        <SwitchRow label="Remote push" value={settings.notifications.enabled} onValueChange={(value) => void togglePush(value)} />
         <SwitchRow label="New matches" value={settings.notifications.newMatches} disabled={!settings.notifications.enabled} onValueChange={(value) => void updateNotifications({ newMatches: value })} />
         <SwitchRow label="Messages" value={settings.notifications.messages} disabled={!settings.notifications.enabled} onValueChange={(value) => void updateNotifications({ messages: value })} />
         <SwitchRow label="Moderation" value={settings.notifications.moderation} disabled={!settings.notifications.enabled} onValueChange={(value) => void updateNotifications({ moderation: value })} />
@@ -74,7 +104,7 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
         <SwitchRow label="Vibration" value={settings.notifications.vibration} disabled={!settings.notifications.enabled} onValueChange={(value) => void updateNotifications({ vibration: value })} />
       </SettingsSection>
 
-      <SettingsSection title="Quiet hours" copy="Delivery scheduling is applied by Phase 7; keep your preferred window here now.">
+      <SettingsSection title="Quiet hours" copy="Match, message, moderation and product pushes wait until the local end time. Urgent safety alerts remain immediate.">
         <SwitchRow label="Use quiet hours" value={settings.quietHours.enabled} onValueChange={(value) => void updateQuietHours({ enabled: value })} />
         <View style={{ flexDirection: 'row', gap: theme.spacing.x3, marginTop: theme.spacing.x3 }}>
           <View style={{ flex: 1 }}><BinderInput label="Start" value={settings.quietHours.start} onChangeText={(value) => void updateQuietHours({ start: value })} placeholder="22:00" /></View>

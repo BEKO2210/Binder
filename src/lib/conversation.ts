@@ -72,28 +72,34 @@ export async function fetchMatches(): Promise<MatchSummary[]> {
   }
 }
 
-export async function fetchMessages(matchId: string): Promise<Message[]> {
+export type MessagePage = { messages: Message[]; hasMore: boolean };
+
+export async function fetchMessagesPage(matchId: string, before?: Message, limit = 50): Promise<MessagePage> {
   const startedAt = Date.now();
   try {
-    const { data, error } = await supabase
-      .from('messages')
-      .select('id, match_id, sender_id, client_message_id, body, created_at')
-      .eq('match_id', matchId)
-      .order('created_at', { ascending: true })
-      .order('id', { ascending: true });
+    const { data, error } = await supabase.rpc('get_match_messages_page', {
+      p_match_id: matchId,
+      p_before_created_at: before?.created_at,
+      p_before_id: before?.id,
+      p_limit: limit,
+    });
 
     if (error) throw error;
-    const messages = data ?? [];
+    const messages = [...(data ?? [])].reverse();
     void recordBetaEvent('chat_load', 'chat', {
       durationMs: Date.now() - startedAt,
       value: messages.length,
       outcome: messages.length === 0 ? 'empty' : 'ok',
     });
-    return messages;
+    return { messages, hasMore: messages.length === limit };
   } catch (error) {
     void recordBetaEvent('chat_load', 'chat', { durationMs: Date.now() - startedAt, outcome: 'error' });
     throw error;
   }
+}
+
+export async function fetchMessages(matchId: string): Promise<Message[]> {
+  return (await fetchMessagesPage(matchId)).messages;
 }
 
 export function createClientMessageId(): string {

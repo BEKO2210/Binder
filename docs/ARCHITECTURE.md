@@ -144,9 +144,9 @@ The match row lock serializes Send against Unmatch/Block. Terminal transitions u
 
 ## Push boundary
 
-Match/message commits create private push-outbox jobs from database triggers, never from client claims. Token ownership moves to the currently authenticated account when the same device token is re-registered.
+Match/message/moderation/safety commits create idempotent private push-outbox jobs from database triggers, never from client claims. Phase 7 expands each logical job into one durable delivery row per current device, then rechecks account, match, token ownership, category and quiet-hours gates immediately before claiming it. Expo tickets and receipts drive bounded retry, invalid-token disablement and dead-letter state without storing message content in push payloads or logs.
 
-End-to-end remote push delivery is not yet claimed. A real EAS project ID, Android/iOS credentials and dispatcher remain an external release gate.
+The candidate implementation does not itself claim end-to-end delivery. A real linked EAS project ID, FCM/APNs credentials, deployed dispatcher/Cron and the completed two-physical-device matrix remain mandatory release gates.
 
 ## Dependency / runtime separation
 

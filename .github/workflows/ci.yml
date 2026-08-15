@@ -2,7 +2,7 @@ name: Binder CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'phase/**']
   pull_request:
 
 permissions:
@@ -60,6 +60,9 @@ jobs:
       - name: Verify Phase 6 media path
         run: npm run verify:phase6-media
 
+      - name: Verify Phase 7 push and communication reliability
+        run: npm run verify:phase7-push
+
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
@@ -68,7 +71,9 @@ jobs:
           cache-hash: ${{ hashFiles('supabase/functions/**/deno.json') }}
 
       - name: Typecheck Edge Functions
-        run: deno check --config supabase/functions/delete-account/deno.json supabase/functions/delete-account/index.ts
+        run: |
+          deno check --config supabase/functions/delete-account/deno.json supabase/functions/delete-account/index.ts
+          deno check --config supabase/functions/dispatch-push/deno.json supabase/functions/dispatch-push/index.ts
 
       - name: TypeScript
         run: npm run typecheck

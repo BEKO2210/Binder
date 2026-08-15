@@ -59,15 +59,25 @@ function insideRoundedRect(px, py, x, y, width, height, radius) {
   return dx * dx + dy * dy <= radius * radius;
 }
 
+function insideCircle(px, py, centerX, centerY, radius) {
+  const dx = px - centerX;
+  const dy = py - centerY;
+  return dx * dx + dy * dy <= radius * radius;
+}
+
 function canonicalMask(x, y) {
-  let filled = false;
-  filled ||= insideRoundedRect(x, y, 224, 164, 143, 697, 72);
-  filled ||= insideRoundedRect(x, y, 310, 164, 486, 334, 167);
-  filled ||= insideRoundedRect(x, y, 310, 484, 521, 377, 188);
-  filled ||= x >= 310 && x <= 605 && y >= 410 && y <= 615;
-  if (insideRoundedRect(x, y, 404, 268, 249, 141, 70)) filled = false;
-  if (insideRoundedRect(x, y, 404, 596, 270, 159, 80)) filled = false;
-  return filled;
+  const heads = insideCircle(x, y, 352, 205, 72) || insideCircle(x, y, 672, 205, 72);
+
+  let leftBond = insideRoundedRect(x, y, 144, 300, 512, 618, 256)
+    && !insideRoundedRect(x, y, 286, 442, 228, 334, 114);
+  if (x > 492 && y > 602) leftBond = false;
+
+  let rightBond = insideRoundedRect(x, y, 368, 300, 512, 618, 256)
+    && !insideRoundedRect(x, y, 510, 442, 228, 334, 114);
+  if (x < 532 && y < 602) rightBond = false;
+
+  const bindingKnot = insideRoundedRect(x, y, 260, 580, 504, 90, 45);
+  return heads || leftBond || rightBond || bindingKnot;
 }
 
 function transformedMask(x, y, scale = 1, centerX = 512, centerY = 512) {
