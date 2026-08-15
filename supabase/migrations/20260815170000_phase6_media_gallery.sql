@@ -81,7 +81,7 @@ create or replace function public.register_profile_media(
 returns table (
   id uuid,
   storage_path text,
-  position smallint,
+  media_position smallint,
   moderation_status text,
   moderation_reason text,
   created_at timestamptz
