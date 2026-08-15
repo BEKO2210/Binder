@@ -8,7 +8,7 @@ export const PRIVACY_URL = `${BINDER_PUBLIC_URL}/privacy.html`;
 export const TERMS_URL = `${BINDER_PUBLIC_URL}/terms.html`;
 export const DELETE_ACCOUNT_URL = `${BINDER_PUBLIC_URL}/delete-account.html`;
 
-type LegalGateRow = {
+export type LegalGate = {
   terms_version: string;
   privacy_version: string;
   accepted: boolean;
@@ -23,15 +23,15 @@ type Phase4Rpc = {
 // coordinated deploy, database.ts is regenerated from the live schema.
 const phase4Rpc = supabase.rpc.bind(supabase) as unknown as Phase4Rpc;
 
-export async function getLegalGate(): Promise<LegalGateRow> {
-  const { data, error } = await phase4Rpc<LegalGateRow[]>('get_legal_gate');
+export async function getLegalGate(): Promise<LegalGate> {
+  const { data, error } = await phase4Rpc<LegalGate[]>('get_legal_gate');
   if (error) throw error;
   const row = data?.[0];
   if (!row) throw new Error('Binder policy state is unavailable.');
   return row;
 }
 
-export async function acceptCurrentLegalGate(gate: LegalGateRow): Promise<void> {
+export async function acceptCurrentLegalGate(gate: LegalGate): Promise<void> {
   const { error } = await phase4Rpc('accept_legal_terms', {
     p_terms_version: gate.terms_version,
     p_privacy_version: gate.privacy_version,
