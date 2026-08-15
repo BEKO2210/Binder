@@ -7,11 +7,13 @@ import { supabase } from './supabase';
 
 const MAX_UPLOAD_BYTES = 3 * 1024 * 1024;
 
+export type ModerationStatus = 'pending' | 'approved' | 'rejected' | 'removed';
+
 export type GalleryMedia = {
   id: string;
   storagePath: string;
   position: number;
-  moderationStatus: 'pending' | 'approved' | 'rejected' | 'removed';
+  moderationStatus: ModerationStatus;
   moderationReason: string | null;
   width: number;
   height: number;
@@ -24,7 +26,7 @@ type RegisteredMediaRow = {
   id: string;
   storage_path: string;
   position: number;
-  moderation_status: GalleryMedia['moderationStatus'];
+  moderation_status: ModerationStatus;
   moderation_reason: string | null;
   created_at: string;
 };
@@ -40,6 +42,11 @@ type Phase6Rpc = <T = unknown>(
 // passes replay + regression gates. This typed boundary disappears after the
 // coordinated production migration and regenerated live Database types.
 const phase6Rpc = supabase.rpc.bind(supabase) as unknown as Phase6Rpc;
+
+function parseModerationStatus(value: string): ModerationStatus {
+  if (value === 'pending' || value === 'approved' || value === 'rejected' || value === 'removed') return value;
+  throw new Error(`Unexpected profile-media moderation state: ${value}`);
+}
 
 async function payloadFor(image: PreparedImage): Promise<ArrayBuffer> {
   const file = new File(image.uri);
@@ -91,7 +98,7 @@ export async function listMyProfileMedia(): Promise<GalleryMedia[]> {
     id: row.id,
     storagePath: row.storage_path,
     position: row.position,
-    moderationStatus: row.moderation_status,
+    moderationStatus: parseModerationStatus(row.moderation_status),
     moderationReason: row.moderation_reason,
     width: row.width,
     height: row.height,
