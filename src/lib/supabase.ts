@@ -4,6 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppState, Platform } from 'react-native';
 import { createClient, processLock } from '@supabase/supabase-js';
 
+import type { Database } from '../types/database';
+
 const DEFAULT_URL = 'https://sbohsxtzitqhyswznhec.supabase.co';
 const DEFAULT_PUBLISHABLE_KEY = 'sb_publishable_CS84Z2jb7tQZBk97sFpPCw_9smErm5J';
 
@@ -12,7 +14,7 @@ const publishableKey = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? DEFAU
 
 export const isSupabaseConfigured = Boolean(url && publishableKey);
 
-export const supabase = createClient(url, publishableKey, {
+export const supabase = createClient<Database>(url, publishableKey, {
   auth: {
     ...(Platform.OS !== 'web' ? { storage: AsyncStorage } : {}),
     autoRefreshToken: true,
