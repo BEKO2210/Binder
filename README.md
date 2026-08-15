@@ -6,9 +6,9 @@ Binder is an independent implementation. It does not use Tinder source code, pri
 
 ## Current status
 
-Phases 1–3 are merged to `main`; Phase 0 remains frozen as the original interaction proof. Phase 4 is implemented on `phase/4-safety-gate` and remains a draft PR until its final gates and explicit merge approval.
+Phases 1–4 are merged to `main`; Phase 0 remains frozen as the original interaction proof. Phase 5 is being hardened on `phase/5-beta` in draft PR #5 and is not merged yet.
 
-The production Binder Supabase project intentionally remains on the Phase 3 schema while Phase 4 is under review. Phase 4 introduces a mandatory legal/UGC gate, so deploying the database before the compatible app would be a breaking rollout.
+The production Binder Supabase project is synchronized through Phase 4, including the authenticated `delete-account` Edge Function. Phase 5 database migrations remain intentionally undeployed until the Phase 5 branch passes its complete gate and is approved for merge.
 
 ### Phase 1 — identity
 
@@ -54,37 +54,50 @@ Remote push delivery is **not** claimed end-to-end yet. Real EAS/platform creden
 - public Binder product/safety site with Privacy, Terms and Account Deletion pages
 - exact high/critical npm-audit leaf gate; the only documented exception is the current transitive Metro `image-size` build-tool advisory chain
 
+### Phase 5 — beta hardening
+
+- first-party beta observability with no third-party analytics SDK
+- private ranking batches/impressions with position, interest overlap and **10 km distance buckets**, never raw coordinates, profile text or media paths
+- server-authored funnel events for onboarding, decisions, matches, first messages and reports
+- optional client diagnostics that are **off by default**, contain only fixed event names/durations/counts/outcomes and are deleted immediately when the user opts out
+- private in-app beta feedback
+- crash fallback instead of a blank render failure; raw exception messages and component stacks are not sent to telemetry
+- three real Phase 4 foreign-key index advisor findings fixed
+- measured Android Hermes baseline and CI bundle-size budget
+- documented beta operator runbook in `docs/BETA-RUNBOOK.md`
+
 ## Verification
 
-Current Phase 4 gates include all previous regressions plus:
+The Phase 5 gate extends all earlier regressions with:
 
 - app entrypoint contract
-- public policy-site contract and broken-link/tracking checks
-- Phase 4 app safety-wiring contract
+- public policy-site contract, broken-link checks and tracking-script denylist
+- Phase 4 safety-wiring contract
+- Phase 5 privacy/telemetry contract
 - production dependency audit with advisory-level allowlist
 - Deno typecheck for the account-deletion Edge Function
 - TypeScript strict compile
-- Android Expo/Metro bundle export
+- Android Expo/Metro export
+- measured Android export baseline: **2.39 MiB** on the Phase 5 branch
+- CI export budget: **2.75 MiB** total Android export
 - complete local Supabase migration replay from an empty database
-- **108 pgTAP assertions** across identity, matching, conversation, legal/safety and moderation
-- Phase 2 reciprocal-match concurrency regression
-- **12 simultaneous retries of one message → exactly 1 message + 1 push job**
-- **8 send-vs-unmatch races → no duplicate or post-end messages**
-- **24 simultaneous sends by one user across two chats → exactly 20 accepted + 20 push jobs**
+- Phase 5 pgTAP coverage for diagnostics opt-in/out, private feedback, ranking privacy, funnel authorship and retention behavior
+- existing reciprocal-match, conversation-race and sender-wide rate-limit stress regressions
+- account-deletion integration across Auth + Storage + Edge Function
 - database lint restricted to Binder-owned `public` and `private` schemas
 
-No Phase 4 migration or Edge Function is deployed to production until the compatible branch is fully green and approved for merge.
+Phase 5 is not considered complete until the latest branch head has both Binder CI and Binder Database Tests green. No Phase 5 migration is deployed to production before that gate and merge approval.
 
 ## Public site
 
-Phase 4 contains a static, dependency-free GitHub Pages site in `site/`:
+Binder ships a static, dependency-free GitHub Pages site in `site/`:
 
 - product + safety overview
 - Privacy Policy
 - Terms & Community Rules
 - external Account Deletion resource
 
-The design uses a deliberately small semantic palette: lime for primary/trust actions, pink for destructive/safety commitment actions, and neutral charcoal/white tones for normal navigation and content. Policy pages contain no analytics or third-party tracking scripts.
+The Privacy page separates authoritative first-party beta product measurement from optional technical client diagnostics. Optional diagnostics are disabled by default; ranking measurement stores coarse distance buckets rather than coordinates. Policy pages contain no analytics or third-party tracking scripts.
 
 ## Run it
 
@@ -114,6 +127,7 @@ EXPO_PUBLIC_EAS_PROJECT_ID=   # optional until remote push is connected
 - Binder is 18+ and public release remains blocked on the required store-side adult-access configuration.
 - Account deletion is a product surface, not a support-only workaround.
 - Binder reproduces useful public interaction patterns independently instead of copying proprietary implementation details.
+- Beta measurement must not become a reason to leak profile, chat or precise-location content.
 
 ## Build phases
 
@@ -121,8 +135,8 @@ EXPO_PUBLIC_EAS_PROJECT_ID=   # optional until remote push is connected
 1. **Identity** — Auth, 18+ onboarding, profile/media and privacy/RLS gates. *(merged)*
 2. **Matching** — server discovery, durable decisions and atomic mutual matches. *(merged)*
 3. **Conversation** — Realtime chat, unread state, unmatch, block/report and push groundwork. *(merged)*
-4. **Safety gate** — legal/UGC gate, moderation, account deletion, public policies and broader adversarial tests. *(development branch)*
-5. **Beta** — real testers, ranking instrumentation and crash/performance hardening.
+4. **Safety gate** — legal/UGC gate, moderation, account deletion, public policies and broader adversarial tests. *(merged)*
+5. **Beta** — privacy-preserving ranking/funnel instrumentation, feedback and crash/performance hardening. *(draft PR)*
 6. **Monetization later** — only after the free core has real usage and retention data.
 
 ## Design language
@@ -139,6 +153,7 @@ Current visual direction: dark, editorial, high contrast and intentionally restr
 - `docs/ARCHITECTURE.md` — backend boundaries and concurrency invariants
 - `docs/SAFETY.md` — release-blocking dating safety requirements
 - `docs/PLAY-RELEASE.md` — repository-backed and external Google Play release gates
+- `docs/BETA-RUNBOOK.md` — Phase 5 beta operations, moderation and metric handling
 - `docs/REVERSE_ENGINEERING.md` — independent public-behavior implementation boundary
 
 ## Backend
