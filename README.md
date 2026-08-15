@@ -10,6 +10,8 @@ Phases 1–5 are merged to `main`; Phase 0 remains frozen as the original intera
 
 The production Binder Supabase project is synchronized through Phase 5, including the authenticated `delete-account` Edge Function, beta feedback/diagnostics, privacy-preserving discovery ranking observations and authoritative funnel events. The public GitHub Pages policy site is deployed from `main`.
 
+**Roadmap change:** Binder will not have a Pro/Premium/paid mode. The old monetization phase is removed. Phases after 5 focus on product completion, professional visual design, multi-photo profiles, settings, real push delivery, release hardening and store operations while Binder remains one free product. See `docs/ROADMAP.md`.
+
 ### Phase 1 — identity
 
 - Supabase Auth with persistent React Native sessions
@@ -109,7 +111,9 @@ EXPO_PUBLIC_EAS_PROJECT_ID=   # optional until remote push is connected
 
 ## Product principles
 
-- The initial launch is genuinely free.
+- **Binder remains one free product. No Pro/Premium/paid tier is planned.**
+- Matching, messaging, safety, notifications, settings, themes and profile media are not future paywall candidates.
+- No artificial daily limits, blurred likes or ranking boosts are introduced to manufacture an upgrade path.
 - Mutual interest is required before normal chat.
 - Exact user location is never exposed to another client.
 - Blocking and reporting are server-enforced operations.
@@ -126,7 +130,13 @@ EXPO_PUBLIC_EAS_PROJECT_ID=   # optional until remote push is connected
 3. **Conversation** — Realtime chat, unread state, unmatch, block/report and push groundwork. *(merged)*
 4. **Safety gate** — legal/UGC gate, moderation, account deletion, public policies and broader adversarial tests. *(merged)*
 5. **Beta** — privacy-preserving ranking/funnel instrumentation, feedback and crash/performance hardening. *(merged + production synchronized)*
-6. **Monetization later** — only after the free core has real usage and retention data.
+6. **Product completion + visual system** — professional logo/icon/typography/iconography, shared design tokens/components, settings, profile settings and a moderated multi-photo gallery with high-quality client compression.
+7. **Push + communication reliability** — real FCM/EAS push delivery, notification preferences/quiet hours, deep links, token lifecycle and chat reliability polish.
+8. **Release candidate hardening** — real-device two-user E2E, performance/network/accessibility gates and signed release-build validation.
+9. **Store release + operations** — Google Play compliance, adult-access configuration, moderation operations, final store assets and staged rollout.
+10. **Post-launch quality** — ranking/localization/accessibility/abuse/storage improvements based on real usage. **Still free.**
+
+Detailed acceptance criteria live in `docs/ROADMAP.md` and the visual rules in `docs/DESIGN-SYSTEM.md`.
 
 ## Design language
 
@@ -134,11 +144,13 @@ EXPO_PUBLIC_EAS_PROJECT_ID=   # optional until remote push is connected
 - negative decision: **Pass**
 - mutual match: **It's a Bind**
 
-Current visual direction: dark, editorial, high contrast and intentionally restrained. Lime means progress/trust; pink means destructive or safety-critical commitment. The UI is an independent Binder system, not a Tinder skin.
+Current visual direction: dark, editorial, high contrast and intentionally restrained. Lime means progress/trust; pink means destructive or safety-critical commitment. Phase 6 formalizes this into a complete professional visual system covering logo, launcher icon, typography, imagery, iconography, shared components, motion, haptics and accessibility. The UI remains an independent Binder system, not a Tinder skin.
 
 ## Architecture docs
 
 - `docs/PRODUCT.md` — product contract and scope
+- `docs/ROADMAP.md` — free product-completion roadmap after Phase 5
+- `docs/DESIGN-SYSTEM.md` — professional visual/interaction system and visual QA gates
 - `docs/ARCHITECTURE.md` — backend boundaries and concurrency invariants
 - `docs/SAFETY.md` — release-blocking dating safety requirements
 - `docs/PLAY-RELEASE.md` — repository-backed and external Google Play release gates
