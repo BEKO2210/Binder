@@ -73,8 +73,10 @@ export async function recordBetaEvent(
       p_session_id: sessionId,
       p_event_name: eventName,
       p_surface: surface,
-      p_duration_ms: durationMs,
-      p_value: value,
+      // PostgreSQL accepts NULL for these non-STRICT integer parameters; the
+      // generated Supabase function type does not currently encode that nullability.
+      p_duration_ms: durationMs as number,
+      p_value: value as number,
       p_outcome: options.outcome ?? 'ok',
       p_platform: platform,
       p_app_version: BINDER_APP_VERSION,
