@@ -25,6 +25,9 @@ jobs:
       - name: Install dependencies
         run: npm install --ignore-scripts
 
+      - name: Verify app entrypoint
+        run: node scripts/verify-entrypoint.mjs
+
       - name: TypeScript
         run: npm run typecheck
 
