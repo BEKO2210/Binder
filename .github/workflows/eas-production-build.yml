@@ -1,4 +1,5 @@
 name: Binder EAS Production Build
+# Repository secret contract: EXPO_TOKEN.
 
 on:
   push:
