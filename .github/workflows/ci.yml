@@ -25,11 +25,17 @@ jobs:
       - name: Install dependencies
         run: npm install --ignore-scripts
 
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
       - name: Verify app entrypoint
         run: node scripts/verify-entrypoint.mjs
 
       - name: Verify public policy site
         run: node scripts/verify-site.mjs
+
+      - name: Verify Phase 4 safety contract
+        run: node scripts/verify-safety-contract.mjs
 
       - name: Setup Deno
         uses: denoland/setup-deno@v2
