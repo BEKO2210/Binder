@@ -1,22 +1,26 @@
-// Generated from Supabase project sbohsxtzitqhyswznhec on 2026-08-15.
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[];
+// Generated from Supabase project sbohsxtzitqhyswznhec; updated for Phase 2 schema.
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
-  __InternalSupabase: {
-    PostgrestVersion: '14.15';
-  };
+  __InternalSupabase: { PostgrestVersion: '14.15' };
   public: {
     Tables: {
       blocks: {
         Row: { blocked_id: string; blocker_id: string; created_at: string };
         Insert: { blocked_id: string; blocker_id: string; created_at?: string };
         Update: { blocked_id?: string; blocker_id?: string; created_at?: string };
+        Relationships: [];
+      };
+      decisions: {
+        Row: { actor_id: string; created_at: string; decision: string; id: string; target_id: string };
+        Insert: { actor_id: string; created_at?: string; decision: string; id?: string; target_id: string };
+        Update: { actor_id?: string; created_at?: string; decision?: string; id?: string; target_id?: string };
+        Relationships: [];
+      };
+      matches: {
+        Row: { created_at: string; ended_at: string | null; id: string; status: string; user_high: string; user_low: string };
+        Insert: { created_at?: string; ended_at?: string | null; id?: string; status?: string; user_high: string; user_low: string };
+        Update: { created_at?: string; ended_at?: string | null; id?: string; status?: string; user_high?: string; user_low?: string };
         Relationships: [];
       };
       profile_media: {
@@ -58,9 +62,17 @@ export type Database = {
       };
       distance_to_user: { Args: { target_user_id: string }; Returns: number };
       finalize_my_onboarding: { Args: never; Returns: undefined };
+      get_discovery_batch: {
+        Args: { p_limit?: number };
+        Returns: { age: number; bio: string; distance_km: number; first_name: string; interests: string[]; primary_photo_path: string; target_user_id: string }[];
+      };
       get_public_profile: {
         Args: { target_user_id: string };
         Returns: { age: number; bio: string; first_name: string; gender: string; interests: string[]; user_id: string }[];
+      };
+      record_decision: {
+        Args: { p_decision: string; p_target_user_id: string };
+        Returns: { decision: string; match_created: boolean; match_id: string | null; matched: boolean; target_user_id: string }[];
       };
       set_my_location: { Args: { latitude: number; longitude: number }; Returns: undefined };
       update_my_profile: {
