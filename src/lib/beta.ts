@@ -1,6 +1,5 @@
 import * as Crypto from 'expo-crypto';
 import { Platform } from 'react-native';
-import type { PostgrestError } from '@supabase/supabase-js';
 
 import { supabase } from './supabase';
 
@@ -26,16 +25,11 @@ export type BetaSettings = {
   ranking_retention_days: number;
 };
 
-type BetaRpc = {
-  <T = unknown>(fn: string, args?: Record<string, unknown>): Promise<{ data: T | null; error: PostgrestError | null }>;
-};
-
-const betaRpc = supabase.rpc.bind(supabase) as unknown as BetaRpc;
 const sessionId = Crypto.randomUUID();
 let diagnosticsEnabled: boolean | null = null;
 
 export async function getBetaSettings(): Promise<BetaSettings> {
-  const { data, error } = await betaRpc<BetaSettings[]>('get_beta_settings');
+  const { data, error } = await supabase.rpc('get_beta_settings');
   if (error) throw error;
   const row = data?.[0];
   if (!row) throw new Error('Binder beta settings are unavailable.');
@@ -56,7 +50,7 @@ export function betaDiagnosticsEnabled(): boolean {
 }
 
 export async function setBetaDiagnostics(enabled: boolean): Promise<boolean> {
-  const { data, error } = await betaRpc<boolean>('set_beta_diagnostics', { p_enabled: enabled });
+  const { data, error } = await supabase.rpc('set_beta_diagnostics', { p_enabled: enabled });
   if (error) throw error;
   diagnosticsEnabled = data === true;
   return diagnosticsEnabled;
@@ -74,13 +68,15 @@ export async function recordBetaEvent(
   const value = options.value === undefined ? null : Math.max(0, Math.min(1000, Math.round(options.value)));
 
   try {
-    const { data, error } = await betaRpc<boolean>('record_beta_client_event', {
+    const { data, error } = await supabase.rpc('record_beta_client_event', {
       p_event_id: Crypto.randomUUID(),
       p_session_id: sessionId,
       p_event_name: eventName,
       p_surface: surface,
-      p_duration_ms: durationMs,
-      p_value: value,
+      // PostgreSQL accepts NULL for these non-STRICT integer parameters; the
+      // generated Supabase function type does not currently encode that nullability.
+      p_duration_ms: durationMs as number,
+      p_value: value as number,
       p_outcome: options.outcome ?? 'ok',
       p_platform: platform,
       p_app_version: BINDER_APP_VERSION,
@@ -99,7 +95,7 @@ export async function submitBetaFeedback(
 ): Promise<string> {
   const safeRating = Math.max(1, Math.min(5, Math.round(rating)));
   const safeDetails = details.trim().slice(0, 1500);
-  const { data, error } = await betaRpc<string>('submit_beta_feedback', {
+  const { data, error } = await supabase.rpc('submit_beta_feedback', {
     p_category: category,
     p_rating: safeRating,
     p_details: safeDetails,

@@ -6,9 +6,9 @@ Binder is an independent implementation. It does not use Tinder source code, pri
 
 ## Current status
 
-Phases 1–4 are merged to `main`; Phase 0 remains frozen as the original interaction proof. Phase 5 is being hardened on `phase/5-beta` in draft PR #5 and is not merged yet.
+Phases 1–5 are merged to `main`; Phase 0 remains frozen as the original interaction proof. Phase 5 closed-beta hardening is complete.
 
-The production Binder Supabase project is synchronized through Phase 4, including the authenticated `delete-account` Edge Function. Phase 5 database migrations remain intentionally undeployed until the Phase 5 branch passes its complete gate and is approved for merge.
+The production Binder Supabase project is synchronized through Phase 5, including the authenticated `delete-account` Edge Function, beta feedback/diagnostics, privacy-preserving discovery ranking observations and authoritative funnel events. The public GitHub Pages policy site is deployed from `main`.
 
 ### Phase 1 — identity
 
@@ -68,25 +68,14 @@ Remote push delivery is **not** claimed end-to-end yet. Real EAS/platform creden
 
 ## Verification
 
-The Phase 5 gate extends all earlier regressions with:
+The final Phase 5 gate at head `ff0cfcd38430b9948f10fcb0810056b8f2e420c9` passed both required pipelines:
 
-- app entrypoint contract
-- public policy-site contract, broken-link checks and tracking-script denylist
-- Phase 4 safety-wiring contract
-- Phase 5 privacy/telemetry contract
-- production dependency audit with advisory-level allowlist
-- Deno typecheck for the account-deletion Edge Function
-- TypeScript strict compile
-- Android Expo/Metro export
-- measured Android export baseline: **2.39 MiB** on the Phase 5 branch
+- Binder CI #140: dependency audit, entrypoint/policy/safety/beta contracts, Deno Edge Function typecheck, strict TypeScript, Android Expo export and bundle-size gate
+- Binder Database Tests #123: complete Phase 1–5 migration replay, **144 pgTAP assertions**, reciprocal-match races, message retry/unmatch races, sender-wide rate-limit stress, schema lint and account-deletion Auth/Storage/Edge integration
+- measured Android export baseline: **2.39 MiB**
 - CI export budget: **2.75 MiB** total Android export
-- complete local Supabase migration replay from an empty database
-- Phase 5 pgTAP coverage for diagnostics opt-in/out, private feedback, ranking privacy, funnel authorship and retention behavior
-- existing reciprocal-match, conversation-race and sender-wide rate-limit stress regressions
-- account-deletion integration across Auth + Storage + Edge Function
-- database lint restricted to Binder-owned `public` and `private` schemas
 
-Phase 5 is not considered complete until the latest branch head has both Binder CI and Binder Database Tests green. No Phase 5 migration is deployed to production before that gate and merge approval.
+After merge, `main` Binder CI #141 and Binder Pages also completed successfully. Production Phase 5 migrations were then applied in order and checked against the live security/performance advisors.
 
 ## Public site
 
@@ -136,7 +125,7 @@ EXPO_PUBLIC_EAS_PROJECT_ID=   # optional until remote push is connected
 2. **Matching** — server discovery, durable decisions and atomic mutual matches. *(merged)*
 3. **Conversation** — Realtime chat, unread state, unmatch, block/report and push groundwork. *(merged)*
 4. **Safety gate** — legal/UGC gate, moderation, account deletion, public policies and broader adversarial tests. *(merged)*
-5. **Beta** — privacy-preserving ranking/funnel instrumentation, feedback and crash/performance hardening. *(draft PR)*
+5. **Beta** — privacy-preserving ranking/funnel instrumentation, feedback and crash/performance hardening. *(merged + production synchronized)*
 6. **Monetization later** — only after the free core has real usage and retention data.
 
 ## Design language

@@ -86,6 +86,27 @@ export type Database = {
         }
         Relationships: []
       }
+      legal_acceptances: {
+        Row: {
+          accepted_at: string
+          privacy_version: string
+          terms_version: string
+          user_id: string
+        }
+        Insert: {
+          accepted_at?: string
+          privacy_version: string
+          terms_version: string
+          user_id: string
+        }
+        Update: {
+          accepted_at?: string
+          privacy_version?: string
+          terms_version?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       match_read_state: {
         Row: {
           last_read_at: string
@@ -181,6 +202,9 @@ export type Database = {
           height: number
           id: string
           mime_type: string
+          moderated_at: string | null
+          moderation_reason: string | null
+          moderation_status: string
           position: number
           storage_path: string
           user_id: string
@@ -192,6 +216,9 @@ export type Database = {
           height: number
           id?: string
           mime_type: string
+          moderated_at?: string | null
+          moderation_reason?: string | null
+          moderation_status?: string
           position: number
           storage_path: string
           user_id: string
@@ -203,6 +230,9 @@ export type Database = {
           height?: number
           id?: string
           mime_type?: string
+          moderated_at?: string | null
+          moderation_reason?: string | null
+          moderation_status?: string
           position?: number
           storage_path?: string
           user_id?: string
@@ -329,6 +359,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_legal_terms: {
+        Args: { p_privacy_version: string; p_terms_version: string }
+        Returns: undefined
+      }
       complete_my_onboarding: {
         Args: {
           p_bio: string
@@ -345,6 +379,15 @@ export type Database = {
       }
       distance_to_user: { Args: { target_user_id: string }; Returns: number }
       finalize_my_onboarding: { Args: never; Returns: undefined }
+      get_beta_settings: {
+        Args: never
+        Returns: {
+          client_retention_days: number
+          diagnostics_enabled: boolean
+          rank_variant: string
+          ranking_retention_days: number
+        }[]
+      }
       get_discovery_batch: {
         Args: { p_limit?: number }
         Returns: {
@@ -355,6 +398,14 @@ export type Database = {
           interests: string[]
           primary_photo_path: string
           target_user_id: string
+        }[]
+      }
+      get_legal_gate: {
+        Args: never
+        Returns: {
+          accepted: boolean
+          privacy_version: string
+          terms_version: string
         }[]
       }
       get_my_matches: {
@@ -372,6 +423,14 @@ export type Database = {
           unread_count: number
         }[]
       }
+      get_my_primary_media_state: {
+        Args: never
+        Returns: {
+          moderation_reason: string
+          moderation_status: string
+          storage_path: string
+        }[]
+      }
       get_public_profile: {
         Args: { target_user_id: string }
         Returns: {
@@ -384,6 +443,21 @@ export type Database = {
         }[]
       }
       mark_match_read: { Args: { p_match_id: string }; Returns: undefined }
+      prepare_account_deletion: { Args: never; Returns: boolean }
+      record_beta_client_event: {
+        Args: {
+          p_app_version: string
+          p_duration_ms: number
+          p_event_id: string
+          p_event_name: string
+          p_outcome: string
+          p_platform: string
+          p_session_id: string
+          p_surface: string
+          p_value: number
+        }
+        Returns: boolean
+      }
       record_decision: {
         Args: { p_decision: string; p_target_user_id: string }
         Returns: {
@@ -423,9 +497,14 @@ export type Database = {
           sender_id: string
         }[]
       }
+      set_beta_diagnostics: { Args: { p_enabled: boolean }; Returns: boolean }
       set_my_location: {
         Args: { latitude: number; longitude: number }
         Returns: undefined
+      }
+      submit_beta_feedback: {
+        Args: { p_category: string; p_details?: string; p_rating: number }
+        Returns: string
       }
       unmatch: { Args: { p_match_id: string }; Returns: boolean }
       unregister_push_token: { Args: { p_token: string }; Returns: undefined }
