@@ -1,0 +1,80 @@
+import { SymbolView } from 'expo-symbols';
+import { Pressable, type ColorValue, type ViewStyle } from 'react-native';
+
+import { useBinderTheme } from '../../theme/ThemeProvider';
+
+const symbols = {
+  discover: { ios: 'safari', android: 'explore', web: 'explore' },
+  matches: { ios: 'heart.fill', android: 'favorite', web: 'favorite' },
+  profile: { ios: 'person.fill', android: 'person', web: 'person' },
+  settings: { ios: 'gearshape.fill', android: 'settings', web: 'settings' },
+  back: { ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' },
+  close: { ios: 'xmark', android: 'close', web: 'close' },
+  send: { ios: 'paperplane.fill', android: 'send', web: 'send' },
+  safety: { ios: 'shield.fill', android: 'shield', web: 'shield' },
+  report: { ios: 'exclamationmark.triangle.fill', android: 'report', web: 'report' },
+  block: { ios: 'nosign', android: 'block', web: 'block' },
+  delete: { ios: 'trash.fill', android: 'delete', web: 'delete' },
+  photo: { ios: 'photo.fill', android: 'image', web: 'image' },
+  addPhoto: { ios: 'photo.badge.plus', android: 'add_photo_alternate', web: 'add_photo_alternate' },
+  notifications: { ios: 'bell.fill', android: 'notifications', web: 'notifications' },
+  palette: { ios: 'paintpalette.fill', android: 'palette', web: 'palette' },
+  privacy: { ios: 'lock.fill', android: 'lock', web: 'lock' },
+  legal: { ios: 'doc.text.fill', android: 'description', web: 'description' },
+  beta: { ios: 'flask.fill', android: 'science', web: 'science' },
+  info: { ios: 'info.circle.fill', android: 'info', web: 'info' },
+  check: { ios: 'checkmark', android: 'check', web: 'check' },
+  retry: { ios: 'arrow.clockwise', android: 'refresh', web: 'refresh' },
+  chevronRight: { ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' },
+  edit: { ios: 'pencil', android: 'edit', web: 'edit' },
+  more: { ios: 'ellipsis', android: 'more_horiz', web: 'more_horiz' },
+  logout: { ios: 'rectangle.portrait.and.arrow.right', android: 'logout', web: 'logout' },
+  email: { ios: 'envelope.fill', android: 'mail', web: 'mail' },
+} as const;
+
+export type BinderIconName = keyof typeof symbols;
+
+type IconProps = {
+  name: BinderIconName;
+  size?: number;
+  color?: ColorValue;
+};
+
+export function BinderIcon({ name, size = 24, color }: IconProps) {
+  const { theme } = useBinderTheme();
+  return <SymbolView name={symbols[name]} size={size} tintColor={color ?? theme.colors.textPrimary} />;
+}
+
+type IconButtonProps = IconProps & {
+  accessibilityLabel: string;
+  onPress: () => void;
+  disabled?: boolean;
+  selected?: boolean;
+  destructive?: boolean;
+  style?: ViewStyle;
+};
+
+export function BinderIconButton({ accessibilityLabel, onPress, disabled, selected, destructive, style, ...icon }: IconButtonProps) {
+  const { theme } = useBinderTheme();
+  const color = destructive ? theme.semantic.destructive : selected ? theme.accent.accent : theme.colors.textSecondary;
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      accessibilityState={{ disabled, selected }}
+      disabled={disabled}
+      onPress={onPress}
+      style={({ pressed }) => [{
+        minWidth: 48,
+        minHeight: 48,
+        borderRadius: theme.radii.control,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: pressed ? theme.colors.surfacePressed : 'transparent',
+        opacity: disabled ? 0.42 : 1,
+      }, style]}
+    >
+      <BinderIcon {...icon} color={color} />
+    </Pressable>
+  );
+}
