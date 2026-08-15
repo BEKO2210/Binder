@@ -39,6 +39,7 @@ reset role;
 select set_config('request.jwt.claims','{"sub":"f3333333-3333-4333-8333-333333333333","role":"authenticated"}',true); set local role authenticated;
 select public.accept_legal_terms('2026-08-15','2026-08-15');
 reset role;
+select set_config('request.jwt.claims','{"role":"service_role"}',true);
 
 insert into public.profiles(user_id,first_name,bio,gender,interests,onboarding_complete) values
 ('f1111111-1111-4111-8111-111111111111','Alpha','Alpha bio','woman',array['Coffee','Music'],false),
@@ -60,7 +61,6 @@ insert into public.profile_media(user_id,storage_path,position,width,height,byte
 ('f1111111-1111-4111-8111-111111111111','f1111111-1111-4111-8111-111111111111/beta.webp',0,1080,900,100,'image/webp'),
 ('f2222222-2222-4222-8222-222222222222','f2222222-2222-4222-8222-222222222222/beta.webp',0,1080,900,100,'image/webp'),
 ('f3333333-3333-4333-8333-333333333333','f3333333-3333-4333-8333-333333333333/beta.webp',0,1080,900,100,'image/webp');
-select set_config('request.jwt.claims','{"role":"service_role"}',true);
 update public.profile_media set moderation_status='approved',moderated_at=clock_timestamp();
 update public.profiles set onboarding_complete=true;
 
@@ -70,13 +70,15 @@ select is((select count(*) from information_schema.columns where table_schema='p
 select set_config('request.jwt.claims','{"sub":"f1111111-1111-4111-8111-111111111111","role":"authenticated"}',true); set local role authenticated;
 select is((select count(*) from public.get_discovery_batch(20)),2::bigint,'Discovery returns two compatible candidates');
 reset role;
+select set_config('request.jwt.claims','{"role":"service_role"}',true);
 select is((select candidate_count from private.discovery_batches where viewer_id='f1111111-1111-4111-8111-111111111111' order by created_at desc limit 1),2::smallint,'Discovery batch records candidate count and ranking variant');
 select is((select position from private.discovery_impressions where viewer_id='f1111111-1111-4111-8111-111111111111' and candidate_id='f2222222-2222-4222-8222-222222222222' order by created_at desc limit 1),1::smallint,'Higher interest overlap ranks before a closer lower-overlap profile');
 select is((select distance_bucket_km from private.discovery_impressions where viewer_id='f1111111-1111-4111-8111-111111111111' and candidate_id='f2222222-2222-4222-8222-222222222222' order by created_at desc limit 1),10::smallint,'Ranking telemetry coarsens distance to a 10 km bucket');
 
-set local role authenticated;
+select set_config('request.jwt.claims','{"sub":"f1111111-1111-4111-8111-111111111111","role":"authenticated"}',true); set local role authenticated;
 select is((select matched from public.record_decision('f2222222-2222-4222-8222-222222222222','bind')),false,'First bind waits for reciprocal decision');
 reset role;
+select set_config('request.jwt.claims','{"role":"service_role"}',true);
 select is((select decision from private.discovery_impressions where viewer_id='f1111111-1111-4111-8111-111111111111' and candidate_id='f2222222-2222-4222-8222-222222222222' order by created_at desc limit 1),'bind','Authoritative decision attaches to latest ranking impression');
 select is((select count(*) from private.beta_server_events where event_name='decision_bind' and user_id='f1111111-1111-4111-8111-111111111111'),1::bigint,'Bind is captured from decision table trigger');
 
@@ -84,17 +86,20 @@ select set_config('request.jwt.claims','{"sub":"f2222222-2222-4222-8222-22222222
 select * from public.get_discovery_batch(20);
 select is((select matched from public.record_decision('f1111111-1111-4111-8111-111111111111','bind')),true,'Reciprocal bind creates match under Phase 5 instrumentation');
 reset role;
+select set_config('request.jwt.claims','{"role":"service_role"}',true);
 select is((select count(*) from private.beta_server_events where event_name='match_created'),2::bigint,'One match creates one per-member funnel event');
 
 select set_config('request.jwt.claims','{"sub":"f1111111-1111-4111-8111-111111111111","role":"authenticated"}',true); set local role authenticated;
 select public.send_message((select id from public.matches where 'f1111111-1111-4111-8111-111111111111'::uuid in (user_low,user_high) and 'f2222222-2222-4222-8222-222222222222'::uuid in (user_low,user_high)), '30000000-0000-4000-8000-000000000001','Hello beta');
 reset role;
+select set_config('request.jwt.claims','{"role":"service_role"}',true);
 select is((select count(*) from private.beta_server_events where event_name='first_message_sent'),1::bigint,'First message funnel event is server-authored exactly once');
 
 select set_config('request.jwt.claims','{"sub":"f1111111-1111-4111-8111-111111111111","role":"authenticated"}',true); set local role authenticated;
 select public.report_user('f2222222-2222-4222-8222-222222222222','other','Beta report',null,null,false);
 select is(public.set_beta_diagnostics(false),false,'User can opt out again');
 reset role;
+select set_config('request.jwt.claims','{"role":"service_role"}',true);
 select is((select count(*) from private.beta_client_events where user_id='f1111111-1111-4111-8111-111111111111'),0::bigint,'Opt-out immediately deletes optional client diagnostics');
 select is((select count(*) from private.beta_server_events where event_name='report_submitted'),1::bigint,'Safety report funnel event remains authoritative and content-free');
 select is((select matches from private.beta_daily_summary(1) limit 1),1::bigint,'Operator daily summary counts unique matches rather than per-member events');
