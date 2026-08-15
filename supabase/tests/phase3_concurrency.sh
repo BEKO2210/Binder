@@ -24,6 +24,11 @@ union all
 select user_b, 'authenticated', 'authenticated', 'phase3-b-' || pair_no || '@binder.test', '{}'::jsonb, '{}'::jsonb, now(), now()
 from public._phase3_race_pairs;
 
+insert into public.legal_acceptances (user_id, terms_version, privacy_version)
+select user_a, '2026-08-15', '2026-08-15' from public._phase3_race_pairs
+union all
+select user_b, '2026-08-15', '2026-08-15' from public._phase3_race_pairs;
+
 insert into public.matches (id, user_low, user_high)
 select match_id, least(user_a, user_b), greatest(user_a, user_b)
 from public._phase3_race_pairs;
@@ -37,6 +42,11 @@ from public._phase3_retry_fixture
 union all
 select user_b, 'authenticated', 'authenticated', 'phase3-retry-b@binder.test', '{}'::jsonb, '{}'::jsonb, now(), now()
 from public._phase3_retry_fixture;
+
+insert into public.legal_acceptances (user_id, terms_version, privacy_version)
+select user_a, '2026-08-15', '2026-08-15' from public._phase3_retry_fixture
+union all
+select user_b, '2026-08-15', '2026-08-15' from public._phase3_retry_fixture;
 
 insert into public.matches (id, user_low, user_high)
 select match_id, least(user_a, user_b), greatest(user_a, user_b)
