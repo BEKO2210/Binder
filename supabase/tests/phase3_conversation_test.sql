@@ -14,7 +14,7 @@ exception when others then
 end;
 $$;
 
-select plan(35);
+select plan(37);
 
 insert into auth.users (id, aud, role, email, raw_app_meta_data, raw_user_meta_data, created_at, updated_at)
 values
