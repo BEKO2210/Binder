@@ -23,6 +23,10 @@ values
   ('77777777-7777-4777-8777-777777777777', 'authenticated', 'authenticated', 'charlie3@binder.test', '{}'::jsonb, '{}'::jsonb, now(), now()),
   ('88888888-8888-4888-8888-888888888888', 'authenticated', 'authenticated', 'dana3@binder.test', '{}'::jsonb, '{}'::jsonb, now(), now());
 
+insert into public.legal_acceptances(user_id,terms_version,privacy_version)
+select id,'2026-08-15','2026-08-15' from auth.users
+where email in ('alice3@binder.test','bob3@binder.test','charlie3@binder.test','dana3@binder.test');
+
 insert into public.profiles (user_id, first_name, bio, gender, interests, onboarding_complete)
 values
   ('55555555-5555-4555-8555-555555555555', 'Alice', 'Alpha', 'woman', array['Coffee'], false),
@@ -58,6 +62,7 @@ values
   ('77777777-7777-4777-8777-777777777777', '77777777-7777-4777-8777-777777777777/main.webp', 0, 800, 1080, 100, 'image/webp'),
   ('88888888-8888-4888-8888-888888888888', '88888888-8888-4888-8888-888888888888/main.webp', 0, 800, 1080, 100, 'image/webp');
 
+update public.profile_media set moderation_status='approved', moderated_at=clock_timestamp();
 update public.profiles set onboarding_complete = true
 where user_id in (
   '55555555-5555-4555-8555-555555555555',
