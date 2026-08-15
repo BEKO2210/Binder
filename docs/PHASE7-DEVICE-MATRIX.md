@@ -8,9 +8,9 @@ Status: **not yet executed**. This file is an evidence template, not a claim tha
 |---|---|
 | EAS project ID | `167de5e7-e72f-4fcd-bc7c-379513ff2b21` (provided; account ownership verification pending) |
 | Android application ID | `de.beko2210.binder` |
-| EAS build profile / build ID | pending |
+| EAS build profile / build ID | `production` / [`f361306c-031d-48b0-8743-235d9ebdbfe4`](https://expo.dev/accounts/beko2210s-team/projects/binder/builds/f361306c-031d-48b0-8743-235d9ebdbfe4) — Android AAB build finished successfully |
 | FCM v1 service credential present in EAS | pending |
-| Exact Git commit | pending |
+| Exact Git commit | `a347d64c3ac4c545edccd1d26ffe1ad4770c2262` |
 | Device A / Android version | pending |
 | Device B / Android version | pending |
 
