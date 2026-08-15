@@ -2,7 +2,7 @@
   "expo": {
     "name": "Binder",
     "slug": "binder",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "plugins": [
@@ -10,6 +10,13 @@
         "expo-location",
         {
           "locationWhenInUsePermission": "Allow Binder to use your location while discovering nearby people."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "defaultChannel": "messages",
+          "color": "#C7FF4A"
         }
       ]
     ],

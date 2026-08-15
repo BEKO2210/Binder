@@ -6,48 +6,48 @@ Binder is an independent implementation. It does not use Tinder source code, pri
 
 ## Current status
 
-Phase 0 is frozen. Phase 1 and Phase 2 are merged to `main`. Phase 2 is the current stable matching baseline; Phase 3 conversation work is next.
+Phase 0 is frozen. Phase 1 and Phase 2 are merged to `main`. Phase 3 is complete on the `phase/3-conversation` development branch and remains unmerged until explicitly approved.
 
-Phase 1 includes:
+Phase 1 includes identity, 18+ onboarding, profile/preferences, compressed private photos and privacy/RLS boundaries.
 
-- Expo 57 / React Native 0.86, Android-first with the iOS path preserved
-- Supabase Auth with persistent React Native sessions
-- mandatory server-enforced 18+ onboarding
-- profile editor, interests and discovery preferences
-- profile images compressed client-side to a maximum 1080 px edge, WebP at 80% quality before upload
-- private profile-media bucket with owner-scoped writes
-- exact birth date and exact PostGIS coordinates isolated from public profile data
-- safe server projections for calculated age and distance
-- reciprocal block visibility rules and report storage
-- strict RLS plus a reduced SQL privilege allowlist
+Phase 2 adds live location-based discovery, persistent `Bind` / `Pass` decisions and race-safe atomic mutual matching.
 
-Phase 2 adds:
+Phase 3 adds:
 
-- live foreground-location discovery instead of demo profiles
-- server-side reciprocal gender, age and distance filtering
-- stale-location rejection and rounded kilometer output only
-- persistent immutable `Bind` / `Pass` decisions
-- no direct client writes to decision or match tables
-- canonical `(user_low, user_high)` match identity with a database unique constraint
-- pair-level transaction serialization before reciprocal decision checks
-- exactly-once private `match_created` outbox event generation
-- block operations serialized on the same pair lock and active matches deactivated immediately
-- private profile photos delivered through short-lived signed URLs
-- Supabase TypeScript types generated from the live Phase 2 database
+- `App.tsx` locked to the real Auth/Onboarding `Root` entrypoint by CI
+- Matches inbox with signed profile photos, last-message preview and unread badges
+- persisted 1:1 messages available only to members of an active match
+- Supabase Realtime Postgres Changes filtered by `match_id` and protected by message RLS
+- idempotent client message IDs and server-confirmed sends instead of optimistic fake success
+- 20 messages/minute and 300/hour sender-wide limits, serialized across concurrent chats
+- send-vs-unmatch/block serialization so no new message can commit after a conversation ends
+- idempotent Unmatch and immediate Block match deactivation
+- profile/message reporting with server-captured moderation snapshots and optional atomic block
+- private push-token registry plus exactly-once `new_match` / `new_message` push outbox jobs
+- push opt-in UI that degrades safely when this build has no EAS project ID
+- Phase 3 Supabase TypeScript types generated from the live database
+- foreign-key/index hardening for conversation and outbox tables
 
-## Verification
+## Phase 3 verification
 
-Phase 2 is gated by:
+The development branch is gated by:
 
+- production entrypoint verification
 - TypeScript compile
 - Android Expo/Metro bundle export
 - complete local Supabase migration replay from an empty database
-- 40 pgTAP assertions across Phase 1 and Phase 2
-- a parallel race test with 8 independent reciprocal pairs / 16 concurrent database sessions
-- two additional concurrent idempotency retry rounds
+- **77 pgTAP assertions** across identity, matching and conversations
+- Phase 2 reciprocal-match concurrency regression
+- **12 simultaneous retries of one message → exactly 1 message + 1 push job**
+- **8 send-vs-unmatch races → no duplicate or post-end messages**
+- **24 simultaneous sends by one user across two chats → exactly 20 accepted + 20 push jobs**
 - database lint restricted to Binder-owned `public` and `private` schemas
 
-The concurrency invariant is strict: 8 simultaneous reciprocal pairs must produce exactly 16 decisions, 8 matches and 8 private match-created events. Retry rounds must not increase any of those counts.
+The tested Phase 3 database migrations are already deployed to the Binder Supabase project. Normal authenticated clients cannot directly insert messages, update matches, insert reports or insert device tokens; those mutations go through the intended server-side boundaries.
+
+### Remote push status
+
+The database outbox, token registration and app opt-in path are implemented. **Remote push delivery is not claimed end-to-end yet.** A real Expo/EAS project ID plus Android/iOS push credentials and the server dispatcher must be connected before remote notifications become a release gate. Chat and realtime messaging do not depend on remote push.
 
 ## Run it
 
@@ -66,6 +66,14 @@ You can also start the Expo development server with:
 npm start
 ```
 
+Environment variables:
+
+```bash
+EXPO_PUBLIC_SUPABASE_URL=
+EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+EXPO_PUBLIC_EAS_PROJECT_ID=   # optional until remote push is connected
+```
+
 ## Product principles
 
 - The initial launch is genuinely free.
@@ -80,8 +88,8 @@ npm start
 0. **Interaction proof** — swipe deck and local mutual-match state. *(frozen)*
 1. **Identity** — Supabase Auth, 18+ onboarding, profile editor, compressed photo storage, privacy/RLS gates. *(merged to main)*
 2. **Matching** — server-side discovery, persistent decisions and race-safe atomic mutual matches. *(merged to main)*
-3. **Conversation** — realtime chat, notifications, unmatch, block and report flows. *(next)*
-4. **Safety gate** — moderation, rate limits, deletion and broader adversarial tests.
+3. **Conversation** — realtime chat, unread state, unmatch, block/report and push groundwork. *(verified on development branch)*
+4. **Safety gate** — moderation operations, account deletion, broader abuse controls and adversarial tests. *(next)*
 5. **Beta** — real testers, ranking instrumentation and crash/performance hardening.
 6. **Monetization later** — only after the free core has real usage and retention data.
 
@@ -104,9 +112,7 @@ Current visual direction: dark, editorial, high contrast, lime accent. This is a
 
 ## Backend
 
-Binder uses Supabase Postgres + Auth + Storage with Row Level Security. The app contains only the publishable client credential. Raw birth dates and exact coordinates remain private; candidate generation, calculated age, distance and match creation are server-side.
-
-Phase 2 is deployed to the Binder Supabase project and the matching implementation is now merged to `main`.
+Binder uses Supabase Postgres + Auth + Storage + Realtime with Row Level Security. The app contains only the publishable client credential. Raw birth dates and exact coordinates remain private; candidate generation, calculated age, distance, match creation and conversation mutations are enforced server-side.
 
 ## License
 

@@ -3,16 +3,23 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { supabase } from './lib/supabase';
+import type { MatchSummary } from './lib/conversation';
 import AuthScreen from './screens/AuthScreen';
+import ChatScreen from './screens/ChatScreen';
 import DiscoveryScreen from './screens/DiscoveryScreen';
+import MatchesScreen from './screens/MatchesScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
 import ProfileScreen from './screens/ProfileScreen';
+
+type Tab = 'discover' | 'matches' | 'profile';
 
 export default function Root() {
   const [session, setSession] = useState<Session | null | undefined>(undefined);
   const [onboardingComplete, setOnboardingComplete] = useState<boolean | undefined>(undefined);
   const [loadError, setLoadError] = useState('');
-  const [tab, setTab] = useState<'discover' | 'profile'>('discover');
+  const [tab, setTab] = useState<Tab>('discover');
+  const [activeMatch, setActiveMatch] = useState<MatchSummary | null>(null);
+  const [matchesRefreshKey, setMatchesRefreshKey] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -26,6 +33,8 @@ export default function Root() {
     const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession);
       setLoadError('');
+      setActiveMatch(null);
+      setTab('discover');
     });
 
     return () => {
@@ -77,20 +86,57 @@ export default function Root() {
     );
   }
 
+  if (activeMatch) {
+    return (
+      <ChatScreen
+        match={activeMatch}
+        currentUserId={session.user.id}
+        onClose={() => {
+          setActiveMatch(null);
+          setMatchesRefreshKey((value) => value + 1);
+        }}
+        onConversationEnded={() => {
+          setActiveMatch(null);
+          setTab('matches');
+          setMatchesRefreshKey((value) => value + 1);
+        }}
+      />
+    );
+  }
+
   return (
     <View style={styles.shell}>
       <View style={styles.nav}>
-        <Pressable onPress={() => setTab('discover')} style={[styles.navItem, tab === 'discover' && styles.navItemActive]}>
-          <Text style={[styles.navText, tab === 'discover' && styles.navTextActive]}>Discover</Text>
-        </Pressable>
-        <Pressable onPress={() => setTab('profile')} style={[styles.navItem, tab === 'profile' && styles.navItemActive]}>
-          <Text style={[styles.navText, tab === 'profile' && styles.navTextActive]}>Profile</Text>
-        </Pressable>
+        <NavItem label="Discover" active={tab === 'discover'} onPress={() => setTab('discover')} />
+        <NavItem
+          label="Matches"
+          active={tab === 'matches'}
+          onPress={() => {
+            setTab('matches');
+            setMatchesRefreshKey((value) => value + 1);
+          }}
+        />
+        <NavItem label="Profile" active={tab === 'profile'} onPress={() => setTab('profile')} />
       </View>
       <View style={styles.content}>
-        {tab === 'discover' ? <DiscoveryScreen /> : <ProfileScreen userId={session.user.id} />}
+        {tab === 'discover' ? <DiscoveryScreen /> : null}
+        {tab === 'matches' ? (
+          <MatchesScreen
+            refreshKey={matchesRefreshKey}
+            onOpenMatch={(match) => setActiveMatch(match)}
+          />
+        ) : null}
+        {tab === 'profile' ? <ProfileScreen userId={session.user.id} /> : null}
       </View>
     </View>
+  );
+}
+
+function NavItem({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
+  return (
+    <Pressable onPress={onPress} style={[styles.navItem, active && styles.navItemActive]} accessibilityRole="button">
+      <Text style={[styles.navText, active && styles.navTextActive]}>{label}</Text>
+    </Pressable>
   );
 }
 

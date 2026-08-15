@@ -1,1 +1,1 @@
-export { default } from './src/screens/DiscoveryScreen';
+export { default } from './src/Root';
