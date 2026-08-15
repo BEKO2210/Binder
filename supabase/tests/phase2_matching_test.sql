@@ -14,7 +14,7 @@ exception when others then
 end;
 $$;
 
-select plan(21);
+select plan(24);
 
 insert into auth.users (id, aud, role, email, raw_app_meta_data, raw_user_meta_data, created_at, updated_at)
 values
@@ -60,25 +60,23 @@ values
 
 update public.profiles set onboarding_complete = true;
 
--- Discovery only returns compatible, nearby, complete candidates.
 select set_config('request.jwt.claims', '{"sub":"11111111-1111-4111-8111-111111111111","role":"authenticated"}', true);
 set local role authenticated;
 select is((select count(*) from public.get_discovery_batch(20)), 2::bigint, 'Alice receives exactly two discovery candidates');
 select is((select count(*) from public.get_discovery_batch(20) where target_user_id = '22222222-2222-4222-8222-222222222222'), 1::bigint, 'Nearby compatible Bob is discoverable');
 select is((select count(*) from public.get_discovery_batch(20) where target_user_id = '44444444-4444-4444-8444-444444444444'), 1::bigint, 'Nearby compatible Dana is discoverable');
 select is((select count(*) from public.get_discovery_batch(20) where target_user_id = '33333333-3333-4333-8333-333333333333'), 0::bigint, 'Out-of-range Charlie is excluded');
-
+select ok(pg_temp.did_error($sql$insert into public.decisions (actor_id,target_id,decision) values ('11111111-1111-4111-8111-111111111111','22222222-2222-4222-8222-222222222222','bind')$sql$), 'Client cannot directly insert decisions');
+select ok(pg_temp.did_error($sql$insert into public.matches (user_low,user_high) values ('11111111-1111-4111-8111-111111111111','22222222-2222-4222-8222-222222222222')$sql$), 'Client cannot directly insert matches');
 select is((select matched from public.record_decision('22222222-2222-4222-8222-222222222222', 'pass')), false, 'Pass persists without a match');
 reset role;
 select is((select count(*) from public.decisions where actor_id = '11111111-1111-4111-8111-111111111111' and target_id = '22222222-2222-4222-8222-222222222222'), 1::bigint, 'Pass creates one decision row');
 set local role authenticated;
 select is((select match_created from public.record_decision('22222222-2222-4222-8222-222222222222', 'pass')), false, 'Retrying the same pass is idempotent');
 select ok(pg_temp.did_error($sql$select * from public.record_decision('22222222-2222-4222-8222-222222222222', 'bind')$sql$), 'A recorded pass cannot be silently changed to bind');
-
 select is((select matched from public.record_decision('44444444-4444-4444-8444-444444444444', 'bind')), false, 'First bind waits for reciprocal interest');
 reset role;
 
--- Dana reciprocates. This must create exactly one canonical match and one outbox event.
 select set_config('request.jwt.claims', '{"sub":"44444444-4444-4444-8444-444444444444","role":"authenticated"}', true);
 set local role authenticated;
 select is((select matched from public.record_decision('11111111-1111-4111-8111-111111111111', 'bind')), true, 'Reciprocal bind returns matched=true');
@@ -89,7 +87,6 @@ select is((select count(*) from private.match_events where event_type = 'created
 select is((select count(*) from public.decisions where decision = 'bind'), 2::bigint, 'Both bind decisions are persisted exactly once');
 select is((select count(*) from private.match_events where event_type = 'created'), 1::bigint, 'Idempotent retry did not duplicate the outbox event');
 
--- Match visibility is member-only.
 select set_config('request.jwt.claims', '{"sub":"11111111-1111-4111-8111-111111111111","role":"authenticated"}', true);
 set local role authenticated;
 select is((select count(*) from public.matches), 1::bigint, 'Alice can read her active match');
@@ -99,20 +96,16 @@ set local role authenticated;
 select is((select count(*) from public.matches), 0::bigint, 'Non-member Bob cannot read Alice and Dana match');
 reset role;
 
--- A block shares the same pair lock and deactivates the match.
 select set_config('request.jwt.claims', '{"sub":"11111111-1111-4111-8111-111111111111","role":"authenticated"}', true);
 set local role authenticated;
-insert into public.blocks (blocker_id, blocked_id)
-values ('11111111-1111-4111-8111-111111111111', '44444444-4444-4444-8444-444444444444');
+insert into public.blocks (blocker_id, blocked_id) values ('11111111-1111-4111-8111-111111111111', '44444444-4444-4444-8444-444444444444');
 reset role;
 select is((select status from public.matches where user_low = least('11111111-1111-4111-8111-111111111111'::uuid, '44444444-4444-4444-8444-444444444444'::uuid) and user_high = greatest('11111111-1111-4111-8111-111111111111'::uuid, '44444444-4444-4444-8444-444444444444'::uuid)), 'blocked', 'Block deactivates an active match');
-
 set local role authenticated;
 select is((select count(*) from public.matches), 0::bigint, 'Blocked match disappears from member RLS view');
 select is((select count(*) from public.get_discovery_batch(20)), 0::bigint, 'Decided and blocked profiles do not reappear in discovery');
 select is((select matched from public.record_decision('44444444-4444-4444-8444-444444444444', 'bind')), false, 'Idempotent retry after block does not resurrect the match');
 reset role;
-
 select set_config('request.jwt.claims', '{"sub":"44444444-4444-4444-8444-444444444444","role":"authenticated"}', true);
 set local role authenticated;
 select is((select count(*) from public.get_public_profile('11111111-1111-4111-8111-111111111111')), 0::bigint, 'Blocked user cannot see blocker public profile');
