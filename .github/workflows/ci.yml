@@ -28,6 +28,9 @@ jobs:
       - name: Verify app entrypoint
         run: node scripts/verify-entrypoint.mjs
 
+      - name: Verify public policy site
+        run: node scripts/verify-site.mjs
+
       - name: TypeScript
         run: npm run typecheck
 
