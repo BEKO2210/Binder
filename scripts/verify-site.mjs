@@ -34,6 +34,13 @@ for (const required of ['18+ only', 'harass', 'minors', 'block', 'report']) {
   if (!terms.toLowerCase().includes(required.toLowerCase())) failures.push(`terms.html: required safety concept missing: ${required}`);
 }
 
+const privacy = readFileSync('site/privacy.html', 'utf8').toLowerCase();
+for (const required of ['beta ranking measurement', '10-km distance bucket', 'optional client diagnostics', '30 days', '90 days']) {
+  if (!privacy.includes(required)) failures.push(`privacy.html: Phase 5 disclosure missing: ${required}`);
+}
+if (!privacy.includes('start disabled')) failures.push('privacy.html: optional diagnostics default-off disclosure missing');
+if (!privacy.includes('deletes the existing optional client-diagnostic rows')) failures.push('privacy.html: diagnostics opt-out deletion disclosure missing');
+
 if (failures.length) {
   console.error(failures.join('\n'));
   process.exit(1);
