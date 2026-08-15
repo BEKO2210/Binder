@@ -133,7 +133,7 @@ grant execute on function public.get_my_notification_preferences() to authentica
 grant execute on function public.set_my_notification_preferences(boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,time without time zone,time without time zone,text) to authenticated;
 
 alter table public.device_tokens
-  add column installation_id uuid,
+  add column installation_id uuid default gen_random_uuid(),
   add column last_registered_at timestamptz not null default now();
 
 update public.device_tokens set installation_id = id where installation_id is null;
@@ -276,6 +276,26 @@ $$;
 
 revoke all on function public.register_push_token(text,text,uuid) from public, anon;
 grant execute on function public.register_push_token(text,text,uuid) to authenticated;
+
+-- Preserve the Phase 3 RPC for already-installed builds while routing all new
+-- clients through the stable installation-aware overload above.
+create or replace function public.register_push_token(p_token text,p_platform text)
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  perform public.register_push_token(
+    p_token,
+    p_platform,
+    pg_catalog.md5(pg_catalog.btrim(p_token))::uuid
+  );
+end;
+$$;
+
+revoke all on function public.register_push_token(text,text) from public, anon;
+grant execute on function public.register_push_token(text,text) to authenticated;
 
 create or replace function public.unregister_push_installation(p_installation_id uuid)
 returns void
