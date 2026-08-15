@@ -37,6 +37,7 @@ const REPORT_REASONS: { value: ReportReason; label: string }[] = [
 ];
 
 type FailedAttempt = { clientId: string; body: string };
+type SafetyMode = 'menu' | 'report';
 
 export default function ChatScreen({
   match,
@@ -57,6 +58,7 @@ export default function ChatScreen({
   const [sendError, setSendError] = useState('');
   const [failedAttempt, setFailedAttempt] = useState<FailedAttempt | null>(null);
   const [showSafety, setShowSafety] = useState(false);
+  const [safetyMode, setSafetyMode] = useState<SafetyMode>('menu');
   const [reportReason, setReportReason] = useState<ReportReason>('harassment');
   const [reportDetails, setReportDetails] = useState('');
   const [reportMessageId, setReportMessageId] = useState<string | null>(null);
@@ -84,7 +86,9 @@ export default function ChatScreen({
         setMessages(rows);
         await markMatchRead(match.matchId);
       } catch (nextError) {
-        if (active) setLoadError(nextError instanceof Error ? nextError.message : 'Could not load conversation.');
+        if (active) {
+          setLoadError(nextError instanceof Error ? nextError.message : 'Could not load conversation.');
+        }
       } finally {
         if (active) setLoading(false);
       }
@@ -152,7 +156,9 @@ export default function ChatScreen({
           onPress: () => {
             void unmatch(match.matchId)
               .then(() => onConversationEnded())
-              .catch((error: unknown) => setLoadError(error instanceof Error ? error.message : 'Could not unmatch.'));
+              .catch((error: unknown) => {
+                setLoadError(error instanceof Error ? error.message : 'Could not unmatch.');
+              });
           },
         },
       ],
@@ -171,7 +177,9 @@ export default function ChatScreen({
           onPress: () => {
             void blockUser(match.otherUserId)
               .then(() => onConversationEnded())
-              .catch((error: unknown) => setLoadError(error instanceof Error ? error.message : 'Could not block user.'));
+              .catch((error: unknown) => {
+                setLoadError(error instanceof Error ? error.message : 'Could not block user.');
+              });
           },
         },
       ],
@@ -182,6 +190,7 @@ export default function ChatScreen({
     if (reporting) return;
     setReporting(true);
     setLoadError('');
+
     try {
       await reportUser({
         reportedUserId: match.otherUserId,
@@ -203,7 +212,15 @@ export default function ChatScreen({
     setReportMessageId(messageId ?? null);
     setReportReason('harassment');
     setReportDetails('');
+    setSafetyMode('report');
     setShowSafety(true);
+  }
+
+  function closeSafety() {
+    setShowSafety(false);
+    setSafetyMode('menu');
+    setReportMessageId(null);
+    setReportDetails('');
   }
 
   return (
@@ -220,17 +237,34 @@ export default function ChatScreen({
           <Text style={styles.name}>{match.firstName}, {match.age}</Text>
           <Text style={styles.subtitle}>It's a Bind</Text>
         </View>
-        <Pressable onPress={() => setShowSafety((value) => !value)} style={styles.headerButton} accessibilityRole="button">
+        <Pressable
+          onPress={() => {
+            if (showSafety) closeSafety();
+            else {
+              setSafetyMode('menu');
+              setShowSafety(true);
+            }
+          }}
+          style={styles.headerButton}
+          accessibilityRole="button"
+        >
           <Text style={styles.more}>•••</Text>
         </Pressable>
       </View>
 
       {showSafety ? (
         <View style={styles.safetyPanel}>
-          <Text style={styles.safetyTitle}>{reportMessageId ? 'Report this message' : 'Safety controls'}</Text>
-          {reportingMessage ? <Text style={styles.reportQuote}>“{reportingMessage.body}”</Text> : null}
-          {reportMessageId || reportDetails || reportReason !== 'harassment' ? (
+          <Text style={styles.safetyTitle}>
+            {safetyMode === 'report'
+              ? reportMessageId
+                ? 'Report this message'
+                : `Report ${match.firstName}`
+              : 'Safety controls'}
+          </Text>
+
+          {safetyMode === 'report' ? (
             <>
+              {reportingMessage ? <Text style={styles.reportQuote}>“{reportingMessage.body}”</Text> : null}
               <View style={styles.reasonWrap}>
                 {REPORT_REASONS.map((reason) => (
                   <Pressable
@@ -238,7 +272,9 @@ export default function ChatScreen({
                     onPress={() => setReportReason(reason.value)}
                     style={[styles.reasonChip, reportReason === reason.value && styles.reasonChipActive]}
                   >
-                    <Text style={[styles.reasonText, reportReason === reason.value && styles.reasonTextActive]}>{reason.label}</Text>
+                    <Text style={[styles.reasonText, reportReason === reason.value && styles.reasonTextActive]}>
+                      {reason.label}
+                    </Text>
                   </Pressable>
                 ))}
               </View>
@@ -254,8 +290,15 @@ export default function ChatScreen({
               <Pressable onPress={() => void submitReport()} disabled={reporting} style={styles.reportButton}>
                 <Text style={styles.reportButtonText}>{reporting ? 'Submitting…' : 'Report & block'}</Text>
               </Pressable>
-              <Pressable onPress={() => { setReportMessageId(null); setReportDetails(''); setShowSafety(false); }} style={styles.cancelReport}>
-                <Text style={styles.cancelReportText}>Cancel</Text>
+              <Pressable
+                onPress={() => {
+                  setSafetyMode('menu');
+                  setReportMessageId(null);
+                  setReportDetails('');
+                }}
+                style={styles.cancelReport}
+              >
+                <Text style={styles.cancelReportText}>Back</Text>
               </Pressable>
             </>
           ) : (
@@ -266,7 +309,7 @@ export default function ChatScreen({
               <Pressable onPress={confirmBlock} style={styles.safetyAction}>
                 <Text style={styles.dangerText}>Block</Text>
               </Pressable>
-              <Pressable onPress={() => { setReportDetails(' '); }} style={styles.safetyAction}>
+              <Pressable onPress={() => openReport()} style={styles.safetyAction}>
                 <Text style={styles.dangerText}>Report & block</Text>
               </Pressable>
             </View>
@@ -380,7 +423,7 @@ const styles = StyleSheet.create({
   bubbleMine: { backgroundColor: '#C7FF4A', borderBottomRightRadius: 6 },
   bubbleOther: { backgroundColor: '#1B1B21', borderBottomLeftRadius: 6 },
   bubbleText: { color: '#F0F0F3', fontSize: 15, lineHeight: 21 },
-  bubbleTextMine: { color: '#101115', fontWeight: '650' },
+  bubbleTextMine: { color: '#101115', fontWeight: '600' },
   longPressHint: { color: '#52525A', fontSize: 8, marginTop: 3, marginLeft: 5 },
   composerRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 8, paddingHorizontal: 12, paddingTop: 9, paddingBottom: Platform.OS === 'ios' ? 22 : 12, borderTopWidth: 1, borderTopColor: '#202026' },
   composer: { flex: 1, minHeight: 44, maxHeight: 120, backgroundColor: '#17171D', color: '#F6F6F3', borderRadius: 18, paddingHorizontal: 14, paddingTop: 11, paddingBottom: 11, textAlignVertical: 'center' },
