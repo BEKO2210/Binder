@@ -15,29 +15,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
           version: latest
-
       - name: Initialize local Supabase config
         run: supabase init --force
-
       - name: Start local Postgres
         run: supabase db start
-
       - name: Run pgTAP database tests
         run: supabase test db
-
       - name: Stress atomic mutual matches
         run: bash supabase/tests/phase2_concurrency.sh
-
       - name: Stress conversation races
         run: bash supabase/tests/phase3_concurrency.sh
-
       - name: Stress sender-wide rate limit
         run: bash supabase/tests/phase3_rate_concurrency.sh
-
       - name: Lint Binder schemas
         run: supabase db lint --schema public,private --level error --fail-on error
