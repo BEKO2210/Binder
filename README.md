@@ -6,17 +6,25 @@ Binder is an independent implementation. It does not use Tinder source code, pri
 
 ## Current status
 
-Phase 0 is in the repository now:
+Phase 0 is frozen as the last stable interaction proof. Phase 1 is complete on the `phase/1-identity` development branch and remains unmerged until explicitly approved.
 
-- Expo 57 / React Native 0.86 foundation
-- Android-first configuration with iOS path preserved
-- working draggable profile-card deck
-- Bind / Pass actions
-- mutual-like demo producing an `It's a Bind` match state
-- strict TypeScript
-- product, architecture and safety contracts
+Phase 1 includes:
 
-The current profiles are demo data only. Backend authentication, persistence and real user data come in the next phase.
+- Expo 57 / React Native 0.86, Android-first with the iOS path preserved
+- Supabase Auth with persistent React Native sessions
+- mandatory server-enforced 18+ onboarding
+- profile editor, interests and discovery preferences
+- profile images compressed client-side to a maximum 1080 px edge, WebP at 80% quality before upload
+- private profile-media bucket with owner-scoped writes
+- exact birth date and exact PostGIS coordinates isolated from public profile data
+- safe server projections for calculated age and distance
+- reciprocal block visibility rules and report storage
+- strict RLS plus a reduced SQL privilege allowlist
+- generated Supabase TypeScript schema types
+- Android Expo bundle verification in CI
+- local Supabase migration replay, 16 pgTAP privacy/RLS tests and app-schema DB lint in CI
+
+The discovery deck still uses demo profiles. Real candidate discovery, swipe persistence and atomic mutual matching belong to Phase 2.
 
 ## Run it
 
@@ -25,6 +33,7 @@ Requirements: Node.js 22.13+ and npm.
 ```bash
 npm install
 npm run typecheck
+npm run bundlecheck
 npm run android
 ```
 
@@ -45,13 +54,13 @@ npm start
 
 ## Build phases
 
-1. **Interaction proof** — swipe deck and local mutual-match state. *(current)*
-2. **Identity** — Supabase Auth, profile editor, photo storage, onboarding.
-3. **Matching** — server-side discovery, decisions and atomic mutual matches.
-4. **Conversation** — realtime chat, notifications, unmatch, block and report.
-5. **Safety gate** — age-access, moderation, rate limits, deletion and adversarial RLS tests.
-6. **Beta** — real testers, ranking instrumentation and crash/performance hardening.
-7. **Monetization later** — only after the free core has real usage and retention data.
+0. **Interaction proof** — swipe deck and local mutual-match state. *(frozen)*
+1. **Identity** — Supabase Auth, 18+ onboarding, profile editor, compressed photo storage, privacy/RLS gates. *(verified on development branch)*
+2. **Matching** — server-side discovery, decisions and atomic mutual matches. *(next)*
+3. **Conversation** — realtime chat, notifications, unmatch, block and report flows.
+4. **Safety gate** — moderation, rate limits, deletion and broader adversarial tests.
+5. **Beta** — real testers, ranking instrumentation and crash/performance hardening.
+6. **Monetization later** — only after the free core has real usage and retention data.
 
 ## Design language
 
@@ -68,10 +77,13 @@ Current visual direction: dark, editorial, high contrast, lime accent. This is a
 - `docs/PRODUCT.md` — product contract and scope
 - `docs/ARCHITECTURE.md` — backend boundaries and matching invariants
 - `docs/SAFETY.md` — release-blocking dating safety requirements
+- `docs/REVERSE_ENGINEERING.md` — independent public-behavior implementation boundary
 
-## Backend direction
+## Backend
 
-Supabase is the planned first backend: Postgres + Auth + Storage + Realtime with Row Level Security. The app will contain only publishable client credentials; privileged operations and atomic matching stay server-side.
+Binder currently uses Supabase Postgres + Auth + Storage with Row Level Security. The app contains only the publishable client credential. Raw birth dates and exact coordinates remain private; public profile data and distance are projected server-side.
+
+Phase 2 will add atomic swipe/match persistence in Postgres so simultaneous reciprocal likes create exactly one match record and one downstream match event.
 
 ## License
 
