@@ -33,3 +33,18 @@ jobs:
         run: bash supabase/tests/phase3_rate_concurrency.sh
       - name: Lint Binder schemas
         run: supabase db lint --schema public,private --level error --fail-on error
+
+  account-deletion-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Initialize local Supabase config
+        run: supabase init --force
+      - name: Exercise Auth + Storage + Edge deletion end-to-end
+        run: bash supabase/tests/phase4_delete_account_integration.sh
