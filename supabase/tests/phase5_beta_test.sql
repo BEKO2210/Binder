@@ -13,9 +13,9 @@ select is((select rank_variant from private.beta_preferences where user_id='f111
 select ok(not has_table_privilege('authenticated','private.beta_client_events','select'),'Client cannot read diagnostic event table');
 select ok(not has_table_privilege('authenticated','private.discovery_impressions','select'),'Client cannot read ranking impression table');
 select ok(not has_function_privilege('authenticated','private.beta_daily_summary(integer)','execute'),'Client cannot read operator beta dashboard');
-select ok(has_index('private','moderation_actions','moderation_actions_case_id_idx'),'Phase 4 moderation action FK receives covering index');
-select ok(has_index('private','moderation_cases','moderation_cases_media_id_idx'),'Phase 4 media FK receives covering index');
-select ok(has_index('private','moderation_cases','moderation_cases_report_id_idx'),'Phase 4 report FK receives covering index');
+select has_index('private','moderation_actions','moderation_actions_case_id_idx','Phase 4 moderation action FK receives covering index');
+select has_index('private','moderation_cases','moderation_cases_media_id_idx','Phase 4 media FK receives covering index');
+select has_index('private','moderation_cases','moderation_cases_report_id_idx','Phase 4 report FK receives covering index');
 
 select set_config('request.jwt.claims','{"sub":"f1111111-1111-4111-8111-111111111111","role":"authenticated"}',true); set local role authenticated;
 select is((select privacy_version from public.get_legal_gate()),'2026-08-15','Beta instrumentation remains inside the initial pre-user privacy-policy version');
