@@ -26,7 +26,8 @@ for (const file of pages) {
 
 const deletion = readFileSync('site/delete-account.html', 'utf8');
 if (!deletion.includes('nullmesh@protonmail.com')) failures.push('delete-account.html: deletion contact missing');
-if (!deletion.includes('Binder account deletion request')) failures.push('delete-account.html: explicit deletion request action missing');
+if (!deletion.includes('Request account deletion')) failures.push('delete-account.html: visible deletion action missing');
+if (!deletion.includes('subject=Binder%20account%20deletion%20request')) failures.push('delete-account.html: explicit encoded deletion subject missing');
 
 const terms = readFileSync('site/terms.html', 'utf8');
 for (const required of ['18+ only', 'harass', 'minors', 'block', 'report']) {
