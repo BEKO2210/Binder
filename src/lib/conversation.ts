@@ -106,6 +106,19 @@ export async function unmatch(matchId: string): Promise<boolean> {
   return data;
 }
 
+export async function blockUser(userId: string): Promise<void> {
+  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+  if (sessionError) throw sessionError;
+  const currentUserId = sessionData.session?.user.id;
+  if (!currentUserId) throw new Error('Authentication required.');
+
+  const { error } = await supabase.from('blocks').upsert(
+    { blocker_id: currentUserId, blocked_id: userId },
+    { onConflict: 'blocker_id,blocked_id', ignoreDuplicates: true },
+  );
+  if (error) throw error;
+}
+
 export async function reportUser(options: {
   reportedUserId: string;
   reason: ReportReason;
