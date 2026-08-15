@@ -1,6 +1,7 @@
 import { Image, View } from 'react-native';
 
 import { useBinderTheme } from '../../theme/ThemeProvider';
+import { fontFamilies } from '../../theme/tokens';
 import { BinderText } from './BinderText';
 
 const binderIcon = require('../../../assets/brand/icon.png');
@@ -19,7 +20,7 @@ export function BinderBrand({ compact = false }: { compact?: boolean }) {
       {!compact ? (
         <BinderText
           variant="label"
-          style={{ color: theme.colors.textPrimary, letterSpacing: 3, fontFamily: theme.type.family.extraBold }}
+          style={{ color: theme.colors.textPrimary, letterSpacing: 3, fontFamily: fontFamilies.extraBold }}
         >
           BINDER
         </BinderText>
