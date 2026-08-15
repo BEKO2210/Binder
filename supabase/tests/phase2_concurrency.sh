@@ -16,10 +16,10 @@ select i, gen_random_uuid(), gen_random_uuid()
 from generate_series(1, ${PAIR_COUNT}) as i;
 
 insert into auth.users (id, aud, role, email, raw_app_meta_data, raw_user_meta_data, created_at, updated_at)
-select user_a, 'authenticated', 'authenticated', 'race-a-' || pair_no || '@binder.test', '{}', '{}', now(), now()
+select user_a, 'authenticated', 'authenticated', 'race-a-' || pair_no || '@binder.test', '{}'::jsonb, '{}'::jsonb, now(), now()
 from public._phase2_concurrency_pairs
 union all
-select user_b, 'authenticated', 'authenticated', 'race-b-' || pair_no || '@binder.test', '{}', '{}', now(), now()
+select user_b, 'authenticated', 'authenticated', 'race-b-' || pair_no || '@binder.test', '{}'::jsonb, '{}'::jsonb, now(), now()
 from public._phase2_concurrency_pairs;
 
 insert into public.profiles (user_id, first_name, bio, gender, interests, onboarding_complete)
