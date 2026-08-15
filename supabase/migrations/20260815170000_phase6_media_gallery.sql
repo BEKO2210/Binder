@@ -11,6 +11,17 @@ alter table public.profile_media
   unique (user_id, position)
   deferrable initially immediate;
 
+-- Phase 4 used ON DELETE SET NULL for photo-review cases while simultaneously
+-- requiring media_id NOT NULL for those cases. That made legitimate media
+-- deletion contradictory. A photo review is scoped to the concrete photo, so its
+-- case/action history is deleted with that photo (Binder is delete-by-default).
+alter table private.moderation_cases
+  drop constraint if exists moderation_cases_media_id_fkey;
+
+alter table private.moderation_cases
+  add constraint moderation_cases_media_id_fkey
+  foreign key (media_id) references public.profile_media(id) on delete cascade;
+
 create or replace function private.lock_profile_media_owner(target_user_id uuid)
 returns void
 language sql
@@ -44,7 +55,6 @@ for each row execute function private.profile_media_owner_lock_trigger();
 create or replace function private.require_profile_media_write_access(target_user_id uuid)
 returns void
 language plpgsql
-stable
 security definer
 set search_path = ''
 as $$
@@ -251,8 +261,8 @@ begin
 
   if replacement_id is not null then
     perform public.set_primary_profile_media(replacement_id);
-  elsif not coalesce(profile_complete, false) then
-    -- Keep remaining pre-onboarding media densely ordered after removal.
+  else
+    -- Densely pack remaining positions after any non-primary or pre-onboarding removal.
     set constraints profile_media_user_position_unique deferred;
     with ordered as (
       select pm.id, row_number() over(order by pm.position)::smallint - 1 as next_position
