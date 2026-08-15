@@ -9,9 +9,9 @@ permissions:
   contents: read
 
 jobs:
-  typecheck:
+  app-checks:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -27,3 +27,6 @@ jobs:
 
       - name: TypeScript
         run: npm run typecheck
+
+      - name: Android Expo bundle
+        run: npm run bundlecheck
