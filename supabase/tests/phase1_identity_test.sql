@@ -30,6 +30,7 @@ values
 -- Alice goes through the same authenticated RPC/RLS path as the app.
 select set_config('request.jwt.claims', '{"sub":"11111111-1111-4111-8111-111111111111","role":"authenticated"}', true);
 set local role authenticated;
+select public.accept_legal_terms('2026-08-15','2026-08-15');
 select public.complete_my_onboarding('Alice', '1992-04-12', 'woman', 'A', array['Coffee'], array['man'], 25::smallint, 45::smallint, 80::smallint);
 insert into public.profile_media (user_id, storage_path, position, width, height, byte_size, mime_type)
 values ('11111111-1111-4111-8111-111111111111', '11111111-1111-4111-8111-111111111111/test.webp', 0, 900, 1080, 100, 'image/webp');
@@ -37,10 +38,12 @@ select public.finalize_my_onboarding();
 select public.set_my_location(48.897, 9.191);
 select is((select onboarding_complete from public.profiles where user_id = auth.uid()), true, 'Alice completes onboarding');
 reset role;
+update public.profile_media set moderation_status='approved', moderated_at=clock_timestamp() where user_id='11111111-1111-4111-8111-111111111111';
 
 -- Bob does the same.
 select set_config('request.jwt.claims', '{"sub":"22222222-2222-4222-8222-222222222222","role":"authenticated"}', true);
 set local role authenticated;
+select public.accept_legal_terms('2026-08-15','2026-08-15');
 select public.complete_my_onboarding('Bob', '1990-08-20', 'man', 'B', array['Hiking'], array['woman'], 24::smallint, 48::smallint, 100::smallint);
 insert into public.profile_media (user_id, storage_path, position, width, height, byte_size, mime_type)
 values ('22222222-2222-4222-8222-222222222222', '22222222-2222-4222-8222-222222222222/test.webp', 0, 1080, 900, 100, 'image/webp');
@@ -48,6 +51,7 @@ select public.finalize_my_onboarding();
 select public.set_my_location(48.775, 9.182);
 select is((select onboarding_complete from public.profiles where user_id = auth.uid()), true, 'Bob completes onboarding');
 reset role;
+update public.profile_media set moderation_status='approved', moderated_at=clock_timestamp() where user_id='22222222-2222-4222-8222-222222222222';
 
 -- Alice must only see Bob through safe server projections.
 select set_config('request.jwt.claims', '{"sub":"11111111-1111-4111-8111-111111111111","role":"authenticated"}', true);
@@ -105,9 +109,10 @@ set local role authenticated;
 select is((select count(*) from public.get_public_profile('11111111-1111-4111-8111-111111111111')), 0::bigint, 'Blocked user cannot see blocker either');
 reset role;
 
--- Charlie tries to bypass onboarding and age checks.
+-- Charlie tries to bypass onboarding and age checks after accepting the current policy contract.
 select set_config('request.jwt.claims', '{"sub":"33333333-3333-4333-8333-333333333333","role":"authenticated"}', true);
 set local role authenticated;
+select public.accept_legal_terms('2026-08-15','2026-08-15');
 select ok(
   pg_temp.did_error($sql$insert into public.profiles (user_id, first_name, gender, onboarding_complete) values ('33333333-3333-4333-8333-333333333333', 'Charlie', 'man', true)$sql$),
   'Direct completed-profile insert is rejected without required identity/media state'
