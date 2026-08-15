@@ -1,7 +1,7 @@
 begin;
 create extension if not exists pgtap;
 create or replace function pg_temp.did_error(statement text) returns boolean language plpgsql as $$ begin execute statement; return false; exception when others then return true; end $$;
-select plan(33);
+select plan(36);
 
 insert into auth.users(id,aud,role,email,raw_app_meta_data,raw_user_meta_data,created_at,updated_at) values
 ('f1111111-1111-4111-8111-111111111111','authenticated','authenticated','beta-a@binder.test','{}','{}',now(),now()),
