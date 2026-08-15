@@ -57,15 +57,16 @@ select is((select count(*) from public.profiles where user_id = '22222222-2222-4
 select is((select count(*) from public.get_public_profile('22222222-2222-4222-8222-222222222222')), 1::bigint, 'Safe public profile projection is visible');
 select ok(public.distance_to_user('22222222-2222-4222-8222-222222222222') between 10 and 20, 'Distance is calculated server-side in km');
 
+update public.profiles
+set bio = 'hacked'
+where user_id = '22222222-2222-4222-8222-222222222222';
+reset role;
 select is(
-  (with changed as (
-    update public.profiles set bio = 'hacked'
-    where user_id = '22222222-2222-4222-8222-222222222222'
-    returning 1
-  ) select count(*) from changed),
-  0::bigint,
+  (select bio from public.profiles where user_id = '22222222-2222-4222-8222-222222222222'),
+  'B',
   'Cross-user profile update is blocked by RLS'
 );
+set local role authenticated;
 
 select ok(
   pg_temp.did_error($sql$update public.user_private set birth_date = '1995-01-01' where user_id = '11111111-1111-4111-8111-111111111111'$sql$),
@@ -77,25 +78,25 @@ select ok(
   'Media metadata cannot point to a nonexistent Storage object'
 );
 
+delete from public.profile_media
+where user_id = '11111111-1111-4111-8111-111111111111' and position = 0;
+reset role;
 select is(
-  (with removed as (
-    delete from public.profile_media
-    where user_id = '11111111-1111-4111-8111-111111111111' and position = 0
-    returning 1
-  ) select count(*) from removed),
-  0::bigint,
+  (select count(*) from public.profile_media where user_id = '11111111-1111-4111-8111-111111111111' and position = 0),
+  1::bigint,
   'Completed profile cannot delete its last photo metadata'
 );
+set local role authenticated;
 
+delete from storage.objects
+where bucket_id = 'profile-media' and name = '11111111-1111-4111-8111-111111111111/test.webp';
+reset role;
 select is(
-  (with removed as (
-    delete from storage.objects
-    where bucket_id = 'profile-media' and name = '11111111-1111-4111-8111-111111111111/test.webp'
-    returning 1
-  ) select count(*) from removed),
-  0::bigint,
+  (select count(*) from storage.objects where bucket_id = 'profile-media' and name = '11111111-1111-4111-8111-111111111111/test.webp'),
+  1::bigint,
   'Active profile photo object cannot be deleted directly'
 );
+set local role authenticated;
 
 insert into public.blocks (blocker_id, blocked_id)
 values ('11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222');
