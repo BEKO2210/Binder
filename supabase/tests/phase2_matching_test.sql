@@ -23,6 +23,10 @@ values
   ('33333333-3333-4333-8333-333333333333', 'authenticated', 'authenticated', 'charlie2@binder.test', '{}', '{}', now(), now()),
   ('44444444-4444-4444-8444-444444444444', 'authenticated', 'authenticated', 'dana2@binder.test', '{}', '{}', now(), now());
 
+insert into public.legal_acceptances (user_id, terms_version, privacy_version)
+select id, '2026-08-15', '2026-08-15' from auth.users
+where email in ('alice2@binder.test','bob2@binder.test','charlie2@binder.test','dana2@binder.test');
+
 insert into public.profiles (user_id, first_name, bio, gender, interests, onboarding_complete)
 values
   ('11111111-1111-4111-8111-111111111111', 'Alice', 'Coffee and music', 'woman', array['Coffee','Music'], false),
@@ -58,6 +62,7 @@ values
   ('33333333-3333-4333-8333-333333333333', '33333333-3333-4333-8333-333333333333/main.webp', 0, 800, 1080, 100, 'image/webp'),
   ('44444444-4444-4444-8444-444444444444', '44444444-4444-4444-8444-444444444444/main.webp', 0, 800, 1080, 100, 'image/webp');
 
+update public.profile_media set moderation_status='approved', moderated_at=clock_timestamp();
 update public.profiles set onboarding_complete = true;
 
 select set_config('request.jwt.claims', '{"sub":"11111111-1111-4111-8111-111111111111","role":"authenticated"}', true);
