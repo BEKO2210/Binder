@@ -38,6 +38,7 @@ select public.finalize_my_onboarding();
 select public.set_my_location(48.897, 9.191);
 select is((select onboarding_complete from public.profiles where user_id = auth.uid()), true, 'Alice completes onboarding');
 reset role;
+select set_config('request.jwt.claims', '{"role":"service_role"}', true);
 update public.profile_media set moderation_status='approved', moderated_at=clock_timestamp() where user_id='11111111-1111-4111-8111-111111111111';
 
 -- Bob does the same.
@@ -51,6 +52,7 @@ select public.finalize_my_onboarding();
 select public.set_my_location(48.775, 9.182);
 select is((select onboarding_complete from public.profiles where user_id = auth.uid()), true, 'Bob completes onboarding');
 reset role;
+select set_config('request.jwt.claims', '{"role":"service_role"}', true);
 update public.profile_media set moderation_status='approved', moderated_at=clock_timestamp() where user_id='22222222-2222-4222-8222-222222222222';
 
 -- Alice must only see Bob through safe server projections.
