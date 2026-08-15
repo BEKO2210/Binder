@@ -55,6 +55,7 @@ for each row execute function private.profile_media_owner_lock_trigger();
 create or replace function private.require_profile_media_write_access(target_user_id uuid)
 returns void
 language plpgsql
+stable
 security definer
 set search_path = ''
 as $$
@@ -101,7 +102,7 @@ begin
   perform private.require_profile_media_write_access(uid);
   perform private.lock_profile_media_owner(uid);
 
-  if p_storage_path is null or split_part(p_storage_path, '/', 1) <> uid::text then
+  if p_storage_path is null or pg_catalog.split_part(p_storage_path, '/', 1) <> uid::text then
     raise exception 'Media path must belong to the authenticated user.' using errcode = '23514';
   end if;
   if p_width is null or p_height is null or p_width not between 1 and 1080 or p_height not between 1 and 1080 then
@@ -115,7 +116,7 @@ begin
   end if;
 
   select slot::smallint into next_position
-  from generate_series(0, 5) as slot
+  from pg_catalog.generate_series(0, 5) as slot
   where not exists (
     select 1 from public.profile_media pm
     where pm.user_id = uid and pm.position = slot
@@ -153,33 +154,33 @@ begin
   perform private.lock_profile_media_owner(uid);
 
   expected_count := (select count(*) from public.profile_media pm where pm.user_id = uid);
-  if p_media_ids is null or cardinality(p_media_ids) <> expected_count or expected_count not between 1 and 6 then
+  if p_media_ids is null or pg_catalog.cardinality(p_media_ids) <> expected_count or expected_count not between 1 and 6 then
     raise exception 'Reorder must contain every profile photo exactly once.' using errcode = '23514';
   end if;
-  if (select count(distinct value) from unnest(p_media_ids) as value) <> expected_count then
+  if (select count(distinct value) from pg_catalog.unnest(p_media_ids) as value) <> expected_count then
     raise exception 'Reorder contains duplicate media IDs.' using errcode = '23514';
   end if;
   if exists (
-    select 1 from unnest(p_media_ids) as requested(id)
+    select 1 from pg_catalog.unnest(p_media_ids) as requested(id)
     where not exists (select 1 from public.profile_media pm where pm.id = requested.id and pm.user_id = uid)
   ) then
     raise exception 'Reorder contains media not owned by this account.' using errcode = '42501';
   end if;
 
   select p.onboarding_complete into profile_complete from public.profiles p where p.user_id = uid;
-  if coalesce(profile_complete, false) then
+  if pg_catalog.coalesce(profile_complete, false) then
     select pm.moderation_status into first_status from public.profile_media pm where pm.id = p_media_ids[1] and pm.user_id = uid;
     if first_status is distinct from 'approved' then
       raise exception 'A completed profile can only make an approved photo primary.' using errcode = '23514';
     end if;
   end if;
 
-  set constraints profile_media_user_position_unique deferred;
+  set constraints public.profile_media_user_position_unique deferred;
   update public.profile_media pm
   set position = requested.ordinality::smallint - 1
-  from unnest(p_media_ids) with ordinality as requested(id, ordinality)
+  from pg_catalog.unnest(p_media_ids) with ordinality as requested(id, ordinality)
   where pm.user_id = uid and pm.id = requested.id;
-  set constraints profile_media_user_position_unique immediate;
+  set constraints public.profile_media_user_position_unique immediate;
 end;
 $$;
 
@@ -204,19 +205,19 @@ begin
   if not found then raise exception 'Profile photo not found.' using errcode = '22023'; end if;
 
   select p.onboarding_complete into profile_complete from public.profiles p where p.user_id = uid;
-  if coalesce(profile_complete, false) and target_status <> 'approved' then
+  if pg_catalog.coalesce(profile_complete, false) and target_status <> 'approved' then
     raise exception 'A completed profile can only make an approved photo primary.' using errcode = '23514';
   end if;
 
-  select array_agg(pm.id order by pm.position) into current_ids from public.profile_media pm where pm.user_id = uid;
-  reordered := array[p_media_id] || array(select value from unnest(current_ids) as value where value <> p_media_id);
+  select pg_catalog.array_agg(pm.id order by pm.position) into current_ids from public.profile_media pm where pm.user_id = uid;
+  reordered := array[p_media_id] || array(select value from pg_catalog.unnest(current_ids) as value where value <> p_media_id);
 
-  set constraints profile_media_user_position_unique deferred;
+  set constraints public.profile_media_user_position_unique deferred;
   update public.profile_media pm
   set position = requested.ordinality::smallint - 1
-  from unnest(reordered) with ordinality as requested(id, ordinality)
+  from pg_catalog.unnest(reordered) with ordinality as requested(id, ordinality)
   where pm.user_id = uid and pm.id = requested.id;
-  set constraints profile_media_user_position_unique immediate;
+  set constraints public.profile_media_user_position_unique immediate;
 end;
 $$;
 
@@ -242,11 +243,11 @@ begin
 
   select count(*) into media_count from public.profile_media pm where pm.user_id = uid;
   select p.onboarding_complete into profile_complete from public.profiles p where p.user_id = uid;
-  if coalesce(profile_complete, false) and media_count <= 1 then
+  if pg_catalog.coalesce(profile_complete, false) and media_count <= 1 then
     raise exception 'A completed profile must keep at least one profile photo.' using errcode = '23514';
   end if;
 
-  if removing.position = 0 and coalesce(profile_complete, false) then
+  if removing.position = 0 and pg_catalog.coalesce(profile_complete, false) then
     select pm.id into replacement_id
     from public.profile_media pm
     where pm.user_id = uid and pm.id <> removing.id and pm.moderation_status = 'approved'
@@ -262,15 +263,14 @@ begin
   if replacement_id is not null then
     perform public.set_primary_profile_media(replacement_id);
   else
-    -- Densely pack remaining positions after any non-primary or pre-onboarding removal.
-    set constraints profile_media_user_position_unique deferred;
+    set constraints public.profile_media_user_position_unique deferred;
     with ordered as (
-      select pm.id, row_number() over(order by pm.position)::smallint - 1 as next_position
+      select pm.id, pg_catalog.row_number() over(order by pm.position)::smallint - 1 as next_position
       from public.profile_media pm where pm.user_id = uid
     )
     update public.profile_media pm set position = ordered.next_position
     from ordered where pm.id = ordered.id;
-    set constraints profile_media_user_position_unique immediate;
+    set constraints public.profile_media_user_position_unique immediate;
   end if;
 
   return query select removing.storage_path;
