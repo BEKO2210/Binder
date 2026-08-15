@@ -3,7 +3,7 @@ import { Image, Pressable, ScrollView, View } from 'react-native';
 
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderInput, BinderText, SectionHeader } from '../components/ui';
 import { pickAndPrepareProfileImage, type PreparedImage } from '../lib/images';
-import { replaceProfileImage } from '../lib/media';
+import { addProfileImage } from '../lib/media';
 import { supabase } from '../lib/supabase';
 import { GENDERS, INTERESTS, type Gender, validateAdultBirthDate } from '../lib/validation';
 import { useBinderTheme } from '../theme/ThemeProvider';
@@ -47,7 +47,7 @@ export default function OnboardingScreen({ userId, onComplete }: Props) {
     try {
       const { error: identityError } = await supabase.rpc('complete_my_onboarding', { p_first_name: firstName.trim(), p_birth_date: birthDate.trim(), p_gender: gender, p_bio: bio.trim(), p_interests: interests, p_interested_in: interestedIn, p_min_age: min, p_max_age: max, p_max_distance_km: maxDistance });
       if (identityError) throw identityError;
-      await replaceProfileImage(userId, photo, 0);
+      await addProfileImage(userId, photo);
       const { error: finalizeError } = await supabase.rpc('finalize_my_onboarding');
       if (finalizeError) throw finalizeError;
       onComplete();
@@ -68,11 +68,7 @@ export default function OnboardingScreen({ userId, onComplete }: Props) {
         <ChoiceField label="Discovery range"><View style={{ flexDirection: 'row', gap: theme.spacing.x2 }}><CompactNumber label="Min age" value={minAge} setValue={setMinAge} /><CompactNumber label="Max age" value={maxAge} setValue={setMaxAge} /><CompactNumber label="Km" value={distance} setValue={setDistance} /></View></ChoiceField>
         <ChoiceField label="Primary profile photo">
           <Pressable accessibilityRole="button" accessibilityLabel={photo ? 'Replace primary profile photo' : 'Choose primary profile photo'} onPress={() => void choosePhoto()}>
-            {({ pressed }) => (
-              <BinderCard style={{ padding: 0, minHeight: 280, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface }}>
-                {photo ? <Image source={{ uri: photo.uri }} style={{ width: '100%', height: 280 }} resizeMode="cover" /> : <View style={{ alignItems: 'center', gap: theme.spacing.x3 }}><BinderIcon name="addPhoto" size={34} color={theme.accent.accent} /><BinderText variant="label" tone="accent">Choose photo</BinderText></View>}
-              </BinderCard>
-            )}
+            {({ pressed }) => <BinderCard style={{ padding: 0, minHeight: 280, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface }}>{photo ? <Image source={{ uri: photo.uri }} style={{ width: '100%', height: 280 }} resizeMode="cover" /> : <View style={{ alignItems: 'center', gap: theme.spacing.x3 }}><BinderIcon name="addPhoto" size={34} color={theme.accent.accent} /><BinderText variant="label" tone="accent">Choose photo</BinderText></View>}</BinderCard>}
           </Pressable>
           <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>Prepared before upload: max 1080 px edge, WebP, about 80% quality.</BinderText>
         </ChoiceField>

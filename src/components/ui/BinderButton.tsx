@@ -17,11 +17,11 @@ type Props = Omit<PressableProps, 'style' | 'children'> & {
 
 export function BinderButton({ label, variant = 'primary', loading = false, icon, fullWidth = true, disabled, style, ...props }: Props) {
   const { theme } = useBinderTheme();
-  const isDisabled = disabled || loading;
+  const isDisabled = disabled === true || loading;
   const foreground = variant === 'primary'
     ? theme.accent.foreground
     : variant === 'destructive'
-      ? '#240A0F'
+      ? theme.semantic.destructiveForeground
       : theme.colors.textPrimary;
   const background = variant === 'primary'
     ? theme.accent.accent

@@ -5,6 +5,7 @@ export type MotionPreference = 'system' | 'reduce' | 'full';
 export const baseColors = {
   destructive: '#FF5A76',
   destructivePressed: '#E84B66',
+  destructiveForeground: '#240A0F',
   destructiveSoftDark: '#211318',
   destructiveSoftLight: '#FFF0F3',
   warning: '#F3C969',
