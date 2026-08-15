@@ -1,5 +1,6 @@
 import * as Location from 'expo-location';
 
+import { recordBetaEvent } from './beta';
 import { supabase } from './supabase';
 
 export type DiscoveryProfile = {
@@ -39,28 +40,41 @@ export async function refreshDiscoveryLocation(): Promise<void> {
 }
 
 export async function fetchDiscoveryBatch(limit = 20): Promise<DiscoveryProfile[]> {
-  const { data, error } = await supabase.rpc('get_discovery_batch', { p_limit: limit });
-  if (error) throw error;
+  const startedAt = Date.now();
+  try {
+    const { data, error } = await supabase.rpc('get_discovery_batch', { p_limit: limit });
+    if (error) throw error;
 
-  return Promise.all(
-    (data ?? []).map(async (candidate) => {
-      const { data: signed, error: signedError } = await supabase.storage
-        .from('profile-media')
-        .createSignedUrl(candidate.primary_photo_path, 60 * 60);
+    const profiles = await Promise.all(
+      (data ?? []).map(async (candidate) => {
+        const { data: signed, error: signedError } = await supabase.storage
+          .from('profile-media')
+          .createSignedUrl(candidate.primary_photo_path, 60 * 60);
 
-      if (signedError) throw signedError;
+        if (signedError) throw signedError;
 
-      return {
-        id: candidate.target_user_id,
-        name: candidate.first_name,
-        age: candidate.age,
-        distanceKm: candidate.distance_km,
-        bio: candidate.bio,
-        tags: candidate.interests,
-        photoUrl: signed.signedUrl,
-      } satisfies DiscoveryProfile;
-    }),
-  );
+        return {
+          id: candidate.target_user_id,
+          name: candidate.first_name,
+          age: candidate.age,
+          distanceKm: candidate.distance_km,
+          bio: candidate.bio,
+          tags: candidate.interests,
+          photoUrl: signed.signedUrl,
+        } satisfies DiscoveryProfile;
+      }),
+    );
+
+    void recordBetaEvent('discovery_load', 'discover', {
+      durationMs: Date.now() - startedAt,
+      value: profiles.length,
+      outcome: profiles.length === 0 ? 'empty' : 'ok',
+    });
+    return profiles;
+  } catch (error) {
+    void recordBetaEvent('discovery_load', 'discover', { durationMs: Date.now() - startedAt, outcome: 'error' });
+    throw error;
+  }
 }
 
 export async function recordDecision(
