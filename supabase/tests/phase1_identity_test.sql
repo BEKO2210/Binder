@@ -88,15 +88,10 @@ select is(
 );
 set local role authenticated;
 
-delete from storage.objects
-where bucket_id = 'profile-media' and name = '11111111-1111-4111-8111-111111111111/test.webp';
-reset role;
-select is(
-  (select count(*) from storage.objects where bucket_id = 'profile-media' and name = '11111111-1111-4111-8111-111111111111/test.webp'),
-  1::bigint,
-  'Active profile photo object cannot be deleted directly'
+select ok(
+  pg_temp.did_error($sql$delete from storage.objects where bucket_id = 'profile-media' and name = '11111111-1111-4111-8111-111111111111/test.webp'$sql$),
+  'Direct SQL deletion of an active Storage object is rejected'
 );
-set local role authenticated;
 
 insert into public.blocks (blocker_id, blocked_id)
 values ('11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222');
