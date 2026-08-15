@@ -6,6 +6,7 @@
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "backgroundColor": "#090A0F",
+    "icon": "./assets/brand/icon.png",
     "plugins": [
       [
         "expo-location",
@@ -17,6 +18,7 @@
         "expo-notifications",
         {
           "defaultChannel": "messages",
+          "icon": "./assets/brand/monochrome.png",
           "color": "#C7FF4A"
         }
       ],
@@ -31,16 +33,33 @@
           ]
         }
       ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#090A0F",
+          "image": "./assets/brand/splash-icon.png",
+          "imageWidth": 180,
+          "resizeMode": "contain",
+          "dark": {
+            "backgroundColor": "#090A0F",
+            "image": "./assets/brand/splash-icon.png"
+          }
+        }
+      ],
       "expo-system-ui"
     ],
     "android": {
       "package": "de.beko2210.binder",
+      "icon": "./assets/brand/icon.png",
       "adaptiveIcon": {
+        "foregroundImage": "./assets/brand/adaptive-foreground.png",
+        "monochromeImage": "./assets/brand/monochrome.png",
         "backgroundColor": "#090A0F"
       }
     },
     "ios": {
       "bundleIdentifier": "de.beko2210.binder",
+      "icon": "./assets/brand/icon.png",
       "supportsTablet": false
     }
   }
