@@ -11,7 +11,7 @@ permissions:
 jobs:
   app-checks:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 14
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -25,8 +25,29 @@ jobs:
       - name: Install dependencies
         run: npm install --ignore-scripts
 
+      - name: Audit production dependency graph
+        run: |
+          npm audit --omit=dev --json > npm-audit.json || true
+          node scripts/verify-audit-baseline.mjs npm-audit.json
+
       - name: Verify app entrypoint
         run: node scripts/verify-entrypoint.mjs
+
+      - name: Verify public policy site
+        run: node scripts/verify-site.mjs
+
+      - name: Verify Phase 4 safety contract
+        run: node scripts/verify-safety-contract.mjs
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+          cache: true
+          cache-hash: ${{ hashFiles('supabase/functions/**/deno.json') }}
+
+      - name: Typecheck Edge Functions
+        run: deno check --config supabase/functions/delete-account/deno.json supabase/functions/delete-account/index.ts
 
       - name: TypeScript
         run: npm run typecheck

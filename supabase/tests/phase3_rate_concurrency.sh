@@ -16,6 +16,12 @@ values
   ('${RECIPIENT_A}', 'authenticated', 'authenticated', 'rate-a@binder.test', '{}'::jsonb, '{}'::jsonb, now(), now()),
   ('${RECIPIENT_B}', 'authenticated', 'authenticated', 'rate-b@binder.test', '{}'::jsonb, '{}'::jsonb, now(), now());
 
+insert into public.legal_acceptances (user_id, terms_version, privacy_version)
+values
+  ('${SENDER}', '2026-08-15', '2026-08-15'),
+  ('${RECIPIENT_A}', '2026-08-15', '2026-08-15'),
+  ('${RECIPIENT_B}', '2026-08-15', '2026-08-15');
+
 insert into public.matches (id, user_low, user_high)
 values
   ('${MATCH_A}', least('${SENDER}'::uuid, '${RECIPIENT_A}'::uuid), greatest('${SENDER}'::uuid, '${RECIPIENT_A}'::uuid)),
