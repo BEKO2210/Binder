@@ -11,7 +11,7 @@ permissions:
 jobs:
   app-checks:
     runs-on: ubuntu-latest
-    timeout-minutes: 14
+    timeout-minutes: 16
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -41,6 +41,15 @@ jobs:
 
       - name: Verify Phase 5 beta contract
         run: node scripts/verify-phase5-contract.mjs
+
+      - name: Verify Phase 6 visual system
+        run: npm run verify:phase6-design
+
+      - name: Verify Phase 6 settings
+        run: npm run verify:phase6-settings
+
+      - name: Verify Phase 6 media path
+        run: npm run verify:phase6-media
 
       - name: Setup Deno
         uses: denoland/setup-deno@v2
