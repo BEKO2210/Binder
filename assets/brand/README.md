@@ -1,18 +1,19 @@
 # Binder brand assets
 
-The production mark is a custom Binder bond: two people represented by separate heads and interlocking rounded bodies joined at one intentional knot. It reads as mutual connection first and only hints at a `B`; it is not a generic letter tile.
+The Binder mark shows **two people** as **interlocking rounded bodies** joined
+at the shoulder — a mutual bond, mirrored in the match moment of the app. The
+mark is flat Binder Lime `#C7FF4A` on canonical dark `#090A0F`; the negative
+space between the two bodies is part of the drawing and must not be filled.
 
-The canonical source is the deterministic geometry in `scripts/materialize-brand-assets.mjs`. Generated PNGs are intentionally not committed; `npm install`, native start commands and bundle checks materialize them before Expo reads the app config.
+Masters live in `assets/brand-src/` as 1024x1024 PNGs:
 
-Native asset contract:
+- `icon.png` — full-bleed launcher/store icon (mark on dark)
+- `adaptive-foreground.png` — mark on transparency inside the Android
+  adaptive-icon safe zone
+- `monochrome.png` — white mark on transparency for Android themed icons and
+  the notification small icon
+- `splash-icon.png` — splash mark on dark
 
-- `icon.png` — 1024×1024 full-square launcher/store fallback.
-- `adaptive-foreground.png` — transparent Android adaptive foreground with safe padding.
-- `monochrome.png` — transparent Android 13+ themed/notification mark.
-- `splash-icon.png` — tighter transparent splash mark for the native launch screen.
-
-The public site copies the generated launcher mark and locally packaged Manrope fonts into its deployment artifact, so app and website share one brand source without a CDN or tracker.
-
-All four images are generated from the same flat, two-color geometry. Lime remains the brand/trust accent; destructive and safety-critical UI continues to use the separate semantic danger token. The mark contains no gradient, shadow, baked launcher mask or generated text.
-
-Do not add text to launcher icons or bake device-specific rounded corners into the geometry; the operating system applies launcher masks.
+`npm run brand:assets` materializes the masters into `assets/brand/` for Expo.
+Regenerating or restyling the mark is a deliberate brand decision: replace the
+masters, keep the meaning, and keep everything flat — no gradient, no shadow.

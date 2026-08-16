@@ -43,9 +43,16 @@ if (/">B<\/BinderText>/.test(brandComponent)) failures.push('legacy text-only B 
 
 const generator = readFileSync('scripts/materialize-brand-assets.mjs', 'utf8');
 const brandReadme = readFileSync('assets/brand/README.md', 'utf8');
-for (const contract of ['const heads = insideCircle', 'leftBond', 'rightBond', 'bindingKnot']) {
-  if (!generator.includes(contract)) failures.push(`canonical two-person bond geometry missing: ${contract}`);
+// The designed mark lives as checked-in 1024x1024 masters; the pipeline may
+// only materialize them, never invent replacements.
+for (const master of ['icon.png', 'adaptive-foreground.png', 'monochrome.png', 'splash-icon.png']) {
+  const path = `assets/brand-src/${master}`;
+  if (!existsSync(path)) { failures.push(`${path}: brand master missing`); continue; }
+  const png = readFileSync(path);
+  if (!png.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))) failures.push(`${path}: invalid PNG signature`);
+  else if (png.readUInt32BE(16) !== 1024 || png.readUInt32BE(20) !== 1024) failures.push(`${path}: expected 1024x1024`);
 }
+if (!generator.includes("assets/brand-src")) failures.push('brand pipeline no longer materializes from the checked-in masters');
 if (!brandReadme.includes('two people') || !brandReadme.includes('interlocking rounded bodies')) {
   failures.push('brand documentation does not freeze the two-person interlocking-bond meaning');
 }
