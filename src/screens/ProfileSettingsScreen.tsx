@@ -130,7 +130,20 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
     finally { setBusy(false); }
   }
 
+  const [viewerUrl, setViewerUrl] = useState<string | null>(null);
+
   if (loading) return <ScreenState kind="loading" message="Loading profile settings…" />;
+
+  if (viewerUrl) {
+    return (
+      <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
+        <View style={{ paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x2 }}>
+          <BinderIconButton name="close" accessibilityLabel="Close full photo" onPress={() => setViewerUrl(null)} />
+        </View>
+        <Image source={{ uri: viewerUrl }} style={{ flex: 1 }} resizeMode="contain" />
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.canvas }} contentContainerStyle={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x4, paddingBottom: theme.spacing.x16 }} keyboardShouldPersistTaps="handled">
@@ -140,9 +153,10 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
       <View style={{ marginTop: theme.spacing.x8 }}>
         <BinderText variant="micro" tone="muted">PHOTOS · {media.length}/6</BinderText>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x3, marginTop: theme.spacing.x3 }}>
-          {media.map((item, index) => <PhotoTile key={item.id} item={item} index={index} total={media.length} busy={busy} onLeft={() => void movePhoto(index, -1)} onRight={() => void movePhoto(index, 1)} onPrimary={() => void makePrimary(item)} onRemove={() => confirmRemove(item)} />)}
+          {media.map((item, index) => <PhotoTile key={item.id} item={item} index={index} total={media.length} busy={busy} onLeft={() => void movePhoto(index, -1)} onRight={() => void movePhoto(index, 1)} onPrimary={() => void makePrimary(item)} onRemove={() => confirmRemove(item)} onView={() => setViewerUrl(item.signedUrl)} />)}
           {media.length < 6 ? <AddPhotoTile disabled={busy} onPress={() => void addPhoto()} /> : null}
         </View>
+        {message ? <BinderText variant="caption" tone={message.includes('saved') || message.includes('optimized') ? 'accent' : 'destructive'} style={{ marginTop: theme.spacing.x3 }}>{message}</BinderText> : null}
       </View>
 
       <View style={{ gap: theme.spacing.x5, marginTop: theme.spacing.x8 }}>
@@ -173,13 +187,15 @@ function AddPhotoTile({ disabled, onPress }: { disabled: boolean; onPress: () =>
   return <Pressable accessibilityRole="button" accessibilityLabel="Add profile photo" disabled={disabled} onPress={onPress} style={({ pressed }) => ({ width: '47%', minHeight: 220, borderRadius: theme.radii.card, borderWidth: 1, borderStyle: 'dashed', borderColor: theme.colors.borderStrong, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface, alignItems: 'center', justifyContent: 'center', gap: theme.spacing.x2, opacity: disabled ? 0.42 : 1 })}><BinderIcon name="addPhoto" size={30} color={theme.accent.accent} /><BinderText variant="label" tone="accent">Add photo</BinderText><BinderText variant="caption" tone="muted" align="center">Optimized before upload</BinderText></Pressable>;
 }
 
-function PhotoTile({ item, index, total, busy, onLeft, onRight, onPrimary, onRemove }: { item: GalleryMedia; index: number; total: number; busy: boolean; onLeft: () => void; onRight: () => void; onPrimary: () => void; onRemove: () => void }) {
+function PhotoTile({ item, index, total, busy, onLeft, onRight, onPrimary, onRemove, onView }: { item: GalleryMedia; index: number; total: number; busy: boolean; onLeft: () => void; onRight: () => void; onPrimary: () => void; onRemove: () => void; onView: () => void }) {
   const { theme } = useBinderTheme();
   const statusTone = item.moderationStatus === 'approved' ? theme.semantic.success : item.moderationStatus === 'pending' ? theme.semantic.warning : theme.semantic.destructive;
   const statusCopy = item.moderationStatus === 'approved' ? 'Approved' : item.moderationStatus === 'pending' ? 'Pending review' : item.moderationStatus === 'rejected' ? 'Not approved' : 'Removed';
   return (
     <BinderCard style={{ width: '47%', padding: 0, overflow: 'hidden' }}>
-      <Image source={{ uri: item.signedUrl }} style={{ width: '100%', height: 190 }} resizeMode="cover" />
+      <Pressable accessibilityRole="imagebutton" accessibilityLabel={`View photo ${index + 1} in full`} onPress={onView}>
+        <Image source={{ uri: item.signedUrl }} style={{ width: '100%', height: 190 }} resizeMode="cover" />
+      </Pressable>
       <View style={{ padding: theme.spacing.x3, gap: theme.spacing.x2 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}><View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: statusTone }} /><BinderText variant="caption" style={{ color: statusTone }}>{statusCopy}</BinderText></View>
         {item.position === 0 ? <BinderText variant="micro" tone="accent">PRIMARY</BinderText> : item.moderationStatus === 'approved' ? <BinderButton label="Make primary" variant="ghost" disabled={busy} onPress={onPrimary} /> : null}

@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { Dimensions, ImageBackground, Pressable, ScrollView, View } from 'react-native';
+import { BackHandler, Dimensions, ImageBackground, Pressable, ScrollView, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { Extrapolation, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
@@ -11,6 +11,7 @@ import { fetchDiscoveryBatch, recordDecision, refreshDiscoveryLocation, type Dis
 import { listMyProfileMedia } from '../lib/media';
 import { resolveSpring } from '../lib/motionPolicy';
 import { reportAndBlockDiscoveryProfile, type DiscoveryReportReason } from '../lib/safety';
+import PartnerProfileScreen from './PartnerProfileScreen';
 import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
@@ -40,6 +41,7 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
   const [match, setMatch] = useState<DiscoveryProfile | null>(null);
   const [myPhotoUrl, setMyPhotoUrl] = useState<string | null>(null);
   const [openingConversation, setOpeningConversation] = useState(false);
+  const [viewingProfile, setViewingProfile] = useState<DiscoveryProfile | null>(null);
   const [safetyOpen, setSafetyOpen] = useState(false);
   const [safetyReason, setSafetyReason] = useState<DiscoveryReportReason | null>(null);
   const [safetyBusy, setSafetyBusy] = useState(false);
@@ -69,6 +71,15 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
       .catch(() => undefined);
     return () => { active = false; };
   }, []);
+
+  useEffect(() => {
+    if (!viewingProfile) return;
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      setViewingProfile(null);
+      return true;
+    });
+    return () => subscription.remove();
+  }, [viewingProfile]);
 
   // The celebration CTA jumps straight into the fresh conversation.
   async function openConversation(current: DiscoveryProfile) {
@@ -223,7 +234,9 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
             ) : null}
             <GestureDetector gesture={panGesture}>
               <Animated.View style={[{ position: 'absolute', inset: 0 }, topCardStyle]}>
-                <ProfileCard profile={profile} />
+                <Pressable style={{ flex: 1 }} accessibilityRole="button" accessibilityLabel={`Open ${profile.name}'s full profile`} onPress={() => { if (!decisionPending && !safetyOpen) setViewingProfile(profile); }}>
+                  <ProfileCard profile={profile} />
+                </Pressable>
                 {!reduceMotion ? <Animated.View pointerEvents="none" style={[{ position: 'absolute', top: theme.spacing.x8, left: theme.spacing.x6, borderWidth: 2, borderColor: theme.accent.accent, borderRadius: theme.radii.small, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x2, transform: [{ rotate: '-8deg' }] }, bindStampStyle]}><BinderText variant="title" tone="accent">BIND</BinderText></Animated.View> : null}
                 {!reduceMotion ? <Animated.View pointerEvents="none" style={[{ position: 'absolute', top: theme.spacing.x8, right: theme.spacing.x6, borderWidth: 2, borderColor: theme.semantic.destructive, borderRadius: theme.radii.small, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x2, transform: [{ rotate: '8deg' }] }, passStampStyle]}><BinderText variant="title" tone="destructive">PASS</BinderText></Animated.View> : null}
               </Animated.View>
@@ -238,6 +251,12 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
         <DiscoveryAction kind="pass" disabled={!profile || decisionPending || safetyOpen} onPress={() => void submitDecision('left')} />
         <DiscoveryAction kind="bind" disabled={!profile || decisionPending || safetyOpen} onPress={() => void submitDecision('right')} />
       </View>
+
+      {viewingProfile ? (
+        <View style={{ position: 'absolute', inset: 0, backgroundColor: theme.colors.canvas }}>
+          <PartnerProfileScreen userId={viewingProfile.id} fallbackName={viewingProfile.name} onClose={() => setViewingProfile(null)} />
+        </View>
+      ) : null}
 
       {match ? (
         <MatchCelebration

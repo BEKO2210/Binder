@@ -13,9 +13,10 @@ type Props = {
   onEditProfile: () => void;
   onOpenSettings: () => void;
   onOpenBeta: () => void;
+  onOpenAbout: () => void;
 };
 
-export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, onOpenBeta }: Props) {
+export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, onOpenBeta, onOpenAbout }: Props) {
   const { theme } = useBinderTheme();
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -79,6 +80,7 @@ export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, o
         <HubRow icon="edit" title="Profile & photos" copy="Edit your profile, discovery preferences and up to six moderated photos." onPress={onEditProfile} />
         <HubRow icon="settings" title="App settings" copy="Appearance, haptics, motion, notification preferences and quiet hours." onPress={onOpenSettings} />
         <HubRow icon="beta" title="Beta program" copy="Optional diagnostics and private feedback." onPress={onOpenBeta} />
+        <HubRow icon="info" title="About & legal notice" copy="Impressum, policies and the version you are running." onPress={onOpenAbout} />
       </View>
       <View style={{ marginTop: theme.spacing.x8 }}>
         <BinderText variant="micro" tone="muted">SAFETY & PRIVACY</BinderText>
@@ -100,7 +102,7 @@ export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, o
   );
 }
 
-function HubRow({ icon, title, copy, onPress }: { icon: 'edit' | 'settings' | 'beta'; title: string; copy: string; onPress: () => void }) {
+function HubRow({ icon, title, copy, onPress }: { icon: 'edit' | 'settings' | 'beta' | 'info'; title: string; copy: string; onPress: () => void }) {
   const { theme } = useBinderTheme();
   return (
     <Pressable accessibilityRole="button" onPress={onPress}>

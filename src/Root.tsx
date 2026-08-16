@@ -21,6 +21,7 @@ import {
 } from './lib/notifications';
 import { getLegalGate, type LegalGate } from './lib/safety';
 import { supabase } from './lib/supabase';
+import AboutScreen from './screens/AboutScreen';
 import AppSettingsScreen from './screens/AppSettingsScreen';
 import AuthScreen from './screens/AuthScreen';
 import BetaScreen from './screens/BetaScreen';
@@ -35,7 +36,7 @@ import { useBinderHaptics } from './theme/haptics';
 import { BinderThemeProvider, useBinderTheme } from './theme/ThemeProvider';
 
 type Tab = 'discover' | 'matches' | 'profile';
-type ProfileRoute = 'home' | 'edit' | 'settings' | 'beta';
+type ProfileRoute = 'home' | 'edit' | 'settings' | 'beta' | 'about';
 
 export default function Root() {
   return (
@@ -225,13 +226,14 @@ function BinderApp() {
   if (profileRoute === 'edit') return <ProfileSettingsScreen userId={session.user.id} onClose={() => setProfileRoute('home')} />;
   if (profileRoute === 'settings') return <AppSettingsScreen onClose={() => setProfileRoute('home')} />;
   if (profileRoute === 'beta') return <BetaScreen onClose={() => setProfileRoute('home')} />;
+  if (profileRoute === 'about') return <AboutScreen onClose={() => setProfileRoute('home')} />;
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
       <View style={{ flex: 1 }}>
         {tab === 'discover' ? <DiscoveryScreen onOpenMatch={(target) => { setActiveMatch(target); setMatchesRefreshKey((value) => value + 1); }} /> : null}
         {tab === 'matches' ? <MatchesScreen refreshKey={matchesRefreshKey} onOpenMatch={setActiveMatch} /> : null}
-        {tab === 'profile' ? <ProfileScreen userId={session.user.id} onEditProfile={() => setProfileRoute('edit')} onOpenSettings={() => setProfileRoute('settings')} onOpenBeta={() => setProfileRoute('beta')} /> : null}
+        {tab === 'profile' ? <ProfileScreen userId={session.user.id} onEditProfile={() => setProfileRoute('edit')} onOpenSettings={() => setProfileRoute('settings')} onOpenBeta={() => setProfileRoute('beta')} onOpenAbout={() => setProfileRoute('about')} /> : null}
       </View>
       <View style={{ minHeight: 76, flexDirection: 'row', paddingHorizontal: theme.spacing.x3, paddingTop: theme.spacing.x2, paddingBottom: theme.spacing.x2 + tabBarInsetBottom, backgroundColor: theme.colors.surface, borderTopColor: theme.colors.borderSubtle, borderTopWidth: 1 }}>
         <NavItem icon="discover" label="Discover" active={tab === 'discover'} onPress={() => setTab('discover')} />
