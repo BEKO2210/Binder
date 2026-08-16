@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Alert, AppState, FlatList, Platform, Pressable, TextInput, View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+
+import { buildChatTimeline, timeLabel, type TimelineItem } from '../lib/chatTimeline';
 
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderText, ScreenState } from '../components/ui';
 import {
@@ -38,7 +41,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   onClose: () => void;
   onConversationEnded: () => void;
 }) {
-  const { theme } = useBinderTheme();
+  const { theme, reduceMotion } = useBinderTheme();
   const haptic = useBinderHaptics();
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
@@ -169,7 +172,8 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   const reportingMessage = useMemo(() => messages.find((message) => message.id === reportMessageId) ?? null, [messages, reportMessageId]);
   // The list renders inverted so the newest message is always pinned to the
   // bottom edge, directly above the composer — also while the keyboard is up.
-  const newestFirst = useMemo(() => [...messages].reverse(), [messages]);
+  // The timeline adds bubble grouping, timestamps and day separators.
+  const timeline = useMemo(() => [...buildChatTimeline(messages)].reverse(), [messages]);
 
   async function submitMessage() {
     if (!canSend) return;
@@ -265,21 +269,47 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
 
       {loading ? <ScreenState kind="loading" message="Opening conversation…" /> : loadError && messages.length === 0 ? <ScreenState kind="error" icon="retry" title="Conversation did not load" message={loadError} actionLabel="Back to matches" onAction={onClose} /> : messages.length === 0 ? <ScreenState kind="empty" icon="matches" title="You matched." message="Normal chat opens only after mutual interest. Say something real." /> : (
         <FlatList
-          data={newestFirst}
+          data={timeline}
           inverted
           keyExtractor={(item) => item.id}
-          contentContainerStyle={{ flexGrow: 1, padding: theme.spacing.x4, gap: theme.spacing.x2 }}
+          contentContainerStyle={{ flexGrow: 1, padding: theme.spacing.x4 }}
           showsVerticalScrollIndicator={false}
           ListFooterComponent={hasMore ? <BinderButton label="Load earlier messages" variant="ghost" loading={loadingOlder} onPress={() => void loadOlder()} style={{ marginBottom: theme.spacing.x3 }} /> : null}
           renderItem={({ item }) => {
-            const mine = item.sender_id === currentUserId;
-            return (
-              <Pressable disabled={mine} onLongPress={() => openReport(item.id)} style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: '82%' }}>
-                <View style={{ paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x3, borderRadius: theme.radii.control, backgroundColor: mine ? theme.accent.accent : theme.colors.surfaceElevated, borderWidth: mine ? 0 : 1, borderColor: theme.colors.borderSubtle }}>
-                  <BinderText selectable variant="body" style={{ color: mine ? theme.accent.foreground : theme.colors.textPrimary }}>{item.body}</BinderText>
+            if (item.type === 'day') {
+              return (
+                <View style={{ alignItems: 'center', marginTop: theme.spacing.x5, marginBottom: theme.spacing.x2 }}>
+                  <View style={{ backgroundColor: theme.colors.surfaceElevated, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x1 }}>
+                    <BinderText variant="caption" tone="muted">{item.label}</BinderText>
+                  </View>
                 </View>
-                <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1, marginLeft: theme.spacing.x2 }}>{mine ? 'Sent' : 'Hold to report'}</BinderText>
-              </Pressable>
+              );
+            }
+            const message = item.message;
+            const mine = message.sender_id === currentUserId;
+            const bubbleRadius = theme.radii.control;
+            return (
+              <Animated.View entering={reduceMotion ? undefined : FadeInDown.duration(theme.motion.feedback)} style={{ marginTop: item.groupedWithPrevious ? theme.spacing.x1 : theme.spacing.x3 }}>
+                <Pressable disabled={mine} onLongPress={() => openReport(message.id)} accessibilityHint={mine ? undefined : 'Hold to report this message'} style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: '82%' }}>
+                  <View style={{
+                    paddingHorizontal: theme.spacing.x4,
+                    paddingVertical: theme.spacing.x3,
+                    borderRadius: bubbleRadius,
+                    borderTopRightRadius: mine && item.groupedWithPrevious ? theme.radii.small / 2 : bubbleRadius,
+                    borderTopLeftRadius: !mine && item.groupedWithPrevious ? theme.radii.small / 2 : bubbleRadius,
+                    backgroundColor: mine ? theme.accent.accent : theme.colors.surfaceElevated,
+                    borderWidth: mine ? 0 : 1,
+                    borderColor: theme.colors.borderSubtle,
+                  }}>
+                    <BinderText selectable variant="body" style={{ color: mine ? theme.accent.foreground : theme.colors.textPrimary }}>{message.body}</BinderText>
+                  </View>
+                  {item.showsTimestamp ? (
+                    <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1, alignSelf: mine ? 'flex-end' : 'flex-start', marginHorizontal: theme.spacing.x2 }}>
+                      {timeLabel(message.created_at)}
+                    </BinderText>
+                  ) : null}
+                </Pressable>
+              </Animated.View>
             );
           }}
         />
