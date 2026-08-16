@@ -1,8 +1,10 @@
-import { useState } from 'react';
-import { Image, Pressable, ScrollView, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Animated, Image, Pressable, ScrollView, TextInput, View } from 'react-native';
 
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderInput, BinderText, SectionHeader } from '../components/ui';
+import { assessBirthDate, sanitizeDigits } from '../lib/birthdate';
 import { pickAndPrepareProfileImage, type PreparedImage } from '../lib/images';
+import { resolveSpring } from '../lib/motionPolicy';
 import { addProfileImage } from '../lib/media';
 import { supabase } from '../lib/supabase';
 import { GENDERS, INTERESTS, type Gender, validateAdultBirthDate } from '../lib/validation';
@@ -60,7 +62,7 @@ export default function OnboardingScreen({ userId, onComplete }: Props) {
       <SectionHeader eyebrow="BINDER · 18+" title="Build a profile people can trust." copy="Your birth date and exact location stay private. Other people only receive the age and distance Binder calculates." />
       <View style={{ gap: theme.spacing.x6, marginTop: theme.spacing.x8 }}>
         <BinderInput label="First name" value={firstName} onChangeText={setFirstName} maxLength={40} placeholder="First name" />
-        <BinderInput label="Birth date" helper="YYYY-MM-DD · locked after onboarding" value={birthDate} onChangeText={setBirthDate} keyboardType="numbers-and-punctuation" placeholder="1995-04-23" />
+        <BirthDateField onValidDate={setBirthDate} />
         <ChoiceField label="I am"><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{GENDERS.map((item) => <BinderChip key={item.value} label={item.label} selected={gender === item.value} onPress={() => setGender(item.value)} />)}</View></ChoiceField>
         <BinderInput label="Bio" helper={`${bio.length}/500`} value={bio} onChangeText={setBio} maxLength={500} multiline placeholder="A few real lines about you…" style={{ minHeight: 110, textAlignVertical: 'top' }} />
         <ChoiceField label="Interests"><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{INTERESTS.map((item) => <BinderChip key={item} label={item} selected={interests.includes(item)} onPress={() => toggleInterest(item)} />)}</View></ChoiceField>
@@ -76,6 +78,65 @@ export default function OnboardingScreen({ userId, onComplete }: Props) {
       {error ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x5 }}>{error}</BinderText> : null}
       <BinderButton label="Enter Binder" loading={busy} onPress={() => void finish()} style={{ marginTop: theme.spacing.x6 }} />
     </ScrollView>
+  );
+}
+
+// Research-backed birthday input: three labeled digit fields with
+// auto-advance — no wheels, no calendar. A live age chip springs in once the
+// date is real, and 18+/plausibility feedback appears inline.
+function BirthDateField({ onValidDate }: { onValidDate: (iso: string) => void }) {
+  const { theme, reduceMotion } = useBinderTheme();
+  const [day, setDay] = useState('');
+  const [month, setMonth] = useState('');
+  const [year, setYear] = useState('');
+  const monthRef = useRef<TextInput>(null);
+  const yearRef = useRef<TextInput>(null);
+  const chipScale = useRef(new Animated.Value(0)).current;
+  const assessment = assessBirthDate(day, month, year);
+
+  useEffect(() => {
+    onValidDate(assessment.kind === 'ok' ? assessment.iso : '');
+    const target = assessment.kind === 'ok' ? 1 : 0;
+    if (reduceMotion) {
+      chipScale.setValue(target);
+      return;
+    }
+    Animated.spring(chipScale, { toValue: target, useNativeDriver: true, ...resolveSpring(false, 'celebratory') }).start();
+  }, [assessment.kind, assessment.kind === 'ok' ? assessment.iso : '']);
+
+  return (
+    <View>
+      <BinderText variant="label" tone="secondary" style={{ marginBottom: theme.spacing.x2 }}>Birth date · locked after onboarding</BinderText>
+      <View style={{ flexDirection: 'row', gap: theme.spacing.x2, alignItems: 'flex-end' }}>
+        <View style={{ flex: 1 }}>
+          <BinderInput label="Day" value={day} keyboardType="number-pad" maxLength={2} placeholder="23" style={{ textAlign: 'center' }}
+            onChangeText={(value) => { const next = sanitizeDigits(value, 2); setDay(next); if (next.length === 2) monthRef.current?.focus(); }} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <BinderInput inputRef={monthRef} label="Month" value={month} keyboardType="number-pad" maxLength={2} placeholder="04" style={{ textAlign: 'center' }}
+            onChangeText={(value) => { const next = sanitizeDigits(value, 2); setMonth(next); if (next.length === 2) yearRef.current?.focus(); }} />
+        </View>
+        <View style={{ flex: 1.4 }}>
+          <BinderInput inputRef={yearRef} label="Year" value={year} keyboardType="number-pad" maxLength={4} placeholder="1995" style={{ textAlign: 'center' }}
+            onChangeText={(value) => setYear(sanitizeDigits(value, 4))} />
+        </View>
+      </View>
+      <View style={{ minHeight: 34, marginTop: theme.spacing.x2, justifyContent: 'center' }}>
+        {assessment.kind === 'ok' ? (
+          <Animated.View style={{ alignSelf: 'flex-start', transform: [{ scale: chipScale }], backgroundColor: theme.accent.accent, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x1 }}>
+            <BinderText variant="label" style={{ color: theme.accent.foreground }}>You are {assessment.age}</BinderText>
+          </Animated.View>
+        ) : assessment.kind === 'underage' ? (
+          <BinderText variant="caption" tone="destructive">Binder is 18+ only.</BinderText>
+        ) : assessment.kind === 'invalid' ? (
+          <BinderText variant="caption" tone="destructive">That date does not exist — check day and month.</BinderText>
+        ) : assessment.kind === 'implausible' ? (
+          <BinderText variant="caption" tone="destructive">Please check the year.</BinderText>
+        ) : (
+          <BinderText variant="caption" tone="muted">Other people only ever see your age, never the date.</BinderText>
+        )}
+      </View>
+    </View>
   );
 }
 

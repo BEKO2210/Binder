@@ -8,9 +8,10 @@ type Props = TextInputProps & {
   label: string;
   error?: string;
   helper?: string;
+  inputRef?: React.Ref<TextInput>;
 };
 
-export function BinderInput({ label, error, helper, style, editable = true, ...props }: Props) {
+export function BinderInput({ label, error, helper, style, editable = true, inputRef, ...props }: Props) {
   const { theme } = useBinderTheme();
   const [focused, setFocused] = useState(false);
   const borderColor = error ? theme.semantic.destructive : focused ? theme.accent.accent : theme.colors.borderSubtle;
@@ -20,6 +21,7 @@ export function BinderInput({ label, error, helper, style, editable = true, ...p
       <BinderText variant="label" tone={error ? 'destructive' : 'secondary'}>{label}</BinderText>
       <TextInput
         {...props}
+        ref={inputRef}
         editable={editable}
         onFocus={(event) => { setFocused(true); props.onFocus?.(event); }}
         onBlur={(event) => { setFocused(false); props.onBlur?.(event); }}
