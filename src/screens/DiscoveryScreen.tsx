@@ -1,9 +1,11 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { BackHandler, Dimensions, ImageBackground, Pressable, ScrollView, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { Extrapolation, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
+import DiscoveryFilterSheet from '../components/DiscoveryFilterSheet';
 import { MatchCelebration } from '../components/MatchCelebration';
 import { BinderBrand, BinderButton, BinderCard, BinderIcon, BinderIconButton, BinderText, ScreenState } from '../components/ui';
 import { fetchMatches, type MatchSummary } from '../lib/conversation';
@@ -42,6 +44,7 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
   const [myPhotoUrl, setMyPhotoUrl] = useState<string | null>(null);
   const [openingConversation, setOpeningConversation] = useState(false);
   const [viewingProfile, setViewingProfile] = useState<DiscoveryProfile | null>(null);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [safetyOpen, setSafetyOpen] = useState(false);
   const [safetyReason, setSafetyReason] = useState<DiscoveryReportReason | null>(null);
   const [safetyBusy, setSafetyBusy] = useState(false);
@@ -73,15 +76,16 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
   }, []);
 
   useEffect(() => {
-    if (!viewingProfile && !match && !safetyOpen) return;
+    if (!viewingProfile && !match && !safetyOpen && !filtersOpen) return;
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
       if (viewingProfile) setViewingProfile(null);
+      else if (filtersOpen) setFiltersOpen(false);
       else if (safetyOpen) { setSafetyOpen(false); setSafetyReason(null); }
       else setMatch(null);
       return true;
     });
     return () => subscription.remove();
-  }, [viewingProfile, match, safetyOpen]);
+  }, [viewingProfile, match, safetyOpen, filtersOpen]);
 
   // The celebration CTA jumps straight into the fresh conversation.
   async function openConversation(current: DiscoveryProfile) {
@@ -226,7 +230,10 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
       <StatusBar style={theme.mode === 'dark' ? 'light' : 'dark'} />
       <View style={{ minHeight: 74, paddingHorizontal: theme.spacing.screen, paddingVertical: theme.spacing.x3, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <View><BinderBrand compact /><BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>People who fit both sides.</BinderText></View>
-        {decisionPending ? <BinderText variant="caption" tone="accent">Saving decision…</BinderText> : null}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
+          {decisionPending ? <BinderText variant="caption" tone="accent">Saving…</BinderText> : null}
+          <BinderIconButton name="settings" accessibilityLabel="Discovery filters" onPress={() => setFiltersOpen(true)} />
+        </View>
       </View>
 
       <View style={{ flex: 1, marginHorizontal: theme.spacing.x4, marginTop: theme.spacing.x1, marginBottom: theme.spacing.x3, justifyContent: 'center' }}>
@@ -280,6 +287,13 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
         />
       ) : null}
 
+      {filtersOpen ? (
+        <DiscoveryFilterSheet
+          onClose={() => setFiltersOpen(false)}
+          onApplied={() => { setFiltersOpen(false); void loadDiscovery(false); }}
+        />
+      ) : null}
+
       {safetyOpen && profile ? (
         <View style={{ position: 'absolute', inset: 0, backgroundColor: theme.colors.overlay, justifyContent: 'flex-end' }}>
           <BinderCard style={{ maxHeight: '92%', borderBottomLeftRadius: 0, borderBottomRightRadius: 0, borderColor: theme.colors.borderStrong }}>
@@ -316,12 +330,12 @@ function ProfileCard({ profile, back = false }: { profile: DiscoveryProfile; bac
   return (
     <View style={{ position: 'absolute', inset: 0, borderRadius: theme.radii.hero, overflow: 'hidden', backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.borderSubtle, transform: back ? [{ scale: 0.965 }, { translateY: 10 }] : undefined, opacity: back ? 0.62 : 1 }}>
       <ImageBackground source={{ uri: profile.photoUrl }} style={{ flex: 1, justifyContent: 'flex-end' }} imageStyle={{ borderRadius: theme.radii.hero }}>
-        <View style={{ padding: theme.spacing.x5, paddingTop: 150, backgroundColor: theme.colors.scrim }}>
-          <View style={{ alignSelf: 'flex-start', backgroundColor: theme.colors.overlay, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x2, marginBottom: theme.spacing.x2 }}><BinderText variant="caption" style={{ color: theme.colors.textPrimary }}>{profile.distanceKm} km away</BinderText></View>
-          <BinderText variant="displayL" style={{ color: theme.colors.textPrimary }}>{profile.name} <BinderText variant="heading" style={{ color: theme.colors.textPrimary }}>{profile.age}</BinderText></BinderText>
-          <BinderText variant="body" style={{ color: theme.colors.textPrimary, marginTop: theme.spacing.x2, maxWidth: '92%' }}>{profile.bio}</BinderText>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2, marginTop: theme.spacing.x3 }}>{profile.tags.map((tag) => <View key={tag} style={{ backgroundColor: theme.colors.overlay, borderWidth: 1, borderColor: theme.colors.borderStrong, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x2 }}><BinderText variant="caption" style={{ color: theme.colors.textPrimary }}>{tag}</BinderText></View>)}</View>
-        </View>
+        <LinearGradient colors={['transparent', theme.colors.scrim, theme.colors.overlay]} locations={[0, 0.45, 1]} style={{ padding: theme.spacing.x5, paddingTop: 170, borderBottomLeftRadius: theme.radii.hero, borderBottomRightRadius: theme.radii.hero }}>
+          <View style={{ alignSelf: 'flex-start', backgroundColor: theme.accent.accent, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x1, marginBottom: theme.spacing.x3 }}><BinderText variant="label" style={{ color: theme.accent.foreground }}>{profile.distanceKm} km away</BinderText></View>
+          <BinderText variant="displayL" style={{ color: theme.colors.textPrimary }}>{profile.name} <BinderText variant="heading" tone="accent">{profile.age}</BinderText></BinderText>
+          {profile.bio ? <BinderText variant="body" style={{ color: theme.colors.textPrimary, marginTop: theme.spacing.x2, maxWidth: '92%' }} numberOfLines={2}>{profile.bio}</BinderText> : null}
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2, marginTop: theme.spacing.x3 }}>{profile.tags.slice(0, 5).map((tag) => <View key={tag} style={{ backgroundColor: theme.colors.overlay, borderWidth: 1, borderColor: theme.accent.accent, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x1 }}><BinderText variant="caption" tone="accent">{tag}</BinderText></View>)}{profile.tags.length > 5 ? <View style={{ backgroundColor: theme.colors.overlay, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x1 }}><BinderText variant="caption" style={{ color: theme.colors.textPrimary }}>+{profile.tags.length - 5}</BinderText></View> : null}</View>
+        </LinearGradient>
       </ImageBackground>
     </View>
   );

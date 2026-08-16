@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FlatList, Image, ScrollView, View, useWindowDimensions } from 'react-native';
+import { BackHandler, FlatList, Image, Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { BinderIconButton, BinderText, ScreenState } from '../components/ui';
@@ -17,6 +17,16 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose }: 
   const [profile, setProfile] = useState<PartnerProfile | null>(null);
   const [error, setError] = useState('');
   const [page, setPage] = useState(0);
+  const [viewerUrl, setViewerUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!viewerUrl) return;
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      setViewerUrl(null);
+      return true;
+    });
+    return () => subscription.remove();
+  }, [viewerUrl]);
 
   useEffect(() => {
     let active = true;
@@ -52,7 +62,9 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose }: 
                   keyExtractor={(item, index) => `${index}-${item.slice(-24)}`}
                   onMomentumScrollEnd={(event) => setPage(Math.round(event.nativeEvent.contentOffset.x / width))}
                   renderItem={({ item, index }) => (
-                    <Image accessible accessibilityLabel={`Photo ${index + 1} of ${profile.photoUrls.length} of ${profile.name}`} source={{ uri: item }} style={{ width, height: heroHeight, backgroundColor: theme.colors.surfaceElevated }} resizeMode="cover" />
+                    <Pressable accessibilityRole="imagebutton" accessibilityLabel={`View photo ${index + 1} of ${profile.photoUrls.length} of ${profile.name} in full`} onPress={() => setViewerUrl(item)}>
+                      <Image source={{ uri: item }} style={{ width, height: heroHeight, backgroundColor: theme.colors.surfaceElevated }} resizeMode="cover" />
+                    </Pressable>
                   )}
                 />
                 {profile.photoUrls.length > 1 ? (
@@ -92,6 +104,15 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose }: 
           </ScrollView>
         </Animated.View>
       )}
+
+      {viewerUrl ? (
+        <View style={{ position: 'absolute', inset: 0, backgroundColor: theme.colors.canvas }}>
+          <View style={{ paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x2 }}>
+            <BinderIconButton name="close" accessibilityLabel="Close full photo" onPress={() => setViewerUrl(null)} />
+          </View>
+          <Image source={{ uri: viewerUrl }} style={{ flex: 1 }} resizeMode="contain" />
+        </View>
+      ) : null}
     </View>
   );
 }

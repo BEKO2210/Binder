@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Alert, Image, Pressable, ScrollView, View } from 'react-native';
 
+import { RangeSlider, SingleSlider } from '../components/RangeSlider';
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderInput, BinderText, ScreenState, SectionHeader } from '../components/ui';
 import { pickAndPrepareProfileImage } from '../lib/images';
 import { addProfileImage, listMyProfileMedia, removeProfileMedia, reorderProfileMedia, setPrimaryProfileMedia, type GalleryMedia } from '../lib/media';
@@ -166,7 +167,12 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
         <Choice label="I am"><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{GENDERS.map((item) => <BinderChip key={item.value} label={item.label} selected={gender === item.value} onPress={() => setGender(item.value)} />)}</View></Choice>
         <Choice label="Interests"><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{INTERESTS.map((item) => <BinderChip key={item} label={item} selected={interests.includes(item)} onPress={() => setInterests((current) => current.includes(item) ? current.filter((value) => value !== item) : current.length < 12 ? [...current, item] : current)} />)}</View></Choice>
         <Choice label="I want to meet"><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{GENDERS.map((item) => <BinderChip key={item.value} label={item.label} selected={interestedIn.includes(item.value)} onPress={() => setInterestedIn((current) => current.includes(item.value) ? current.filter((value) => value !== item.value) : [...current, item.value])} />)}</View></Choice>
-        <Choice label="Discovery range"><View style={{ flexDirection: 'row', gap: theme.spacing.x2 }}><CompactNumber label="Min age" value={minAge} setValue={setMinAge} /><CompactNumber label="Max age" value={maxAge} setValue={setMaxAge} /><CompactNumber label="Km" value={distance} setValue={setDistance} /></View></Choice>
+        <Choice label="Discovery range">
+          <View style={{ gap: theme.spacing.x5 }}>
+            <RangeSlider min={18} max={100} lowValue={Number(minAge) || 18} highValue={Number(maxAge) || 45} label={(lowest, highest) => `Age ${lowest} – ${highest}`} onChange={(lowest, highest) => { setMinAge(String(lowest)); setMaxAge(String(highest)); }} />
+            <SingleSlider min={1} max={500} value={Number(distance) || 50} label={(value) => `Distance up to ${value} km`} onChange={(value) => setDistance(String(value))} />
+          </View>
+        </Choice>
       </View>
       <BinderButton label="Save profile" loading={busy} onPress={() => void save()} style={{ marginTop: theme.spacing.x6 }} />
     </ScrollView>
