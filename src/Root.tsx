@@ -1,6 +1,7 @@
 import type { Session } from '@supabase/supabase-js';
 import { useEffect, useRef, useState } from 'react';
 import { BackHandler, Pressable, View } from 'react-native';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 import BinderErrorBoundary from './components/BinderErrorBoundary';
 import { BinderIcon, BinderText, ScreenState, type BinderIconName } from './components/ui';
@@ -35,7 +36,7 @@ type Tab = 'discover' | 'matches' | 'profile';
 type ProfileRoute = 'home' | 'edit' | 'settings' | 'beta';
 
 export default function Root() {
-  return <BinderThemeProvider><BinderErrorBoundary><BinderApp /></BinderErrorBoundary></BinderThemeProvider>;
+  return <KeyboardProvider><BinderThemeProvider><BinderErrorBoundary><BinderApp /></BinderErrorBoundary></BinderThemeProvider></KeyboardProvider>;
 }
 
 function BinderApp() {

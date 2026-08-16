@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, AppState, FlatList, KeyboardAvoidingView, Platform, Pressable, TextInput, View } from 'react-native';
+import { Alert, AppState, FlatList, Platform, Pressable, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderText, ScreenState } from '../components/ui';
 import {
