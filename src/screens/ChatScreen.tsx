@@ -167,6 +167,9 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   const trimmedComposer = composer.trim();
   const canSend = trimmedComposer.length > 0 && trimmedComposer.length <= 2000 && !sending;
   const reportingMessage = useMemo(() => messages.find((message) => message.id === reportMessageId) ?? null, [messages, reportMessageId]);
+  // The list renders inverted so the newest message is always pinned to the
+  // bottom edge, directly above the composer — also while the keyboard is up.
+  const newestFirst = useMemo(() => [...messages].reverse(), [messages]);
 
   async function submitMessage() {
     if (!canSend) return;
@@ -260,14 +263,14 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         </BinderCard>
       ) : null}
 
-      {loading ? <ScreenState kind="loading" message="Opening conversation…" /> : loadError && messages.length === 0 ? <ScreenState kind="error" icon="retry" title="Conversation did not load" message={loadError} actionLabel="Back to matches" onAction={onClose} /> : (
+      {loading ? <ScreenState kind="loading" message="Opening conversation…" /> : loadError && messages.length === 0 ? <ScreenState kind="error" icon="retry" title="Conversation did not load" message={loadError} actionLabel="Back to matches" onAction={onClose} /> : messages.length === 0 ? <ScreenState kind="empty" icon="matches" title="You matched." message="Normal chat opens only after mutual interest. Say something real." /> : (
         <FlatList
-          data={messages}
+          data={newestFirst}
+          inverted
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ flexGrow: 1, padding: theme.spacing.x4, gap: theme.spacing.x2 }}
           showsVerticalScrollIndicator={false}
-          ListHeaderComponent={hasMore ? <BinderButton label="Load earlier messages" variant="ghost" loading={loadingOlder} onPress={() => void loadOlder()} style={{ marginBottom: theme.spacing.x3 }} /> : null}
-          ListEmptyComponent={<ScreenState kind="empty" icon="matches" title="You matched." message="Normal chat opens only after mutual interest. Say something real." />}
+          ListFooterComponent={hasMore ? <BinderButton label="Load earlier messages" variant="ghost" loading={loadingOlder} onPress={() => void loadOlder()} style={{ marginBottom: theme.spacing.x3 }} /> : null}
           renderItem={({ item }) => {
             const mine = item.sender_id === currentUserId;
             return (
