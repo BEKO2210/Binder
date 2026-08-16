@@ -58,8 +58,8 @@ if (!failures.length) {
     failures.push('admin membership table must never be granted to browser roles');
   }
 
-  if (!test.includes('select plan(41);')) failures.push('Phase 8 pgTAP plan must remain at 41 assertions');
-  for (const required of ['normal Binder account cannot claim admin access', 'Disabled moderator immediately loses dashboard access', 'Audit actor is derived from the confirmed session', 'Changing the confirmed Auth email immediately revokes']) {
+  if (!test.includes('select plan(42);')) failures.push('Phase 8 pgTAP plan must remain at 42 assertions');
+  for (const required of ['normal Binder account cannot claim admin access', 'Disabled moderator immediately loses dashboard access', 'Audit actor is derived from the confirmed session', 'Changing the confirmed Auth email immediately revokes', 'Admin media review restores the authenticated caller context']) {
     if (!test.includes(required)) failures.push(`Phase 8 pgTAP proof missing: ${required}`);
   }
 

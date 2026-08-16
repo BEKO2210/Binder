@@ -41,7 +41,7 @@ Status: **candidate only**. Nothing in this document claims production deploymen
 
 ## Immutable proofs
 
-- `supabase/tests/phase8_admin_moderation_dashboard_test.sql`: 41 pgTAP assertions.
+- `supabase/tests/phase8_admin_moderation_dashboard_test.sql`: 42 pgTAP assertions.
 - `scripts/verify-admin-dashboard.mjs`: public-key boundary, CSP, local dependency, RPC, SQL-revoke, actor and invitation checks.
 - CI type-checks `invite-moderator` and runs the complete historical database replay.
 

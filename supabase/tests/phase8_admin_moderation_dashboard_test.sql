@@ -13,7 +13,7 @@ exception when others then
 end;
 $$;
 
-select plan(41);
+select plan(42);
 
 select is(
   (select email from private.admin_members where role = 'owner'),
@@ -131,6 +131,11 @@ set local role authenticated;
 select lives_ok(
   $sql$select public.admin_review_media((select case_id from public.admin_list_media_queue() order by case_id limit 1), 'approve_media', null)$sql$,
   'Media reviewer can approve a queued photo'
+);
+select is(
+  auth.uid(),
+  '81000000-0000-4000-8000-000000000002'::uuid,
+  'Admin media review restores the authenticated caller context'
 );
 reset role;
 select is(

@@ -349,6 +349,10 @@ language plpgsql
 security definer
 set search_path = ''
 as $$
+declare
+  actor_email text;
+  original_claims text;
+  original_claim_sub text;
 begin
   perform private.require_admin_permission('review_media');
   if p_action not in ('approve_media', 'reject_media', 'remove_media') then
@@ -357,7 +361,26 @@ begin
   if p_action <> 'approve_media' and char_length(trim(coalesce(p_notes, ''))) < 3 then
     raise exception 'A moderation reason is required.' using errcode = '23514';
   end if;
-  perform private.moderate_case(p_case_id, p_action, private.current_admin_actor(), p_notes);
+
+  -- The Phase 4 media trigger deliberately rejects moderation-field changes
+  -- whenever a client JWT is present. Capture the verified actor first, then
+  -- remove only the transaction-local JWT context while the already-private
+  -- operator function performs its server-owned update. Always restore the
+  -- caller context, including when moderation raises.
+  actor_email := private.current_admin_actor();
+  original_claims := pg_catalog.current_setting('request.jwt.claims', true);
+  original_claim_sub := pg_catalog.current_setting('request.jwt.claim.sub', true);
+  perform pg_catalog.set_config('request.jwt.claims', '{}', true);
+  perform pg_catalog.set_config('request.jwt.claim.sub', '', true);
+  begin
+    perform private.moderate_case(p_case_id, p_action, actor_email, p_notes);
+  exception when others then
+    perform pg_catalog.set_config('request.jwt.claims', coalesce(original_claims, ''), true);
+    perform pg_catalog.set_config('request.jwt.claim.sub', coalesce(original_claim_sub, ''), true);
+    raise;
+  end;
+  perform pg_catalog.set_config('request.jwt.claims', coalesce(original_claims, ''), true);
+  perform pg_catalog.set_config('request.jwt.claim.sub', coalesce(original_claim_sub, ''), true);
 end;
 $$;
 
