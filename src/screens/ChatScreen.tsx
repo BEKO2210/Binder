@@ -287,7 +287,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
           data={timeline}
           inverted
           keyExtractor={(item) => item.id}
-          contentContainerStyle={{ flexGrow: 1, padding: theme.spacing.x4 }}
+          contentContainerStyle={{ padding: theme.spacing.x4 }}
           showsVerticalScrollIndicator={false}
           ListFooterComponent={hasMore ? <BinderButton label="Load earlier messages" variant="ghost" loading={loadingOlder} onPress={() => void loadOlder()} style={{ marginBottom: theme.spacing.x3 }} /> : null}
           renderItem={({ item }) => {
