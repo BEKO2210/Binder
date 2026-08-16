@@ -67,7 +67,8 @@ CreateBytes micro-interaction guide.
 | **P3 — Match celebration** | Full-screen match moment: both photos, spring entrance (bouncy damping), haptic peak, primary CTA "Say something real", secondary "Keep discovering". | Triggered from real mutual match on devices; reduced-motion variant. |
 | **P4 — Onboarding & auth polish** | Segmented DOB input with live age chip (research pattern), step progress, focused single-question screens, keyboard-safe layouts, error microcopy pass. | New account walk-through on device, every step screenshot-audited. |
 | **P5 — Chat** | Bubble grouping + timestamps, send button morph (idle→active→sending), incoming message spring, day separators, jump-to-latest, long-message handling, copy pass. | Two-device conversation audit; no duplicate/ordering regressions (existing tests stay green). |
-| **P6 — Profile & settings** | Full-screen photo viewer (pinch/zoom/swipe between photos), gallery reorder polish, settings touch-target/spacing pass, Impressum & legal screen (About Binder), every text production-ready. | Screenshot audit of all settings/profile states; legal data present; texts reviewed. |
+| **P5.5 — Partner profile view** | A real profile page for the OTHER person, opened from the discovery card and from the chat/match header: every approved photo swipeable full-width, name/age/distance, bio, interests — exactly what the server already declares visible, nothing more. Reuses the existing RLS visibility (approved media of viewable profiles only). | Opened from both entry points on device; shows only approved media; screenshot audit. |
+| **P6 — Profile & settings** | Full-screen photo viewer (pinch/zoom/swipe between photos), gallery reorder polish, reorder/primary errors surface AT the gallery (defect D7), settings touch-target/spacing pass, Impressum & legal screen (About Binder), every text production-ready. | Screenshot audit of all settings/profile states; legal data present; texts reviewed. |
 | **P7 — Brand & icon** | New icon + adaptive/monochrome variants via Higgsfield, splash refresh, store-ready asset set consistent with in-app brand. | Icon renders correctly on launcher shapes; brand verifier updated deliberately. |
 | **P8 — Final audit** | Fresh test account, complete screenshot catalog of every screen/state on both devices, fix list worked to zero. | Catalog archived in repo; zero open findings. |
 
@@ -81,3 +82,5 @@ No phase starts before the previous one is accepted.
 | D1 | Keyboard: content slides back down while typing (edge-to-edge inset fight) — reproduced on Tab S9 + S23 with build `f5a80063` | open |
 | D2 | Matches screen "Message alerts → Enable" button has no visible effect | open |
 | D3 | Profile/discovery photos cropped with no way to view the full image | open (also P6 scope) |
+| D7 | Gallery reorder/primary rejections render far below the fold, invisible to the user | open (P6 scope) |
+| F1 | No partner profile page — a match's photos and profile details cannot be browsed | open (P5.5 scope) |
