@@ -3,13 +3,21 @@ import { join, relative } from 'node:path';
 
 const root = 'dist';
 const phase5JsBaselineMiB = 2.39;
-const maxJsMiB = 2.75;
+// Deliberate re-baseline 2026-08-16 (UI/UX program): four measured runtime
+// dependencies joined — react-native-reanimated + react-native-gesture-handler
+// (UI-thread discovery deck), react-native-keyboard-controller (the only
+// working keyboard handling under enforced edge-to-edge) and
+// react-native-safe-area-context (system-bar insets). Measured JS/Hermes
+// after adoption: 3.84 MiB. The budget stays a hard ceiling with ~10%
+// headroom so future growth still fails loudly.
+const maxJsMiB = 4.2;
 // Phase 6 measured 3.44 MiB after adopting one canonical Expo Symbols family.
 // 0.92 MiB of that export is the Material Symbols font asset; the JS/Hermes
-// payload is still 2.52 MiB. Keep separate budgets so future JS growth cannot
-// hide behind an approved, measured visual-system asset.
+// payload dominates the rest. Keep separate budgets so future JS growth
+// cannot hide behind an approved, measured visual-system asset.
+// Total re-baseline 2026-08-16: measured 4.80 MiB after the UI/UX program.
 const phase6TotalBaselineMiB = 3.44;
-const maxTotalMiB = 3.65;
+const maxTotalMiB = 5.25;
 let total = 0;
 const files = [];
 
