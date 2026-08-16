@@ -5,6 +5,18 @@ import { BinderBrand, BinderButton, BinderInput, BinderText, SectionHeader } fro
 import { supabase } from '../lib/supabase';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
+function mapAuthError(error: unknown): string {
+  const raw = error instanceof Error ? error.message : '';
+  if (/network|failed to fetch|fetch failed|timeout/i.test(raw) || error instanceof TypeError) {
+    return 'No connection. Check your internet and try again.';
+  }
+  if (/invalid login credentials/i.test(raw)) return 'Email or password is incorrect.';
+  if (/already registered|already exists/i.test(raw)) return 'This email is already registered. Sign in instead.';
+  if (/at least 6|password should be|at least 8/i.test(raw)) return 'The password must be at least 8 characters.';
+  if (/invalid email|valid email/i.test(raw)) return 'Enter a valid email address.';
+  return raw || 'Something went wrong. Try again.';
+}
+
 export default function AuthScreen() {
   const { theme } = useBinderTheme();
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
@@ -36,7 +48,7 @@ export default function AuthScreen() {
       }
     } catch (error) {
       setMessageTone('destructive');
-      setMessage(error instanceof Error ? error.message : 'Authentication failed.');
+      setMessage(mapAuthError(error));
     } finally {
       setBusy(false);
     }

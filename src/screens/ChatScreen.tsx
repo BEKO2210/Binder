@@ -89,7 +89,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         if (!active) return;
         mergeMessages(page.messages);
         setHasMore(page.hasMore);
-        await markMatchRead(match.matchId);
+        void markMatchRead(match.matchId).catch(() => undefined);
       } catch (nextError) {
         if (active) setLoadError(nextError instanceof Error ? nextError.message : 'Could not load conversation.');
       } finally {
@@ -109,6 +109,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         (message) => {
           if (!active) return;
           retryAttempt = 0;
+          setLoadError('');
           mergeMessage(message);
           if (message.sender_id !== currentUserId) void markMatchRead(match.matchId).catch(() => undefined);
         },
@@ -120,6 +121,8 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
           retryAttempt += 1;
           retryTimer = setTimeout(() => {
             retryTimer = null;
+            // Backfill whatever arrived during the outage before resubscribing.
+            void load(false);
             connect();
           },delay);
         },
@@ -178,13 +181,14 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   const timeline = useMemo(() => [...buildChatTimeline(messages)].reverse(), [messages]);
 
   useEffect(() => {
-    if (!showPartnerProfile) return;
+    if (!showPartnerProfile && !showSafety) return;
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
-      setShowPartnerProfile(false);
+      if (showPartnerProfile) setShowPartnerProfile(false);
+      else closeSafety();
       return true;
     });
     return () => subscription.remove();
-  }, [showPartnerProfile]);
+  }, [showPartnerProfile, showSafety]);
 
   async function submitMessage() {
     if (!canSend) return;
@@ -200,7 +204,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
       await haptic('selection');
     } catch (nextError) {
       setFailedAttempt({ clientId, body });
-      setSendError(nextError instanceof Error ? nextError.message : 'Message was not sent.');
+      setSendError('Message not sent. Check your connection, then tap Send to retry.');
     } finally { setSending(false); }
   }
 
@@ -268,7 +272,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
             <View style={{ marginTop: theme.spacing.x4 }}>
               {reportingMessage ? <BinderCard style={{ backgroundColor: theme.colors.surfaceElevated, padding: theme.spacing.x3 }}><BinderText variant="caption" tone="secondary" numberOfLines={4}>{reportingMessage.body}</BinderText></BinderCard> : null}
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2, marginTop: theme.spacing.x3 }}>{REPORT_REASONS.map((reason) => <BinderChip key={reason.value} label={reason.label} selected={reportReason === reason.value} onPress={() => setReportReason(reason.value)} />)}</View>
-              <TextInput value={reportDetails} onChangeText={setReportDetails} maxLength={1000} multiline placeholder="Optional details for the safety team" placeholderTextColor={theme.colors.textMuted} selectionColor={theme.accent.accent} style={{ minHeight: 88, maxHeight: 150, marginTop: theme.spacing.x3, color: theme.colors.textPrimary, backgroundColor: theme.colors.surfaceElevated, borderWidth: 1, borderColor: theme.colors.borderSubtle, borderRadius: theme.radii.control, padding: theme.spacing.x3, textAlignVertical: 'top' }} />
+              <TextInput accessibilityLabel="Report details" value={reportDetails} onChangeText={setReportDetails} maxLength={1000} multiline placeholder="Optional details for the safety team" placeholderTextColor={theme.colors.textMuted} selectionColor={theme.accent.accent} style={{ minHeight: 88, maxHeight: 150, marginTop: theme.spacing.x3, color: theme.colors.textPrimary, backgroundColor: theme.colors.surfaceElevated, borderWidth: 1, borderColor: theme.colors.borderSubtle, borderRadius: theme.radii.control, padding: theme.spacing.x3, textAlignVertical: 'top' }} />
               <BinderButton label="Report & block" icon="report" variant="destructive" loading={reporting} onPress={() => void submitReport()} style={{ marginTop: theme.spacing.x3 }} />
               <BinderButton label="Back to safety controls" variant="ghost" disabled={reporting} onPress={() => { setSafetyMode('menu'); setReportMessageId(null); setReportDetails(''); }} style={{ marginTop: theme.spacing.x2 }} />
             </View>
@@ -334,7 +338,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
       {sendError ? <BinderText variant="caption" tone="destructive" style={{ paddingHorizontal: theme.spacing.x4 }}>{sendError} Tap Send to retry safely.</BinderText> : null}
 
       <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: theme.spacing.x2, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x3, borderTopWidth: 1, borderTopColor: theme.colors.borderSubtle, backgroundColor: theme.colors.surface }}>
-        <TextInput value={composer} onChangeText={(value) => { setComposer(value); setSendError(''); if (failedAttempt && failedAttempt.body !== value.trim()) setFailedAttempt(null); }} maxLength={2000} multiline placeholder={`Message ${match.firstName}`} placeholderTextColor={theme.colors.textMuted} selectionColor={theme.accent.accent} style={{ flex: 1, minHeight: 48, maxHeight: 130, color: theme.colors.textPrimary, backgroundColor: theme.colors.surfaceElevated, borderWidth: 1, borderColor: theme.colors.borderSubtle, borderRadius: theme.radii.control, paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x3, textAlignVertical: 'center' }} />
+        <TextInput accessibilityLabel={`Message ${match.firstName}`} value={composer} onChangeText={(value) => { setComposer(value); setSendError(''); if (failedAttempt && failedAttempt.body !== value.trim()) setFailedAttempt(null); }} maxLength={2000} multiline placeholder={`Message ${match.firstName}`} placeholderTextColor={theme.colors.textMuted} selectionColor={theme.accent.accent} style={{ flex: 1, minHeight: 48, maxHeight: 130, color: theme.colors.textPrimary, backgroundColor: theme.colors.surfaceElevated, borderWidth: 1, borderColor: theme.colors.borderSubtle, borderRadius: theme.radii.control, paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x3, textAlignVertical: 'center' }} />
         <BinderIconButton name="send" accessibilityLabel={`Send message to ${match.firstName}`} selected={canSend} disabled={!canSend} onPress={() => void submitMessage()} />
       </View>
     </KeyboardAvoidingView>

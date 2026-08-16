@@ -15,6 +15,7 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
+  const [messageKind, setMessageKind] = useState<'success' | 'error'>('error');
   const [firstName, setFirstName] = useState('');
   const [bio, setBio] = useState('');
   const [gender, setGender] = useState<Gender>('nonbinary');
@@ -47,7 +48,7 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
       setMaxAge(String(preferences.data.max_age));
       setDistance(String(preferences.data.max_distance_km));
       setMedia(gallery);
-    } catch (error) { setMessage(error instanceof Error ? error.message : 'Could not load profile settings.'); }
+    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : 'Could not load profile settings.'); }
     finally { setLoading(false); }
   }
 
@@ -61,8 +62,8 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
       await addProfileImage(userId, image);
       await haptic('selection');
       setMedia(await listMyProfileMedia());
-      setMessage('Photo optimized, uploaded and sent for safety review.');
-    } catch (error) { setMessage(error instanceof Error ? error.message : 'Could not add photo.'); }
+      setMessage('Photo optimized, uploaded and sent for safety review.'); setMessageKind('success');
+    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : 'Could not add photo.'); }
     finally { setBusy(false); }
   }
 
@@ -81,7 +82,7 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
       await reorderProfileMedia(next.map((item) => item.id));
       await haptic('selection');
       setMedia(await listMyProfileMedia());
-    } catch (error) { setMessage(error instanceof Error ? error.message : 'Could not reorder photos.'); }
+    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : 'Could not reorder photos.'); }
     finally { setBusy(false); }
   }
 
@@ -93,7 +94,7 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
       await setPrimaryProfileMedia(item.id);
       await haptic('selection');
       setMedia(await listMyProfileMedia());
-    } catch (error) { setMessage(error instanceof Error ? error.message : 'Could not make this photo primary.'); }
+    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : 'Could not make this photo primary.'); }
     finally { setBusy(false); }
   }
 
@@ -111,7 +112,7 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
       await removeProfileMedia(item.id);
       await haptic('destructive');
       setMedia(await listMyProfileMedia());
-    } catch (error) { setMessage(error instanceof Error ? error.message : 'Could not remove photo.'); }
+    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : 'Could not remove photo.'); }
     finally { setBusy(false); }
   }
 
@@ -126,7 +127,7 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
       if (error) throw error;
       await haptic('selection');
       setMessage('Profile settings saved.');
-    } catch (error) { setMessage(error instanceof Error ? error.message : 'Could not save profile settings.'); }
+    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : 'Could not save profile settings.'); }
     finally { setBusy(false); }
   }
 
@@ -156,7 +157,7 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
           {media.map((item, index) => <PhotoTile key={item.id} item={item} index={index} total={media.length} busy={busy} onLeft={() => void movePhoto(index, -1)} onRight={() => void movePhoto(index, 1)} onPrimary={() => void makePrimary(item)} onRemove={() => confirmRemove(item)} onView={() => setViewerUrl(item.signedUrl)} />)}
           {media.length < 6 ? <AddPhotoTile disabled={busy} onPress={() => void addPhoto()} /> : null}
         </View>
-        {message ? <BinderText variant="caption" tone={message.includes('saved') || message.includes('optimized') ? 'accent' : 'destructive'} style={{ marginTop: theme.spacing.x3 }}>{message}</BinderText> : null}
+        {message ? <BinderText variant="caption" tone={messageKind === 'success' ? 'accent' : 'destructive'} style={{ marginTop: theme.spacing.x3 }}>{message}</BinderText> : null}
       </View>
 
       <View style={{ gap: theme.spacing.x5, marginTop: theme.spacing.x8 }}>
@@ -167,7 +168,6 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
         <Choice label="I want to meet"><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{GENDERS.map((item) => <BinderChip key={item.value} label={item.label} selected={interestedIn.includes(item.value)} onPress={() => setInterestedIn((current) => current.includes(item.value) ? current.filter((value) => value !== item.value) : [...current, item.value])} />)}</View></Choice>
         <Choice label="Discovery range"><View style={{ flexDirection: 'row', gap: theme.spacing.x2 }}><CompactNumber label="Min age" value={minAge} setValue={setMinAge} /><CompactNumber label="Max age" value={maxAge} setValue={setMaxAge} /><CompactNumber label="Km" value={distance} setValue={setDistance} /></View></Choice>
       </View>
-      {message ? <BinderText variant="caption" tone={message.includes('saved') || message.includes('optimized') ? 'accent' : 'secondary'} style={{ marginTop: theme.spacing.x5 }}>{message}</BinderText> : null}
       <BinderButton label="Save profile" loading={busy} onPress={() => void save()} style={{ marginTop: theme.spacing.x6 }} />
     </ScrollView>
   );

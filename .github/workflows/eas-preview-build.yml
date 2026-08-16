@@ -46,7 +46,11 @@ jobs:
         run: |
           npm run verify:phase7-push
           npm run verify:brand
+          npm run verify:phase6-design
+          npm run verify:phase6-settings
+          npm run verify:phase6-media
           npm run typecheck
+          npm test
 
       - name: Build Android preview APK on EAS
         run: npx --yes eas-cli@latest build --platform android --profile preview --non-interactive

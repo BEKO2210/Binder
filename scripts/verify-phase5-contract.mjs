@@ -22,7 +22,7 @@ const core = read('supabase/migrations/20260815160000_phase5_beta_core.sql');
 const pkg = JSON.parse(read('package.json'));
 const app = JSON.parse(read('app.json'));
 
-if (pkg.version !== '0.5.0' || app.expo?.version !== '0.5.0') failures.push('package.json and app.json must both be Binder 0.5.0');
+if (!pkg.version || pkg.version !== app.expo?.version) failures.push(`package.json (${pkg.version}) and app.json (${app.expo?.version}) versions must agree`);
 if (!beta.includes("diagnosticsEnabled: boolean | null = null") && !beta.includes('diagnosticsEnabled: boolean | null = null')) failures.push('Diagnostics cache must begin unresolved/off rather than opt-in');
 if (!beta.includes("if (!diagnosticsEnabled) return false")) failures.push('Client diagnostics do not fail closed when opt-in is absent');
 if (!core.includes('diagnostics_enabled boolean not null default false')) failures.push('Server diagnostics preference is not default-off');

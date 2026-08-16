@@ -80,7 +80,9 @@ jobs:
           deno check --config supabase/functions/invite-moderator/deno.json supabase/functions/invite-moderator/index.ts
 
       - name: TypeScript
-        run: npm run typecheck
+        run: |
+          npm run typecheck
+          npm run typecheck:tests
 
       - name: Unit tests
         run: npm test

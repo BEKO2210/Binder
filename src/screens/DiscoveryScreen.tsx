@@ -73,13 +73,15 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
   }, []);
 
   useEffect(() => {
-    if (!viewingProfile) return;
+    if (!viewingProfile && !match && !safetyOpen) return;
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
-      setViewingProfile(null);
+      if (viewingProfile) setViewingProfile(null);
+      else if (safetyOpen) { setSafetyOpen(false); setSafetyReason(null); }
+      else setMatch(null);
       return true;
     });
     return () => subscription.remove();
-  }, [viewingProfile]);
+  }, [viewingProfile, match, safetyOpen]);
 
   // The celebration CTA jumps straight into the fresh conversation.
   async function openConversation(current: DiscoveryProfile) {
@@ -91,6 +93,8 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
       setMatch(null);
       if (target && onOpenMatch) onOpenMatch(target);
     } catch {
+      // Keep the moment; the match is safe under Matches either way.
+      setError('Could not open the conversation. You will find it under Matches.');
       setMatch(null);
     } finally { setOpeningConversation(false); }
   }
@@ -128,10 +132,14 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
 
   function finishDismiss(current: DiscoveryProfile, matched: boolean) {
     setProfiles((value) => value.slice(1));
-    x.value = 0;
-    y.value = 0;
     if (matched) setMatch(current);
-    setDecisionPending(false);
+    // Reset only after React committed the new top card — resetting in the
+    // same frame flashed the dismissed card back to center.
+    requestAnimationFrame(() => {
+      x.value = 0;
+      y.value = 0;
+      setDecisionPending(false);
+    });
   }
 
   // The card flies out immediately for instant feel; it is only REMOVED from
@@ -207,7 +215,11 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
   }
 
   if (loading && profiles.length === 0) return <ScreenState kind="loading" message="Finding people who fit both sides…" />;
-  if (error && profiles.length === 0) return <ScreenState kind="permission" icon="discover" title="Discovery paused" message={`${error}\n\nBinder uses foreground location only to calculate nearby candidates. Exact coordinates are never sent to another user.`} actionLabel="Try again" onAction={() => void loadDiscovery(true)} />;
+  if (error && profiles.length === 0) {
+    const locationRelated = /location|permission|denied|gps/i.test(error);
+    if (locationRelated) return <ScreenState kind="permission" icon="discover" title="Discovery paused" message={`${error}\n\nBinder uses foreground location only to calculate nearby candidates. Exact coordinates are never sent to another user.`} actionLabel="Try again" onAction={() => void loadDiscovery(true)} />;
+    return <ScreenState kind="error" icon="retry" title="Discovery did not load" message="No connection. Check your internet and try again." actionLabel="Try again" onAction={() => void loadDiscovery(true)} />;
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>

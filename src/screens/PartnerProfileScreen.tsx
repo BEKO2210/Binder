@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { FlatList, Image, ScrollView, View, useWindowDimensions } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
-import { BinderChip, BinderIconButton, BinderText, ScreenState } from '../components/ui';
+import { BinderIconButton, BinderText, ScreenState } from '../components/ui';
 import { fetchPartnerProfile, type PartnerProfile } from '../lib/partnerProfile';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
@@ -51,8 +51,8 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose }: 
                   showsHorizontalScrollIndicator={false}
                   keyExtractor={(item, index) => `${index}-${item.slice(-24)}`}
                   onMomentumScrollEnd={(event) => setPage(Math.round(event.nativeEvent.contentOffset.x / width))}
-                  renderItem={({ item }) => (
-                    <Image source={{ uri: item }} style={{ width, height: heroHeight, backgroundColor: theme.colors.surfaceElevated }} resizeMode="cover" />
+                  renderItem={({ item, index }) => (
+                    <Image accessible accessibilityLabel={`Photo ${index + 1} of ${profile.photoUrls.length} of ${profile.name}`} source={{ uri: item }} style={{ width, height: heroHeight, backgroundColor: theme.colors.surfaceElevated }} resizeMode="cover" />
                   )}
                 />
                 {profile.photoUrls.length > 1 ? (
@@ -81,7 +81,11 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose }: 
               {profile.bio ? <BinderText variant="bodyL" tone="secondary" style={{ marginTop: theme.spacing.x4 }}>{profile.bio}</BinderText> : null}
               {profile.interests.length > 0 ? (
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2, marginTop: theme.spacing.x5 }}>
-                  {profile.interests.map((interest) => <BinderChip key={interest} label={interest} selected={false} onPress={() => undefined} disabled />)}
+                  {profile.interests.map((interest) => (
+                    <View key={interest} accessibilityRole="text" style={{ minHeight: 40, justifyContent: 'center', paddingHorizontal: theme.spacing.x4, borderRadius: theme.radii.pill, borderWidth: 1, borderColor: theme.colors.borderSubtle, backgroundColor: theme.colors.surface }}>
+                      <BinderText variant="label" tone="secondary">{interest}</BinderText>
+                    </View>
+                  ))}
                 </View>
               ) : null}
             </View>

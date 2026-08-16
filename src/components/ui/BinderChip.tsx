@@ -18,7 +18,7 @@ export function BinderChip({ label, selected = false, disabled, ...props }: Prop
       accessibilityState={{ selected, disabled: isDisabled }}
       disabled={isDisabled}
       style={({ pressed }) => ({
-        minHeight: 44,
+        minHeight: 48,
         paddingHorizontal: theme.spacing.x4,
         borderRadius: theme.radii.pill,
         borderWidth: 1,

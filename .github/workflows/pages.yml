@@ -6,6 +6,7 @@ on:
     paths:
       - 'site/**'
       - 'assets/brand/**'
+      - 'assets/brand-src/**'
       - 'scripts/materialize-brand-assets.mjs'
       - 'scripts/prepare-site.mjs'
       - 'scripts/verify-site.mjs'

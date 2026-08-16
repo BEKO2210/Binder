@@ -22,19 +22,23 @@ export type TimelineItem<M extends TimelineMessage> =
 
 const GROUP_WINDOW_MS = 5 * 60 * 1000;
 
+// Day boundaries follow the DEVICE timezone — the same clock the time
+// captions use — so a message after local midnight starts a new local day.
+function localDayKey(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
 function dayKey(iso: string): string {
-  return iso.slice(0, 10);
+  return localDayKey(new Date(iso));
 }
 
 export function dayLabel(iso: string, reference: Date = new Date()): string {
   const key = dayKey(iso);
-  const todayKey = reference.toISOString().slice(0, 10);
-  const yesterday = new Date(reference.getTime() - 24 * 60 * 60 * 1000);
-  const yesterdayKey = yesterday.toISOString().slice(0, 10);
+  const todayKey = localDayKey(reference);
+  const yesterdayKey = localDayKey(new Date(reference.getTime() - 24 * 60 * 60 * 1000));
   if (key === todayKey) return 'Today';
   if (key === yesterdayKey) return 'Yesterday';
-  const date = new Date(`${key}T00:00:00Z`);
-  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
 export function timeLabel(iso: string): string {

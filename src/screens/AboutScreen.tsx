@@ -1,5 +1,6 @@
 import Constants from 'expo-constants';
-import { ScrollView, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, ScrollView, View } from 'react-native';
 
 import { BinderCard, BinderIconButton, BinderText, SectionHeader } from '../components/ui';
 import { DELETE_ACCOUNT_URL, PRIVACY_URL, TERMS_URL, openBinderUrl } from '../lib/safety';
@@ -12,6 +13,7 @@ type Props = { onClose: () => void };
 export default function AboutScreen({ onClose }: Props) {
   const { theme } = useBinderTheme();
   const version = Constants.expoConfig?.version ?? '';
+  const [linkError, setLinkError] = useState('');
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.canvas }} contentContainerStyle={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x4, paddingBottom: theme.spacing.x16 }}>
@@ -29,10 +31,11 @@ export default function AboutScreen({ onClose }: Props) {
       <BinderCard style={{ marginTop: theme.spacing.x4 }}>
         <BinderText variant="micro" tone="muted">POLICIES</BinderText>
         <View style={{ marginTop: theme.spacing.x2 }}>
-          <PolicyLink label="Terms & Community Rules" onPress={() => void openBinderUrl(TERMS_URL).catch(() => undefined)} />
-          <PolicyLink label="Privacy Policy" onPress={() => void openBinderUrl(PRIVACY_URL).catch(() => undefined)} />
-          <PolicyLink label="Account deletion & retention" onPress={() => void openBinderUrl(DELETE_ACCOUNT_URL).catch(() => undefined)} />
+          <PolicyLink label="Terms & Community Rules" onPress={() => void openBinderUrl(TERMS_URL).then(() => setLinkError('')).catch(() => setLinkError('Could not open this page. Try again later.'))} />
+          <PolicyLink label="Privacy Policy" onPress={() => void openBinderUrl(PRIVACY_URL).then(() => setLinkError('')).catch(() => setLinkError('Could not open this page. Try again later.'))} />
+          <PolicyLink label="Account deletion & retention" onPress={() => void openBinderUrl(DELETE_ACCOUNT_URL).then(() => setLinkError('')).catch(() => setLinkError('Could not open this page. Try again later.'))} />
         </View>
+        {linkError ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x2 }}>{linkError}</BinderText> : null}
       </BinderCard>
 
       {version ? <BinderText variant="caption" tone="muted" align="center" style={{ marginTop: theme.spacing.x6 }}>Binder {version}</BinderText> : null}
@@ -43,14 +46,8 @@ export default function AboutScreen({ onClose }: Props) {
 function PolicyLink({ label, onPress }: { label: string; onPress: () => void }) {
   const { theme } = useBinderTheme();
   return (
-    <BinderText
-      accessibilityRole="link"
-      onPress={onPress}
-      variant="label"
-      tone="secondary"
-      style={{ paddingVertical: theme.spacing.x3, borderBottomWidth: 1, borderBottomColor: theme.colors.borderSubtle }}
-    >
-      {label}
-    </BinderText>
+    <Pressable accessibilityRole="link" onPress={onPress} style={({ pressed }) => ({ minHeight: 52, justifyContent: 'center', borderBottomWidth: 1, borderBottomColor: theme.colors.borderSubtle, backgroundColor: pressed ? theme.colors.surfacePressed : 'transparent' })}>
+      <BinderText variant="label" tone="secondary">{label}</BinderText>
+    </Pressable>
   );
 }

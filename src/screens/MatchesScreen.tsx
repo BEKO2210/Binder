@@ -65,7 +65,7 @@ export default function MatchesScreen({ refreshKey, onOpenMatch }: { refreshKey:
           <View style={{ flex: 1 }}>
             <BinderText variant="label">{pushState === 'enabled' ? 'Message alerts enabled' : pushState === 'busy' ? 'Enabling alerts…' : pushState === 'denied' ? 'Alerts are blocked' : 'Message alerts'}</BinderText>
             <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1 }}>
-              {pushState === 'unavailable' ? 'Remote push is not available in this environment. Chat still works normally.'
+              {pushState === 'unavailable' ? 'Push notifications are not supported on this device. Chat still works normally.'
                 : pushState === 'offline' ? 'Could not reach the push service. Check your connection and try again.'
                 : pushState === 'denied' ? 'Android is blocking Binder notifications. Allow them in system settings.'
                 : pushState === 'enabled' ? 'Notification categories can be adjusted in App Settings.'
@@ -91,7 +91,7 @@ export default function MatchesScreen({ refreshKey, onOpenMatch }: { refreshKey:
                   <View style={{ flex: 1, minWidth: 0 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
                       <BinderText variant="label" numberOfLines={1} style={{ flex: 1 }}>{item.firstName}, {item.age}</BinderText>
-                      {item.unreadCount > 0 ? <View style={{ minWidth: 24, height: 24, paddingHorizontal: theme.spacing.x2, borderRadius: theme.radii.pill, backgroundColor: theme.accent.accent, alignItems: 'center', justifyContent: 'center' }}><BinderText variant="caption" style={{ color: theme.accent.foreground }}>{Math.min(item.unreadCount,99)}</BinderText></View> : null}
+                      {item.unreadCount > 0 ? <View style={{ minWidth: 24, height: 24, paddingHorizontal: theme.spacing.x2, borderRadius: theme.radii.pill, backgroundColor: theme.accent.accent, alignItems: 'center', justifyContent: 'center' }}><BinderText variant="caption" style={{ color: theme.accent.foreground }}>{item.unreadCount > 99 ? '99+' : item.unreadCount}</BinderText></View> : null}
                     </View>
                     <BinderText variant="caption" tone={item.unreadCount > 0 ? 'secondary' : 'muted'} numberOfLines={1} style={{ marginTop: theme.spacing.x2 }}>{item.lastMessageBody ?? "It's a Bind — say hi."}</BinderText>
                   </View>

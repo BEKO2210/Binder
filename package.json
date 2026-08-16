@@ -24,13 +24,16 @@
     "verify:phase6-media": "node scripts/verify-phase6-media.mjs",
     "verify:phase7-push": "node scripts/verify-phase7-push.mjs",
     "verify:admin": "node scripts/verify-admin-dashboard.mjs",
-    "test": "node --experimental-strip-types --test 'tests/*.test.ts'"
+    "test": "node --experimental-strip-types --test 'tests/*.test.ts'",
+    "typecheck:tests": "tsc --project tsconfig.tests.json"
   },
   "dependencies": {
     "@expo-google-fonts/manrope": "0.4.2",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@supabase/supabase-js": "2.112.3",
+    "aes-js": "^3.1.2",
     "expo": "~57.0.8",
+    "expo-build-properties": "~57.0.11",
     "expo-constants": "57.0.11",
     "expo-crypto": "~57.0.1",
     "expo-file-system": "~57.0.1",
@@ -40,6 +43,7 @@
     "expo-image-picker": "~57.0.5",
     "expo-location": "~57.0.5",
     "expo-notifications": "~57.0.6",
+    "expo-secure-store": "~57.0.1",
     "expo-splash-screen": "~57.0.4",
     "expo-status-bar": "~57.0.1",
     "expo-symbols": "~57.0.1",
@@ -53,6 +57,7 @@
     "react-native-url-polyfill": "^3.0.0"
   },
   "devDependencies": {
+    "@types/node": "^26.2.0",
     "@types/react": "~19.2.2",
     "typescript": "~6.0.3"
   }

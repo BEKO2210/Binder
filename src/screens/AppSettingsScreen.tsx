@@ -116,7 +116,7 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
         {diagnosticsLoading ? <ScreenState kind="loading" message="Checking diagnostics…" /> : <SwitchRow label="Share optional diagnostics" value={diagnostics} onValueChange={(value) => void toggleDiagnostics(value)} />}
       </SettingsSection>
 
-      {message ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x4 }}>{message}</BinderText> : null}
+      {message ? <BinderText variant="caption" tone={/are active|are off/.test(message) ? 'accent' : 'destructive'} style={{ marginTop: theme.spacing.x4 }}>{message}</BinderText> : null}
       <BinderButton label="Reset app settings" variant="secondary" onPress={() => void resetSettings()} style={{ marginTop: theme.spacing.x6 }} />
     </ScrollView>
   );
@@ -129,5 +129,5 @@ function SettingsSection({ title, copy, children }: { title: string; copy?: stri
 
 function SwitchRow({ label, copy, value, disabled, onValueChange }: { label: string; copy?: string; value: boolean; disabled?: boolean; onValueChange: (value: boolean) => void }) {
   const { theme } = useBinderTheme();
-  return <View style={{ minHeight: 56, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3, opacity: disabled ? 0.42 : 1 }}><View style={{ flex: 1 }}><BinderText variant="label">{label}</BinderText>{copy ? <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1 }}>{copy}</BinderText> : null}</View><Switch disabled={disabled} value={value} onValueChange={onValueChange} trackColor={{ false: theme.colors.borderStrong, true: theme.accent.accent }} thumbColor={theme.colors.textPrimary} /></View>;
+  return <View style={{ minHeight: 56, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3, opacity: disabled ? 0.42 : 1 }}><View style={{ flex: 1 }}><BinderText variant="label">{label}</BinderText>{copy ? <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1 }}>{copy}</BinderText> : null}</View><Switch accessibilityLabel={label} accessibilityHint={copy} disabled={disabled} value={value} onValueChange={onValueChange} trackColor={{ false: theme.colors.borderStrong, true: theme.accent.accent }} thumbColor={theme.colors.textPrimary} /></View>;
 }

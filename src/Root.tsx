@@ -186,22 +186,25 @@ function BinderApp() {
   useEffect(() => {
     if (!pendingNotificationRoute || !session || legalGate?.accepted !== true || onboardingComplete !== true) return;
     const route = pendingNotificationRoute;
-    setPendingNotificationRoute(null);
     if (route.screen === 'matches') {
+      setPendingNotificationRoute(null);
       setActiveMatch(null);
       setTab('matches');
       setMatchesRefreshKey((value) => value + 1);
       return;
     }
     if (route.screen === 'profile') {
+      setPendingNotificationRoute(null);
       setActiveMatch(null);
       setProfileRoute('home');
       setTab('profile');
       return;
     }
-    let active = true;
+    // Keep the pending route set while the chat target resolves — clearing it
+    // first re-ran this effect and its cleanup cancelled the fetch, so a
+    // notification tap never opened the chat. The route clears in finally,
+    // whose re-run exits at the guard above.
     void fetchMatches().then((matches) => {
-      if (!active) return;
       const target = matches.find((match) => match.matchId === route.matchId);
       if (target) setActiveMatch(target);
       else {
@@ -210,9 +213,10 @@ function BinderApp() {
         setMatchesRefreshKey((value) => value + 1);
       }
     }).catch(() => {
-      if (active) setTab('matches');
+      setTab('matches');
+    }).finally(() => {
+      setPendingNotificationRoute(null);
     });
-    return () => { active = false; };
   }, [pendingNotificationRoute, session?.user.id, legalGate?.accepted, onboardingComplete]);
 
   if (session === undefined) return <ScreenState kind="loading" message={loadError || 'Loading Binder…'} />;
