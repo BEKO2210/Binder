@@ -4,8 +4,11 @@ import { Dimensions, ImageBackground, Pressable, ScrollView, View } from 'react-
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { Extrapolation, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
+import { MatchCelebration } from '../components/MatchCelebration';
 import { BinderBrand, BinderButton, BinderCard, BinderIcon, BinderIconButton, BinderText, ScreenState } from '../components/ui';
+import { fetchMatches, type MatchSummary } from '../lib/conversation';
 import { fetchDiscoveryBatch, recordDecision, refreshDiscoveryLocation, type DiscoveryProfile } from '../lib/discovery';
+import { listMyProfileMedia } from '../lib/media';
 import { resolveSpring } from '../lib/motionPolicy';
 import { reportAndBlockDiscoveryProfile, type DiscoveryReportReason } from '../lib/safety';
 import { useBinderHaptics } from '../theme/haptics';
@@ -27,7 +30,7 @@ const REPORT_REASONS: { value: DiscoveryReportReason; label: string; detail: str
   { value: 'other', label: 'Other safety concern', detail: 'A concern not covered above.' },
 ];
 
-export default function DiscoveryScreen() {
+export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match: MatchSummary) => void }) {
   const { theme, reduceMotion } = useBinderTheme();
   const haptic = useBinderHaptics();
   const [profiles, setProfiles] = useState<DiscoveryProfile[]>([]);
@@ -35,6 +38,8 @@ export default function DiscoveryScreen() {
   const [decisionPending, setDecisionPending] = useState(false);
   const [error, setError] = useState('');
   const [match, setMatch] = useState<DiscoveryProfile | null>(null);
+  const [myPhotoUrl, setMyPhotoUrl] = useState<string | null>(null);
+  const [openingConversation, setOpeningConversation] = useState(false);
   const [safetyOpen, setSafetyOpen] = useState(false);
   const [safetyReason, setSafetyReason] = useState<DiscoveryReportReason | null>(null);
   const [safetyBusy, setSafetyBusy] = useState(false);
@@ -56,6 +61,28 @@ export default function DiscoveryScreen() {
   }
 
   useEffect(() => { void loadDiscovery(true); }, []);
+
+  useEffect(() => {
+    let active = true;
+    listMyProfileMedia()
+      .then((media) => { if (active) setMyPhotoUrl(media[0]?.signedUrl ?? null); })
+      .catch(() => undefined);
+    return () => { active = false; };
+  }, []);
+
+  // The celebration CTA jumps straight into the fresh conversation.
+  async function openConversation(current: DiscoveryProfile) {
+    if (openingConversation) return;
+    setOpeningConversation(true);
+    try {
+      const summaries = await fetchMatches();
+      const target = summaries.find((item) => item.otherUserId === current.id);
+      setMatch(null);
+      if (target && onOpenMatch) onOpenMatch(target);
+    } catch {
+      setMatch(null);
+    } finally { setOpeningConversation(false); }
+  }
 
   const topCardStyle = useAnimatedStyle(() => ({
     transform: [
@@ -213,15 +240,13 @@ export default function DiscoveryScreen() {
       </View>
 
       {match ? (
-        <View style={{ position: 'absolute', inset: 0, backgroundColor: theme.colors.overlay, alignItems: 'center', justifyContent: 'center', padding: theme.spacing.x6 }}>
-          <BinderCard style={{ width: '100%', maxWidth: 420, borderColor: theme.accent.accent }}>
-            <BinderIcon name="matches" size={34} color={theme.accent.accent} />
-            <BinderText variant="micro" tone="accent" style={{ marginTop: theme.spacing.x4 }}>IT'S A BIND</BinderText>
-            <BinderText variant="heading" style={{ marginTop: theme.spacing.x2 }}>You and {match.name} chose each other.</BinderText>
-            <BinderText variant="body" tone="secondary" style={{ marginTop: theme.spacing.x3 }}>Your match is ready in Matches. Start a conversation when you want to.</BinderText>
-            <BinderButton label="Keep discovering" onPress={() => setMatch(null)} style={{ marginTop: theme.spacing.x5 }} />
-          </BinderCard>
-        </View>
+        <MatchCelebration
+          profile={match}
+          myPhotoUrl={myPhotoUrl}
+          busy={openingConversation}
+          onSaySomething={() => void openConversation(match)}
+          onKeepDiscovering={() => setMatch(null)}
+        />
       ) : null}
 
       {safetyOpen && profile ? (
