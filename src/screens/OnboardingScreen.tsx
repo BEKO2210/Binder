@@ -56,7 +56,7 @@ export default function OnboardingScreen({ userId, onComplete }: Props) {
   }
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: theme.colors.canvas }} contentContainerStyle={{ paddingTop: theme.spacing.x12, paddingHorizontal: theme.spacing.screen, paddingBottom: theme.spacing.x16 }} keyboardShouldPersistTaps="handled">
+    <ScrollView style={{ flex: 1, backgroundColor: theme.colors.canvas }} contentContainerStyle={{ paddingTop: theme.spacing.x5, paddingHorizontal: theme.spacing.screen, paddingBottom: theme.spacing.x16 }} keyboardShouldPersistTaps="handled">
       <SectionHeader eyebrow="BINDER · 18+" title="Build a profile people can trust." copy="Your birth date and exact location stay private. Other people only receive the age and distance Binder calculates." />
       <View style={{ gap: theme.spacing.x6, marginTop: theme.spacing.x8 }}>
         <BinderInput label="First name" value={firstName} onChangeText={setFirstName} maxLength={40} placeholder="First name" />

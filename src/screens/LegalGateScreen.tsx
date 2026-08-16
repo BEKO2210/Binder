@@ -29,7 +29,7 @@ export default function LegalGateScreen({ gate, onAccepted }: Props) {
   }
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: theme.colors.canvas }} contentContainerStyle={{ paddingTop: theme.spacing.x12, paddingHorizontal: theme.spacing.screen, paddingBottom: theme.spacing.x16 }}>
+    <ScrollView style={{ flex: 1, backgroundColor: theme.colors.canvas }} contentContainerStyle={{ paddingTop: theme.spacing.x5, paddingHorizontal: theme.spacing.screen, paddingBottom: theme.spacing.x16 }}>
       <BinderBrand />
       <View style={{ marginTop: theme.spacing.x8 }}>
         <SectionHeader eyebrow="BEFORE YOU CREATE OR SHARE" title="Clear rules before conversation." copy="Binder is 18+ and built around mutual choice. Before you create a profile, upload a photo or send a message, accept the current Terms & Community Rules and Privacy Policy." />

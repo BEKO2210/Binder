@@ -233,7 +233,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: theme.colors.canvas }} behavior="padding" keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}>
-      <View style={{ paddingTop: theme.spacing.x12, paddingHorizontal: theme.spacing.x3, paddingBottom: theme.spacing.x3, flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: theme.colors.borderSubtle }}>
+      <View style={{ paddingTop: theme.spacing.x3, paddingHorizontal: theme.spacing.x3, paddingBottom: theme.spacing.x3, flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: theme.colors.borderSubtle }}>
         <BinderIconButton name="back" accessibilityLabel="Back to matches" onPress={onClose} />
         <View style={{ flex: 1, alignItems: 'center' }}>
           <BinderText variant="label">{match.firstName}, {match.age}</BinderText>

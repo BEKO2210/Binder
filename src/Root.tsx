@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { BackHandler, Pressable, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import BinderErrorBoundary from './components/BinderErrorBoundary';
 import { BinderIcon, BinderText, ScreenState, type BinderIconName } from './components/ui';
@@ -37,11 +38,32 @@ type Tab = 'discover' | 'matches' | 'profile';
 type ProfileRoute = 'home' | 'edit' | 'settings' | 'beta';
 
 export default function Root() {
-  return <GestureHandlerRootView style={{ flex: 1 }}><KeyboardProvider><BinderThemeProvider><BinderErrorBoundary><BinderApp /></BinderErrorBoundary></BinderThemeProvider></KeyboardProvider></GestureHandlerRootView>;
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <KeyboardProvider>
+          <BinderThemeProvider>
+            <TopInset>
+              <BinderErrorBoundary><BinderApp /></BinderErrorBoundary>
+            </TopInset>
+          </BinderThemeProvider>
+        </KeyboardProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
+  );
+}
+
+// Edge-to-edge is mandatory under SDK 57: without this single choke point every
+// screen would draw beneath the status bar and collide with clock and icons.
+function TopInset({ children }: { children: React.ReactNode }) {
+  const insets = useSafeAreaInsets();
+  const { theme } = useBinderTheme();
+  return <View style={{ flex: 1, paddingTop: insets.top, backgroundColor: theme.colors.canvas }}>{children}</View>;
 }
 
 function BinderApp() {
   const { theme, settings, hydrated, updateSettings } = useBinderTheme();
+  const tabBarInsetBottom = Math.max(useSafeAreaInsets().bottom, 8);
   const haptic = useBinderHaptics();
   const [session, setSession] = useState<Session | null | undefined>(undefined);
   const [legalGate, setLegalGate] = useState<LegalGate | null | undefined>(undefined);
@@ -211,7 +233,7 @@ function BinderApp() {
         {tab === 'matches' ? <MatchesScreen refreshKey={matchesRefreshKey} onOpenMatch={setActiveMatch} /> : null}
         {tab === 'profile' ? <ProfileScreen userId={session.user.id} onEditProfile={() => setProfileRoute('edit')} onOpenSettings={() => setProfileRoute('settings')} onOpenBeta={() => setProfileRoute('beta')} /> : null}
       </View>
-      <View style={{ minHeight: 76, flexDirection: 'row', paddingHorizontal: theme.spacing.x3, paddingTop: theme.spacing.x2, paddingBottom: theme.spacing.x4, backgroundColor: theme.colors.surface, borderTopColor: theme.colors.borderSubtle, borderTopWidth: 1 }}>
+      <View style={{ minHeight: 76, flexDirection: 'row', paddingHorizontal: theme.spacing.x3, paddingTop: theme.spacing.x2, paddingBottom: theme.spacing.x2 + tabBarInsetBottom, backgroundColor: theme.colors.surface, borderTopColor: theme.colors.borderSubtle, borderTopWidth: 1 }}>
         <NavItem icon="discover" label="Discover" active={tab === 'discover'} onPress={() => setTab('discover')} />
         <NavItem icon="matches" label="Matches" active={tab === 'matches'} onPress={() => { setTab('matches'); setMatchesRefreshKey((value) => value + 1); }} />
         <NavItem icon="profile" label="Profile" active={tab === 'profile'} onPress={() => { setTab('profile'); setProfileRoute('home'); }} />
