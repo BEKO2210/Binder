@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' blob: data:; connect-src https://sbohsxtzitqhyswznhec.supabase.co wss://sbohsxtzitqhyswznhec.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests">
+  <title>Binder Admin</title>
+  <link rel="icon" href="../assets/binder-icon.png">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin-body">
+  <header class="admin-topbar">
+    <a class="brand" href="../" aria-label="Binder Startseite">
+      <img src="../assets/binder-icon.png" alt="">
+      <span class="brand-word">BINDER ADMIN</span>
+    </a>
+    <button id="sign-out" class="admin-button ghost" type="button" hidden>Abmelden</button>
+  </header>
+
+  <main class="admin-main">
+    <section id="login-view" class="login-layout" aria-labelledby="login-title">
+      <div class="login-copy">
+        <span class="admin-kicker">Geschützter Bereich</span>
+        <h1 id="login-title">Binder sicher moderieren.</h1>
+        <p>Der erste Zugang ist ausschließlich für <strong>belkis.aslani@gmail.com</strong> freigeschaltet. Weitere Moderatoren können später nur vom Owner eingeladen werden.</p>
+      </div>
+      <form id="login-form" class="login-card">
+        <label for="login-email">Freigeschaltete E-Mail-Adresse</label>
+        <input id="login-email" name="email" type="email" value="belkis.aslani@gmail.com" autocomplete="email" required maxlength="254">
+        <button id="login-submit" class="admin-button primary-action" type="submit">Sicheren Anmeldelink senden</button>
+        <p class="form-help">Es wird kein neues Konto angelegt. Nicht freigeschaltete Konten erhalten keinen Dashboard-Zugriff.</p>
+        <p id="login-status" class="form-status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section id="dashboard-view" hidden>
+      <div class="dashboard-heading">
+        <div>
+          <span class="admin-kicker">Binder Operations</span>
+          <h1>Moderation, ohne Umwege.</h1>
+          <p id="session-label" class="session-label"></p>
+        </div>
+        <button id="refresh-all" class="admin-button secondary-action" type="button">Alles aktualisieren</button>
+      </div>
+
+      <section class="summary-grid" aria-label="Übersicht">
+        <article class="summary-card"><span>Offene Fotos</span><strong id="summary-media">–</strong></article>
+        <article class="summary-card"><span>Offene Meldungen</span><strong id="summary-reports">–</strong></article>
+        <article class="summary-card danger-summary"><span>Gesperrte Konten</span><strong id="summary-suspended">–</strong></article>
+        <article class="summary-card"><span>Aktive Moderatoren</span><strong id="summary-moderators">–</strong></article>
+        <article class="summary-card"><span>Protokollierte Aktionen</span><strong id="summary-audit">–</strong></article>
+      </section>
+
+      <nav class="admin-tabs" aria-label="Dashboard Bereiche">
+        <button class="tab-button" type="button" data-tab="photos">Fotos</button>
+        <button class="tab-button" type="button" data-tab="reports">Meldungen</button>
+        <button class="tab-button" type="button" data-tab="moderators">Moderatoren</button>
+        <button class="tab-button" type="button" data-tab="audit">Aktivitätsprotokoll</button>
+      </nav>
+
+      <section class="tab-panel" data-panel="photos" aria-labelledby="photos-title">
+        <div class="panel-heading">
+          <div><span class="admin-kicker">Foto-Warteschlange</span><h2 id="photos-title">Neue Profilbilder prüfen</h2></div>
+          <button class="admin-button ghost queue-refresh" type="button" data-refresh="photos">Aktualisieren</button>
+        </div>
+        <div id="photo-queue" class="moderation-grid" aria-live="polite"></div>
+      </section>
+
+      <section class="tab-panel" data-panel="reports" aria-labelledby="reports-title" hidden>
+        <div class="panel-heading">
+          <div><span class="admin-kicker">Safety-Warteschlange</span><h2 id="reports-title">Meldungen entscheiden</h2></div>
+          <button class="admin-button ghost queue-refresh" type="button" data-refresh="reports">Aktualisieren</button>
+        </div>
+        <div id="report-queue" class="report-list" aria-live="polite"></div>
+      </section>
+
+      <section class="tab-panel" data-panel="moderators" aria-labelledby="moderators-title" hidden>
+        <div class="panel-heading">
+          <div><span class="admin-kicker">Nur für den Owner</span><h2 id="moderators-title">Moderatorenzugänge verwalten</h2></div>
+        </div>
+        <form id="invite-form" class="invite-card">
+          <div class="field-wide">
+            <label for="moderator-email">E-Mail-Adresse</label>
+            <input id="moderator-email" type="email" autocomplete="off" required maxlength="254" placeholder="moderator@example.com">
+          </div>
+          <label class="permission-check"><input id="invite-media" type="checkbox" checked> Fotos prüfen</label>
+          <label class="permission-check"><input id="invite-reports" type="checkbox" checked> Meldungen prüfen</label>
+          <label class="permission-check"><input id="invite-suspend" type="checkbox"> Konten sperren</label>
+          <button class="admin-button primary-action" type="submit">Moderator einladen</button>
+          <p id="invite-status" class="form-status field-wide" role="status" aria-live="polite"></p>
+        </form>
+        <div id="moderator-list" class="moderator-list" aria-live="polite"></div>
+      </section>
+
+      <section class="tab-panel" data-panel="audit" aria-labelledby="audit-title" hidden>
+        <div class="panel-heading">
+          <div><span class="admin-kicker">Unveränderlicher Verlauf</span><h2 id="audit-title">Wer hat was entschieden?</h2></div>
+          <button class="admin-button ghost queue-refresh" type="button" data-refresh="audit">Aktualisieren</button>
+        </div>
+        <div id="audit-list" class="audit-list" aria-live="polite"></div>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="action-dialog" class="action-dialog">
+    <form id="action-form" method="dialog">
+      <span id="action-kicker" class="admin-kicker">Entscheidung</span>
+      <h2 id="action-title">Fall bearbeiten</h2>
+      <p id="action-description" class="dialog-description"></p>
+      <label for="action-notes">Begründung <span id="notes-requirement"></span></label>
+      <textarea id="action-notes" rows="5" maxlength="2000" placeholder="Kurze, sachliche Begründung"></textarea>
+      <div class="dialog-actions">
+        <button id="action-cancel" class="admin-button ghost" type="button">Abbrechen</button>
+        <button id="action-confirm" class="admin-button primary-action" type="submit">Entscheidung bestätigen</button>
+      </div>
+      <p id="action-status" class="form-status" role="status" aria-live="polite"></p>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <script src="../assets/supabase.js" defer></script>
+  <script src="admin.js" defer></script>
+</body>
+</html>

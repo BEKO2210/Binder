@@ -9,6 +9,7 @@ on:
       - 'scripts/materialize-brand-assets.mjs'
       - 'scripts/prepare-site.mjs'
       - 'scripts/verify-site.mjs'
+      - 'scripts/verify-admin-dashboard.mjs'
       - 'package.json'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
@@ -38,6 +39,8 @@ jobs:
         run: npm run site:prepare
       - name: Verify public policy and brand contract
         run: node scripts/verify-site.mjs
+      - name: Verify admin dashboard authorization boundary
+        run: npm run verify:admin
       - name: Configure Pages
         uses: actions/configure-pages@v6
       - name: Upload Pages artifact

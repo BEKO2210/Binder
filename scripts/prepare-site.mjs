@@ -8,5 +8,6 @@ copyFileSync('assets/brand/icon.png', 'site/assets/binder-icon.png');
 copyFileSync('node_modules/@expo-google-fonts/manrope/400Regular/Manrope_400Regular.ttf', 'site/assets/Manrope-Regular.ttf');
 copyFileSync('node_modules/@expo-google-fonts/manrope/700Bold/Manrope_700Bold.ttf', 'site/assets/Manrope-Bold.ttf');
 copyFileSync('node_modules/@expo-google-fonts/manrope/800ExtraBold/Manrope_800ExtraBold.ttf', 'site/assets/Manrope-ExtraBold.ttf');
+copyFileSync('node_modules/@supabase/supabase-js/dist/umd/supabase.js', 'site/assets/supabase.js');
 
 console.log('Binder public site assets prepared.');

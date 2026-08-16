@@ -1,12 +1,13 @@
 import { readFileSync, existsSync, statSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 
-const pages = ['site/index.html', 'site/privacy.html', 'site/terms.html', 'site/delete-account.html'];
+const pages = ['site/index.html', 'site/privacy.html', 'site/terms.html', 'site/delete-account.html', 'site/admin/index.html'];
 const siteAssets = [
   'site/assets/binder-icon.png',
   'site/assets/Manrope-Regular.ttf',
   'site/assets/Manrope-Bold.ttf',
   'site/assets/Manrope-ExtraBold.ttf',
+  'site/assets/supabase.js',
 ];
 const forbidden = [/google-analytics/i, /googletagmanager/i, /facebook\.net/i, /segment\.com/i, /hotjar/i];
 let failures = [];
@@ -32,6 +33,14 @@ for (const file of pages) {
     if (!clean || clean === './') continue;
     const target = resolve(dirname(file), clean);
     if (!existsSync(target)) failures.push(`${file}: broken local link ${href}`);
+  }
+  for (const match of html.matchAll(/src="([^"]+)"/g)) {
+    const src = match[1];
+    if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('data:')) continue;
+    const clean = src.split('#')[0].split('?')[0];
+    if (!clean) continue;
+    const target = resolve(dirname(file), clean);
+    if (!existsSync(target)) failures.push(`${file}: broken local source ${src}`);
   }
 }
 

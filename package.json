@@ -23,12 +23,13 @@
     "verify:phase6-settings": "node scripts/verify-phase6-settings.mjs",
     "verify:phase6-media": "node scripts/verify-phase6-media.mjs",
     "verify:phase7-push": "node scripts/verify-phase7-push.mjs",
+    "verify:admin": "node scripts/verify-admin-dashboard.mjs",
     "test": "node --experimental-strip-types --test 'tests/*.test.ts'"
   },
   "dependencies": {
     "@expo-google-fonts/manrope": "0.4.2",
     "@react-native-async-storage/async-storage": "^2.2.0",
-    "@supabase/supabase-js": "^2.0.0",
+    "@supabase/supabase-js": "2.112.3",
     "expo": "~57.0.8",
     "expo-constants": "57.0.11",
     "expo-crypto": "~57.0.1",

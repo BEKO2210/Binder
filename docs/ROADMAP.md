@@ -267,6 +267,11 @@ Goal: ship the free Binder product safely.
 - account suspension/reinstatement procedure;
 - explicit legal escalation path when required.
 
+Candidate implementation: `docs/PHASE8-ADMIN-STRATA.md` defines the owner-only
+bootstrap, moderator permissions, photo/report queues and immutable audit
+boundary. It is not production until its migration, invitation function and
+static dashboard pass the exact-commit activation runbook.
+
 ### 9.3 Production monitoring
 
 Use the existing first-party privacy-preserving telemetry to watch:

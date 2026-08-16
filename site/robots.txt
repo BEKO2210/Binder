@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
+Disallow: /Binder/admin/
 Sitemap: https://beko2210.github.io/Binder/sitemap.xml

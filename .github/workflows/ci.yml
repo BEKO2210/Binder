@@ -45,6 +45,9 @@ jobs:
       - name: Verify public policy site
         run: node scripts/verify-site.mjs
 
+      - name: Verify admin dashboard authorization boundary
+        run: npm run verify:admin
+
       - name: Verify Phase 4 safety contract
         run: node scripts/verify-safety-contract.mjs
 
@@ -74,6 +77,7 @@ jobs:
         run: |
           deno check --config supabase/functions/delete-account/deno.json supabase/functions/delete-account/index.ts
           deno check --config supabase/functions/dispatch-push/deno.json supabase/functions/dispatch-push/index.ts
+          deno check --config supabase/functions/invite-moderator/deno.json supabase/functions/invite-moderator/index.ts
 
       - name: TypeScript
         run: npm run typecheck
