@@ -105,22 +105,38 @@
     selectTab(allowedTabs()[0]);
   }
 
+  let authorizing = false;
+
   async function authorizeSession() {
+    if (authorizing) return;
+    authorizing = true;
     try {
       state.member = firstRow(await rpc('claim_admin_session'));
-      if (!state.member) throw new Error('Keine Admin-Berechtigung gefunden.');
+      if (!state.member) throw new Error('not-authorized');
       byId('login-view').hidden = true;
       byId('dashboard-view').hidden = false;
       byId('sign-out').hidden = false;
       configurePermissions();
+      window.scrollTo({ top: 0, behavior: 'instant' in document.documentElement.style ? 'instant' : 'auto' });
       await refreshAll();
     } catch (error) {
-      await client.auth.signOut({ scope: 'local' });
-      state.member = null;
-      byId('login-view').hidden = false;
-      byId('dashboard-view').hidden = true;
-      byId('sign-out').hidden = true;
-      setStatus(byId('login-status'), 'Dieses Konto ist nicht für Binder Admin freigeschaltet.', 'error');
+      const message = String(error?.message || '');
+      const transient = /fetch|network|timeout|load failed/i.test(message);
+      if (transient && state.member) {
+        // A flaky request must not destroy a valid session.
+        toast('Verbindung unterbrochen. Bitte „Alles aktualisieren" antippen.', true);
+      } else if (transient) {
+        setStatus(byId('login-status'), 'Keine Verbindung zum Server. Bitte erneut versuchen.', 'error');
+      } else {
+        await client.auth.signOut({ scope: 'local' });
+        state.member = null;
+        byId('login-view').hidden = false;
+        byId('dashboard-view').hidden = true;
+        byId('sign-out').hidden = true;
+        setStatus(byId('login-status'), 'Dieses Konto ist nicht für Binder Admin freigeschaltet.', 'error');
+      }
+    } finally {
+      authorizing = false;
     }
   }
 
@@ -462,6 +478,15 @@
 
   async function start() {
     bindEvents();
+    client.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session && !state.member) void authorizeSession();
+      if (event === 'SIGNED_OUT') {
+        state.member = null;
+        byId('login-view').hidden = false;
+        byId('dashboard-view').hidden = true;
+        byId('sign-out').hidden = true;
+      }
+    });
     const { data } = await client.auth.getSession();
     if (data.session) await authorizeSession();
   }
