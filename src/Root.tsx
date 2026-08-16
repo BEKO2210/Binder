@@ -1,6 +1,7 @@
 import type { Session } from '@supabase/supabase-js';
 import { useEffect, useRef, useState } from 'react';
 import { BackHandler, Pressable, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 import BinderErrorBoundary from './components/BinderErrorBoundary';
@@ -36,7 +37,7 @@ type Tab = 'discover' | 'matches' | 'profile';
 type ProfileRoute = 'home' | 'edit' | 'settings' | 'beta';
 
 export default function Root() {
-  return <KeyboardProvider><BinderThemeProvider><BinderErrorBoundary><BinderApp /></BinderErrorBoundary></BinderThemeProvider></KeyboardProvider>;
+  return <GestureHandlerRootView style={{ flex: 1 }}><KeyboardProvider><BinderThemeProvider><BinderErrorBoundary><BinderApp /></BinderErrorBoundary></BinderThemeProvider></KeyboardProvider></GestureHandlerRootView>;
 }
 
 function BinderApp() {

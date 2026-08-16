@@ -1,9 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Dimensions, ImageBackground, PanResponder, Pressable, ScrollView, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Dimensions, ImageBackground, Pressable, ScrollView, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, { Extrapolation, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
 import { BinderBrand, BinderButton, BinderCard, BinderIcon, BinderIconButton, BinderText, ScreenState } from '../components/ui';
 import { fetchDiscoveryBatch, recordDecision, refreshDiscoveryLocation, type DiscoveryProfile } from '../lib/discovery';
+import { resolveSpring } from '../lib/motionPolicy';
 import { reportAndBlockDiscoveryProfile, type DiscoveryReportReason } from '../lib/safety';
 import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
@@ -11,6 +14,8 @@ import { useBinderTheme } from '../theme/ThemeProvider';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.24;
 const SWIPE_OUT = SCREEN_WIDTH * 1.35;
+// Research-backed release rule: distance OR velocity commits the swipe.
+const FLING_VELOCITY = 900;
 
 const REPORT_REASONS: { value: DiscoveryReportReason; label: string; detail: string }[] = [
   { value: 'underage', label: 'May be under 18', detail: 'Highest-priority safety review.' },
@@ -33,9 +38,11 @@ export default function DiscoveryScreen() {
   const [safetyOpen, setSafetyOpen] = useState(false);
   const [safetyReason, setSafetyReason] = useState<DiscoveryReportReason | null>(null);
   const [safetyBusy, setSafetyBusy] = useState(false);
-  const position = useRef(new Animated.ValueXY()).current;
+  const x = useSharedValue(0);
+  const y = useSharedValue(0);
   const profile = profiles[0];
   const nextProfile = profiles[1];
+  const spring = resolveSpring(reduceMotion, 'professional');
 
   async function loadDiscovery(refreshLocation = true) {
     setLoading(true);
@@ -50,40 +57,62 @@ export default function DiscoveryScreen() {
 
   useEffect(() => { void loadDiscovery(true); }, []);
 
-  const rotate = position.x.interpolate({ inputRange: [-SCREEN_WIDTH, 0, SCREEN_WIDTH], outputRange: ['-13deg', '0deg', '13deg'], extrapolate: 'clamp' });
-  const bindOpacity = position.x.interpolate({ inputRange: [0, SWIPE_THRESHOLD], outputRange: [0, 1], extrapolate: 'clamp' });
-  const passOpacity = position.x.interpolate({ inputRange: [-SWIPE_THRESHOLD, 0], outputRange: [1, 0], extrapolate: 'clamp' });
+  const topCardStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: x.value },
+      { translateY: y.value },
+      { rotate: `${interpolate(x.value, [-SCREEN_WIDTH, 0, SCREEN_WIDTH], [-13, 0, 13], Extrapolation.CLAMP)}deg` },
+    ],
+  }));
+  const bindStampStyle = useAnimatedStyle(() => ({ opacity: interpolate(x.value, [0, SWIPE_THRESHOLD], [0, 1], Extrapolation.CLAMP) }));
+  const passStampStyle = useAnimatedStyle(() => ({ opacity: interpolate(x.value, [-SWIPE_THRESHOLD, 0], [1, 0], Extrapolation.CLAMP) }));
+  // The card underneath grows toward full size as the top card leaves.
+  const backCardStyle = useAnimatedStyle(() => {
+    const progress = interpolate(Math.abs(x.value), [0, SWIPE_THRESHOLD * 1.6], [0, 1], Extrapolation.CLAMP);
+    return {
+      opacity: interpolate(progress, [0, 1], [0.62, 1]),
+      transform: [
+        { scale: interpolate(progress, [0, 1], [0.965, 1]) },
+        { translateY: interpolate(progress, [0, 1], [10, 0]) },
+      ],
+    };
+  });
 
   function springBack() {
     if (reduceMotion) {
-      position.setValue({ x: 0, y: 0 });
+      x.value = 0;
+      y.value = 0;
       return;
     }
-    Animated.spring(position, { toValue: { x: 0, y: 0 }, friction: 5, tension: 45, useNativeDriver: false }).start();
+    x.value = withSpring(0, spring);
+    y.value = withSpring(0, spring);
   }
 
   function finishDismiss(current: DiscoveryProfile, matched: boolean) {
-    position.setValue({ x: 0, y: 0 });
     setProfiles((value) => value.slice(1));
+    x.value = 0;
+    y.value = 0;
     if (matched) setMatch(current);
     setDecisionPending(false);
   }
 
+  // The card flies out immediately for instant feel; it is only REMOVED from
+  // the stack after the server confirms. On failure it springs back in.
   async function submitDecision(direction: 'left' | 'right') {
     if (!profile || decisionPending || safetyOpen) return;
     const current = profile;
     setDecisionPending(true);
     setError('');
+    if (reduceMotion) {
+      x.value = direction === 'right' ? SWIPE_OUT : -SWIPE_OUT;
+    } else {
+      x.value = withTiming(direction === 'right' ? SWIPE_OUT : -SWIPE_OUT, { duration: theme.motion.deliberate });
+    }
     try {
       const result = await recordDecision(current.id, direction === 'right' ? 'bind' : 'pass');
       if (result.matched) await haptic('match');
       else await haptic(direction === 'right' ? 'bind' : 'selection');
-
-      if (reduceMotion) {
-        finishDismiss(current, result.matched);
-        return;
-      }
-      Animated.timing(position, { toValue: { x: direction === 'right' ? SWIPE_OUT : -SWIPE_OUT, y: 0 }, duration: theme.motion.standard, useNativeDriver: false }).start(() => finishDismiss(current, result.matched));
+      finishDismiss(current, result.matched);
     } catch (cause) {
       setDecisionPending(false);
       setError(cause instanceof Error ? cause.message : 'Could not save your decision.');
@@ -109,23 +138,35 @@ export default function DiscoveryScreen() {
       await haptic('destructive');
       setSafetyOpen(false);
       setSafetyReason(null);
-      position.setValue({ x: 0, y: 0 });
+      x.value = 0;
+      y.value = 0;
       setProfiles((current) => current.filter((item) => item.id !== targetId));
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Could not submit the safety report.');
     } finally { setSafetyBusy(false); }
   }
 
-  const panResponder = useMemo(() => PanResponder.create({
-    onMoveShouldSetPanResponder: (_, gesture) => !decisionPending && !safetyOpen && (Math.abs(gesture.dx) > 6 || Math.abs(gesture.dy) > 6),
-    onPanResponderMove: (_, gesture) => { if (!decisionPending && !safetyOpen) position.setValue({ x: gesture.dx, y: reduceMotion ? 0 : gesture.dy * 0.18 }); },
-    onPanResponderRelease: (_, gesture) => {
-      if (decisionPending || safetyOpen || !profile) return;
-      if (gesture.dx > SWIPE_THRESHOLD) void submitDecision('right');
-      else if (gesture.dx < -SWIPE_THRESHOLD) void submitDecision('left');
-      else springBack();
-    },
-  }), [decisionPending, safetyOpen, profile?.id, reduceMotion]);
+  const panGesture = Gesture.Pan()
+    .enabled(!decisionPending && !safetyOpen && Boolean(profile))
+    .activeOffsetX([-8, 8])
+    .onUpdate((event) => {
+      x.value = event.translationX;
+      y.value = reduceMotion ? 0 : event.translationY * 0.18;
+    })
+    .onEnd((event) => {
+      const commitRight = x.value > SWIPE_THRESHOLD || event.velocityX > FLING_VELOCITY;
+      const commitLeft = x.value < -SWIPE_THRESHOLD || event.velocityX < -FLING_VELOCITY;
+      if (commitRight) runOnJS(submitFromGesture)('right');
+      else if (commitLeft) runOnJS(submitFromGesture)('left');
+      else {
+        x.value = withSpring(0, spring);
+        y.value = withSpring(0, spring);
+      }
+    });
+
+  function submitFromGesture(direction: 'left' | 'right') {
+    void submitDecision(direction);
+  }
 
   if (loading && profiles.length === 0) return <ScreenState kind="loading" message="Finding people who fit both sides…" />;
   if (error && profiles.length === 0) return <ScreenState kind="permission" icon="discover" title="Discovery paused" message={`${error}\n\nBinder uses foreground location only to calculate nearby candidates. Exact coordinates are never sent to another user.`} actionLabel="Try again" onAction={() => void loadDiscovery(true)} />;
@@ -148,12 +189,18 @@ export default function DiscoveryScreen() {
           </BinderCard>
         ) : (
           <>
-            {nextProfile ? <ProfileCard profile={nextProfile} back /> : null}
-            <Animated.View {...panResponder.panHandlers} style={{ position: 'absolute', inset: 0, transform: [{ translateX: position.x }, { translateY: position.y }, { rotate: reduceMotion ? '0deg' : rotate }] }}>
-              <ProfileCard profile={profile} />
-              {!reduceMotion ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: theme.spacing.x8, left: theme.spacing.x6, borderWidth: 2, borderColor: theme.accent.accent, borderRadius: theme.radii.small, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x2, opacity: bindOpacity, transform: [{ rotate: '-8deg' }] }}><BinderText variant="title" tone="accent">BIND</BinderText></Animated.View> : null}
-              {!reduceMotion ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: theme.spacing.x8, right: theme.spacing.x6, borderWidth: 2, borderColor: theme.semantic.destructive, borderRadius: theme.radii.small, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x2, opacity: passOpacity, transform: [{ rotate: '8deg' }] }}><BinderText variant="title" tone="destructive">PASS</BinderText></Animated.View> : null}
-            </Animated.View>
+            {nextProfile ? (
+              <Animated.View style={[{ position: 'absolute', inset: 0 }, reduceMotion ? undefined : backCardStyle]}>
+                <ProfileCard profile={nextProfile} back={reduceMotion} />
+              </Animated.View>
+            ) : null}
+            <GestureDetector gesture={panGesture}>
+              <Animated.View style={[{ position: 'absolute', inset: 0 }, topCardStyle]}>
+                <ProfileCard profile={profile} />
+                {!reduceMotion ? <Animated.View pointerEvents="none" style={[{ position: 'absolute', top: theme.spacing.x8, left: theme.spacing.x6, borderWidth: 2, borderColor: theme.accent.accent, borderRadius: theme.radii.small, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x2, transform: [{ rotate: '-8deg' }] }, bindStampStyle]}><BinderText variant="title" tone="accent">BIND</BinderText></Animated.View> : null}
+                {!reduceMotion ? <Animated.View pointerEvents="none" style={[{ position: 'absolute', top: theme.spacing.x8, right: theme.spacing.x6, borderWidth: 2, borderColor: theme.semantic.destructive, borderRadius: theme.radii.small, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x2, transform: [{ rotate: '8deg' }] }, passStampStyle]}><BinderText variant="title" tone="destructive">PASS</BinderText></Animated.View> : null}
+              </Animated.View>
+            </GestureDetector>
             <View style={{ position: 'absolute', top: theme.spacing.x3, right: theme.spacing.x3 }}><BinderIconButton name="safety" accessibilityLabel={`Safety options for ${profile.name}`} onPress={openSafety} /></View>
           </>
         )}

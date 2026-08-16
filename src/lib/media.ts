@@ -74,7 +74,15 @@ export async function addProfileImage(userId: string, image: PreparedImage): Pro
 }
 
 export async function listMyProfileMedia(): Promise<GalleryMedia[]> {
-  const { data, error } = await supabase.from('profile_media').select('id,storage_path,position,moderation_status,moderation_reason,width,height,byte_size,created_at').order('position', { ascending: true });
+  // RLS deliberately also grants read on OTHER users' media once their profile
+  // is viewable (discovery/matches need that), so "my media" must filter on
+  // the signed-in user explicitly — otherwise a match's photos leak into the
+  // own-profile surfaces after an account switch.
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (userError) throw userError;
+  const uid = userData.user?.id;
+  if (!uid) throw new Error('Authentication required.');
+  const { data, error } = await supabase.from('profile_media').select('id,storage_path,position,moderation_status,moderation_reason,width,height,byte_size,created_at').eq('user_id', uid).order('position', { ascending: true });
   if (error) throw error;
   return Promise.all((data ?? []).map(async (row) => ({
     id: row.id,
