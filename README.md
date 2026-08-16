@@ -1,166 +1,64 @@
-# Binder
+<p align="center">
+  <img src=".github/assets/banner.png" alt="Binder — Both choose. Then you talk." width="820">
+</p>
 
-**A relationship-first dating app with mutual matching, conversation safety and explicit account control built into the architecture.**
+<p align="center">
+  <a href="https://github.com/BEKO2210/Binder/actions/workflows/ci.yml"><img src="https://github.com/BEKO2210/Binder/actions/workflows/ci.yml/badge.svg" alt="Binder CI"></a>
+  <a href="https://github.com/BEKO2210/Binder/actions/workflows/database-tests.yml"><img src="https://github.com/BEKO2210/Binder/actions/workflows/database-tests.yml/badge.svg" alt="Database Tests"></a>
+  <img src="https://img.shields.io/badge/price-free%20forever-C7FF4A" alt="Free forever">
+  <img src="https://img.shields.io/badge/audience-18%2B-critical" alt="18+">
+</p>
 
-Binder is an independent implementation. It does not use Tinder source code, private APIs, trademarks or copied assets.
+**Binder is dating with one rule: both people choose each other before a conversation can begin.** No paywall, no blurred likes, no boosts, no ads, no data brokers — one free product, built like infrastructure.
 
-## Current status
+<p align="center">
+  <img src=".github/assets/shot-chat.png" width="260" alt="Chat with grouped bubbles and timestamps">
+  <img src=".github/assets/shot-profile.png" width="260" alt="Partner profile with photo pager">
+  <img src=".github/assets/shot-matches.png" width="260" alt="Matches with message alerts">
+</p>
 
-Phases 1–5 are merged to `main`; Phase 0 remains frozen as the original interaction proof. Phase 5 closed-beta hardening is complete.
+## Why Binder is different
 
-The production Binder Supabase project is synchronized through Phase 5, including the authenticated `delete-account` Edge Function, beta feedback/diagnostics, privacy-preserving discovery ranking observations and authoritative funnel events. The public GitHub Pages policy site is deployed from `main`.
+- **Mutual first.** Messaging exists only after a server-created mutual match. Concurrent likes serialize into exactly one match — never zero, never two.
+- **Free, permanently.** No Pro tier, no boost, no artificial limits. That is a frozen product rule, not a launch promise.
+- **Safety as database invariants.** Blocks dominate discovery, matching, chat and queued push. Reports snapshot evidence server-side. Every photo passes moderation before anyone sees it. 18+ is enforced at sign-up with a locked birth date.
+- **Privacy by architecture.** Exact location and birth date never leave the server — other people only receive a rounded distance and an age. Push notifications never carry message content.
 
-**Roadmap change:** Binder will not have a Pro/Premium/paid mode. The old monetization phase is removed. Phases after 5 focus on product completion, professional visual design, multi-photo profiles, settings, real push delivery, release hardening and store operations while Binder remains one free product. See `docs/ROADMAP.md`.
+## Product surface
 
-### Phase 1 — identity
+| Area | What ships |
+|---|---|
+| Discovery | 60 fps gesture deck (Reanimated/UI-thread), velocity-aware release, server-confirmed decisions |
+| Match | Full-screen celebration mirroring the brand mark, direct hand-off into the conversation |
+| Chat | Inverted timeline pinned to the newest message, grouped bubbles, timestamps, day separators, idempotent send retry |
+| Profiles | Six moderated photos, full-photo viewer, partner profile page fed strictly by server-side visibility |
+| Push | Expo/FCM v1 pipeline with outbox, per-device deliveries, tickets/receipts, bounded retry, dead-letter state, quiet hours enforced server-side |
+| Legal | In-app Impressum & policies, public [policy site](https://beko2210.github.io/Binder/) incl. [child-safety standards](https://beko2210.github.io/Binder/safety-standards.html) |
 
-- Supabase Auth with persistent React Native sessions
-- server-enforced 18+ onboarding baseline
-- profile/preferences and client-compressed WebP profile images
-- private raw birth date and exact PostGIS location
-- RLS plus reduced SQL grants and adversarial privacy tests
+## Engineering proof
 
-### Phase 2 — matching
+- 150+ pgTAP assertions across identity, matching, conversation, safety, moderation and push — replayed from an empty database on every CI run
+- Concurrency stress suites: reciprocal likes, send-vs-unmatch races, sender-wide rate limits, gallery races, dispatcher claims
+- Static contracts: entrypoint, safety wiring, design tokens (no raw hex in screens), brand assets, push architecture, public site
+- Unit tests (`npm test`) for pure product logic: push banner state, motion policy, birthday assessment, chat timeline shaping
 
-- foreground-location discovery with reciprocal age, preference and distance checks
-- persistent immutable `Bind` / `Pass` decisions
-- canonical pair locks before mutuality checks
-- exactly one match + exactly one match-created event under concurrent reciprocal likes
-- reciprocal block semantics and server-only match mutation paths
+## Stack
 
-### Phase 3 — conversation
+Expo SDK 57 / React Native (Android-first) · Supabase (Postgres 17, Auth, Storage, Realtime, Edge Functions) · Expo Push + FCM v1 · EAS Build · GitHub Actions CI with mandatory gates.
 
-- Matches inbox, signed profile media, last-message preview and unread state
-- persisted 1:1 Realtime chat protected by message RLS
-- idempotent server-confirmed sends
-- 20 messages/minute and 300/hour sender-wide limits, serialized across concurrent chats
-- send-vs-unmatch/block serialization
-- Unmatch, Block, profile/message reporting and immutable report evidence snapshots
-- private device-token registry and exactly-once push-outbox groundwork
+## Repository guide
 
-Remote push delivery is **not** claimed end-to-end yet. Real EAS/platform credentials plus the dispatcher remain an external release gate; chat and Realtime do not depend on remote push.
+| Doc | Purpose |
+|---|---|
+| [`AGENTS.md`](AGENTS.md) | Working agreement & current state for AI-assisted development |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | The full map: data model, invariants, push boundary |
+| [`docs/ROADMAP.md`](docs/ROADMAP.md) | Phases and the frozen free-product rule |
+| [`docs/UIUX-PROGRAM.md`](docs/UIUX-PROGRAM.md) | Research-backed UI/UX program & defect log |
+| [`docs/PLAY-RELEASE.md`](docs/PLAY-RELEASE.md) | Signing & Play Console procedure |
+| [`docs/PHASE7-DEVICE-MATRIX.md`](docs/PHASE7-DEVICE-MATRIX.md) | Real-device push evidence |
 
-### Phase 4 — safety gate
+## Legal
 
-- versioned Terms & Community Rules + Privacy acceptance **before profile/photo/message UGC**
-- fail-closed Legal Gate in the app before onboarding or normal tabs
-- account safety state: `active`, `suspended`, `deletion_requested`
-- new/replaced profile photos forced to `pending`; only approved media can be shown to other users
-- private moderation queue for photo reviews and safety reports
-- underage reports receive highest queue priority
-- server-only moderation actions with immutable action log
-- account restrictions immediately remove discovery visibility, close active matches and disable push tokens
-- authenticated Delete Account Edge Function that removes profile media and Supabase Auth identity
-- public external deletion path for users who no longer have the app
-- pre-match report + block flow from Discovery
-- public Binder product/safety site with Privacy, Terms and Account Deletion pages
-- exact high/critical npm-audit leaf gate; the only documented exception is the current transitive Metro `image-size` build-tool advisory chain
+Operator: Belkis Aslani · [Impressum](https://beko2210.github.io/Binder/impressum.html) · [Privacy](https://beko2210.github.io/Binder/privacy.html) · [Terms](https://beko2210.github.io/Binder/terms.html) · [Account deletion](https://beko2210.github.io/Binder/delete-account.html)
 
-### Phase 5 — beta hardening
-
-- first-party beta observability with no third-party analytics SDK
-- private ranking batches/impressions with position, interest overlap and **10 km distance buckets**, never raw coordinates, profile text or media paths
-- server-authored funnel events for onboarding, decisions, matches, first messages and reports
-- optional client diagnostics that are **off by default**, contain only fixed event names/durations/counts/outcomes and are deleted immediately when the user opts out
-- private in-app beta feedback
-- crash fallback instead of a blank render failure; raw exception messages and component stacks are not sent to telemetry
-- three real Phase 4 foreign-key index advisor findings fixed
-- measured Android Hermes baseline and CI bundle-size budget
-- documented beta operator runbook in `docs/BETA-RUNBOOK.md`
-
-## Verification
-
-The final Phase 5 gate at head `ff0cfcd38430b9948f10fcb0810056b8f2e420c9` passed both required pipelines:
-
-- Binder CI #140: dependency audit, entrypoint/policy/safety/beta contracts, Deno Edge Function typecheck, strict TypeScript, Android Expo export and bundle-size gate
-- Binder Database Tests #123: complete Phase 1–5 migration replay, **144 pgTAP assertions**, reciprocal-match races, message retry/unmatch races, sender-wide rate-limit stress, schema lint and account-deletion Auth/Storage/Edge integration
-- measured Android export baseline: **2.39 MiB**
-- CI export budget: **2.75 MiB** total Android export
-
-After merge, `main` Binder CI #141 and Binder Pages also completed successfully. Production Phase 5 migrations were then applied in order and checked against the live security/performance advisors.
-
-## Public site
-
-Binder ships a static, dependency-free GitHub Pages site in `site/`:
-
-- product + safety overview
-- Privacy Policy
-- Terms & Community Rules
-- external Account Deletion resource
-
-The Privacy page separates authoritative first-party beta product measurement from optional technical client diagnostics. Optional diagnostics are disabled by default; ranking measurement stores coarse distance buckets rather than coordinates. Policy pages contain no analytics or third-party tracking scripts.
-
-## Run it
-
-Requirements: Node.js 22.13+ and npm.
-
-```bash
-npm install
-npm run typecheck
-npm run bundlecheck
-npm run android
-```
-
-Environment variables:
-
-```bash
-EXPO_PUBLIC_SUPABASE_URL=
-EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
-EXPO_PUBLIC_EAS_PROJECT_ID=   # optional until remote push is connected
-```
-
-## Product principles
-
-- **Binder remains one free product. No Pro/Premium/paid tier is planned.**
-- Matching, messaging, safety, notifications, settings, themes and profile media are not future paywall candidates.
-- No artificial daily limits, blurred likes or ranking boosts are introduced to manufacture an upgrade path.
-- Mutual interest is required before normal chat.
-- Exact user location is never exposed to another client.
-- Blocking and reporting are server-enforced operations.
-- Binder is 18+ and public release remains blocked on the required store-side adult-access configuration.
-- Account deletion is a product surface, not a support-only workaround.
-- Binder reproduces useful public interaction patterns independently instead of copying proprietary implementation details.
-- Beta measurement must not become a reason to leak profile, chat or precise-location content.
-
-## Build phases
-
-0. **Interaction proof** — swipe deck and local mutual-match state. *(frozen)*
-1. **Identity** — Auth, 18+ onboarding, profile/media and privacy/RLS gates. *(merged)*
-2. **Matching** — server discovery, durable decisions and atomic mutual matches. *(merged)*
-3. **Conversation** — Realtime chat, unread state, unmatch, block/report and push groundwork. *(merged)*
-4. **Safety gate** — legal/UGC gate, moderation, account deletion, public policies and broader adversarial tests. *(merged)*
-5. **Beta** — privacy-preserving ranking/funnel instrumentation, feedback and crash/performance hardening. *(merged + production synchronized)*
-6. **Product completion + visual system** — professional logo/icon/typography/iconography, shared design tokens/components, settings, profile settings and a moderated multi-photo gallery with high-quality client compression.
-7. **Push + communication reliability** — real FCM/EAS push delivery, notification preferences/quiet hours, deep links, token lifecycle and chat reliability polish.
-8. **Release candidate hardening** — real-device two-user E2E, performance/network/accessibility gates and signed release-build validation.
-9. **Store release + operations** — Google Play compliance, adult-access configuration, moderation operations, final store assets and staged rollout.
-10. **Post-launch quality** — ranking/localization/accessibility/abuse/storage improvements based on real usage. **Still free.**
-
-Detailed acceptance criteria live in `docs/ROADMAP.md` and the visual rules in `docs/DESIGN-SYSTEM.md`.
-
-## Design language
-
-- positive decision: **Bind**
-- negative decision: **Pass**
-- mutual match: **It's a Bind**
-
-Current visual direction: dark, editorial, high contrast and intentionally restrained. Lime means progress/trust; pink means destructive or safety-critical commitment. Phase 6 formalizes this into a complete professional visual system covering logo, launcher icon, typography, imagery, iconography, shared components, motion, haptics and accessibility. The UI remains an independent Binder system, not a Tinder skin.
-
-## Architecture docs
-
-- `docs/PRODUCT.md` — product contract and scope
-- `docs/ROADMAP.md` — free product-completion roadmap after Phase 5
-- `docs/DESIGN-SYSTEM.md` — professional visual/interaction system and visual QA gates
-- `docs/ARCHITECTURE.md` — backend boundaries and concurrency invariants
-- `docs/SAFETY.md` — release-blocking dating safety requirements
-- `docs/PLAY-RELEASE.md` — repository-backed and external Google Play release gates
-- `docs/BETA-RUNBOOK.md` — Phase 5 beta operations, moderation and metric handling
-- `docs/REVERSE_ENGINEERING.md` — independent public-behavior implementation boundary
-
-## Backend
-
-Binder uses Supabase Postgres + Auth + Storage + Realtime with Row Level Security. The mobile app contains only the publishable client credential. Raw birth dates and exact coordinates remain private; candidate generation, calculated age, distance, match creation and conversation mutations are server-enforced.
-
-## License
-
-No project license has been selected yet.
+Binder is an independent implementation. It uses no third-party dating-app source code, private APIs, trademarks or copied assets. No project license has been selected yet — all rights reserved.
