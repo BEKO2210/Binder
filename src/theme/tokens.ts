@@ -1,3 +1,5 @@
+import { motionDurations, motionPressScale, motionSprings } from '../lib/motionPolicy';
+
 export type AccentThemeId = 'lime' | 'blue' | 'violet' | 'coral' | 'ice';
 export type AppearanceMode = 'system' | 'dark';
 export type MotionPreference = 'system' | 'reduce' | 'full';
@@ -71,10 +73,14 @@ export const radii = {
   pill: 999,
 } as const;
 
+// Research-backed motion scale (docs/UIUX-PROGRAM.md): 200–400 ms for
+// feedback, up to ~600 ms for context changes; springs with damping 20–30 feel
+// professional, low damping is reserved for deliberate celebration moments.
+// Raw values live in src/lib/motionPolicy.ts so node:test can exercise them.
 export const motion = {
-  fast: 120,
-  standard: 180,
-  deliberate: 240,
+  ...motionDurations,
+  pressScale: motionPressScale,
+  spring: motionSprings,
 } as const;
 
 export const fontFamilies = {

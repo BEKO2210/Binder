@@ -1,5 +1,7 @@
-import { ActivityIndicator, Pressable, View, type PressableProps, type ViewStyle } from 'react-native';
+import { useRef } from 'react';
+import { ActivityIndicator, Animated, Pressable, View, type PressableProps, type ViewStyle } from 'react-native';
 
+import { resolvePressScale, resolveSpring } from '../../lib/motionPolicy';
 import { useBinderTheme } from '../../theme/ThemeProvider';
 import { BinderIcon, type BinderIconName } from './BinderIcon';
 import { BinderText } from './BinderText';
@@ -15,9 +17,15 @@ type Props = Omit<PressableProps, 'style' | 'children'> & {
   style?: ViewStyle;
 };
 
-export function BinderButton({ label, variant = 'primary', loading = false, icon, fullWidth = true, disabled, style, ...props }: Props) {
-  const { theme } = useBinderTheme();
+export function BinderButton({ label, variant = 'primary', loading = false, icon, fullWidth = true, disabled, style, onPressIn, onPressOut, ...props }: Props) {
+  const { theme, reduceMotion } = useBinderTheme();
+  const scale = useRef(new Animated.Value(1)).current;
   const isDisabled = disabled === true || loading;
+  const spring = resolveSpring(reduceMotion, 'professional');
+
+  function animateTo(value: number) {
+    Animated.spring(scale, { toValue: value, useNativeDriver: true, ...spring }).start();
+  }
   const foreground = variant === 'primary'
     ? theme.accent.foreground
     : variant === 'destructive'
@@ -37,8 +45,11 @@ export function BinderButton({ label, variant = 'primary', loading = false, icon
       : background;
 
   return (
+    <Animated.View style={{ transform: [{ scale }], width: fullWidth ? '100%' : undefined }}>
     <Pressable
       {...props}
+      onPressIn={(event) => { animateTo(resolvePressScale(reduceMotion)); onPressIn?.(event); }}
+      onPressOut={(event) => { animateTo(1); onPressOut?.(event); }}
       accessibilityRole="button"
       accessibilityState={{ disabled: isDisabled, busy: loading }}
       disabled={isDisabled}
@@ -70,5 +81,6 @@ export function BinderButton({ label, variant = 'primary', loading = false, icon
         </View>
       )}
     </Pressable>
+    </Animated.View>
   );
 }
