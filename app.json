@@ -60,14 +60,6 @@
         {
           "microphonePermission": false
         }
-      ],
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "allowBackup": false
-          }
-        }
       ]
     ],
     "android": {
@@ -83,7 +75,8 @@
       "blockedPermissions": [
         "android.permission.SYSTEM_ALERT_WINDOW",
         "android.permission.CAMERA"
-      ]
+      ],
+      "allowBackup": false
     },
     "ios": {
       "bundleIdentifier": "de.beko2210.binder",
