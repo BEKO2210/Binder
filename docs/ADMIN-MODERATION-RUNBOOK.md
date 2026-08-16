@@ -5,14 +5,15 @@
 1. Verify the exact candidate commit with app CI, full migration replay, all pgTAP tests, schema lint, Deno checks and site/admin verifiers.
 2. Confirm Supabase production is healthy and migration history still matches the repository.
 3. Apply `20260816180415_phase8_admin_moderation_dashboard.sql` to production.
-4. Run Supabase security and performance advisors. Stop on new security findings.
-5. Deploy `invite-moderator` with JWT verification enabled.
-6. Add `https://beko2210.github.io/Binder/admin/` to the allowed Supabase Auth redirect URLs before sending a login or moderator invite.
-7. Set optional `BINDER_ADMIN_REDIRECT_URL` only if the canonical URL differs from `https://beko2210.github.io/Binder/admin/`. Never add a service-role key manually; Supabase supplies the function runtime secret.
-8. Publish the matching Pages artifact.
-9. Sign in as `belkis.aslani@gmail.com`, verify owner status, photo/report queues and audit access.
-10. Invite one test moderator with photo-only permission. Verify invitation, claim, denied report access and immediate loss of access after disabling.
-11. Only then invite operational moderators.
+4. Apply `20260816180946_phase8_admin_session_revalidation.sql` so revoked Auth sessions immediately lose every admin permission.
+5. Run Supabase security and performance advisors. Stop on unexplained new security findings.
+6. Deploy `invite-moderator` with JWT verification enabled.
+7. Add `https://beko2210.github.io/Binder/admin/` to the allowed Supabase Auth redirect URLs before sending a login or moderator invite.
+8. Set optional `BINDER_ADMIN_REDIRECT_URL` only if the canonical URL differs from `https://beko2210.github.io/Binder/admin/`. Never add a service-role key manually; Supabase supplies the function runtime secret.
+9. Publish the matching Pages artifact.
+10. Sign in as `belkis.aslani@gmail.com`, verify owner status, photo/report queues and audit access.
+11. Invite one test moderator with photo-only permission. Verify invitation, claim, denied report access and immediate loss of access after disabling.
+12. Only then invite operational moderators.
 
 ## Photo review
 

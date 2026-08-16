@@ -7,6 +7,7 @@ const requiredFiles = [
   'site/admin/admin.js',
   'site/assets/supabase.js',
   'supabase/migrations/20260816180415_phase8_admin_moderation_dashboard.sql',
+  'supabase/migrations/20260816180946_phase8_admin_session_revalidation.sql',
   'supabase/tests/phase8_admin_moderation_dashboard_test.sql',
   'supabase/functions/invite-moderator/index.ts',
   'supabase/functions/invite-moderator/deno.json',
@@ -22,6 +23,7 @@ if (!failures.length) {
   const script = readFileSync('site/admin/admin.js', 'utf8');
   const css = readFileSync('site/admin/admin.css', 'utf8');
   const migration = readFileSync('supabase/migrations/20260816180415_phase8_admin_moderation_dashboard.sql', 'utf8');
+  const sessionMigration = readFileSync('supabase/migrations/20260816180946_phase8_admin_session_revalidation.sql', 'utf8');
   const test = readFileSync('supabase/tests/phase8_admin_moderation_dashboard_test.sql', 'utf8');
   const invite = readFileSync('supabase/functions/invite-moderator/index.ts', 'utf8');
   const publicSurface = `${html}\n${script}\n${css}`;
@@ -58,8 +60,16 @@ if (!failures.length) {
     failures.push('admin membership table must never be granted to browser roles');
   }
 
-  if (!test.includes('select plan(42);')) failures.push('Phase 8 pgTAP plan must remain at 42 assertions');
-  for (const required of ['normal Binder account cannot claim admin access', 'Disabled moderator immediately loses dashboard access', 'Audit actor is derived from the confirmed session', 'Changing the confirmed Auth email immediately revokes', 'Admin media review restores the authenticated caller context']) {
+  for (const required of [
+    'private.current_admin_session_is_active()', 'auth.sessions', "auth.jwt() ->> 'session_id'",
+    'Active authentication session required.',
+    'revoke all on function private.admin_has_permission(text) from public, anon, authenticated',
+  ]) {
+    if (!sessionMigration.includes(required)) failures.push(`admin session revalidation missing: ${required}`);
+  }
+
+  if (!test.includes('select plan(43);')) failures.push('Phase 8 pgTAP plan must remain at 43 assertions');
+  for (const required of ['normal Binder account cannot claim admin access', 'Deleting an Auth session immediately revokes dashboard access', 'Disabled moderator immediately loses dashboard access', 'Audit actor is derived from the confirmed session', 'Changing the confirmed Auth email immediately revokes', 'Admin media review restores the authenticated caller context']) {
     if (!test.includes(required)) failures.push(`Phase 8 pgTAP proof missing: ${required}`);
   }
 

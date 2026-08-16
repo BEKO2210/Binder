@@ -18,6 +18,7 @@ Status: **candidate only**. Nothing in this document claims production deploymen
 - Moderator permissions are independent: photo review, report review and account suspension.
 - Account suspension implies report-review permission.
 - Authorization is evaluated from `private.admin_members` on every privileged database call. It never trusts `user_metadata` or browser state.
+- Every privileged call also revalidates the JWT `session_id` against `auth.sessions`, so deleting a session revokes admin access immediately even while its access token has not expired.
 - Disabled moderators lose database access immediately, including with an otherwise valid JWT.
 
 ## Moderation contract
@@ -41,7 +42,7 @@ Status: **candidate only**. Nothing in this document claims production deploymen
 
 ## Immutable proofs
 
-- `supabase/tests/phase8_admin_moderation_dashboard_test.sql`: 42 pgTAP assertions.
+- `supabase/tests/phase8_admin_moderation_dashboard_test.sql`: 43 pgTAP assertions.
 - `scripts/verify-admin-dashboard.mjs`: public-key boundary, CSP, local dependency, RPC, SQL-revoke, actor and invitation checks.
 - CI type-checks `invite-moderator` and runs the complete historical database replay.
 

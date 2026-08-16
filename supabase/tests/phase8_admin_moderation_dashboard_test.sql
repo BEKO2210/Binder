@@ -13,7 +13,7 @@ exception when others then
 end;
 $$;
 
-select plan(42);
+select plan(43);
 
 select is(
   (select email from private.admin_members where role = 'owner'),
@@ -33,6 +33,10 @@ insert into auth.users (
 ('81000000-0000-4000-8000-000000000003', 'authenticated', 'authenticated', 'subject@binder.test', now(), '{}', '{}', now(), now()),
 ('81000000-0000-4000-8000-000000000004', 'authenticated', 'authenticated', 'reporter@binder.test', now(), '{}', '{}', now(), now()),
 ('81000000-0000-4000-8000-000000000005', 'authenticated', 'authenticated', 'stranger@binder.test', now(), '{}', '{}', now(), now());
+
+insert into auth.sessions(id, user_id) values
+('83000000-0000-4000-8000-000000000001', '81000000-0000-4000-8000-000000000001'),
+('83000000-0000-4000-8000-000000000005', '81000000-0000-4000-8000-000000000005');
 
 insert into public.profiles(user_id, first_name, bio, gender, onboarding_complete) values
 ('81000000-0000-4000-8000-000000000003', 'Subject', 'Moderation test subject', 'man', false),
@@ -55,12 +59,12 @@ insert into private.report_context(report_id, reported_profile_snapshot) values
 ('82000000-0000-4000-8000-000000000001', '{"first_name":"Subject","age":25}'::jsonb),
 ('82000000-0000-4000-8000-000000000002', '{"first_name":"Subject","age":15}'::jsonb);
 
-select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000005","role":"authenticated"}', true);
+select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000005","role":"authenticated","session_id":"83000000-0000-4000-8000-000000000005"}', true);
 set local role authenticated;
 select ok(pg_temp.did_error($sql$select * from public.claim_admin_session()$sql$), 'A normal Binder account cannot claim admin access');
 reset role;
 
-select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000001","role":"authenticated"}', true);
+select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000001","role":"authenticated","session_id":"83000000-0000-4000-8000-000000000001"}', true);
 set local role authenticated;
 select is((select admin_role from public.claim_admin_session()), 'owner', 'Confirmed bootstrap email claims the owner role');
 select ok((select can_review_media and can_review_reports and can_suspend_accounts from public.claim_admin_session()), 'Owner receives all moderation permissions');
@@ -87,7 +91,10 @@ insert into auth.users (
   'moderator@binder.test', now(), '{}', '{}', now(), now()
 );
 
-select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000002","role":"authenticated"}', true);
+insert into auth.sessions(id, user_id) values
+('83000000-0000-4000-8000-000000000002', '81000000-0000-4000-8000-000000000002');
+
+select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000002","role":"authenticated","session_id":"83000000-0000-4000-8000-000000000002"}', true);
 set local role authenticated;
 select is((select admin_role from public.claim_admin_session()), 'moderator', 'Invited confirmed email claims the moderator role');
 select ok(
@@ -95,13 +102,23 @@ select ok(
   'Moderator receives only the permissions assigned by owner'
 );
 reset role;
+delete from auth.sessions where id = '83000000-0000-4000-8000-000000000002';
+select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000002","role":"authenticated","session_id":"83000000-0000-4000-8000-000000000002"}', true);
+set local role authenticated;
+select ok(
+  pg_temp.did_error($sql$select * from public.admin_dashboard_summary()$sql$),
+  'Deleting an Auth session immediately revokes dashboard access'
+);
+reset role;
+insert into auth.sessions(id, user_id) values
+('83000000-0000-4000-8000-000000000002', '81000000-0000-4000-8000-000000000002');
 update auth.users set email = 'changed@binder.test' where id = '81000000-0000-4000-8000-000000000002';
-select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000002","role":"authenticated"}', true);
+select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000002","role":"authenticated","session_id":"83000000-0000-4000-8000-000000000002"}', true);
 set local role authenticated;
 select ok(pg_temp.did_error($sql$select * from public.admin_list_media_queue()$sql$), 'Changing the confirmed Auth email immediately revokes the bound admin identity');
 reset role;
 update auth.users set email = 'moderator@binder.test' where id = '81000000-0000-4000-8000-000000000002';
-select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000002","role":"authenticated"}', true);
+select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000002","role":"authenticated","session_id":"83000000-0000-4000-8000-000000000002"}', true);
 set local role authenticated;
 select ok(pg_temp.did_error($sql$select * from public.admin_list_moderators()$sql$), 'Moderator cannot list or manage moderators');
 select ok(
@@ -117,7 +134,7 @@ select is(
 );
 reset role;
 
-select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000005","role":"authenticated"}', true);
+select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000005","role":"authenticated","session_id":"83000000-0000-4000-8000-000000000005"}', true);
 set local role authenticated;
 select is(
   (select count(*) from storage.objects where bucket_id = 'profile-media' and name like '%/admin-%'),
@@ -126,7 +143,7 @@ select is(
 );
 reset role;
 
-select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000002","role":"authenticated"}', true);
+select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000002","role":"authenticated","session_id":"83000000-0000-4000-8000-000000000002"}', true);
 set local role authenticated;
 select lives_ok(
   $sql$select public.admin_review_media((select case_id from public.admin_list_media_queue() order by case_id limit 1), 'approve_media', null)$sql$,
@@ -149,7 +166,7 @@ select is(
   'Audit actor is derived from the confirmed session, not client input'
 );
 
-select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000002","role":"authenticated"}', true);
+select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000002","role":"authenticated","session_id":"83000000-0000-4000-8000-000000000002"}', true);
 set local role authenticated;
 select ok(
   pg_temp.did_error($sql$select public.admin_review_media((select case_id from public.admin_list_media_queue() order by case_id limit 1), 'reject_media', '')$sql$),
@@ -166,7 +183,7 @@ select is(
   'Rejected action changes the server-controlled media state'
 );
 
-select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000002","role":"authenticated"}', true);
+select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000002","role":"authenticated","session_id":"83000000-0000-4000-8000-000000000002"}', true);
 set local role authenticated;
 select lives_ok(
   $sql$select public.admin_review_report((select case_id from public.admin_list_report_queue() where reason = 'spam'), 'dismiss', 'No violation found')$sql$,
@@ -178,7 +195,7 @@ select ok(
 );
 reset role;
 
-select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000001","role":"authenticated"}', true);
+select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000001","role":"authenticated","session_id":"83000000-0000-4000-8000-000000000001"}', true);
 set local role authenticated;
 select public.admin_update_moderator('moderator@binder.test', true, true, true, true);
 select ok(
@@ -187,7 +204,7 @@ select ok(
 );
 reset role;
 
-select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000002","role":"authenticated"}', true);
+select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000002","role":"authenticated","session_id":"83000000-0000-4000-8000-000000000002"}', true);
 set local role authenticated;
 select lives_ok(
   $sql$select public.admin_review_report((select case_id from public.admin_list_report_queue() where reason = 'underage'), 'suspend', 'Confirmed underage safety violation')$sql$,
@@ -205,7 +222,7 @@ select is(
   'Suspension receives the immutable authenticated actor'
 );
 
-select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000001","role":"authenticated"}', true);
+select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000001","role":"authenticated","session_id":"83000000-0000-4000-8000-000000000001"}', true);
 set local role authenticated;
 select public.admin_update_moderator('moderator@binder.test', false, true, true, true);
 select is(
@@ -215,12 +232,12 @@ select is(
 );
 reset role;
 
-select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000002","role":"authenticated"}', true);
+select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000002","role":"authenticated","session_id":"83000000-0000-4000-8000-000000000002"}', true);
 set local role authenticated;
 select ok(pg_temp.did_error($sql$select * from public.admin_dashboard_summary()$sql$), 'Disabled moderator immediately loses dashboard access');
 reset role;
 
-select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000001","role":"authenticated"}', true);
+select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000001","role":"authenticated","session_id":"83000000-0000-4000-8000-000000000001"}', true);
 set local role authenticated;
 select ok(
   pg_temp.did_error($sql$select * from public.admin_prepare_moderator_invite('belkis.aslani@gmail.com', true, true, true)$sql$),
