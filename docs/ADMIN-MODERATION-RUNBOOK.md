@@ -5,7 +5,7 @@
 1. Verify the exact candidate commit with app CI, full migration replay, all pgTAP tests, schema lint, Deno checks and site/admin verifiers.
 2. Confirm Supabase production is healthy and migration history still matches the repository.
 3. Apply `20260816180415_phase8_admin_moderation_dashboard.sql` to production.
-4. Apply `20260816180946_phase8_admin_session_revalidation.sql` so revoked Auth sessions immediately lose every admin permission.
+4. Apply `20260816181817_phase8_admin_session_revalidation.sql` so revoked Auth sessions immediately lose every admin permission.
 5. Run Supabase security and performance advisors. Stop on unexplained new security findings.
 6. Deploy `invite-moderator` with JWT verification enabled.
 7. Add `https://beko2210.github.io/Binder/admin/` to the allowed Supabase Auth redirect URLs before sending a login or moderator invite.

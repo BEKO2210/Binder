@@ -7,7 +7,7 @@ const requiredFiles = [
   'site/admin/admin.js',
   'site/assets/supabase.js',
   'supabase/migrations/20260816180415_phase8_admin_moderation_dashboard.sql',
-  'supabase/migrations/20260816180946_phase8_admin_session_revalidation.sql',
+  'supabase/migrations/20260816181817_phase8_admin_session_revalidation.sql',
   'supabase/tests/phase8_admin_moderation_dashboard_test.sql',
   'supabase/functions/invite-moderator/index.ts',
   'supabase/functions/invite-moderator/deno.json',
@@ -23,7 +23,7 @@ if (!failures.length) {
   const script = readFileSync('site/admin/admin.js', 'utf8');
   const css = readFileSync('site/admin/admin.css', 'utf8');
   const migration = readFileSync('supabase/migrations/20260816180415_phase8_admin_moderation_dashboard.sql', 'utf8');
-  const sessionMigration = readFileSync('supabase/migrations/20260816180946_phase8_admin_session_revalidation.sql', 'utf8');
+  const sessionMigration = readFileSync('supabase/migrations/20260816181817_phase8_admin_session_revalidation.sql', 'utf8');
   const test = readFileSync('supabase/tests/phase8_admin_moderation_dashboard_test.sql', 'utf8');
   const invite = readFileSync('supabase/functions/invite-moderator/index.ts', 'utf8');
   const publicSurface = `${html}\n${script}\n${css}`;
