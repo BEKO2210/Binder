@@ -63,7 +63,8 @@
         "monochromeImage": "./assets/brand/monochrome.png",
         "backgroundColor": "#090A0F"
       },
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "versionCode": 2
     },
     "ios": {
       "bundleIdentifier": "de.beko2210.binder",
