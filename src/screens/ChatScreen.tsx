@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, AppState, FlatList, Platform, Pressable, TextInput, View } from 'react-native';
+import { Alert, AppState, BackHandler, FlatList, Platform, Pressable, TextInput, View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
@@ -19,6 +19,7 @@ import {
   type Message,
   type ReportReason,
 } from '../lib/conversation';
+import PartnerProfileScreen from './PartnerProfileScreen';
 import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
@@ -58,6 +59,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   const [reportDetails, setReportDetails] = useState('');
   const [reportMessageId, setReportMessageId] = useState<string | null>(null);
   const [reporting, setReporting] = useState(false);
+  const [showPartnerProfile, setShowPartnerProfile] = useState(false);
 
   function mergeMessages(next: Message[]) {
     setMessages((current) => {
@@ -175,6 +177,15 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   // The timeline adds bubble grouping, timestamps and day separators.
   const timeline = useMemo(() => [...buildChatTimeline(messages)].reverse(), [messages]);
 
+  useEffect(() => {
+    if (!showPartnerProfile) return;
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      setShowPartnerProfile(false);
+      return true;
+    });
+    return () => subscription.remove();
+  }, [showPartnerProfile]);
+
   async function submitMessage() {
     if (!canSend) return;
     const body = trimmedComposer;
@@ -235,14 +246,18 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     setReportDetails('');
   }
 
+  if (showPartnerProfile) {
+    return <PartnerProfileScreen userId={match.otherUserId} fallbackName={match.firstName} onClose={() => setShowPartnerProfile(false)} />;
+  }
+
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: theme.colors.canvas }} behavior="padding" keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}>
       <View style={{ paddingTop: theme.spacing.x3, paddingHorizontal: theme.spacing.x3, paddingBottom: theme.spacing.x3, flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: theme.colors.borderSubtle }}>
         <BinderIconButton name="back" accessibilityLabel="Back to matches" onPress={onClose} />
-        <View style={{ flex: 1, alignItems: 'center' }}>
+        <Pressable accessibilityRole="button" accessibilityLabel={`Open ${match.firstName}'s profile`} onPress={() => setShowPartnerProfile(true)} style={{ flex: 1, alignItems: 'center' }}>
           <BinderText variant="label">{match.firstName}, {match.age}</BinderText>
-          <BinderText variant="micro" tone="accent" style={{ marginTop: theme.spacing.x1 }}>IT'S A BIND</BinderText>
-        </View>
+          <BinderText variant="micro" tone="accent" style={{ marginTop: theme.spacing.x1 }}>View profile</BinderText>
+        </Pressable>
         <BinderIconButton name="more" accessibilityLabel="Conversation safety controls" selected={showSafety} onPress={() => { if (showSafety) closeSafety(); else { setSafetyMode('menu'); setShowSafety(true); } }} />
       </View>
 
