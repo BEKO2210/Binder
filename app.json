@@ -62,7 +62,8 @@
         "foregroundImage": "./assets/brand/adaptive-foreground.png",
         "monochromeImage": "./assets/brand/monochrome.png",
         "backgroundColor": "#090A0F"
-      }
+      },
+      "googleServicesFile": "./google-services.json"
     },
     "ios": {
       "bundleIdentifier": "de.beko2210.binder",

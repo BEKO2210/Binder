@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1098973922981",
+    "project_id": "binder-90d33",
+    "storage_bucket": "binder-90d33.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1098973922981:android:3731592dfa2029d62d6f4c",
+        "android_client_info": {
+          "package_name": "de.beko2210.binder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5tUYnfCuvpIftwE27oLwSfnx-AvByygc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
