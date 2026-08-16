@@ -12,7 +12,7 @@ Status: **in progress**. First end-to-end remote deliveries are proven on real h
 | Device-test build (preview APK) | `preview` / [`cddb4a8d-95ea-456f-a158-efa8f5100646`](https://expo.dev/accounts/beko2210s-team/projects/binder/builds/cddb4a8d-95ea-456f-a158-efa8f5100646) — internal-distribution APK installed on both devices |
 | FCM v1 service credential present in EAS | confirmed 2026-08-16 — Firebase project `binder-90d33`, client `firebase-adminsdk-fbsvc@binder-90d33.iam.gserviceaccount.com` |
 | Exact Git commit | AAB: `a347d64c3ac4c545edccd1d26ffe1ad4770c2262` · preview APK + production activation: `8af966cf` |
-| Device A / Android version | Samsung Galaxy S23 Ultra, test account A ("Renate") — Android version pending |
+| Device A / Android version | Samsung Galaxy S23 Ultra (SM-S918B), Android 16, One UI 8.5, test account A ("Renate") |
 | Device B / Android version | Samsung Galaxy Tab S9 Ultra (SM-X910), Android 16, test account B ("Belkis") |
 
 Do not put push tokens, service-account JSON, Expo access tokens or dispatcher secrets in this file.

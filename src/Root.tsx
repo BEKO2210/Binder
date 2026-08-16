@@ -1,6 +1,6 @@
 import type { Session } from '@supabase/supabase-js';
 import { useEffect, useRef, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { BackHandler, Pressable, View } from 'react-native';
 
 import BinderErrorBoundary from './components/BinderErrorBoundary';
 import { BinderIcon, BinderText, ScreenState, type BinderIconName } from './components/ui';
@@ -134,6 +134,29 @@ function BinderApp() {
     void refreshPushRegistration().catch(() => undefined);
     return observePushTokenRotation();
   }, [session?.user.id, legalGate?.accepted, onboardingComplete, settings.notifications.enabled]);
+
+  useEffect(() => {
+    // Android hardware/gesture back walks one level up instead of leaving the app:
+    // open chat -> matches list, profile sub-screen -> profile, other tab -> discover.
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (activeMatch) {
+        setActiveMatch(null);
+        setMatchesRefreshKey((value) => value + 1);
+        setTab('matches');
+        return true;
+      }
+      if (profileRoute !== 'home') {
+        setProfileRoute('home');
+        return true;
+      }
+      if (tab !== 'discover') {
+        setTab('discover');
+        return true;
+      }
+      return false;
+    });
+    return () => subscription.remove();
+  }, [activeMatch, profileRoute, tab]);
 
   useEffect(() => {
     if (!pendingNotificationRoute || !session || legalGate?.accepted !== true || onboardingComplete !== true) return;
