@@ -1,0 +1,52 @@
+name: Binder EAS Preview Build
+# Repository secret contract: EXPO_TOKEN.
+# Manual-only: builds an installable internal APK for the Phase 7 device matrix.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: binder-eas-preview
+  cancel-in-progress: false
+
+jobs:
+  android-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      CI: '1'
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v6
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22.13.1'
+          package-manager-cache: false
+
+      - name: Require Expo authentication
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then
+            echo "EXPO_TOKEN repository secret is missing or empty." >&2
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+
+      - name: Materialize production branding
+        run: npm run brand:assets
+
+      - name: Verify Phase 7 candidate
+        run: |
+          npm run verify:phase7-push
+          npm run verify:brand
+          npm run typecheck
+
+      - name: Build Android preview APK on EAS
+        run: npx --yes eas-cli@latest build --platform android --profile preview --non-interactive
