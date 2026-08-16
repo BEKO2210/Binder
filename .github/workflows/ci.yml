@@ -78,6 +78,9 @@ jobs:
       - name: TypeScript
         run: npm run typecheck
 
+      - name: Unit tests
+        run: npm test
+
       - name: Verify Android native config
         run: npx expo prebuild --platform android --no-install --clean
 

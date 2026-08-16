@@ -5,6 +5,7 @@
     "noUncheckedIndexedAccess": true
   },
   "exclude": [
-    "supabase/functions/**"
+    "supabase/functions/**",
+    "tests/**"
   ]
 }

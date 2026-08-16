@@ -3,17 +3,18 @@ import { FlatList, Image, Pressable, View } from 'react-native';
 
 import { BinderButton, BinderCard, BinderIcon, BinderText, ScreenState, SectionHeader } from '../components/ui';
 import { fetchMatches, type MatchSummary } from '../lib/conversation';
-import { enablePushNotifications } from '../lib/notifications';
+import { enablePushNotifications, getNotificationPermissionStatus, openSystemNotificationSettings } from '../lib/notifications';
+import { bannerOffersEnable, bannerStateAfterRegistration, initialBannerState, type PushBannerState } from '../lib/pushBanner';
 import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
 export default function MatchesScreen({ refreshKey, onOpenMatch }: { refreshKey: number; onOpenMatch: (match: MatchSummary) => void }) {
-  const { theme } = useBinderTheme();
+  const { theme, settings, updateNotifications } = useBinderTheme();
   const haptic = useBinderHaptics();
   const [matches, setMatches] = useState<MatchSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [pushState, setPushState] = useState<'idle' | 'busy' | 'enabled' | 'unavailable'>('idle');
+  const [pushState, setPushState] = useState<PushBannerState>('idle');
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -25,14 +26,24 @@ export default function MatchesScreen({ refreshKey, onOpenMatch }: { refreshKey:
 
   useEffect(() => { void load(); }, [load, refreshKey]);
 
+  useEffect(() => {
+    let active = true;
+    getNotificationPermissionStatus()
+      .then((permission) => { if (active) setPushState((current) => current === 'busy' ? current : initialBannerState(settings.notifications.enabled, permission)); })
+      .catch(() => undefined);
+    return () => { active = false; };
+  }, [settings.notifications.enabled]);
+
   async function enablePush() {
     if (pushState === 'busy') return;
     setPushState('busy');
     setError('');
     try {
       const result = await enablePushNotifications();
-      setPushState(result.status === 'registered' ? 'enabled' : 'unavailable');
-      await haptic(result.status === 'registered' ? 'selection' : 'warning');
+      const next = bannerStateAfterRegistration(result.status);
+      setPushState(next);
+      if (next === 'enabled') await updateNotifications({ enabled: true });
+      await haptic(next === 'enabled' ? 'selection' : 'warning');
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : 'Could not enable notifications.');
       setPushState('idle');
@@ -52,12 +63,17 @@ export default function MatchesScreen({ refreshKey, onOpenMatch }: { refreshKey:
             <BinderIcon name="notifications" size={21} color={pushState === 'enabled' ? theme.accent.accent : theme.colors.textSecondary} />
           </View>
           <View style={{ flex: 1 }}>
-            <BinderText variant="label">{pushState === 'enabled' ? 'Message alerts enabled' : pushState === 'busy' ? 'Enabling alerts…' : 'Message alerts'}</BinderText>
+            <BinderText variant="label">{pushState === 'enabled' ? 'Message alerts enabled' : pushState === 'busy' ? 'Enabling alerts…' : pushState === 'denied' ? 'Alerts are blocked' : 'Message alerts'}</BinderText>
             <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1 }}>
-              {pushState === 'unavailable' ? 'Remote push is not configured on this build yet. Chat still works normally.' : pushState === 'enabled' ? 'Notification categories can be adjusted in App Settings.' : 'Opt in to alerts for new matches and messages.'}
+              {pushState === 'unavailable' ? 'Remote push is not available in this environment. Chat still works normally.'
+                : pushState === 'offline' ? 'Could not reach the push service. Check your connection and try again.'
+                : pushState === 'denied' ? 'Android is blocking Binder notifications. Allow them in system settings.'
+                : pushState === 'enabled' ? 'Notification categories can be adjusted in App Settings.'
+                : 'Opt in to alerts for new matches and messages.'}
             </BinderText>
           </View>
-          {pushState !== 'enabled' && pushState !== 'unavailable' ? <BinderButton label="Enable" variant="secondary" fullWidth={false} loading={pushState === 'busy'} onPress={() => void enablePush()} /> : null}
+          {bannerOffersEnable(pushState) ? <BinderButton label={pushState === 'offline' ? 'Retry' : 'Enable'} variant="secondary" fullWidth={false} loading={pushState === 'busy'} onPress={() => void enablePush()} /> : null}
+          {pushState === 'denied' ? <BinderButton label="Open settings" variant="secondary" fullWidth={false} onPress={() => void openSystemNotificationSettings().catch(() => undefined)} /> : null}
         </View>
       </BinderCard>
 

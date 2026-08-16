@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import * as Crypto from 'expo-crypto';
 import * as Notifications from 'expo-notifications';
-import { Platform } from 'react-native';
+import { Linking, Platform } from 'react-native';
 
 import type { AppSettings } from '../theme/ThemeProvider';
 import { supabase } from './supabase';
@@ -121,6 +121,18 @@ async function registerCurrentToken(requestPermission: boolean): Promise<PushReg
 
 export async function enablePushNotifications(): Promise<PushRegistrationResult> {
   return registerCurrentToken(true);
+}
+
+export async function getNotificationPermissionStatus(): Promise<'granted' | 'denied' | 'undetermined'> {
+  if (Platform.OS !== 'android' && Platform.OS !== 'ios') return 'undetermined';
+  const current = await Notifications.getPermissionsAsync();
+  if (current.status === 'granted') return 'granted';
+  // canAskAgain=false means the user actively revoked or permanently denied it.
+  return current.canAskAgain ? 'undetermined' : 'denied';
+}
+
+export async function openSystemNotificationSettings(): Promise<void> {
+  await Linking.openSettings();
 }
 
 export async function refreshPushRegistration(): Promise<PushRegistrationResult> {
