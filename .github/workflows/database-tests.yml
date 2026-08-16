@@ -2,7 +2,7 @@ name: Binder Database Tests
 
 on:
   push:
-    branches: ['phase/**']
+    branches: [main, 'phase/**']
   pull_request:
     branches: [main]
   workflow_dispatch:
