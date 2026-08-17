@@ -47,3 +47,20 @@ Do not put push tokens, service-account JSON, Expo access tokens or dispatcher s
 ## Evidence format
 
 For each completed row record the UTC timestamp, anonymized account/device label, outbox ID, delivery ID, attempt count, ticket state, receipt state and observed device behavior. Screenshots must omit tokens and personal content.
+
+## Cold start and frame timing per build (S23 Ultra, SM-S918B, Android 16)
+
+Measured with `am start -W` after `force-stop`, five runs, and with
+`dumpsys gfxinfo` reset immediately before the interaction. One row per build
+that shipped a change worth timing, so a regression has something to be
+compared against.
+
+| Build | Cold start (5 runs, ms) | Median | Frames measured | Janky |
+| --- | --- | --- | --- | --- |
+| v0.5.4 (vc7, first build with Skia) | 303 / 305 / 351 / 370 / 402 | 351 | 678 (loading surface) | 0.00 % |
+| v0.5.27 (vc30, thumbnails decode downsampled) | 330 / 363 / 402 / 409 / 600 | 402 | — | — |
+| v0.5.30 (vc33, current) | 291 / 322 / 336 / 341 / 367 | 336 | 427 (photo paging) | 1.87 % |
+
+Baseline before Skia, same device: 318 / 318 / 371 / 408 / 533, median 371 ms.
+The current build starts faster than the pre-Skia baseline and stays well under
+the 5 % janky-frame budget while paging photos.
