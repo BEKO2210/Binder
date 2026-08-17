@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, View, type AccessibilityActionEvent } from 'react-native';
+import { View, type AccessibilityActionEvent } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
@@ -8,6 +8,7 @@ import { useBinderHaptics } from '../../theme/haptics';
 import { useBinderTheme } from '../../theme/ThemeProvider';
 import { layout } from '../../theme/tokens';
 import { BinderText } from './BinderText';
+import { MotionPressable as Pressable } from './MotionPressable';
 
 const DIAL_SIZE = layout.dialSize;
 // These dimensions form the tested polar hit geometry; changing one requires

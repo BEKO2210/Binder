@@ -14,6 +14,11 @@ export const motionDurations = {
 
 export const motionPressScale = 0.97;
 
+export const motionStagger = {
+  step: 36,
+  cap: 180,
+} as const;
+
 export const motionSprings = {
   professional: { damping: 26, stiffness: 320, mass: 1 },
   celebratory: { damping: 12, stiffness: 200, mass: 1 },
@@ -32,6 +37,11 @@ export function resolveDurations(reduceMotion: boolean): MotionDurations {
 // stays at 1 and pressed color states carry the feedback alone.
 export function resolvePressScale(reduceMotion: boolean): number {
   return reduceMotion ? 1 : motionPressScale;
+}
+
+export function resolveStaggerDelay(index: number, reduceMotion: boolean): number {
+  if (reduceMotion) return 0;
+  return Math.min(Math.max(0, Math.floor(index)) * motionStagger.step, motionStagger.cap);
 }
 
 export function resolveSpring(reduceMotion: boolean, flavor: 'professional' | 'celebratory') {

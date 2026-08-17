@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Pressable, TextInput, View, type TextInputProps } from 'react-native';
+import { TextInput, View, type TextInputProps } from 'react-native';
 
 import { useBinderTheme } from '../../theme/ThemeProvider';
 import { BinderIcon } from './BinderIcon';
 import { BinderText } from './BinderText';
+import { MotionPressable as Pressable } from './MotionPressable';
 
 type Props = TextInputProps & {
   label: string;

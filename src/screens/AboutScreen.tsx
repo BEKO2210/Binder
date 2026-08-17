@@ -1,8 +1,9 @@
 import Constants from 'expo-constants';
 import { useState } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 import { BinderCard, BinderScreenHeader, BinderText, SectionHeader } from '../components/ui';
+import { MotionPressable as Pressable } from '../components/ui';
 import { DELETE_ACCOUNT_URL, PRIVACY_URL, TERMS_URL, openBinderUrl } from '../lib/safety';
 import { useBinderTheme } from '../theme/ThemeProvider';
 

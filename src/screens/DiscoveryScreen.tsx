@@ -1,14 +1,15 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { BackHandler, Dimensions, Image, Pressable, ScrollView, View } from 'react-native';
+import { BackHandler, Dimensions, Image, ScrollView, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { Extrapolation, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { Extrapolation, FadeIn, FadeInUp, FadeOut, FadeOutDown, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
 import DiscoveryFilterSheet from '../components/DiscoveryFilterSheet';
 import { DiscoveryLoading } from '../components/DiscoveryLoading';
 import type { DiscoveryPreferenceValues } from '../components/DiscoveryPreferences';
 import { MatchCelebration } from '../components/MatchCelebration';
+import { MotionPressable as Pressable } from '../components/ui';
 import { BinderBrand, BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import { fetchMatches, type MatchSummary } from '../lib/conversation';
 import { fetchDiscoveryBatch, recordDecision, refreshDiscoveryLocation, type DiscoveryProfile } from '../lib/discovery';
@@ -277,7 +278,7 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
       <StatusBar style={theme.mode === 'dark' ? 'light' : 'dark'} />
       <BinderScreenHeader title="Discover" titleVisual={<View><BinderBrand compact /><BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>People who fit both sides.</BinderText></View>} trailing={<View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
           {decisionPending ? <BinderText variant="caption" tone="accent">Saving…</BinderText> : null}
-          <BinderChip label={filterValues ? `${filterValues.minAge}–${filterValues.maxAge} · ${filterValues.distance} km` : 'Filters'} selected={filtersOpen} accessibilityLabel="Open discovery filters" onPress={() => setFiltersOpen(true)} />
+          <Animated.View key={filterValues ? `${filterValues.minAge}-${filterValues.maxAge}-${filterValues.distance}` : 'filters'} entering={reduceMotion ? undefined : FadeIn.duration(theme.motion.standard)} exiting={reduceMotion ? undefined : FadeOut.duration(theme.motion.fast)}><BinderChip label={filterValues ? `${filterValues.minAge}–${filterValues.maxAge} · ${filterValues.distance} km` : 'Filters'} selected={filtersOpen} accessibilityLabel="Open discovery filters" onPress={() => setFiltersOpen(true)} /></Animated.View>
         </View>} />
 
       <View style={{ flex: 1, marginHorizontal: theme.spacing.x4, marginTop: theme.spacing.x1, marginBottom: theme.spacing.x3, justifyContent: 'center' }}>
@@ -317,9 +318,9 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
       </View>
 
       {viewingProfile ? (
-        <View style={{ position: 'absolute', inset: 0, backgroundColor: theme.colors.canvas }}>
+        <Animated.View entering={reduceMotion ? undefined : FadeInUp.duration(theme.motion.entrance)} exiting={reduceMotion ? undefined : FadeOutDown.duration(theme.motion.deliberate)} style={{ position: 'absolute', inset: 0, backgroundColor: theme.colors.canvas }}>
           <PartnerProfileScreen userId={viewingProfile.id} fallbackName={viewingProfile.name} onClose={() => setViewingProfile(null)} />
-        </View>
+        </Animated.View>
       ) : null}
 
       {match ? (

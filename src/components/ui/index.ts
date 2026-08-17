@@ -10,3 +10,5 @@ export { BinderText } from './BinderText';
 export { BinderScreenHeader } from './BinderScreenHeader';
 export { ScreenState } from './ScreenState';
 export { SectionHeader } from './SectionHeader';
+export { MotionPressable } from './MotionPressable';
+export { ChangingNumber } from './ChangingNumber';

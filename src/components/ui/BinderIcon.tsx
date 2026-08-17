@@ -1,9 +1,8 @@
 import { SymbolView } from 'expo-symbols';
-import { useRef } from 'react';
-import { Animated, Pressable, type ColorValue, type ViewStyle } from 'react-native';
+import { type ColorValue, type ViewStyle } from 'react-native';
 
-import { resolvePressScale, resolveSpring } from '../../lib/motionPolicy';
 import { useBinderTheme } from '../../theme/ThemeProvider';
+import { MotionPressable } from './MotionPressable';
 
 const symbols = {
   discover: { ios: 'safari', android: 'explore', web: 'explore' },
@@ -59,17 +58,10 @@ type IconButtonProps = IconProps & {
 };
 
 export function BinderIconButton({ accessibilityLabel, onPress, disabled, selected, destructive, style, ...icon }: IconButtonProps) {
-  const { theme, reduceMotion } = useBinderTheme();
-  const scale = useRef(new Animated.Value(1)).current;
+  const { theme } = useBinderTheme();
   const color = destructive ? theme.semantic.destructive : selected ? theme.accent.accent : theme.colors.textSecondary;
-  function animateTo(value: number) {
-    Animated.spring(scale, { toValue: value, useNativeDriver: true, ...resolveSpring(reduceMotion, 'professional') }).start();
-  }
   return (
-    <Animated.View style={{ transform: [{ scale }] }}>
-    <Pressable
-      onPressIn={() => animateTo(resolvePressScale(reduceMotion))}
-      onPressOut={() => animateTo(1)}
+    <MotionPressable
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       accessibilityState={{ disabled, selected }}
@@ -87,7 +79,6 @@ export function BinderIconButton({ accessibilityLabel, onPress, disabled, select
       }, style]}
     >
       <BinderIcon {...icon} color={color} />
-    </Pressable>
-    </Animated.View>
+    </MotionPressable>
   );
 }

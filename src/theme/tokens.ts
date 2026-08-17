@@ -1,4 +1,4 @@
-import { motionDurations, motionPressScale, motionSprings } from '../lib/motionPolicy';
+import { motionDurations, motionPressScale, motionSprings, motionStagger } from '../lib/motionPolicy';
 
 export type AccentThemeId = 'lime' | 'blue' | 'violet' | 'coral' | 'ice';
 export type AppearanceMode = 'system' | 'dark';
@@ -113,6 +113,7 @@ export const motion = {
   ...motionDurations,
   pressScale: motionPressScale,
   spring: motionSprings,
+  stagger: motionStagger,
 } as const;
 
 export const fontFamilies = {

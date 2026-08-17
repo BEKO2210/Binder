@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Alert, Image, Pressable, View } from 'react-native';
+import { Alert, Image, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { DiscoveryPreferences } from '../components/DiscoveryPreferences';
+import { MotionPressable as Pressable } from '../components/ui';
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderInput, BinderScreenHeader, BinderText, ScreenState, SectionHeader } from '../components/ui';
 import { pickAndPrepareProfileImage } from '../lib/images';
 import { addProfileImage, listMyProfileMedia, removeProfileMedia, reorderProfileMedia, setPrimaryProfileMedia, type GalleryMedia } from '../lib/media';

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { BackHandler, FlatList, Image, Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
+import { BackHandler, FlatList, Image, ScrollView, View, useWindowDimensions } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
+import { MotionPressable as Pressable } from '../components/ui';
 import { fetchPartnerProfile, type PartnerProfile } from '../lib/partnerProfile';
 import { useBinderTheme } from '../theme/ThemeProvider';
 

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Alert, Image, Pressable, ScrollView, View } from 'react-native';
+import { Alert, Image, ScrollView, View } from 'react-native';
 
 import { BinderButton, BinderCard, BinderIcon, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
+import { MotionPressable as Pressable } from '../components/ui';
 import { recordBetaEvent } from '../lib/beta';
 import { listMyProfileMedia } from '../lib/media';
 import { profileCompleteness } from '../lib/profileCompleteness';

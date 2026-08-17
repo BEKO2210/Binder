@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, AppState, BackHandler, Clipboard, FlatList, Platform, Pressable, TextInput, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import { Alert, AppState, BackHandler, Clipboard, FlatList, Platform, TextInput, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated, { FadeInDown, FadeInUp, FadeOutDown } from 'react-native-reanimated';
 
 import { buildChatTimeline, timeLabel, type TimelineItem } from '../lib/chatTimeline';
 import { composerBody } from '../lib/conversationPresentation';
+import { resolveStaggerDelay } from '../lib/motionPolicy';
 
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
+import { MotionPressable as Pressable } from '../components/ui';
 import {
   blockUser,
   createClientMessageId,
@@ -274,7 +276,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   }
 
   if (showPartnerProfile) {
-    return <PartnerProfileScreen userId={match.otherUserId} fallbackName={match.firstName} onClose={() => setShowPartnerProfile(false)} />;
+    return <Animated.View entering={reduceMotion ? undefined : FadeInUp.duration(theme.motion.entrance)} exiting={reduceMotion ? undefined : FadeOutDown.duration(theme.motion.deliberate)} style={{ flex: 1 }}><PartnerProfileScreen userId={match.otherUserId} fallbackName={match.firstName} onClose={() => setShowPartnerProfile(false)} /></Animated.View>;
   }
 
   return (
@@ -313,7 +315,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
           onScroll={trackScroll}
           scrollEventThrottle={theme.motion.feedback}
           ListFooterComponent={hasMore ? <BinderButton label="Load earlier messages" variant="ghost" loading={loadingOlder} onPress={() => void loadOlder()} style={{ marginBottom: theme.spacing.x3 }} /> : null}
-          renderItem={({ item }) => {
+          renderItem={({ item, index }) => {
             if (item.type === 'day') {
               return (
                 <View style={{ alignItems: 'center', marginTop: theme.spacing.x5, marginBottom: theme.spacing.x2 }}>
@@ -327,7 +329,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
             const mine = message.sender_id === currentUserId;
             const bubbleRadius = theme.radii.control;
             return (
-              <Animated.View entering={reduceMotion ? undefined : FadeInDown.duration(theme.motion.feedback)} style={{ marginTop: item.groupedWithPrevious ? theme.spacing.x1 : theme.spacing.x3 }}>
+              <Animated.View entering={reduceMotion ? undefined : FadeInDown.delay(resolveStaggerDelay(index, false)).duration(theme.motion.feedback)} style={{ marginTop: item.groupedWithPrevious ? theme.spacing.x1 : theme.spacing.x3 }}>
                 <Pressable onLongPress={() => openMessageActions(message)} accessibilityHint={mine ? 'Hold to copy this message' : 'Hold to copy or report this message'} style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: theme.layout.chatBubbleMaxWidth }}>
                   <View style={{
                     paddingHorizontal: theme.spacing.x4,

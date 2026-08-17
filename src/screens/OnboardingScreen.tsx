@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Image, Pressable, TextInput, View } from 'react-native';
+import { Animated, Image, TextInput, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { DiscoveryPreferences, discoveryDefaults } from '../components/DiscoveryPreferences';
+import { MotionPressable as Pressable } from '../components/ui';
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderInput, BinderText } from '../components/ui';
 import { assessBirthDate, sanitizeDigits } from '../lib/birthdate';
 import { pickAndPrepareProfileImage, type PreparedImage } from '../lib/images';

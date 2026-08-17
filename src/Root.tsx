@@ -1,12 +1,13 @@
 import type { Session } from '@supabase/supabase-js';
 import { useEffect, useRef, useState } from 'react';
-import { BackHandler, Pressable, View } from 'react-native';
+import { BackHandler, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import Animated, { FadeInUp, FadeOutDown, SlideInRight, SlideOutRight, ZoomIn, ZoomOut } from 'react-native-reanimated';
 
 import BinderErrorBoundary from './components/BinderErrorBoundary';
-import { BinderIcon, BinderText, ScreenState, type BinderIconName } from './components/ui';
+import { BinderIcon, BinderText, MotionPressable, ScreenState, type BinderIconName } from './components/ui';
 import { initializeBetaDiagnostics, recordBetaEvent } from './lib/beta';
 import { fetchMatches, type MatchSummary } from './lib/conversation';
 import {
@@ -225,11 +226,11 @@ function BinderApp() {
   if (!legalGate.accepted) return <LegalGateScreen gate={legalGate} onAccepted={() => { setLegalGate((current) => current ? { ...current, accepted: true } : current); setLoadError(''); }} />;
   if (onboardingComplete === undefined) return <ScreenState kind="loading" message={loadError || 'Loading your Binder profile…'} />;
   if (!onboardingComplete) return <OnboardingScreen userId={session.user.id} onComplete={() => { setOnboardingComplete(true); setTab('discover'); }} />;
-  if (activeMatch) return <ChatScreen match={activeMatch} currentUserId={session.user.id} onClose={() => { setActiveMatch(null); setMatchesRefreshKey((value) => value + 1); }} onConversationEnded={() => { setActiveMatch(null); setTab('matches'); setMatchesRefreshKey((value) => value + 1); }} />;
-  if (profileRoute === 'edit') return <ProfileSettingsScreen userId={session.user.id} onClose={() => setProfileRoute('home')} />;
-  if (profileRoute === 'settings') return <AppSettingsScreen onClose={() => setProfileRoute('home')} />;
-  if (profileRoute === 'beta') return <BetaScreen onClose={() => setProfileRoute('home')} />;
-  if (profileRoute === 'about') return <AboutScreen onClose={() => setProfileRoute('home')} />;
+  if (activeMatch) return <RouteFrame route="expand"><ChatScreen match={activeMatch} currentUserId={session.user.id} onClose={() => { setActiveMatch(null); setMatchesRefreshKey((value) => value + 1); }} onConversationEnded={() => { setActiveMatch(null); setTab('matches'); setMatchesRefreshKey((value) => value + 1); }} /></RouteFrame>;
+  if (profileRoute === 'edit') return <RouteFrame route="lift"><ProfileSettingsScreen userId={session.user.id} onClose={() => setProfileRoute('home')} /></RouteFrame>;
+  if (profileRoute === 'settings') return <RouteFrame route="trailing"><AppSettingsScreen onClose={() => setProfileRoute('home')} /></RouteFrame>;
+  if (profileRoute === 'beta') return <RouteFrame route="trailing"><BetaScreen onClose={() => setProfileRoute('home')} /></RouteFrame>;
+  if (profileRoute === 'about') return <RouteFrame route="trailing"><AboutScreen onClose={() => setProfileRoute('home')} /></RouteFrame>;
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
@@ -249,5 +250,13 @@ function BinderApp() {
 
 function NavItem({ icon, label, active, onPress }: { icon: BinderIconName; label: string; active: boolean; onPress: () => void }) {
   const { theme } = useBinderTheme();
-  return <Pressable accessibilityRole="tab" accessibilityLabel={label} accessibilityState={{ selected: active }} onPress={onPress} style={({ pressed }) => ({ flex: 1, minHeight: 52, borderRadius: theme.radii.control, alignItems: 'center', justifyContent: 'center', gap: 3, backgroundColor: pressed ? theme.colors.surfacePressed : 'transparent' })}><BinderIcon name={icon} size={22} color={active ? theme.accent.accent : theme.colors.textMuted} /><BinderText variant="caption" style={{ color: active ? theme.accent.accent : theme.colors.textMuted }}>{label}</BinderText></Pressable>;
+  return <MotionPressable accessibilityRole="tab" accessibilityLabel={label} accessibilityState={{ selected: active }} onPress={onPress} style={({ pressed }) => ({ flex: 1, minHeight: 52, borderRadius: theme.radii.control, alignItems: 'center', justifyContent: 'center', gap: 3, backgroundColor: pressed ? theme.colors.surfacePressed : 'transparent' })}><BinderIcon name={icon} size={22} color={active ? theme.accent.accent : theme.colors.textMuted} /><BinderText variant="caption" style={{ color: active ? theme.accent.accent : theme.colors.textMuted }}>{label}</BinderText></MotionPressable>;
+}
+
+function RouteFrame({ route, children }: { route: 'expand' | 'lift' | 'trailing'; children: React.ReactNode }) {
+  const { theme, reduceMotion } = useBinderTheme();
+  if (reduceMotion) return <View style={{ flex: 1 }}>{children}</View>;
+  const entering = route === 'trailing' ? SlideInRight.duration(theme.motion.deliberate) : route === 'expand' ? ZoomIn.duration(theme.motion.entrance) : FadeInUp.duration(theme.motion.entrance);
+  const exiting = route === 'trailing' ? SlideOutRight.duration(theme.motion.deliberate) : route === 'expand' ? ZoomOut.duration(theme.motion.deliberate) : FadeOutDown.duration(theme.motion.deliberate);
+  return <Animated.View entering={entering} exiting={exiting} style={{ flex: 1 }}>{children}</Animated.View>;
 }

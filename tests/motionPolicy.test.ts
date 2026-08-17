@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { resolveDurations, resolvePressScale, resolveSpring } from '../src/lib/motionPolicy.ts';
+import { resolveDurations, resolvePressScale, resolveSpring, resolveStaggerDelay } from '../src/lib/motionPolicy.ts';
 
 test('full motion keeps the research-backed duration bands', () => {
   const d = resolveDurations(false);
@@ -9,6 +9,13 @@ test('full motion keeps the research-backed duration bands', () => {
   assert.ok(d.entrance >= 200 && d.entrance <= 400, 'entrances are still feedback-class motion');
   assert.ok(d.context <= 800, 'context changes must not exceed 800ms');
   assert.ok(d.fast < d.standard && d.standard < d.deliberate, 'scale must be monotonic');
+});
+
+test('row stagger is bounded and disappears under reduced motion', () => {
+  assert.equal(resolveStaggerDelay(0, false), 0);
+  assert.ok(resolveStaggerDelay(2, false) > resolveStaggerDelay(1, false));
+  assert.equal(resolveStaggerDelay(100, false), resolveStaggerDelay(5, false));
+  assert.equal(resolveStaggerDelay(3, true), 0);
 });
 
 test('reduced motion collapses every duration to zero', () => {

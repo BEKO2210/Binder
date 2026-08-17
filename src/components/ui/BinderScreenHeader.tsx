@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react';
-import { Pressable, View, type ViewStyle } from 'react-native';
+import { View, type ViewStyle } from 'react-native';
 
 import { useBinderTheme } from '../../theme/ThemeProvider';
 import { BinderIconButton, type BinderIconName } from './BinderIcon';
 import { BinderText } from './BinderText';
+import { MotionPressable as Pressable } from './MotionPressable';
 
 type Control = { icon: BinderIconName; accessibilityLabel: string; onPress: () => void };
 type Props = { title: string; titleVisual?: ReactNode; eyebrow?: string; leading?: Control; trailing?: ReactNode; centered?: boolean; onTitlePress?: () => void; titleAccessibilityLabel?: string; style?: ViewStyle };

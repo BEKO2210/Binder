@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ScrollView, View } from 'react-native';
+import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 
 import { supabase } from '../lib/supabase';
 import type { Gender } from '../lib/validation';
@@ -12,7 +13,7 @@ type LoadedProfile = { first_name: string; gender: Gender; bio: string; interest
 type GroupErrors = { audience?: string; age?: string; distance?: string };
 
 export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied }: Props) {
-  const { theme } = useBinderTheme();
+  const { theme, reduceMotion } = useBinderTheme();
   const [profile, setProfile] = useState<LoadedProfile | null>(null);
   const [values, setValues] = useState(initialValues ?? discoveryDefaults);
   const [loadError, setLoadError] = useState('');
@@ -58,7 +59,7 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
   }
 
   return (
-    <View style={{ position: 'absolute', inset: 0, backgroundColor: theme.colors.overlay, justifyContent: 'flex-end' }}>
+    <Animated.View entering={reduceMotion ? undefined : SlideInDown.duration(theme.motion.deliberate)} exiting={reduceMotion ? undefined : SlideOutDown.duration(theme.motion.deliberate)} style={{ position: 'absolute', inset: 0, backgroundColor: theme.colors.overlay, justifyContent: 'flex-end' }}>
       <BinderCard style={{ height: '94%', padding: 0, borderBottomLeftRadius: 0, borderBottomRightRadius: 0, borderColor: theme.colors.borderStrong, overflow: 'hidden' }}>
         <View style={{ alignItems: 'center', paddingTop: theme.spacing.x2 }}><View style={{ width: theme.spacing.x10, height: theme.spacing.x1, borderRadius: theme.radii.pill, backgroundColor: theme.colors.borderStrong }} /></View>
         <BinderScreenHeader title="Your search" eyebrow="DISCOVERY" trailing={<BinderIconButton name="close" accessibilityLabel="Close discovery filters" onPress={onClose} />} />
@@ -74,6 +75,6 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
           </>
         )}
       </BinderCard>
-    </View>
+    </Animated.View>
   );
 }

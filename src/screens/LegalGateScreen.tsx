@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 import { BinderBrand, BinderButton, BinderCard, BinderIcon, BinderText, SectionHeader } from '../components/ui';
+import { MotionPressable as Pressable } from '../components/ui';
 import { PRIVACY_URL, TERMS_URL, acceptCurrentLegalGate, openBinderUrl, type LegalGate } from '../lib/safety';
 import { useBinderTheme } from '../theme/ThemeProvider';
 

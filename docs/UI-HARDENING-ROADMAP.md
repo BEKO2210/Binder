@@ -97,6 +97,26 @@ Audit decisions:
 - [ ] Match celebration: keep the moment, cut the noise.
 - [ ] Reduced motion parity: every animation has a meaningful static state.
 
+### Phase 3 motion sweep — 2026-08-17
+
+The code sweep is complete; the checklist stays open until the required S23
+Ultra device pass verifies full and reduced motion plus frame timing.
+
+- Route transitions preserve direction: conversations expand and contract,
+  partner profiles lift and settle, and settings-family screens enter and leave
+  through the trailing edge. Hardware and header back actions share the same
+  route state and therefore the same reverse transition.
+- `MotionPressable` owns UI-thread scale timing and the pressed-surface fallback
+  for every pressable. Accent and destructive controls retain their semantic
+  pressed tokens.
+- Matches and chat stagger only mounted rows, with a 36 ms step capped at 180
+  ms. Unread counts and the discovery filter summary transition on value change.
+- The match celebration is one joined-portrait confirmation beat followed by
+  the copy. The former independent travel, rotation, and glow effects were
+  rejected as decoration.
+- Reduced motion removes entrances, exits, stagger, number travel, and scale;
+  destinations render in their settled state and pressed colour remains.
+
 ## Phase 4 — Gates before release
 
 - [ ] TalkBack pass: every control reachable, labelled and adjustable.
