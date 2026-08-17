@@ -1,0 +1,931 @@
+{
+  "$meta": {
+    "name": "Italian",
+    "endonym": "Italiano",
+    "flag": "🇮🇹",
+    "translatedBy": "Binder",
+    "sourceOfTruth": false
+  },
+  "sessionExpired": {
+    "title": "La tua sessione è terminata",
+    "message": "Accedi di nuovo per continuare a usare Binder.",
+    "action": "Accedi di nuovo"
+  },
+  "settings": {
+    "title": "Impostazioni dell'app",
+    "eyebrow": "PREFERENZE",
+    "language": {
+      "title": "Lingua",
+      "copy": "Binder è scritto in inglese. Una lingua compare qui non appena viene aggiunto il relativo file.",
+      "systemLabel": "Segui il dispositivo",
+      "systemCopy": "Usa la lingua del dispositivo quando Binder la supporta, altrimenti usa l'inglese."
+    },
+    "appearance": {
+      "title": "Aspetto",
+      "copy": "Il tema scuro è l'impostazione predefinita di Binder. Sistema segue il dispositivo e può mostrare Binder in modalità chiara.",
+      "system": "Segui il dispositivo",
+      "dark": "Sempre scuro"
+    },
+    "motion": {
+      "title": "Animazioni",
+      "copy": "La riduzione delle animazioni mantiene tutti i cambiamenti di stato, ma senza animarli.",
+      "system": "Segui il dispositivo",
+      "full": "Animazioni complete",
+      "reduce": "Animazioni ridotte"
+    },
+    "haptics": {
+      "title": "Feedback aptico",
+      "copy": "Brevi vibrazioni segnalano soglie e conferme.",
+      "label": "Vibra durante le interazioni"
+    },
+    "quietHours": {
+      "title": "Ore silenziose",
+      "copy": "Le notifiche di Bind, messaggi, moderazione e prodotto vengono rimandate fino all'orario di fine locale. Gli avvisi di sicurezza urgenti restano immediati.",
+      "label": "Usa le ore silenziose",
+      "start": "Inizio",
+      "end": "Fine",
+      "invalid": "Usa HH:MM"
+    },
+    "diagnostics": {
+      "title": "Diagnostica",
+      "copy": "Solo eventi tecnici facoltativi. Nessuna bio, nessun messaggio, nessuna traccia dello stack non elaborata e nessuna posizione precisa.",
+      "label": "Condividi diagnostica facoltativa",
+      "checking": "Controllo della diagnostica…"
+    },
+    "reset": {
+      "action": "Reimposta le impostazioni dell'app",
+      "confirmTitle": "Reimpostare le impostazioni dell'app?",
+      "confirmCopy": "Aspetto, animazioni, feedback aptico, colore di accento, categorie di notifica e ore silenziose torneranno ai valori predefiniti. Il tuo profilo e le tue conversazioni non verranno modificati.",
+      "cancel": "Mantieni le mie impostazioni",
+      "confirm": "Reimposta",
+      "done": "Le impostazioni dell'app sono tornate ai valori predefiniti.",
+      "failed": "Impossibile reimpostare le impostazioni."
+    }
+  },
+  "common": {
+    "retry": "Riprova",
+    "close": "Chiudi",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "loading": "Caricamento…"
+  },
+  "auth": {
+    "errors": {
+      "connection": "Nessuna connessione. Controlla la connessione Internet e riprova.",
+      "credentials": "Email o password non corretti.",
+      "registered": "Questa email è già registrata. Accedi invece.",
+      "passwordLength": "La password deve contenere almeno 8 caratteri.",
+      "email": "Inserisci un indirizzo email valido.",
+      "generic": "Qualcosa è andato storto. Riprova."
+    },
+    "messages": {
+      "passwordChanged": "Password modificata. Hai effettuato l'accesso.",
+      "resetSent": "Se esiste un account associato a questo indirizzo, il link per reimpostare la password è in arrivo. Aprilo su questo telefono.",
+      "accountCreated": "Account creato. Conferma l'email, quindi accedi."
+    },
+    "headers": {
+      "recoveryTitle": "Imposta una nuova password.",
+      "signInTitle": "Bentornato.",
+      "signUpTitle": "Comincia mostrando chi sei davvero.",
+      "resetTitle": "Non riesci ad accedere?",
+      "recoveryCopy": "Scegli una password che non hai mai usato qui. Resterai connesso su questo dispositivo.",
+      "resetCopy": "Inserisci l'indirizzo usato per registrarti e ti invieremo un link per impostare una nuova password.",
+      "defaultCopy": "Incontri per adulti. Interesse reciproco prima della conversazione."
+    },
+    "fields": {
+      "emailLabel": "Email",
+      "emailPlaceholder": "tu@esempio.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Almeno {length} caratteri",
+      "repeatPasswordLabel": "Ripeti la password",
+      "repeatPasswordPlaceholder": "Inseriscila di nuovo",
+      "repeatPasswordHelper": "Le due password devono coincidere prima di creare l'account."
+    },
+    "actions": {
+      "savePassword": "Salva la nuova password",
+      "signIn": "Accedi",
+      "createAccount": "Crea account",
+      "sendResetLink": "Invia link di reimpostazione",
+      "forgotPassword": "Password dimenticata?",
+      "createAccountPrompt": "Sei nuovo? Crea un account",
+      "signInPrompt": "Hai già un account? Accedi",
+      "backToSignIn": "Torna all'accesso"
+    },
+    "ageRequirement": "Devi avere almeno 18 anni per usare Binder."
+  },
+  "matches": {
+    "header": {
+      "title": "I tuoi Binds",
+      "eyebrow": "CONVERSAZIONI"
+    },
+    "notifications": {
+      "enabledTitle": "Avvisi dei messaggi attivati",
+      "enablingTitle": "Attivazione degli avvisi…",
+      "blockedTitle": "Gli avvisi sono bloccati",
+      "title": "Avvisi dei messaggi",
+      "unavailableCopy": "Le notifiche push non sono supportate su questo dispositivo. La chat continua a funzionare normalmente.",
+      "offlineCopy": "Impossibile raggiungere il servizio push. Controlla la connessione e riprova.",
+      "blockedCopy": "Android sta bloccando le notifiche di Binder. Consentile nelle impostazioni di sistema.",
+      "enabledCopy": "Le categorie di notifica possono essere modificate nelle Impostazioni dell'app.",
+      "copy": "Attiva gli avvisi per nuovi Binds e messaggi."
+    },
+    "actions": {
+      "refresh": "Aggiorna",
+      "retry": "Riprova",
+      "enable": "Attiva",
+      "openSettings": "Apri impostazioni",
+      "tryAgain": "Riprova",
+      "goToDiscovery": "Vai a Scopri"
+    },
+    "states": {
+      "loading": "Caricamento dei tuoi Binds…",
+      "offlineTitle": "Sei offline",
+      "offlineMessage": "Controlla la connessione e prova a caricare di nuovo i tuoi Binds.",
+      "errorTitle": "Impossibile caricare i Binds"
+    },
+    "empty": {
+      "title": "Un Bind nasce insieme",
+      "message": "Quando tu e una persona in Scopri scegliete entrambi Bind, quella persona compare qui e uno di voi può iniziare la conversazione.",
+      "conversations": "Le tue conversazioni appariranno qui dopo il primo messaggio."
+    },
+    "newMatches": {
+      "heading": "NUOVI BINDS · INIZIA QUALCOSA",
+      "sayHello": "Di' ciao"
+    },
+    "accessibility": {
+      "startConversation": "Inizia una conversazione con {name}",
+      "openConversation": "Apri la conversazione con {name}",
+      "unreadOne": "{count} messaggio non letto",
+      "unreadOther": "{count} messaggi non letti"
+    }
+  },
+  "partnerProfile": {
+    "errors": {
+      "load": "Impossibile caricare questo profilo.",
+      "title": "Profilo non disponibile"
+    },
+    "actions": {
+      "back": "Indietro"
+    },
+    "accessibility": {
+      "close": "Chiudi il profilo completo",
+      "photosReviewed": "Foto verificate prima di apparire in Scopri"
+    },
+    "loading": "Apertura del profilo…",
+    "photosReviewed": "Foto verificate",
+    "away": "A {distance} km di distanza"
+  },
+  "discovery": {
+    "errors": {
+      "load": "Impossibile caricare Scopri.",
+      "openConversation": "Impossibile aprire la conversazione. La troverai in Binds.",
+      "saveDecision": "Impossibile salvare la tua scelta.",
+      "safetyReport": "Impossibile inviare la segnalazione di sicurezza."
+    },
+    "states": {
+      "loadErrorTitle": "Scopri non è stato caricato",
+      "offlineTitle": "Sei offline",
+      "offlineMessage": "Nessuna connessione. Controlla la connessione Internet e riprova.",
+      "saving": "Salvataggio…"
+    },
+    "location": {
+      "title": "La posizione aiuta a creare la tua selezione",
+      "message": "Binder usa la tua posizione in primo piano per trovare persone nelle vicinanze. La tua posizione esatta non viene mai mostrata a nessuno."
+    },
+    "header": {
+      "title": "Scopri",
+      "copy": "Persone compatibili da entrambe le parti."
+    },
+    "filters": {
+      "summary": "{minAge}–{maxAge} · {distance} km",
+      "label": "Filtri"
+    },
+    "empty": {
+      "filteredEyebrow": "I FILTRI STANNO LIMITANDO LA TUA SELEZIONE",
+      "filteredTitle": "Nessuno corrisponde a questi filtri al momento.",
+      "filteredMessage": "Ci sono persone disponibili con i filtri standard di Binder. Modifica i tuoi per vedere chi corrisponde.",
+      "genuineEyebrow": "SEI IN PARI",
+      "genuineTitle": "La tua selezione è vuota per ora.",
+      "genuineMessage": "Al momento non ci sono nuovi profili approvati compatibili da entrambe le parti. Nuove persone compariranno qui automaticamente."
+    },
+    "actions": {
+      "tryAgain": "Riprova",
+      "allowLocation": "Consenti posizione",
+      "changeFilters": "Modifica filtri",
+      "bindStamp": "BIND",
+      "passStamp": "PASSA",
+      "reportAndBlock": "Segnala e blocca",
+      "cancel": "Annulla"
+    },
+    "accessibility": {
+      "openFilters": "Apri i filtri di scoperta",
+      "matchCreated": "Hai fatto Bind con {name}.",
+      "safetyOptions": "Opzioni di sicurezza per {name}",
+      "closeSafetyOptions": "Chiudi le opzioni di sicurezza",
+      "bindProfile": "Scegli Bind per il profilo",
+      "passProfile": "Passa questo profilo",
+      "profileSummary": "{name}, {age} anni, a {distance} chilometri di distanza"
+    },
+    "safety": {
+      "eyebrow": "SICUREZZA · {name}",
+      "title": "Cosa deve verificare Binder?",
+      "message": "La segnalazione blocca immediatamente anche questo profilo. La persona non saprà chi l'ha segnalata o bloccata.",
+      "reasons": {
+        "underage": {
+          "label": "Potrebbe avere meno di 18 anni",
+          "detail": "Revisione di sicurezza con priorità massima."
+        },
+        "harassment": {
+          "label": "Molestie o minacce",
+          "detail": "Comportamento offensivo, coercitivo o minaccioso."
+        },
+        "fake": {
+          "label": "Profilo falso o impersonificazione",
+          "detail": "L'identità o il profilo sembrano ingannevoli."
+        },
+        "spam": {
+          "label": "Spam o truffa",
+          "detail": "Spam commerciale, frode o richieste sospette."
+        },
+        "sexualContent": {
+          "label": "Contenuto sessuale",
+          "detail": "Contenuto del profilo sessualmente esplicito o indesiderato."
+        },
+        "violence": {
+          "label": "Violenza",
+          "detail": "Minacce o contenuti violenti espliciti."
+        },
+        "other": {
+          "label": "Altro problema di sicurezza",
+          "detail": "Un problema non compreso nelle categorie precedenti."
+        }
+      }
+    },
+    "profile": {
+      "away": "A {distance} km di distanza",
+      "photosReviewed": "· Foto verificate"
+    }
+  },
+  "chat": {
+    "day": {
+      "today": "Oggi",
+      "yesterday": "Ieri"
+    },
+    "header": {
+      "title": "{name}, {age}",
+      "eyebrow": "VEDI PROFILO"
+    },
+    "alerts": {
+      "messageActions": "Azioni del messaggio",
+      "unmatchTitle": "Annullare il Bind con {name}?",
+      "unmatchMessage": "La conversazione si chiude immediatamente per entrambi.",
+      "blockTitle": "Bloccare {name}?",
+      "blockMessage": "Scomparirete l'uno dall'altra e la conversazione si chiuderà immediatamente."
+    },
+    "actions": {
+      "copy": "Copia",
+      "report": "Segnala",
+      "cancel": "Annulla",
+      "unmatch": "Annulla Bind",
+      "block": "Blocca",
+      "reportAndBlock": "Segnala e blocca",
+      "backToSafetyControls": "Torna ai controlli di sicurezza",
+      "refresh": "Aggiorna",
+      "tryAgain": "Riprova",
+      "loadEarlierMessages": "Carica messaggi precedenti",
+      "retry": "Riprova",
+      "discard": "Elimina",
+      "backToMatches": "Torna ai Binds"
+    },
+    "ended": {
+      "title": "Questa conversazione è terminata",
+      "message": "Questo Bind non è più attivo. La conversazione è ora chiusa."
+    },
+    "safety": {
+      "title": "Controlli di sicurezza",
+      "reportMessage": "Segnala questo messaggio",
+      "reportPerson": "Segnala {name}",
+      "detailsPlaceholder": "Dettagli facoltativi per il team di sicurezza",
+      "reasons": {
+        "harassment": "Molestie",
+        "spam": "Spam",
+        "fake": "Profilo falso",
+        "underage": "Meno di 18 anni",
+        "sexualContent": "Contenuto sessuale",
+        "violence": "Violenza",
+        "other": "Altro"
+      }
+    },
+    "states": {
+      "opening": "Apertura della conversazione…",
+      "offlineTitle": "Sei offline",
+      "loadErrorTitle": "Impossibile caricare la conversazione"
+    },
+    "empty": {
+      "title": "Avete fatto Bind.",
+      "message": "La chat normale si apre solo dopo un interesse reciproco. Scrivi qualcosa di vero."
+    },
+    "message": {
+      "sentAt": "{time} · Inviato",
+      "new": "Nuovo messaggio",
+      "sending": "Invio…",
+      "placeholder": "Messaggio a {name}"
+    },
+    "errors": {
+      "messageNotSent": "Messaggio non inviato."
+    },
+    "accessibility": {
+      "backToMatches": "Torna ai Binds",
+      "openProfile": "Apri il profilo di {name}",
+      "safetyControls": "Controlli di sicurezza della conversazione",
+      "closeSafetyControls": "Chiudi i controlli di sicurezza",
+      "reportDetails": "Dettagli della segnalazione",
+      "holdToCopy": "Tieni premuto per copiare questo messaggio",
+      "holdToCopyOrReport": "Tieni premuto per copiare o segnalare questo messaggio",
+      "messageSent": "Messaggio inviato.",
+      "messageFailed": "Messaggio non inviato.",
+      "scrollToNewMessage": "Scorri fino al nuovo messaggio",
+      "retrySending": "Riprova a inviare \"{message}\"",
+      "discardUnsent": "Elimina il messaggio non inviato \"{message}\"",
+      "messagePerson": "Invia un messaggio a {name}",
+      "sendingMessage": "Invio del messaggio",
+      "sendMessageTo": "Invia messaggio a {name}"
+    }
+  },
+  "profile": {
+    "errors": {
+      "load": "Impossibile caricare il profilo.",
+      "openInformation": "Impossibile aprire le informazioni di Binder.",
+      "deleteAccount": "Impossibile eliminare il tuo account."
+    },
+    "alerts": {
+      "deleteTitle": "Eliminare l'account Binder?",
+      "deleteMessage": "Questa operazione elimina definitivamente il tuo account Binder e i normali dati del prodotto. Non può essere annullata.",
+      "signOutTitle": "Disconnettersi da Binder?",
+      "signOutMessage": "Non riceverai più aggiornamenti nell'app su questo dispositivo finché non accederai di nuovo. Il tuo profilo, i Binds e i messaggi restano su Binder."
+    },
+    "actions": {
+      "cancel": "Annulla",
+      "deleteAccount": "Elimina account",
+      "staySignedIn": "Resta connesso",
+      "signOut": "Esci",
+      "completeProfile": "Completa profilo",
+      "tryAgain": "Riprova"
+    },
+    "states": {
+      "loading": "Caricamento del tuo profilo…",
+      "offlineTitle": "Sei offline",
+      "offlineMessage": "Controlla la connessione e prova a caricare di nuovo il tuo profilo.",
+      "errorTitle": "Impossibile caricare il tuo profilo"
+    },
+    "header": {
+      "title": "Il tuo profilo",
+      "eyebrow": "BINDER"
+    },
+    "accessibility": {
+      "primaryPhoto": "La tua foto profilo principale"
+    },
+    "notice": {
+      "warningEyebrow": "AVVISO SULL'ACCOUNT",
+      "warningTitle": "Una nota sul tuo account",
+      "suspendedEyebrow": "STATO DELL'ACCOUNT",
+      "suspendedTitle": "Il tuo account è sospeso",
+      "reasonUnavailable": "Non sono disponibili ulteriori dettagli.",
+      "warnedOn": "Emesso il {date}",
+      "suspendedEffect": "Scopri e i messaggi restano sospesi finché la sospensione è attiva."
+    },
+    "empty": {
+      "addFirstPhoto": "Aggiungi la tua prima foto",
+      "addBio": "Aggiungi qualche riga sincera su di te, così le persone sapranno di cosa parlarti."
+    },
+    "completeness": {
+      "eyebrow": "QUALITÀ DEL PROFILO",
+      "percent": "{percent}% completato",
+      "done": "{item} · fatto"
+    },
+    "hub": {
+      "profileTitle": "Profilo e foto",
+      "profileCopy": "Modifica il tuo profilo, le preferenze di scoperta e fino a sei foto moderate.",
+      "settingsTitle": "Impostazioni dell'app",
+      "settingsCopy": "Aspetto, feedback aptico, animazioni, preferenze di notifica e ore silenziose.",
+      "betaTitle": "Programma beta",
+      "betaCopy": "Diagnostica facoltativa e feedback privato.",
+      "aboutTitle": "Informazioni e note legali",
+      "aboutCopy": "Note legali, informative e versione attualmente in uso."
+    },
+    "safety": {
+      "eyebrow": "SICUREZZA E PRIVACY",
+      "terms": "Termini e Regole della community",
+      "privacy": "Informativa sulla privacy",
+      "deletionDetails": "Dettagli su eliminazione e conservazione"
+    },
+    "account": {
+      "eyebrow": "AZIONI DELL'ACCOUNT",
+      "irreversible": "IRREVERSIBILE",
+      "deleteTitle": "Elimina account Binder",
+      "deleteCopy": "Interrompe Scopri e le conversazioni, rimuove i contenuti multimediali del profilo ed elimina la tua identità di autenticazione."
+    }
+  },
+  "profileSettings": {
+    "errors": {
+      "load": "Impossibile caricare le impostazioni del profilo.",
+      "addPhoto": "Impossibile aggiungere la foto.",
+      "reorderPhotos": "Impossibile riordinare le foto.",
+      "makePrimary": "Impossibile impostare questa foto come principale.",
+      "removePhoto": "Impossibile rimuovere la foto.",
+      "replacePhoto": "Impossibile sostituire la foto.",
+      "save": "Impossibile salvare le impostazioni del profilo."
+    },
+    "messages": {
+      "photoAdded": "Foto ottimizzata, caricata e inviata per la revisione di sicurezza.",
+      "saved": "Impostazioni del profilo salvate."
+    },
+    "alerts": {
+      "removeTitle": "Rimuovere la foto del profilo?",
+      "removePrimaryMessage": "Binder rimuoverà la foto principale solo se un'altra foto approvata può sostituirla.",
+      "removeMessage": "Questa foto verrà rimossa dal tuo profilo e dallo spazio di archiviazione."
+    },
+    "actions": {
+      "cancel": "Annulla",
+      "remove": "Rimuovi",
+      "saveProfile": "Salva profilo",
+      "addPhoto": "Aggiungi foto",
+      "makePrimary": "Imposta come principale",
+      "retryUpload": "Riprova caricamento",
+      "replacePhoto": "Sostituisci foto"
+    },
+    "states": {
+      "loading": "Caricamento delle impostazioni del profilo…"
+    },
+    "gallery": {
+      "photoOf": "Foto {current} di {total}",
+      "photo": "Foto",
+      "name": "la tua galleria"
+    },
+    "header": {
+      "title": "Impostazioni del profilo",
+      "sectionTitle": "Dai forma al profilo che vedono gli altri.",
+      "sectionCopy": "La tua data di nascita resta bloccata. Ogni foto viene verificata singolarmente prima di poter apparire in Scopri."
+    },
+    "accessibility": {
+      "closeFullPhoto": "Chiudi la foto a schermo intero",
+      "backToProfile": "Torna al profilo",
+      "photoUploaded": "Foto caricata.",
+      "photoRemoved": "Foto rimossa.",
+      "addPhoto": "Aggiungi foto profilo",
+      "viewPhoto": "Visualizza la foto {number} a schermo intero",
+      "moveLeft": "Sposta la foto {number} a sinistra",
+      "removePhoto": "Rimuovi la foto {number}",
+      "moveRight": "Sposta la foto {number} a destra"
+    },
+    "photos": {
+      "eyebrow": "FOTO · {count}/6",
+      "orderCopy": "Non serve trascinare: usa i controlli con le frecce per impostare l'ordine esatto. La foto 1 è quella che le persone vedono per prima.",
+      "optimized": "Ottimizzata prima del caricamento",
+      "preparing": "Preparazione della foto…",
+      "uploading": "Caricamento della foto…",
+      "uploadFailed": "Caricamento della foto non riuscito",
+      "primary": "FOTO 1 · PRINCIPALE",
+      "dimensions": "{size} KB · {width} per {height}",
+      "rejectionReason": "Motivo: {reason}",
+      "rejectionReasonUnavailable": "Non è stato fornito alcun motivo.",
+      "status": {
+        "approved": "Approvata",
+        "pending": "In revisione",
+        "rejected": "Non approvata",
+        "removed": "Rimossa"
+      }
+    },
+    "details": {
+      "eyebrow": "DETTAGLI DEL PROFILO",
+      "copy": "Questa è l'identità e il contesto che vedono gli altri."
+    },
+    "fields": {
+      "firstName": "Nome",
+      "bio": "Bio",
+      "bioCount": "{count}/500",
+      "gender": "Sono",
+      "interests": "Interessi"
+    },
+    "discovery": {
+      "eyebrow": "PREFERENZE DI SCOPERTA",
+      "title": "Intervallo di scoperta",
+      "copy": "Controlla chi può comparire nella tua selezione Scopri."
+    }
+  },
+  "discoveryFilterSheet": {
+    "errors": {
+      "authentication": "Autenticazione richiesta.",
+      "load": "Impossibile caricare le impostazioni di scoperta.",
+      "audience": "Scegli almeno un tipo di persona che vuoi conoscere.",
+      "age": "Scegli una fascia d'età di almeno un anno.",
+      "distance": "Scegli una distanza da 1 a 500 km.",
+      "save": "Binder non è riuscito a salvare questi filtri. Controlla la connessione e riprova."
+    },
+    "header": {
+      "title": "La tua ricerca",
+      "eyebrow": "SCOPRI"
+    },
+    "states": {
+      "loadErrorTitle": "Impossibile caricare i filtri",
+      "loading": "Caricamento dei filtri…"
+    },
+    "actions": {
+      "tryAgain": "Riprova",
+      "close": "Chiudi",
+      "apply": "Applica filtri",
+      "reset": "Ripristina valori predefiniti"
+    },
+    "accessibility": {
+      "close": "Chiudi i filtri di scoperta",
+      "filtersApplied": "Filtri applicati."
+    },
+    "count": {
+      "unavailable": "Conteggio non disponibile",
+      "checking": "Controllo delle persone compatibili…",
+      "none": "Nessuna persona corrisponde al momento",
+      "personOne": "{count} persona corrisponde al momento",
+      "personOther": "{count} persone corrispondono al momento",
+      "failed": "Binder non riesce a controllare in questo momento. Modifica un filtro per riprovare: le tue impostazioni restano applicate.",
+      "likelyCause": "Il criterio {cause} è probabilmente la causa. Amplialo prima di applicare i filtri.",
+      "updates": "Il conteggio si aggiorna mentre modifichi la ricerca.",
+      "causes": {
+        "audience": "chi vuoi conoscere",
+        "age": "fascia d'età",
+        "distance": "distanza"
+      }
+    }
+  },
+  "onboarding": {
+    "progress": "PASSAGGIO {number} DI {total}",
+    "steps": {
+      "eligibility": {
+        "eyebrow": "REQUISITI · 18+",
+        "title": "Per prima cosa, conferma la tua età.",
+        "copy": "Binder è riservato agli adulti. La tua data di nascita viene verificata una volta, bloccata dopo la configurazione iniziale e non viene mai mostrata ad altre persone.",
+        "next": "Avanti: nome e genere"
+      },
+      "identity": {
+        "eyebrow": "LE BASI",
+        "title": "Come vuoi farti conoscere?",
+        "copy": "Usa il nome con cui ti presenti normalmente. Questi dati compariranno sul tuo profilo.",
+        "next": "Avanti: bio e interessi"
+      },
+      "profile": {
+        "eyebrow": "SU DI TE",
+        "title": "Dai alle persone un motivo per salutarti.",
+        "copy": "Una bio breve e specifica e alcuni interessi rendono più facile iniziare una vera conversazione.",
+        "next": "Avanti: chi vuoi conoscere"
+      },
+      "discovery": {
+        "eyebrow": "SCOPRI",
+        "title": "Scegli chi è rilevante per te.",
+        "copy": "Queste preferenze definiscono Scopri e possono essere modificate in seguito.",
+        "next": "Avanti: aggiungi la tua prima foto"
+      },
+      "photo": {
+        "eyebrow": "LA TUA FOTO",
+        "title": "Dai un volto al tuo profilo.",
+        "copy": "La tua prima foto è quella che le persone vedono per prima. Viene ottimizzata e poi verificata per la sicurezza prima di apparire.",
+        "next": "Termina ed entra in Binder"
+      }
+    },
+    "errors": {
+      "preparePhoto": "Impossibile preparare la foto.",
+      "photoRequired": "Aggiungi una foto profilo per continuare.",
+      "complete": "Impossibile completare la configurazione iniziale."
+    },
+    "identity": {
+      "firstName": "Nome",
+      "gender": "Sono"
+    },
+    "profile": {
+      "bioLabel": "Bio · facoltativa",
+      "bioHelper": "{count}/500 · Puoi modificarla in seguito",
+      "bioPlaceholder": "Per esempio: escursioni la domenica, musica dal vivo e ottimo caffè.",
+      "interests": "Interessi · scegline fino a 12 ({count})"
+    },
+    "photo": {
+      "replaceAccessibility": "Sostituisci la foto profilo principale",
+      "chooseAccessibility": "Scegli la foto profilo principale",
+      "preparing": "Preparazione della foto…",
+      "choose": "Scegli foto",
+      "resizing": "Ridimensionamento e compressione prima del caricamento",
+      "openLibrary": "Tocca per aprire la tua raccolta foto"
+    },
+    "actions": {
+      "back": "Indietro",
+      "finish": "Completa profilo",
+      "continue": "Continua"
+    },
+    "birthDate": {
+      "title": "Devi avere almeno 18 anni",
+      "copy": "Inserisci la tua vera data di nascita. Se hai meno di 18 anni, non puoi creare un profilo Binder.",
+      "day": "Giorno",
+      "month": "Mese",
+      "year": "Anno",
+      "dayPlaceholder": "23",
+      "monthPlaceholder": "04",
+      "yearPlaceholder": "1995",
+      "eligible": "Idoneo · età {age}",
+      "underage": "Devi avere almeno 18 anni per usare Binder.",
+      "invalid": "Questa data non esiste. Controlla giorno e mese.",
+      "implausible": "Controlla l'anno inserito.",
+      "private": "La tua data di nascita esatta resta privata."
+    }
+  },
+  "beta": {
+    "errors": {
+      "load": "Impossibile caricare le impostazioni beta.",
+      "updateDiagnostics": "Impossibile aggiornare la diagnostica beta.",
+      "submitFeedback": "Impossibile inviare il feedback beta."
+    },
+    "messages": {
+      "diagnosticsEnabled": "Diagnostica facoltativa attivata. Binder registra solo campi tecnici predefiniti.",
+      "diagnosticsDisabled": "Diagnostica facoltativa disattivata. I dati diagnostici client facoltativi esistenti sono stati eliminati.",
+      "feedbackReceived": "Feedback ricevuto. Grazie per aver testato Binder."
+    },
+    "loading": "Caricamento del programma beta…",
+    "header": {
+      "title": "Programma beta",
+      "backAccessibility": "Torna al profilo"
+    },
+    "intro": {
+      "title": "Rendi Binder misurabile, non invasivo.",
+      "copy": "La qualità del ranking deriva dagli eventi server di Binder. La diagnostica client facoltativa è una scelta separata e resta disattivata per impostazione predefinita."
+    },
+    "diagnostics": {
+      "title": "Diagnostica facoltativa",
+      "copy": "Utile per analizzare i tempi di caricamento e gli errori di rendering durante la beta.",
+      "accessibilityLabel": "Diagnostica beta facoltativa di Binder",
+      "canRecord": "PUÒ REGISTRARE",
+      "recorded": "Nome predefinito di schermata/evento, durata, piccolo conteggio, esito successo/errore, piattaforma e versione dell'app.",
+      "never": "MAI NELLA DIAGNOSTICA FACOLTATIVA",
+      "excluded": "Testo dei messaggi, testo di bio/profilo, foto, posizione esatta, contatti, metadati liberi, messaggi di eccezione non elaborati o tracce dello stack.",
+      "retention": "Diagnostica client: {clientDays} giorni · osservazioni del ranking: {rankingDays} giorni"
+    },
+    "ranking": {
+      "eyebrow": "OSSERVABILITÀ DEL RANKING",
+      "title": "Cosa impara Binder dalla selezione.",
+      "copy": "Il server registra la posizione nel ranking, il numero di interessi condivisi, una fascia di distanza di 10 km e il successivo esito Bind/Passa. Le coordinate esatte e il contenuto del profilo non vengono copiati nella telemetria del ranking."
+    },
+    "feedback": {
+      "eyebrow": "FEEDBACK BETA PRIVATO",
+      "title": "Dicci cosa non ha funzionato o cosa ti è sembrato sbagliato.",
+      "copy": "Per una persona offensiva o pericolosa, usa Segnala e blocca dal profilo o dalla chat. Questo modulo serve per il feedback sul prodotto, non per la coda di moderazione.",
+      "overallExperience": "Esperienza complessiva",
+      "details": "Dettagli",
+      "characterCount": "{count}/1500",
+      "placeholder": "Che cosa è successo? Che cosa ti aspettavi invece?",
+      "send": "Invia feedback beta"
+    },
+    "categories": {
+      "bug": "Bug",
+      "ux": "UX",
+      "safety": "Sicurezza",
+      "performance": "Prestazioni",
+      "other": "Altro"
+    }
+  },
+  "legalGate": {
+    "errors": {
+      "open": "Impossibile aprire questa pagina.",
+      "accept": "Impossibile salvare la tua accettazione."
+    },
+    "header": {
+      "eyebrow": "PRIMA DI CREARE O CONDIVIDERE",
+      "title": "Regole chiare prima della conversazione.",
+      "copy": "Binder è riservato ai maggiorenni ed è costruito intorno alla scelta reciproca. Prima di creare un profilo, caricare una foto o inviare un messaggio, accetta i Termini e Regole della community e l'Informativa sulla privacy attuali."
+    },
+    "policies": {
+      "terms": {
+        "title": "Termini e Regole della community",
+        "copy": "Solo 18+ · consenso · niente molestie · niente sfruttamento sessuale · niente impersonificazione, truffe o aggiramento dei blocchi."
+      },
+      "privacy": {
+        "title": "Informativa sulla privacy",
+        "copy": "Cosa conserva Binder, perché la posizione resta privata, come funzionano i registri di sicurezza e come eliminare il tuo account."
+      },
+      "version": "Versione {version}"
+    },
+    "confirmation": "Ho letto e accetto i Termini e Regole della community e l'Informativa sulla privacy attuali.",
+    "actions": {
+      "agree": "Accetta e continua"
+    },
+    "noSkip": "Non è possibile saltare questo passaggio. Modifiche sostanziali alle informative possono richiedere una nuova accettazione prima di creare altri contenuti generati dagli utenti."
+  },
+  "discoveryPreferences": {
+    "groups": {
+      "preset": "Inizia con un preset",
+      "audience": "Chi voglio conoscere",
+      "age": "Età",
+      "distance": "Distanza"
+    },
+    "accessibility": {
+      "minimumAge": "Età minima",
+      "maximumAge": "Età massima",
+      "searchRadius": "Raggio di ricerca"
+    },
+    "units": {
+      "years": "anni",
+      "km": "km"
+    }
+  },
+  "about": {
+    "errors": {
+      "openPage": "Impossibile aprire questa pagina. Riprova più tardi."
+    },
+    "header": {
+      "title": "Informazioni su Binder"
+    },
+    "accessibility": {
+      "backToProfile": "Torna al profilo"
+    },
+    "intro": {
+      "title": "Un unico prodotto gratuito.",
+      "copy": "Binder è sviluppato e gestito come progetto indipendente e non commerciale. Nessuna pubblicità, nessun piano a pagamento, nessun intermediario di dati."
+    },
+    "policies": {
+      "eyebrow": "INFORMATIVE",
+      "terms": "Termini e Regole della community",
+      "privacy": "Informativa sulla privacy",
+      "deletion": "Eliminazione dell'account e conservazione"
+    },
+    "version": "Binder {version}"
+  },
+  "appSettings": {
+    "common": {
+      "system": "Sistema"
+    },
+    "errors": {
+      "loadDiagnostics": "Impossibile caricare la preferenza di diagnostica.",
+      "updateDiagnostics": "Impossibile aggiornare la diagnostica.",
+      "updatePush": "Impossibile aggiornare le notifiche push."
+    },
+    "messages": {
+      "pushOff": "Le notifiche push sono disattivate su questa installazione.",
+      "pushActive": "Le notifiche push sono attive su questa installazione.",
+      "pushDenied": "L'autorizzazione alle notifiche Android è stata negata. Puoi consentire Binder nelle impostazioni di sistema.",
+      "missingProject": "Questa build non è ancora collegata al relativo progetto EAS.",
+      "pushOffline": "Impossibile raggiungere il servizio push. Riprova quando sei online.",
+      "pushUnavailable": "Le notifiche push remote sono disponibili solo in una build Android o iOS di sviluppo/release."
+    },
+    "states": {
+      "loading": "Caricamento delle impostazioni dell'app…"
+    },
+    "header": {
+      "title": "Impostazioni dell'app",
+      "sectionTitle": "Fai sentire Binder come piace a te.",
+      "sectionCopy": "Le preferenze visive non modificano mai i colori di sicurezza. Le regole di consegna push vengono applicate dal server di Binder."
+    },
+    "accessibility": {
+      "backToProfile": "Torna al profilo"
+    },
+    "appearance": {
+      "title": "Aspetto",
+      "copy": "Segui il dispositivo o mantieni Binder in modalità scura.",
+      "dark": "Scuro"
+    },
+    "accent": {
+      "title": "Colore di accento",
+      "copy": "Cambiano solo i colori principali e di fiducia. I colori di avviso e delle azioni distruttive restano fissi.",
+      "options": {
+        "lime": "Lime Binder",
+        "blue": "Blu elettrico",
+        "violet": "Viola",
+        "coral": "Corallo",
+        "ice": "Ghiaccio"
+      }
+    },
+    "hapticsMotion": {
+      "title": "Feedback aptico e animazioni",
+      "haptics": "Feedback aptico",
+      "copy": "Feedback discreto per le azioni importanti.",
+      "motion": "Animazioni",
+      "reduce": "Ridotte",
+      "full": "Complete"
+    },
+    "notifications": {
+      "title": "Notifiche",
+      "copy": "L'autorizzazione vale per questa installazione. Categorie, suono e vibrazione seguono il tuo account Binder e vengono ricontrollati lato server prima di ogni invio.",
+      "remotePush": "Push remoto",
+      "newMatches": "Nuovi Binds",
+      "messages": "Messaggi",
+      "moderation": "Moderazione",
+      "safety": "Sicurezza",
+      "product": "Aggiornamenti del prodotto",
+      "productCopy": "Disattivati per impostazione predefinita.",
+      "sound": "Suono",
+      "vibration": "Vibrazione"
+    },
+    "quietHours": {
+      "title": "Ore silenziose",
+      "copy": "Le notifiche di Bind, messaggi, moderazione e prodotto vengono rimandate fino all'orario di fine locale. Gli avvisi di sicurezza urgenti restano immediati.",
+      "use": "Usa le ore silenziose",
+      "start": "Inizio",
+      "end": "Fine",
+      "invalid": "Usa HH:MM",
+      "startPlaceholder": "22:00",
+      "endPlaceholder": "08:00"
+    },
+    "diagnostics": {
+      "title": "Diagnostica",
+      "copy": "Solo eventi tecnici facoltativi. Nessuna bio, nessun messaggio, nessuna traccia dello stack non elaborata e nessuna posizione precisa.",
+      "checking": "Controllo della diagnostica…",
+      "share": "Condividi diagnostica facoltativa"
+    },
+    "reset": {
+      "action": "Reimposta le impostazioni dell'app",
+      "confirmTitle": "Reimpostare le impostazioni dell'app?",
+      "confirmCopy": "Aspetto, animazioni, feedback aptico, colore di accento, categorie di notifica e ore silenziose torneranno ai valori predefiniti. Il tuo profilo e le tue conversazioni non verranno modificati.",
+      "cancel": "Mantieni le mie impostazioni",
+      "confirm": "Reimposta",
+      "done": "Le impostazioni dell'app sono tornate ai valori predefiniti.",
+      "failed": "Impossibile reimpostare le impostazioni."
+    }
+  },
+  "binderErrorBoundary": {
+    "recovery": {
+      "eyebrow": "BINDER HA RIPRISTINATO LA SCHERMATA",
+      "title": "Qualcosa non è stato visualizzato correttamente.",
+      "message": "I dati del tuo account non sono stati inclusi nell'evento diagnostico. Prova di nuovo la schermata; se il problema si ripete, usa il feedback del Programma beta dopo l'apertura di Binder."
+    },
+    "actions": {
+      "retry": "Riprova Binder"
+    }
+  },
+  "photoPager": {
+    "errors": {
+      "load": "Impossibile caricare questa foto."
+    },
+    "accessibility": {
+      "position": "{name}, foto {current} di {count}",
+      "previous": "Foto precedente di {name}",
+      "openProfile": "Apri il profilo completo di {name}",
+      "next": "Foto successiva di {name}"
+    }
+  },
+  "discoveryLoading": {
+    "states": {
+      "finding": "Ricerca di persone compatibili da entrambe le parti…"
+    },
+    "accessibility": {
+      "finding": "Ricerca di persone compatibili da entrambe le parti"
+    }
+  },
+  "binderDial": {
+    "labels": {
+      "minimum": "MIN",
+      "maximum": "MAX",
+      "adjust": "REGOLA"
+    },
+    "accessibility": {
+      "decreaseMinimum": "Diminuisci minimo",
+      "decreaseMaximum": "Diminuisci massimo",
+      "decrease": "Diminuisci {caption}",
+      "increaseMinimum": "Aumenta minimo",
+      "increaseMaximum": "Aumenta massimo",
+      "increase": "Aumenta {caption}"
+    }
+  },
+  "binderInput": {
+    "accessibility": {
+      "hidePassword": "Nascondi password",
+      "showPassword": "Mostra password"
+    }
+  },
+  "binderScreenHeader": {},
+  "binderBrand": {
+    "accessibility": {
+      "name": "Binder"
+    },
+    "copy": {
+      "name": "BINDER"
+    }
+  },
+  "screenState": {},
+  "matchCelebration": {
+    "fallback": {
+      "you": "Tu"
+    },
+    "copy": {
+      "eyebrow": "È UN BIND",
+      "title": "Tu e {name} vi siete scelti.",
+      "message": "Niente giochi. La conversazione è aperta per entrambi."
+    },
+    "actions": {
+      "saySomething": "Di' qualcosa di vero",
+      "keepDiscovering": "Continua a scoprire"
+    }
+  },
+  "root": {
+    "offline": {
+      "title": "Sei offline",
+      "message": "Binder ha bisogno di una connessione per verificare le regole di sicurezza attuali. Tornerà a funzionare non appena sarai di nuovo online."
+    },
+    "legalGate": {
+      "failedTitle": "Controllo di sicurezza non riuscito",
+      "failedMessage": "Impossibile verificare lo stato delle informative di Binder."
+    }
+  }
+}
