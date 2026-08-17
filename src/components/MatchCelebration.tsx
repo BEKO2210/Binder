@@ -18,7 +18,7 @@ type Props = {
 // One confirmation beat: the joined portraits settle together, then the copy
 // arrives. Reduced motion renders the same meaningful settled state instantly.
 export function MatchCelebration({ profile, myPhotoUrl, onSaySomething, onKeepDiscovering, busy = false }: Props) {
-  const { theme, reduceMotion } = useBinderTheme();
+  const { theme, reduceMotion, t } = useBinderTheme();
   const { width } = useWindowDimensions();
   const spring = resolveSpring(reduceMotion, 'celebratory');
   const portrait = Math.min(176, width * 0.4);
@@ -42,7 +42,7 @@ export function MatchCelebration({ profile, myPhotoUrl, onSaySomething, onKeepDi
       <View style={{ width: '100%', maxWidth: 440, alignItems: 'center' }}>
         <Animated.View style={[{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: portrait + theme.spacing.x6 }, photoStyle]}>
           <View style={{ zIndex: 1 }}>
-            <Portrait uri={myPhotoUrl} size={portrait} borderColor={theme.colors.surface} fallbackLabel="You" />
+            <Portrait uri={myPhotoUrl} size={portrait} borderColor={theme.colors.surface} fallbackLabel={t('matchCelebration.fallback.you')} />
           </View>
           <View style={{ marginLeft: -theme.spacing.x6, zIndex: 2 }}>
             <Portrait uri={profile.photoUrl} size={portrait} borderColor={theme.accent.accent} fallbackLabel={profile.name.slice(0, 1)} />
@@ -50,11 +50,11 @@ export function MatchCelebration({ profile, myPhotoUrl, onSaySomething, onKeepDi
         </Animated.View>
 
         <Animated.View style={[{ alignItems: 'center', width: '100%' }, copyStyle]}>
-          <BinderText variant="micro" tone="accent" style={{ marginTop: theme.spacing.x6 }}>IT'S A BIND</BinderText>
-          <BinderText variant="heading" align="center" style={{ marginTop: theme.spacing.x2 }}>You and {profile.name} chose each other.</BinderText>
-          <BinderText variant="body" tone="secondary" align="center" style={{ marginTop: theme.spacing.x3 }}>No games. The conversation is open for both of you.</BinderText>
-          <BinderButton label="Say something real" icon="send" loading={busy} onPress={onSaySomething} style={{ marginTop: theme.spacing.x6 }} />
-          <BinderButton label="Keep discovering" variant="ghost" disabled={busy} onPress={onKeepDiscovering} style={{ marginTop: theme.spacing.x2 }} />
+          <BinderText variant="micro" tone="accent" style={{ marginTop: theme.spacing.x6 }}>{t('matchCelebration.copy.eyebrow')}</BinderText>
+          <BinderText variant="heading" align="center" style={{ marginTop: theme.spacing.x2 }}>{t('matchCelebration.copy.title', { name: profile.name })}</BinderText>
+          <BinderText variant="body" tone="secondary" align="center" style={{ marginTop: theme.spacing.x3 }}>{t('matchCelebration.copy.message')}</BinderText>
+          <BinderButton label={t('matchCelebration.actions.saySomething')} icon="send" loading={busy} onPress={onSaySomething} style={{ marginTop: theme.spacing.x6 }} />
+          <BinderButton label={t('matchCelebration.actions.keepDiscovering')} variant="ghost" disabled={busy} onPress={onKeepDiscovering} style={{ marginTop: theme.spacing.x2 }} />
         </Animated.View>
       </View>
     </View>

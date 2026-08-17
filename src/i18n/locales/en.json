@@ -597,5 +597,134 @@
       "years": "years",
       "km": "km"
     }
+  },
+  "about": {
+    "errors": {
+      "openPage": "Could not open this page. Try again later."
+    },
+    "header": {
+      "title": "About Binder"
+    },
+    "accessibility": {
+      "backToProfile": "Back to profile"
+    },
+    "intro": {
+      "title": "One free product.",
+      "copy": "Binder is built and run as an independent, non-commercial project. No ads, no paid tiers, no data brokers."
+    },
+    "policies": {
+      "eyebrow": "POLICIES",
+      "terms": "Terms & Community Rules",
+      "privacy": "Privacy Policy",
+      "deletion": "Account deletion & retention"
+    },
+    "version": "Binder {version}"
+  },
+  "appSettings": {
+    "common": {
+      "system": "System"
+    },
+    "errors": {
+      "loadDiagnostics": "Could not load diagnostics preference.",
+      "updateDiagnostics": "Could not update diagnostics.",
+      "updatePush": "Could not update push notifications."
+    },
+    "messages": {
+      "pushOff": "Push notifications are off on this installation.",
+      "pushActive": "Push notifications are active on this installation.",
+      "pushDenied": "Android notification permission is denied. You can allow Binder in system settings.",
+      "missingProject": "This build is not connected to its EAS project yet.",
+      "pushOffline": "Could not reach the push service. Try again when you are online.",
+      "pushUnavailable": "Remote push is available only in an Android or iOS development/release build."
+    },
+    "states": {
+      "loading": "Loading app settings…"
+    },
+    "header": {
+      "title": "App settings",
+      "sectionTitle": "Make Binder feel right.",
+      "sectionCopy": "Visual preferences never change safety colors. Push delivery rules are enforced by Binder's server."
+    },
+    "accessibility": {
+      "backToProfile": "Back to profile"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "copy": "Follow your device or keep Binder dark.",
+      "dark": "Dark"
+    },
+    "accent": {
+      "title": "Accent",
+      "copy": "Only primary/trust accents change. Warning and destructive colors stay fixed.",
+      "options": {
+        "lime": "Binder Lime",
+        "blue": "Electric Blue",
+        "violet": "Violet",
+        "coral": "Coral",
+        "ice": "Ice"
+      }
+    },
+    "hapticsMotion": {
+      "title": "Haptics & motion",
+      "haptics": "Haptics",
+      "copy": "Subtle feedback for meaningful actions.",
+      "motion": "Motion",
+      "reduce": "Reduce",
+      "full": "Full"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "copy": "Permission applies to this installation. Categories, sound and vibration follow your Binder account and are rechecked server-side before every send.",
+      "remotePush": "Remote push",
+      "newMatches": "New matches",
+      "messages": "Messages",
+      "moderation": "Moderation",
+      "safety": "Safety",
+      "product": "Product updates",
+      "productCopy": "Off by default.",
+      "sound": "Sound",
+      "vibration": "Vibration"
+    },
+    "quietHours": {
+      "title": "Quiet hours",
+      "copy": "Match, message, moderation and product pushes wait until the local end time. Urgent safety alerts remain immediate.",
+      "use": "Use quiet hours",
+      "start": "Start",
+      "end": "End",
+      "invalid": "Use HH:MM",
+      "startPlaceholder": "22:00",
+      "endPlaceholder": "08:00"
+    },
+    "diagnostics": {
+      "title": "Diagnostics",
+      "copy": "Optional technical events only. No bio, messages, raw stack traces or precise location.",
+      "checking": "Checking diagnostics…",
+      "share": "Share optional diagnostics"
+    },
+    "reset": {
+      "action": "Reset app settings",
+      "confirmTitle": "Reset app settings?",
+      "confirmCopy": "Appearance, motion, haptics, accent, notification categories and quiet hours return to their defaults. Your profile and conversations are untouched.",
+      "cancel": "Keep my settings",
+      "confirm": "Reset",
+      "done": "App settings are back to their defaults.",
+      "failed": "Could not reset the settings."
+    }
+  },
+  "screenState": {
+  },
+  "matchCelebration": {
+    "fallback": {
+      "you": "You"
+    },
+    "copy": {
+      "eyebrow": "IT'S A BIND",
+      "title": "You and {name} chose each other.",
+      "message": "No games. The conversation is open for both of you."
+    },
+    "actions": {
+      "saySomething": "Say something real",
+      "keepDiscovering": "Keep discovering"
+    }
   }
 }

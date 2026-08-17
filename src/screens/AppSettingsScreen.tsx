@@ -10,12 +10,12 @@ import { useBinderHaptics } from '../theme/haptics';
 import type { AccentThemeId, MotionPreference } from '../theme/tokens';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
-const ACCENT_OPTIONS: { id: AccentThemeId; label: string }[] = [
-  { id: 'lime', label: 'Binder Lime' },
-  { id: 'blue', label: 'Electric Blue' },
-  { id: 'violet', label: 'Violet' },
-  { id: 'coral', label: 'Coral' },
-  { id: 'ice', label: 'Ice' },
+const ACCENT_OPTIONS: { id: AccentThemeId; labelKey: string }[] = [
+  { id: 'lime', labelKey: 'appSettings.accent.options.lime' },
+  { id: 'blue', labelKey: 'appSettings.accent.options.blue' },
+  { id: 'violet', labelKey: 'appSettings.accent.options.violet' },
+  { id: 'coral', labelKey: 'appSettings.accent.options.coral' },
+  { id: 'ice', labelKey: 'appSettings.accent.options.ice' },
 ];
 
 // A quiet hour is a complete 24-hour time. Anything else is a keystroke on the
@@ -34,16 +34,16 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
 
   useEffect(() => {
     let active = true;
-    getBetaSettings().then((value) => { if (active) setDiagnostics(value.diagnostics_enabled); }).catch(() => { if (active) setMessage('Could not load diagnostics preference.'); }).finally(() => { if (active) setDiagnosticsLoading(false); });
+    getBetaSettings().then((value) => { if (active) setDiagnostics(value.diagnostics_enabled); }).catch(() => { if (active) setMessage(t('appSettings.errors.loadDiagnostics')); }).finally(() => { if (active) setDiagnosticsLoading(false); });
     return () => { active = false; };
-  }, []);
+  }, [t]);
 
   const toggleDiagnostics = useCallback(async (next: boolean) => {
     setDiagnosticsLoading(true); setMessage('');
     try { setDiagnostics(await setBetaDiagnostics(next)); await haptic('selection'); }
-    catch (error) { setMessage(error instanceof Error ? error.message : 'Could not update diagnostics.'); }
+    catch (error) { setMessage(error instanceof Error ? error.message : t('appSettings.errors.updateDiagnostics')); }
     finally { setDiagnosticsLoading(false); }
-  }, [haptic]);
+  }, [haptic, t]);
 
   const [pushBusy, setPushBusy] = useState(false);
   const [resetBusy, setResetBusy] = useState(false);
@@ -57,30 +57,30 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
       if (!next) {
         await disablePushNotifications();
         await updateNotifications({ enabled: false });
-        setMessage('Push notifications are off on this installation.');
+        setMessage(t('appSettings.messages.pushOff'));
         return;
       }
       const result = await enablePushNotifications();
       if (result.status === 'registered') {
         await updateNotifications({ enabled: true });
-        setMessage('Push notifications are active on this installation.');
+        setMessage(t('appSettings.messages.pushActive'));
       } else if (result.status === 'denied') {
         await updateNotifications({ enabled: false });
-        setMessage('Android notification permission is denied. You can allow Binder in system settings.');
+        setMessage(t('appSettings.messages.pushDenied'));
       } else if (result.status === 'missing-project-id') {
         await updateNotifications({ enabled: false });
-        setMessage('This build is not connected to its EAS project yet.');
+        setMessage(t('appSettings.messages.missingProject'));
       } else if (result.status === 'offline') {
-        setMessage('Could not reach the push service. Try again when you are online.');
+        setMessage(t('appSettings.messages.pushOffline'));
       } else {
-        setMessage('Remote push is available only in an Android or iOS development/release build.');
+        setMessage(t('appSettings.messages.pushUnavailable'));
       }
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Could not update push notifications.');
+      setMessage(error instanceof Error ? error.message : t('appSettings.errors.updatePush'));
     } finally {
       setPushBusy(false);
     }
-  }, [pushBusy, updateNotifications]);
+  }, [pushBusy, t, updateNotifications]);
 
   // A half-typed time ("22:") is not a quiet hour. The draft lives here until
   // it is complete, so a keystroke never writes an unusable value.
@@ -93,29 +93,29 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
 
   const confirmReset = useCallback(() => {
     if (resetBusy) return;
-    Alert.alert('Reset app settings?', 'Appearance, motion, haptics, accent, notification categories and quiet hours return to their defaults. Your profile and conversations are untouched.', [
-      { text: 'Keep my settings', style: 'cancel' },
-      { text: 'Reset', style: 'destructive', onPress: () => {
+    Alert.alert(t('appSettings.reset.confirmTitle'), t('appSettings.reset.confirmCopy'), [
+      { text: t('appSettings.reset.cancel'), style: 'cancel' },
+      { text: t('appSettings.reset.confirm'), style: 'destructive', onPress: () => {
         setResetBusy(true);
         setMessage('');
         void resetSettings()
-          .then(() => setMessage('App settings are back to their defaults.'))
-          .catch((error: unknown) => setMessage(error instanceof Error ? error.message : 'Could not reset the settings.'))
+          .then(() => setMessage(t('appSettings.reset.done')))
+          .catch((error: unknown) => setMessage(error instanceof Error ? error.message : t('appSettings.reset.failed')))
           .finally(() => setResetBusy(false));
       } },
     ]);
-  }, [resetBusy, resetSettings]);
+  }, [resetBusy, resetSettings, t]);
 
   const toggleHaptics = useCallback((value: boolean) => void updateSettings({ hapticsEnabled: value }), [updateSettings]);
   const toggleQuietHours = useCallback((value: boolean) => void updateQuietHours({ enabled: value }), [updateQuietHours]);
 
-  if (!hydrated) return <ScreenState kind="loading" message="Loading app settings…" />;
+  if (!hydrated) return <ScreenState kind="loading" message={t('appSettings.states.loading')} />;
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
-      <BinderScreenHeader title="App settings" leading={{ icon: 'back', accessibilityLabel: 'Back to profile', onPress: onClose }} />
+      <BinderScreenHeader title={t('appSettings.header.title')} leading={{ icon: 'back', accessibilityLabel: t('appSettings.accessibility.backToProfile'), onPress: onClose }} />
       <KeyboardAwareScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x5, paddingBottom: theme.spacing.x16 }} keyboardShouldPersistTaps="handled">
-      <SectionHeader title="Make Binder feel right." copy="Visual preferences never change safety colors. Push delivery rules are enforced by Binder's server." />
+      <SectionHeader title={t('appSettings.header.sectionTitle')} copy={t('appSettings.header.sectionCopy')} />
 
       {/* The language section is not a placeholder: it appears the moment a
           second locale file is registered, and stays out of the way until then. */}
@@ -141,52 +141,52 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
         </SettingsSection>
       ) : null}
 
-      <SettingsSection title="Appearance" copy="Follow your device or keep Binder dark.">
+      <SettingsSection title={t('appSettings.appearance.title')} copy={t('appSettings.appearance.copy')}>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>
-          <BinderChip label="System" selected={settings.appearance === 'system'} onPress={() => void updateSettings({ appearance: 'system' })} />
-          <BinderChip label="Dark" selected={settings.appearance === 'dark'} onPress={() => void updateSettings({ appearance: 'dark' })} />
+          <BinderChip label={t('appSettings.common.system')} selected={settings.appearance === 'system'} onPress={() => void updateSettings({ appearance: 'system' })} />
+          <BinderChip label={t('appSettings.appearance.dark')} selected={settings.appearance === 'dark'} onPress={() => void updateSettings({ appearance: 'dark' })} />
         </View>
       </SettingsSection>
 
-      <SettingsSection title="Accent" copy="Only primary/trust accents change. Warning and destructive colors stay fixed.">
+      <SettingsSection title={t('appSettings.accent.title')} copy={t('appSettings.accent.copy')}>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>
-          {ACCENT_OPTIONS.map((option) => <BinderChip key={option.id} label={option.label} selected={settings.accentTheme === option.id} onPress={() => { void updateSettings({ accentTheme: option.id }); void haptic('selection'); }} />)}
+          {ACCENT_OPTIONS.map((option) => <BinderChip key={option.id} label={t(option.labelKey)} selected={settings.accentTheme === option.id} onPress={() => { void updateSettings({ accentTheme: option.id }); void haptic('selection'); }} />)}
         </View>
       </SettingsSection>
 
-      <SettingsSection title="Haptics & motion">
-        <SwitchRow label="Haptics" copy="Subtle feedback for meaningful actions." value={settings.hapticsEnabled} onValueChange={toggleHaptics} />
-        <BinderText variant="label" tone="secondary" style={{ marginTop: theme.spacing.x4, marginBottom: theme.spacing.x2 }}>Motion</BinderText>
+      <SettingsSection title={t('appSettings.hapticsMotion.title')}>
+        <SwitchRow label={t('appSettings.hapticsMotion.haptics')} copy={t('appSettings.hapticsMotion.copy')} value={settings.hapticsEnabled} onValueChange={toggleHaptics} />
+        <BinderText variant="label" tone="secondary" style={{ marginTop: theme.spacing.x4, marginBottom: theme.spacing.x2 }}>{t('appSettings.hapticsMotion.motion')}</BinderText>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>
-          {(['system','reduce','full'] as MotionPreference[]).map((value) => <BinderChip key={value} label={value === 'system' ? 'System' : value === 'reduce' ? 'Reduce' : 'Full'} selected={settings.motion === value} onPress={() => void updateSettings({ motion: value })} />)}
+          {(['system','reduce','full'] as MotionPreference[]).map((value) => <BinderChip key={value} label={value === 'system' ? t('appSettings.common.system') : value === 'reduce' ? t('appSettings.hapticsMotion.reduce') : t('appSettings.hapticsMotion.full')} selected={settings.motion === value} onPress={() => void updateSettings({ motion: value })} />)}
         </View>
       </SettingsSection>
 
-      <SettingsSection title="Notifications" copy="Permission applies to this installation. Categories, sound and vibration follow your Binder account and are rechecked server-side before every send.">
-        <SwitchRow disabled={pushBusy} label="Remote push" value={settings.notifications.enabled} onValueChange={togglePush} />
-        <NotificationSwitchRow field="newMatches" label="New matches" value={settings.notifications.newMatches} disabled={!settings.notifications.enabled} update={updateNotifications} />
-        <NotificationSwitchRow field="messages" label="Messages" value={settings.notifications.messages} disabled={!settings.notifications.enabled} update={updateNotifications} />
-        <NotificationSwitchRow field="moderation" label="Moderation" value={settings.notifications.moderation} disabled={!settings.notifications.enabled} update={updateNotifications} />
-        <NotificationSwitchRow field="safety" label="Safety" value={settings.notifications.safety} disabled={!settings.notifications.enabled} update={updateNotifications} />
-        <NotificationSwitchRow field="product" label="Product updates" copy="Off by default." value={settings.notifications.product} disabled={!settings.notifications.enabled} update={updateNotifications} />
-        <NotificationSwitchRow field="sound" label="Sound" value={settings.notifications.sound} disabled={!settings.notifications.enabled} update={updateNotifications} />
-        <NotificationSwitchRow field="vibration" label="Vibration" value={settings.notifications.vibration} disabled={!settings.notifications.enabled} update={updateNotifications} />
+      <SettingsSection title={t('appSettings.notifications.title')} copy={t('appSettings.notifications.copy')}>
+        <SwitchRow disabled={pushBusy} label={t('appSettings.notifications.remotePush')} value={settings.notifications.enabled} onValueChange={togglePush} />
+        <NotificationSwitchRow field="newMatches" label={t('appSettings.notifications.newMatches')} value={settings.notifications.newMatches} disabled={!settings.notifications.enabled} update={updateNotifications} />
+        <NotificationSwitchRow field="messages" label={t('appSettings.notifications.messages')} value={settings.notifications.messages} disabled={!settings.notifications.enabled} update={updateNotifications} />
+        <NotificationSwitchRow field="moderation" label={t('appSettings.notifications.moderation')} value={settings.notifications.moderation} disabled={!settings.notifications.enabled} update={updateNotifications} />
+        <NotificationSwitchRow field="safety" label={t('appSettings.notifications.safety')} value={settings.notifications.safety} disabled={!settings.notifications.enabled} update={updateNotifications} />
+        <NotificationSwitchRow field="product" label={t('appSettings.notifications.product')} copy={t('appSettings.notifications.productCopy')} value={settings.notifications.product} disabled={!settings.notifications.enabled} update={updateNotifications} />
+        <NotificationSwitchRow field="sound" label={t('appSettings.notifications.sound')} value={settings.notifications.sound} disabled={!settings.notifications.enabled} update={updateNotifications} />
+        <NotificationSwitchRow field="vibration" label={t('appSettings.notifications.vibration')} value={settings.notifications.vibration} disabled={!settings.notifications.enabled} update={updateNotifications} />
       </SettingsSection>
 
-      <SettingsSection title="Quiet hours" copy="Match, message, moderation and product pushes wait until the local end time. Urgent safety alerts remain immediate.">
-        <SwitchRow label="Use quiet hours" value={settings.quietHours.enabled} onValueChange={toggleQuietHours} />
+      <SettingsSection title={t('appSettings.quietHours.title')} copy={t('appSettings.quietHours.copy')}>
+        <SwitchRow label={t('appSettings.quietHours.use')} value={settings.quietHours.enabled} onValueChange={toggleQuietHours} />
         <View style={{ flexDirection: 'row', gap: theme.spacing.x3, marginTop: theme.spacing.x3 }}>
-          <View style={{ flex: 1 }}><BinderInput label="Start" keyboardType="numbers-and-punctuation" maxLength={5} value={quietDraft?.start ?? settings.quietHours.start} error={quietDraft && !isQuietTime(quietDraft.start) ? 'Use HH:MM' : undefined} onChangeText={(value) => setQuietDraft({ start: value, end: quietDraft?.end ?? settings.quietHours.end })} onBlur={commitQuietHours} placeholder="22:00" /></View>
-          <View style={{ flex: 1 }}><BinderInput label="End" keyboardType="numbers-and-punctuation" maxLength={5} value={quietDraft?.end ?? settings.quietHours.end} error={quietDraft && !isQuietTime(quietDraft.end) ? 'Use HH:MM' : undefined} onChangeText={(value) => setQuietDraft({ start: quietDraft?.start ?? settings.quietHours.start, end: value })} onBlur={commitQuietHours} placeholder="08:00" /></View>
+          <View style={{ flex: 1 }}><BinderInput label={t('appSettings.quietHours.start')} keyboardType="numbers-and-punctuation" maxLength={5} value={quietDraft?.start ?? settings.quietHours.start} error={quietDraft && !isQuietTime(quietDraft.start) ? t('appSettings.quietHours.invalid') : undefined} onChangeText={(value) => setQuietDraft({ start: value, end: quietDraft?.end ?? settings.quietHours.end })} onBlur={commitQuietHours} placeholder={t('appSettings.quietHours.startPlaceholder')} /></View>
+          <View style={{ flex: 1 }}><BinderInput label={t('appSettings.quietHours.end')} keyboardType="numbers-and-punctuation" maxLength={5} value={quietDraft?.end ?? settings.quietHours.end} error={quietDraft && !isQuietTime(quietDraft.end) ? t('appSettings.quietHours.invalid') : undefined} onChangeText={(value) => setQuietDraft({ start: quietDraft?.start ?? settings.quietHours.start, end: value })} onBlur={commitQuietHours} placeholder={t('appSettings.quietHours.endPlaceholder')} /></View>
         </View>
       </SettingsSection>
 
-      <SettingsSection title="Diagnostics" copy="Optional technical events only. No bio, messages, raw stack traces or precise location.">
-        {diagnosticsLoading ? <ScreenState kind="loading" message="Checking diagnostics…" /> : <SwitchRow label="Share optional diagnostics" value={diagnostics} onValueChange={toggleDiagnostics} />}
+      <SettingsSection title={t('appSettings.diagnostics.title')} copy={t('appSettings.diagnostics.copy')}>
+        {diagnosticsLoading ? <ScreenState kind="loading" message={t('appSettings.diagnostics.checking')} /> : <SwitchRow label={t('appSettings.diagnostics.share')} value={diagnostics} onValueChange={toggleDiagnostics} />}
       </SettingsSection>
 
       {message ? <BinderText variant="caption" tone={/are active|are off/.test(message) ? 'accent' : 'destructive'} style={{ marginTop: theme.spacing.x4 }}>{message}</BinderText> : null}
-      <BinderButton label="Reset app settings" variant="secondary" loading={resetBusy} onPress={confirmReset} style={{ marginTop: theme.spacing.x6 }} />
+      <BinderButton label={t('appSettings.reset.action')} variant="secondary" loading={resetBusy} onPress={confirmReset} style={{ marginTop: theme.spacing.x6 }} />
       </KeyboardAwareScrollView>
     </View>
   );

@@ -12,21 +12,21 @@ type Props = { onClose: () => void };
 // Legal identity of the product. The Impressum block is a German statutory
 // document and therefore stays in German; everything else follows app language.
 export default function AboutScreen({ onClose }: Props) {
-  const { theme } = useBinderTheme();
+  const { theme, t } = useBinderTheme();
   const version = Constants.expoConfig?.version ?? '';
   const [linkError, setLinkError] = useState('');
   const openPolicy = useCallback((url: string) => {
-    void openBinderUrl(url).then(() => setLinkError('')).catch(() => setLinkError('Could not open this page. Try again later.'));
-  }, []);
+    void openBinderUrl(url).then(() => setLinkError('')).catch(() => setLinkError(t('about.errors.openPage')));
+  }, [t]);
   const openTerms = useCallback(() => openPolicy(TERMS_URL), [openPolicy]);
   const openPrivacy = useCallback(() => openPolicy(PRIVACY_URL), [openPolicy]);
   const openDeletion = useCallback(() => openPolicy(DELETE_ACCOUNT_URL), [openPolicy]);
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
-      <BinderScreenHeader title="About Binder" leading={{ icon: 'back', accessibilityLabel: 'Back to profile', onPress: onClose }} />
+      <BinderScreenHeader title={t('about.header.title')} leading={{ icon: 'back', accessibilityLabel: t('about.accessibility.backToProfile'), onPress: onClose }} />
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x5, paddingBottom: theme.spacing.x16 }}>
-      <SectionHeader title="One free product." copy="Binder is built and run as an independent, non-commercial project. No ads, no paid tiers, no data brokers." />
+      <SectionHeader title={t('about.intro.title')} copy={t('about.intro.copy')} />
 
       <BinderCard style={{ marginTop: theme.spacing.x6 }}>
         <BinderText variant="micro" tone="muted">IMPRESSUM · ANGABEN GEMÄSS § 5 DDG</BinderText>
@@ -37,16 +37,16 @@ export default function AboutScreen({ onClose }: Props) {
       </BinderCard>
 
       <BinderCard style={{ marginTop: theme.spacing.x4 }}>
-        <BinderText variant="micro" tone="muted">POLICIES</BinderText>
+        <BinderText variant="micro" tone="muted">{t('about.policies.eyebrow')}</BinderText>
         <View style={{ marginTop: theme.spacing.x2 }}>
-          <PolicyLink label="Terms & Community Rules" onPress={openTerms} />
-          <PolicyLink label="Privacy Policy" onPress={openPrivacy} />
-          <PolicyLink label="Account deletion & retention" onPress={openDeletion} />
+          <PolicyLink label={t('about.policies.terms')} onPress={openTerms} />
+          <PolicyLink label={t('about.policies.privacy')} onPress={openPrivacy} />
+          <PolicyLink label={t('about.policies.deletion')} onPress={openDeletion} />
         </View>
         {linkError ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x2 }}>{linkError}</BinderText> : null}
       </BinderCard>
 
-      {version ? <BinderText variant="caption" tone="muted" align="center" style={{ marginTop: theme.spacing.x6 }}>Binder {version}</BinderText> : null}
+      {version ? <BinderText variant="caption" tone="muted" align="center" style={{ marginTop: theme.spacing.x6 }}>{t('about.version', { version })}</BinderText> : null}
       </ScrollView>
     </View>
   );
