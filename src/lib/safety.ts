@@ -38,11 +38,22 @@ export async function fetchMySafetyNotice(options: RequestOptions = {}): Promise
 }
 
 export async function getLegalGate(): Promise<LegalGate> {
-  const { data, error } = await supabase.rpc('get_legal_gate');
-  if (error) throw error;
-  const row = data?.[0];
-  if (!row) throw new Error('Binder policy state is unavailable.');
-  return row;
+  // This is the first authenticated call after any sign-in. On the S23, once,
+  // straight after a Google sign-in, it failed and put a red "security check
+  // failed" screen in front of a perfectly good account; tapping retry worked
+  // immediately. One automatic retry costs 600 ms in that case and nothing at
+  // all in the normal one — and a failure that is actually a failure still
+  // reaches the screen.
+  for (let attempt = 0; ; attempt += 1) {
+    const { data, error } = await supabase.rpc('get_legal_gate');
+    const row = error ? undefined : data?.[0];
+    if (row) return row;
+    if (attempt >= 1) {
+      if (error) throw error;
+      throw new Error('Binder policy state is unavailable.');
+    }
+    await new Promise((resolve) => { setTimeout(resolve, 600); });
+  }
 }
 
 export async function acceptCurrentLegalGate(gate: LegalGate): Promise<void> {
