@@ -1,6 +1,8 @@
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 
+export { IMAGE_POLICY, imageDecodeSize } from './imagePolicy';
+
 const MAX_EDGE = 1080;
 
 export type PreparedImage = {

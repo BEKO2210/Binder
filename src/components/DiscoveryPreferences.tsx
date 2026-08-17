@@ -1,6 +1,7 @@
 import { View } from 'react-native';
 
 import { radiusSteps } from '../lib/dialScale';
+import { discoveryPresets, matchingDiscoveryPreset } from '../lib/discoveryPreferencesPolicy';
 import { useBinderTheme } from '../theme/ThemeProvider';
 import { GENDERS, type Gender } from '../lib/validation';
 import { BinderChip, BinderDial, BinderText } from './ui';
@@ -17,15 +18,21 @@ export type DiscoveryPreferenceValues = {
 type Props = DiscoveryPreferenceValues & {
   onChange: (values: DiscoveryPreferenceValues) => void;
   errors?: { audience?: string; age?: string; distance?: string };
+  showPresets?: boolean;
 };
 
 export const discoveryDefaults: DiscoveryPreferenceValues = { interestedIn: ['woman', 'man', 'nonbinary'], minAge: 18, maxAge: 45, distance: 50 };
 
-export function DiscoveryPreferences({ interestedIn, minAge, maxAge, distance, onChange, errors = {} }: Props) {
+export function DiscoveryPreferences({ interestedIn, minAge, maxAge, distance, onChange, errors = {}, showPresets = false }: Props) {
   const { theme } = useBinderTheme();
   const current = { interestedIn, minAge, maxAge, distance };
   return (
     <View style={{ gap: theme.spacing.x10 }}>
+      {showPresets ? <PreferenceGroup title="Start with a preset">
+        <View style={{ gap: theme.spacing.x2 }}>
+          {discoveryPresets.map((preset) => <BinderChip key={preset.id} label={`${preset.label} · ${preset.description}`} selected={matchingDiscoveryPreset(current) === preset.id} onPress={() => onChange({ ...current, minAge: preset.minAge, maxAge: preset.maxAge, distance: preset.distance })} />)}
+        </View>
+      </PreferenceGroup> : null}
       <PreferenceGroup title="Who I want to meet" error={errors.audience}>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>
           {GENDERS.map((item) => <BinderChip key={item.value} label={item.label} selected={interestedIn.includes(item.value)} onPress={() => onChange({ ...current, interestedIn: interestedIn.includes(item.value) ? interestedIn.filter((value) => value !== item.value) : [...interestedIn, item.value] })} />)}

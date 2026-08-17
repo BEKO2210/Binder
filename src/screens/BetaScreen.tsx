@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Switch, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
@@ -28,7 +28,7 @@ export default function BetaScreen({ onClose }: { onClose: () => void }) {
     return () => { active = false; };
   }, []);
 
-  async function toggleDiagnostics(enabled: boolean) {
+  const toggleDiagnostics = useCallback(async (enabled: boolean) => {
     if (!settings || busy) return;
     setBusy(true); setMessage('');
     try {
@@ -38,15 +38,15 @@ export default function BetaScreen({ onClose }: { onClose: () => void }) {
       setMessage(saved ? 'Optional diagnostics enabled. Binder records only fixed technical event fields.' : 'Optional diagnostics disabled. Existing optional client diagnostics were deleted.');
     } catch (error) { setMessage(error instanceof Error ? error.message : 'Could not update beta diagnostics.'); }
     finally { setBusy(false); }
-  }
+  }, [busy, haptic, settings]);
 
-  async function submit() {
+  const submit = useCallback(async () => {
     if (busy) return;
     setBusy(true); setMessage('');
     try { await submitBetaFeedback(category, rating, details); setDetails(''); await haptic('selection'); setMessage('Feedback received. Thank you for testing Binder.'); }
     catch (error) { setMessage(error instanceof Error ? error.message : 'Could not submit beta feedback.'); }
     finally { setBusy(false); }
-  }
+  }, [busy, category, details, haptic, rating]);
 
   if (loading) return <ScreenState kind="loading" message="Loading beta program…" />;
 
@@ -59,7 +59,7 @@ export default function BetaScreen({ onClose }: { onClose: () => void }) {
       <BinderCard style={{ marginTop: theme.spacing.x6 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x4 }}>
           <View style={{ flex: 1 }}><BinderText variant="title">Optional diagnostics</BinderText><BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1 }}>Useful for load-time and render-failure debugging during beta.</BinderText></View>
-          <Switch accessibilityLabel="Optional Binder beta diagnostics" disabled={!settings || busy} value={settings?.diagnostics_enabled ?? false} onValueChange={(value) => void toggleDiagnostics(value)} trackColor={{ false: theme.colors.borderStrong, true: theme.accent.accent }} thumbColor={theme.colors.textPrimary} />
+          <Switch accessibilityLabel="Optional Binder beta diagnostics" disabled={!settings || busy} value={settings?.diagnostics_enabled ?? false} onValueChange={toggleDiagnostics} trackColor={{ false: theme.colors.borderStrong, true: theme.accent.accent }} thumbColor={theme.colors.textPrimary} />
         </View>
         <View style={{ height: 1, backgroundColor: theme.colors.borderSubtle, marginVertical: theme.spacing.x5 }} />
         <BinderText variant="micro" tone="muted">CAN RECORD</BinderText>
@@ -83,7 +83,7 @@ export default function BetaScreen({ onClose }: { onClose: () => void }) {
       <View style={{ flexDirection: 'row', gap: theme.spacing.x2 }}>{[1,2,3,4,5].map((value) => <View key={value} style={{ flex: 1 }}><BinderChip label={String(value)} selected={rating === value} onPress={() => setRating(value)} /></View>)}</View>
       <View style={{ marginTop: theme.spacing.x5 }}><BinderInput label="Details" helper={`${details.length}/1500`} value={details} onChangeText={setDetails} maxLength={1500} multiline textAlignVertical="top" placeholder="What happened? What did you expect instead?" style={{ minHeight: theme.layout.feedbackInputHeight }} /></View>
       {message ? <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x4 }}>{message}</BinderText> : null}
-      <BinderButton label="Send beta feedback" loading={busy} onPress={() => void submit()} style={{ marginTop: theme.spacing.x5 }} />
+      <BinderButton label="Send beta feedback" loading={busy} onPress={submit} style={{ marginTop: theme.spacing.x5 }} />
       </KeyboardAwareScrollView>
     </View>
   );

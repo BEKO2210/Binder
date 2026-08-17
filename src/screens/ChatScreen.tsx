@@ -6,6 +6,7 @@ import Animated, { FadeInDown, FadeInUp, FadeOutDown } from 'react-native-reanim
 import { buildChatTimeline, timeLabel, type TimelineItem } from '../lib/chatTimeline';
 import { composerBody } from '../lib/conversationPresentation';
 import { resolveStaggerDelay } from '../lib/motionPolicy';
+import { classifyError, isAbortError, withRetry, type ReliabilityError } from '../lib/reliability';
 
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import { MotionPressable as Pressable } from '../components/ui';
@@ -36,7 +37,7 @@ const REPORT_REASONS: { value: ReportReason; label: string }[] = [
   { value: 'other', label: 'Other' },
 ];
 
-type LocalAttempt = { clientId: string; body: string; status: 'sending' | 'failed' };
+type LocalAttempt = { clientId: string; body: string; status: 'sending' | 'failed'; error?: ReliabilityError };
 type SafetyMode = 'menu' | 'report';
 
 export default function ChatScreen({ match, currentUserId, onClose, onConversationEnded }: {
@@ -49,12 +50,12 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   const haptic = useBinderHaptics();
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState('');
+  const [reloadKey, setReloadKey] = useState(0);
+  const [loadError, setLoadError] = useState<ReliabilityError | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [loadingOlder, setLoadingOlder] = useState(false);
   const [composer, setComposer] = useState('');
   const [sending, setSending] = useState(false);
-  const [sendError, setSendError] = useState('');
   const [localAttempt, setLocalAttempt] = useState<LocalAttempt | null>(null);
   const [showNewMessage, setShowNewMessage] = useState(false);
   const listRef = useRef<FlatList<TimelineItem<Message>>>(null);
@@ -65,7 +66,19 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   const [reportDetails, setReportDetails] = useState('');
   const [reportMessageId, setReportMessageId] = useState<string | null>(null);
   const [reporting, setReporting] = useState(false);
+  const [safetyError, setSafetyError] = useState<ReliabilityError | null>(null);
   const [showPartnerProfile, setShowPartnerProfile] = useState(false);
+  const mountedRef = useRef(true);
+  const lifecycleControllerRef = useRef(new AbortController());
+
+  useEffect(() => {
+    mountedRef.current = true;
+    if (lifecycleControllerRef.current.signal.aborted) lifecycleControllerRef.current = new AbortController();
+    return () => {
+      mountedRef.current = false;
+      lifecycleControllerRef.current.abort();
+    };
+  }, []);
 
   function mergeMessages(next: Message[]) {
     setMessages((current) => {
@@ -82,6 +95,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
 
   useEffect(() => {
     let active = true;
+    const requestController = new AbortController();
     let unsubscribe: (() => void) | null = null;
     let retryTimer: ReturnType<typeof setTimeout> | null = null;
     let retryAttempt = 0;
@@ -89,15 +103,16 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
 
     async function load(initial: boolean) {
       if (initial) setLoading(true);
-      setLoadError('');
+      setLoadError(null);
       try {
-        const page = await fetchMessagesPage(match.matchId);
+        const page = await withRetry((signal) => fetchMessagesPage(match.matchId, undefined, 50, { signal }), { attempts: 3, signal: requestController.signal });
         if (!active) return;
         mergeMessages(page.messages);
         setHasMore(page.hasMore);
-        void markMatchRead(match.matchId).catch(() => undefined);
+        setLoadError(null);
+        void markMatchRead(match.matchId, { signal: requestController.signal }).catch(() => undefined);
       } catch (nextError) {
-        if (active) setLoadError(nextError instanceof Error ? nextError.message : 'Could not load conversation.');
+        if (active && !isAbortError(nextError)) setLoadError(classifyError(nextError));
       } finally {
         if (active && initial) setLoading(false);
       }
@@ -115,16 +130,17 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         (message) => {
           if (!active) return;
           retryAttempt = 0;
-          setLoadError('');
+          setLoadError(null);
           mergeMessage(message);
           if (nearNewestRef.current) listRef.current?.scrollToOffset({ offset: 0, animated: !reduceMotion });
           else if (message.sender_id !== currentUserId) setShowNewMessage(true);
-          if (message.sender_id !== currentUserId) void markMatchRead(match.matchId).catch(() => undefined);
+          if (message.sender_id !== currentUserId) void markMatchRead(match.matchId, { signal: requestController.signal }).catch(() => undefined);
         },
         (message) => {
           if (!active) return;
-          setLoadError(message);
+          setLoadError(classifyError(message));
           unsubscribe?.();
+          if (retryAttempt >= 5) return;
           const delay = Math.min(15_000,1_000 * 2 ** retryAttempt);
           retryAttempt += 1;
           retryTimer = setTimeout(() => {
@@ -158,25 +174,28 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     });
     return () => {
       active = false;
+      requestController.abort();
       if (retryTimer) clearTimeout(retryTimer);
       unsubscribe?.();
       appState.remove();
     };
-  }, [currentUserId, match.matchId, reduceMotion]);
+  }, [currentUserId, match.matchId, reduceMotion, reloadKey]);
 
   async function loadOlder() {
     const oldest = messages[0];
     if (!oldest || loadingOlder || !hasMore) return;
     setLoadingOlder(true);
-    setLoadError('');
+    setLoadError(null);
     try {
-      const page = await fetchMessagesPage(match.matchId,oldest);
+      const page = await withRetry((signal) => fetchMessagesPage(match.matchId, oldest, 50, { signal }), { attempts: 3, signal: lifecycleControllerRef.current.signal });
+      if (!mountedRef.current) return;
       mergeMessages(page.messages);
       setHasMore(page.hasMore);
+      setLoadError(null);
     } catch (error) {
-      setLoadError(error instanceof Error ? error.message : 'Could not load earlier messages.');
+      if (mountedRef.current && !isAbortError(error)) setLoadError(classifyError(error));
     } finally {
-      setLoadingOlder(false);
+      if (mountedRef.current) setLoadingOlder(false);
     }
   }
 
@@ -203,19 +222,18 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     if (!body || sending) return;
     const clientId = retry && localAttempt ? localAttempt.clientId : createClientMessageId();
     setSending(true);
-    setSendError('');
     setLocalAttempt({ clientId, body, status: 'sending' });
     if (!retry) setComposer('');
     try {
-      const confirmed = await sendMessage(match.matchId, clientId, body);
+      const confirmed = await sendMessage(match.matchId, clientId, body, { signal: lifecycleControllerRef.current.signal });
+      if (!mountedRef.current) return;
       mergeMessage(confirmed);
       setLocalAttempt(null);
       listRef.current?.scrollToOffset({ offset: 0, animated: !reduceMotion });
       await haptic('selection');
     } catch (nextError) {
-      setLocalAttempt({ clientId, body, status: 'failed' });
-      setSendError('Message not sent. Check your connection and retry.');
-    } finally { setSending(false); }
+      if (mountedRef.current && !isAbortError(nextError)) setLocalAttempt({ clientId, body, status: 'failed', error: classifyError(nextError) });
+    } finally { if (mountedRef.current) setSending(false); }
   }
 
   function openMessageActions(message: Message) {
@@ -236,28 +254,29 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   function confirmUnmatch() {
     Alert.alert(`Unmatch ${match.firstName}?`, 'The conversation closes for both of you immediately.', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Unmatch', style: 'destructive', onPress: () => { void unmatch(match.matchId).then(async () => { await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => setLoadError(error instanceof Error ? error.message : 'Could not unmatch.')); } },
+      { text: 'Unmatch', style: 'destructive', onPress: () => { setSafetyError(null); void unmatch(match.matchId, { signal: lifecycleControllerRef.current.signal }).then(async () => { if (!mountedRef.current) return; await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => { if (mountedRef.current && !isAbortError(error)) setSafetyError(classifyError(error)); }); } },
     ]);
   }
 
   function confirmBlock() {
     Alert.alert(`Block ${match.firstName}?`, 'You will disappear from each other and the conversation closes immediately.', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Block', style: 'destructive', onPress: () => { void blockUser(match.otherUserId).then(async () => { await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => setLoadError(error instanceof Error ? error.message : 'Could not block user.')); } },
+      { text: 'Block', style: 'destructive', onPress: () => { setSafetyError(null); void blockUser(match.otherUserId, { signal: lifecycleControllerRef.current.signal }).then(async () => { if (!mountedRef.current) return; await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => { if (mountedRef.current && !isAbortError(error)) setSafetyError(classifyError(error)); }); } },
     ]);
   }
 
   async function submitReport() {
     if (reporting) return;
     setReporting(true);
-    setLoadError('');
+    setSafetyError(null);
     try {
-      await reportUser({ reportedUserId: match.otherUserId, reason: reportReason, details: reportDetails, matchId: match.matchId, messageId: reportMessageId ?? undefined, block: true });
+      await reportUser({ reportedUserId: match.otherUserId, reason: reportReason, details: reportDetails, matchId: match.matchId, messageId: reportMessageId ?? undefined, block: true, signal: lifecycleControllerRef.current.signal });
+      if (!mountedRef.current) return;
       await haptic('destructive');
       onConversationEnded();
     } catch (nextError) {
-      setLoadError(nextError instanceof Error ? nextError.message : 'Could not submit report.');
-    } finally { setReporting(false); }
+      if (mountedRef.current && !isAbortError(nextError)) setSafetyError(classifyError(nextError));
+    } finally { if (mountedRef.current) setReporting(false); }
   }
 
   function openReport(messageId?: string) {
@@ -266,6 +285,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     setReportDetails('');
     setSafetyMode('report');
     setShowSafety(true);
+    setSafetyError(null);
   }
 
   function closeSafety() {
@@ -273,6 +293,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     setSafetyMode('menu');
     setReportMessageId(null);
     setReportDetails('');
+    setSafetyError(null);
   }
 
   if (showPartnerProfile) {
@@ -301,10 +322,11 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
               <BinderButton label="Report & block" icon="report" variant="destructive" onPress={() => openReport()} />
             </View>
           )}
+          {safetyError ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x3 }}>{safetyError.message}</BinderText> : null}
         </BinderCard>
       ) : null}
 
-      {loading ? <ScreenState kind="loading" message="Opening conversation…" /> : loadError && messages.length === 0 ? <ScreenState kind="error" icon="retry" title="Conversation did not load" message={loadError} actionLabel="Back to matches" onAction={onClose} /> : messages.length === 0 ? <ScreenState kind="empty" icon="matches" title="You matched." message="Normal chat opens only after mutual interest. Say something real." /> : (
+      {loading ? <ScreenState kind="loading" loadingShape="conversation" message="Opening conversation…" /> : loadError && messages.length === 0 ? <ScreenState kind={loadError.kind === 'offline' ? 'offline' : loadError.kind === 'permission-denied' ? 'permission' : 'error'} icon="retry" title={loadError.kind === 'offline' ? 'You are offline' : 'Conversation did not load'} message={loadError.message} actionLabel={loadError.recovery === 'refresh' ? 'Refresh' : 'Try again'} onAction={() => setReloadKey((value) => value + 1)} /> : messages.length === 0 ? <ScreenState kind="empty" icon="matches" title="You matched." message="Normal chat opens only after mutual interest. Say something real." /> : (
         <FlatList
           ref={listRef}
           data={timeline}
@@ -357,13 +379,12 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
 
       {showNewMessage ? <Pressable accessibilityRole="button" accessibilityLabel="Scroll to new message" onPress={() => { listRef.current?.scrollToOffset({ offset: 0, animated: !reduceMotion }); setShowNewMessage(false); }} style={({ pressed }) => ({ minHeight: theme.spacing.x12, alignSelf: 'center', justifyContent: 'center', paddingHorizontal: theme.spacing.x4, borderRadius: theme.radii.pill, backgroundColor: pressed ? theme.accent.pressed : theme.accent.accent })}><BinderText variant="label" style={{ color: theme.accent.foreground }}>New message</BinderText></Pressable> : null}
 
-      {localAttempt ? <View style={{ alignItems: 'flex-end', paddingHorizontal: theme.spacing.x4, paddingTop: theme.spacing.x2 }}><View style={{ maxWidth: '82%', paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x3, borderRadius: theme.radii.control, borderBottomRightRadius: theme.radii.small, backgroundColor: localAttempt.status === 'failed' ? theme.colors.surfaceElevated : theme.accent.accent, borderWidth: localAttempt.status === 'failed' ? 1 : 0, borderColor: theme.semantic.destructive }}><BinderText variant="body" style={{ color: localAttempt.status === 'failed' ? theme.colors.textPrimary : theme.accent.foreground }}>{localAttempt.body}</BinderText></View><View style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>{localAttempt.status === 'sending' ? <BinderText variant="caption" tone="muted">Sending…</BinderText> : <><BinderText variant="caption" tone="destructive">Not sent</BinderText><Pressable accessibilityRole="button" accessibilityLabel="Retry sending message" onPress={() => void submitMessage(true)} style={({ pressed }) => ({ minHeight: theme.spacing.x12, justifyContent: 'center', paddingHorizontal: theme.spacing.x3, borderRadius: theme.radii.pill, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surfaceElevated })}><BinderText variant="label" tone="accent">Retry</BinderText></Pressable></>}</View></View> : null}
+      {localAttempt ? <View style={{ alignItems: 'flex-end', paddingHorizontal: theme.spacing.x4, paddingTop: theme.spacing.x2 }}><View style={{ maxWidth: '82%', paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x3, borderRadius: theme.radii.control, borderBottomRightRadius: theme.radii.small, backgroundColor: localAttempt.status === 'failed' ? theme.colors.surfaceElevated : theme.accent.accent, borderWidth: localAttempt.status === 'failed' ? 1 : 0, borderColor: theme.semantic.destructive }}><BinderText variant="body" style={{ color: localAttempt.status === 'failed' ? theme.colors.textPrimary : theme.accent.foreground }}>{localAttempt.body}</BinderText></View><View style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>{localAttempt.status === 'sending' ? <BinderText variant="caption" tone="muted">Sending…</BinderText> : <><BinderText variant="caption" tone="destructive" style={{ flexShrink: 1 }}>{localAttempt.error?.message ?? 'Message not sent.'}</BinderText><Pressable accessibilityRole="button" accessibilityLabel="Retry sending message" onPress={() => void submitMessage(true)} style={({ pressed }) => ({ minHeight: theme.spacing.x12, justifyContent: 'center', paddingHorizontal: theme.spacing.x3, borderRadius: theme.radii.pill, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surfaceElevated })}><BinderText variant="label" tone="accent">Retry</BinderText></Pressable></>}</View></View> : null}
 
-      {loadError && messages.length > 0 ? <BinderText variant="caption" tone="destructive" style={{ paddingHorizontal: theme.spacing.x4 }}>{loadError}</BinderText> : null}
-      {sendError ? <BinderText variant="caption" tone="destructive" style={{ paddingHorizontal: theme.spacing.x4 }}>{sendError}</BinderText> : null}
+      {loadError && messages.length > 0 ? <View style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', paddingHorizontal: theme.spacing.x4 }}><BinderText variant="caption" tone="destructive" style={{ flex: 1 }}>{loadError.message}</BinderText><BinderButton label="Retry" variant="ghost" fullWidth={false} onPress={() => setReloadKey((value) => value + 1)} /></View> : null}
 
       <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: theme.spacing.x2, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x3, borderTopWidth: 1, borderTopColor: theme.colors.borderSubtle, backgroundColor: theme.colors.surface }}>
-        <TextInput accessibilityLabel={`Message ${match.firstName}`} value={composer} onChangeText={(value) => { setComposer(value); setSendError(''); }} maxLength={2000} multiline scrollEnabled placeholder={`Message ${match.firstName}`} placeholderTextColor={theme.colors.textMuted} selectionColor={theme.accent.accent} style={{ flex: 1, minHeight: theme.spacing.x12, maxHeight: theme.spacing.x16 * 2, color: theme.colors.textPrimary, backgroundColor: theme.colors.surfaceElevated, borderWidth: 1, borderColor: theme.colors.borderSubtle, borderRadius: theme.radii.control, paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x3, textAlignVertical: 'center' }} />
+        <TextInput accessibilityLabel={`Message ${match.firstName}`} value={composer} onChangeText={setComposer} maxLength={2000} multiline scrollEnabled placeholder={`Message ${match.firstName}`} placeholderTextColor={theme.colors.textMuted} selectionColor={theme.accent.accent} style={{ flex: 1, minHeight: theme.spacing.x12, maxHeight: theme.spacing.x16 * 2, color: theme.colors.textPrimary, backgroundColor: theme.colors.surfaceElevated, borderWidth: 1, borderColor: theme.colors.borderSubtle, borderRadius: theme.radii.control, paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x3, textAlignVertical: 'center' }} />
         <BinderIconButton name={sending ? 'more' : 'send'} accessibilityLabel={sending ? 'Sending message' : `Send message to ${match.firstName}`} selected={canSend || sending} disabled={!canSend} onPress={() => void submitMessage()} />
       </View>
     </KeyboardAvoidingView>

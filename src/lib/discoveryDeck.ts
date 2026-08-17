@@ -5,6 +5,9 @@ export type SwipeDecision = SwipeDirection | null;
 export const discoveryDeckPhysics = {
   distanceRatio: 0.24,
   velocityThreshold: 900,
+  projectionSeconds: 0.16,
+  edgeRatio: 0.72,
+  edgeResistance: 0.28,
   dismissDistanceRatio: 1.35,
   maximumRotationDegrees: 8,
   hingeOffsetRatio: 1.1,
@@ -14,19 +17,31 @@ export const discoveryDeckPhysics = {
   undoWindowMs: 5_000,
 } as const;
 
+export function resistedTranslation(distanceX: number, viewportWidth: number): number {
+  'worklet';
+  const edge = viewportWidth * discoveryDeckPhysics.edgeRatio;
+  const magnitude = Math.abs(distanceX);
+  if (magnitude <= edge) return distanceX;
+  const resisted = edge + (magnitude - edge) * discoveryDeckPhysics.edgeResistance;
+  return Math.sign(distanceX) * resisted;
+}
+
+export function projectedTranslation(distanceX: number, velocityX: number): number {
+  'worklet';
+  return distanceX + velocityX * discoveryDeckPhysics.projectionSeconds;
+}
+
 export function decideSwipe(
   distanceX: number,
   velocityX: number,
   viewportWidth: number,
 ): SwipeDecision {
   'worklet';
-  if (Math.abs(velocityX) >= discoveryDeckPhysics.velocityThreshold) {
-    return velocityX > 0 ? 'right' : 'left';
-  }
-
   const threshold = viewportWidth * discoveryDeckPhysics.distanceRatio;
-  if (distanceX >= threshold) return 'right';
-  if (distanceX <= -threshold) return 'left';
+  const projected = projectedTranslation(distanceX, velocityX);
+  if (Math.abs(velocityX) >= discoveryDeckPhysics.velocityThreshold || Math.abs(projected) >= threshold) {
+    return projected > 0 ? 'right' : 'left';
+  }
   return null;
 }
 

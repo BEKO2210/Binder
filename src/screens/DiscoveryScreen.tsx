@@ -2,17 +2,18 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useState } from 'react';
 import { BackHandler, Dimensions, Image, ScrollView, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { Extrapolation, FadeIn, FadeInUp, FadeOut, FadeOutDown, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { Extrapolation, FadeIn, FadeOut, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
 import DiscoveryFilterSheet from '../components/DiscoveryFilterSheet';
 import { DiscoveryLoading } from '../components/DiscoveryLoading';
 import type { DiscoveryPreferenceValues } from '../components/DiscoveryPreferences';
 import { MatchCelebration } from '../components/MatchCelebration';
+import { PhotoPager } from '../components/PhotoPager';
 import { MotionPressable as Pressable } from '../components/ui';
 import { BinderBrand, BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import { fetchMatches, type MatchSummary } from '../lib/conversation';
 import { fetchDiscoveryBatch, recordDecision, refreshDiscoveryLocation, type DiscoveryProfile } from '../lib/discovery';
-import { advanceDeck, decideSwipe, discoveryDeckPhysics, type SwipeDirection } from '../lib/discoveryDeck';
+import { advanceDeck, decideSwipe, discoveryDeckPhysics, resistedTranslation, type SwipeDirection } from '../lib/discoveryDeck';
 import { listMyProfileMedia } from '../lib/media';
 import { resolveSpring } from '../lib/motionPolicy';
 import { reportAndBlockDiscoveryProfile, type DiscoveryReportReason } from '../lib/safety';
@@ -27,7 +28,6 @@ const SWIPE_THRESHOLD = SCREEN_WIDTH * discoveryDeckPhysics.distanceRatio;
 const SWIPE_OUT = SCREEN_WIDTH * discoveryDeckPhysics.dismissDistanceRatio;
 const HINGE_OFFSET = SCREEN_WIDTH * discoveryDeckPhysics.hingeOffsetRatio;
 const BACK_CARD_OFFSET = SCREEN_WIDTH * discoveryDeckPhysics.backCardOffsetRatio;
-const profilePlaceholder = require('../../assets/brand/icon.png');
 
 const REPORT_REASONS: { value: DiscoveryReportReason; label: string; detail: string }[] = [
   { value: 'underage', label: 'May be under 18', detail: 'Highest-priority safety review.' },
@@ -59,6 +59,7 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
   const y = useSharedValue(0);
   const intentX = useSharedValue(0);
   const thresholdDirection = useSharedValue(0);
+  const profileOpenProgress = useSharedValue(0);
   const profile = profiles[0];
   const nextProfile = profiles[1];
   const spring = resolveSpring(reduceMotion, 'professional');
@@ -151,6 +152,27 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
       ],
     };
   });
+  const expandedProfileStyle = useAnimatedStyle(() => ({
+    opacity: profileOpenProgress.value,
+    transform: [{ scale: interpolate(profileOpenProgress.value, [0, 1], [discoveryDeckPhysics.backCardScale, 1]) }],
+  }));
+
+  function openProfile(current: DiscoveryProfile) {
+    if (decisionPending || safetyOpen) return;
+    profileOpenProgress.value = reduceMotion ? 1 : 0;
+    setViewingProfile(current);
+    if (!reduceMotion) profileOpenProgress.value = withTiming(1, { duration: theme.motion.context });
+  }
+
+  function closeProfile() {
+    if (reduceMotion) {
+      setViewingProfile(null);
+      return;
+    }
+    profileOpenProgress.value = withTiming(0, { duration: theme.motion.deliberate }, (finished) => {
+      if (finished) runOnJS(setViewingProfile)(null);
+    });
+  }
 
   function springBack() {
     if (reduceMotion) {
@@ -237,7 +259,7 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
       thresholdDirection.value = 0;
     })
     .onUpdate((event) => {
-      x.value = reduceMotion ? 0 : event.translationX;
+      x.value = reduceMotion ? 0 : resistedTranslation(event.translationX, SCREEN_WIDTH);
       intentX.value = event.translationX;
       y.value = reduceMotion ? 0 : event.translationY * 0.18;
       const direction = decideSwipe(event.translationX, event.velocityX, SCREEN_WIDTH);
@@ -284,9 +306,9 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
         {!profile ? (
           <BinderCard>
             <BinderText variant="micro" tone="accent">YOU'RE CAUGHT UP</BinderText>
-            <BinderText variant="heading" style={{ marginTop: theme.spacing.x2 }}>No more people right now.</BinderText>
-            <BinderText variant="body" tone="secondary" style={{ marginTop: theme.spacing.x3 }}>Binder only shows profiles that pass mutual age, preference, distance and safety filters.</BinderText>
-            <BinderButton label="Refresh nearby" icon="retry" onPress={() => void loadDiscovery(true)} style={{ marginTop: theme.spacing.x5 }} />
+            <BinderText variant="heading" style={{ marginTop: theme.spacing.x2 }}>Your deck is clear for now.</BinderText>
+            <BinderText variant="body" tone="secondary" style={{ marginTop: theme.spacing.x3 }}>Widen your age range or distance to meet more people. New approved profiles will appear here automatically.</BinderText>
+            <BinderButton label="Change filters" icon="discover" onPress={() => setFiltersOpen(true)} style={{ marginTop: theme.spacing.x5 }} />
           </BinderCard>
         ) : (
           <>
@@ -297,7 +319,7 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
             ) : null}
             <GestureDetector gesture={panGesture}>
               <Animated.View style={[{ position: 'absolute', inset: 0 }, topCardStyle]}>
-                <ProfileCard key={profile.id} profile={profile} onOpenProfile={() => { if (!decisionPending && !safetyOpen) setViewingProfile(profile); }} />
+                <ProfileCard key={profile.id} profile={profile} onOpenProfile={() => openProfile(profile)} />
                 <Animated.View pointerEvents="none" style={[{ position: 'absolute', inset: 0, borderRadius: theme.radii.hero, borderRightWidth: theme.spacing.x1, borderColor: theme.accent.accent, alignItems: 'flex-end', justifyContent: 'center', paddingRight: theme.spacing.x5 }, bindStampStyle]}><BinderText variant="title" tone="accent">BIND</BinderText></Animated.View>
                 <Animated.View pointerEvents="none" style={[{ position: 'absolute', inset: 0, borderRadius: theme.radii.hero, borderLeftWidth: theme.spacing.x1, borderColor: theme.semantic.destructive, justifyContent: 'center', paddingLeft: theme.spacing.x5 }, passStampStyle]}><BinderText variant="title" tone="destructive">PASS</BinderText></Animated.View>
               </Animated.View>
@@ -316,8 +338,8 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
       </View>
 
       {viewingProfile ? (
-        <Animated.View entering={reduceMotion ? undefined : FadeInUp.duration(theme.motion.entrance)} exiting={reduceMotion ? undefined : FadeOutDown.duration(theme.motion.deliberate)} style={{ position: 'absolute', inset: 0, backgroundColor: theme.colors.canvas }}>
-          <PartnerProfileScreen userId={viewingProfile.id} fallbackName={viewingProfile.name} onClose={() => setViewingProfile(null)} />
+        <Animated.View style={[{ position: 'absolute', inset: 0, backgroundColor: theme.colors.canvas }, expandedProfileStyle]}>
+          <PartnerProfileScreen userId={viewingProfile.id} fallbackName={viewingProfile.name} initialProfile={viewingProfile} onClose={closeProfile} />
         </Animated.View>
       ) : null}
 
@@ -372,53 +394,16 @@ function DiscoveryAction({ kind, disabled, onPress }: { kind: 'pass' | 'bind'; d
 
 function ProfileCard({ profile, back = false, onOpenProfile }: { profile: DiscoveryProfile; back?: boolean; onOpenProfile?: () => void }) {
   const { theme } = useBinderTheme();
-  const [photoIndex, setPhotoIndex] = useState(0);
-  const [failedPhotos, setFailedPhotos] = useState<Set<number>>(() => new Set());
   const photos = profile.photoUrls.length > 0 ? profile.photoUrls : [profile.photoUrl];
-  const hasGallery = photos.length > 1;
-  const photoFailed = failedPhotos.has(photoIndex);
-  const accessibilitySummary = `${profile.name}, ${profile.age}, ${profile.distanceKm} kilometers away`;
-
-  function markPhotoFailed() {
-    setFailedPhotos((current) => {
-      const next = new Set(current);
-      next.add(photoIndex);
-      return next;
-    });
-  }
 
   return (
     <View style={{ position: 'absolute', inset: 0, borderRadius: theme.radii.hero, overflow: 'hidden', backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.borderSubtle, transform: back ? [{ scale: discoveryDeckPhysics.backCardScale }, { translateY: BACK_CARD_OFFSET }] : undefined, opacity: back ? discoveryDeckPhysics.backCardOpacity : 1 }}>
-      <Image
-        accessibilityIgnoresInvertColors
-        source={photoFailed ? profilePlaceholder : { uri: photos[photoIndex] }}
-        resizeMode={photoFailed ? 'contain' : 'cover'}
-        onError={markPhotoFailed}
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', backgroundColor: theme.colors.surfaceElevated }}
-      />
+      <PhotoPager photos={photos} name={`${profile.name}, ${profile.age}, ${profile.distanceKm} kilometers away`} interactive={!back} onOpen={onOpenProfile ? () => onOpenProfile() : undefined} />
       <LinearGradient pointerEvents="none" colors={[theme.colors.transparent, theme.colors.scrim, theme.colors.overlay]} locations={[0, 0.52, 1]} style={{ position: 'absolute', inset: 0 }} />
-
-      {hasGallery ? (
-        <View pointerEvents="none" style={{ position: 'absolute', top: theme.spacing.x3, left: theme.spacing.x3, right: theme.spacing.x3, flexDirection: 'row', gap: theme.spacing.x1 }}>
-          {photos.map((photo, index) => <View key={photo} style={{ flex: 1, height: theme.spacing.x1, borderRadius: theme.radii.pill, backgroundColor: index === photoIndex ? theme.accent.accent : theme.colors.textMuted }} />)}
-        </View>
-      ) : null}
-
-      {!back ? (
-        hasGallery ? (
-          <>
-            <Pressable accessibilityRole="button" accessibilityLabel={`Previous photo of ${profile.name}`} accessibilityState={{ disabled: photoIndex === 0 }} disabled={photoIndex === 0} onPress={() => setPhotoIndex((value) => Math.max(0, value - 1))} style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: '33.333%' }} />
-            <Pressable accessibilityRole="button" accessibilityLabel={`Open full profile for ${accessibilitySummary}`} onPress={onOpenProfile} style={{ position: 'absolute', top: 0, bottom: 0, left: '33.333%', width: '33.333%' }} />
-            <Pressable accessibilityRole="button" accessibilityLabel={`Next photo of ${profile.name}`} accessibilityState={{ disabled: photoIndex === photos.length - 1 }} disabled={photoIndex === photos.length - 1} onPress={() => setPhotoIndex((value) => Math.min(photos.length - 1, value + 1))} style={{ position: 'absolute', top: 0, bottom: 0, right: 0, width: '33.333%' }} />
-          </>
-        ) : (
-          <Pressable accessibilityRole="button" accessibilityLabel={`Open full profile for ${accessibilitySummary}`} onPress={onOpenProfile} style={{ position: 'absolute', inset: 0 }} />
-        )
-      ) : null}
 
       <View pointerEvents="none" style={{ position: 'absolute', left: theme.spacing.x5, right: theme.spacing.x5, bottom: theme.spacing.x5 }}>
         <BinderText variant="displayL" style={{ color: theme.colors.textPrimary }} numberOfLines={1}>{profile.name} <BinderText variant="heading" style={{ color: theme.colors.textPrimary }}>{profile.age}</BinderText></BinderText>
-        <View style={{ alignSelf: 'flex-start', backgroundColor: theme.colors.overlay, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x2, marginTop: theme.spacing.x2 }}><BinderText variant="caption" tone="secondary">{profile.distanceKm} km away</BinderText></View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, marginTop: theme.spacing.x2 }}><BinderText variant="caption" style={{ color: theme.colors.textSecondary }}>{profile.distanceKm} km away</BinderText><BinderText variant="caption" style={{ color: theme.colors.textMuted }}>· Photos reviewed</BinderText></View>
         {profile.bio ? <BinderText variant="body" style={{ color: theme.colors.textPrimary, marginTop: theme.spacing.x2 }} numberOfLines={2}>{profile.bio}</BinderText> : null}
         <View style={{ flexDirection: 'row', gap: theme.spacing.x2, marginTop: theme.spacing.x3, overflow: 'hidden' }}>
           {profile.tags.slice(0, 3).map((tag) => <View key={tag} style={{ maxWidth: '32%', backgroundColor: theme.colors.overlay, borderWidth: 1, borderColor: theme.colors.borderStrong, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x1 }}><BinderText variant="caption" style={{ color: theme.colors.textPrimary }} numberOfLines={1} ellipsizeMode="tail">{tag}</BinderText></View>)}

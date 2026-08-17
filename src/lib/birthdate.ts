@@ -23,6 +23,10 @@ export function composeBirthDate(day: string, month: string, year: string): stri
 
 // Age in completed years on the given reference date (defaults to now).
 export function ageOn(isoBirthDate: string, reference: Date = new Date()): number | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(isoBirthDate);
+  if (!match) return null;
+  const canonical = composeBirthDate(match[3]!, match[2]!, match[1]!);
+  if (canonical !== isoBirthDate) return null;
   const birth = new Date(`${isoBirthDate}T00:00:00Z`);
   if (Number.isNaN(birth.getTime())) return null;
   let age = reference.getUTCFullYear() - birth.getUTCFullYear();

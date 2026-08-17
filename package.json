@@ -24,8 +24,10 @@
     "verify:phase6-media": "node scripts/verify-phase6-media.mjs",
     "verify:phase7-push": "node scripts/verify-phase7-push.mjs",
     "verify:admin": "node scripts/verify-admin-dashboard.mjs",
+    "verify:design-contract": "node scripts/verify-design-contract.mjs",
     "test": "node --experimental-strip-types --test 'tests/*.test.ts'",
-    "typecheck:tests": "tsc --project tsconfig.tests.json"
+    "typecheck:tests": "tsc --project tsconfig.tests.json",
+    "test:design-contract": "npm run verify:design-contract"
   },
   "dependencies": {
     "@expo-google-fonts/manrope": "0.4.2",

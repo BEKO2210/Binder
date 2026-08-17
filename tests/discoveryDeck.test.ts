@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { advanceDeck, decideSwipe, discoveryDeckPhysics, isUndoWindowOpen } from '../src/lib/discoveryDeck.ts';
+import { advanceDeck, decideSwipe, discoveryDeckPhysics, isUndoWindowOpen, projectedTranslation, resistedTranslation } from '../src/lib/discoveryDeck.ts';
 
 test('swipe commits when distance reaches either side of the threshold', () => {
   const width = 400;
@@ -17,8 +17,16 @@ test('a fast flick commits in its velocity direction even when short', () => {
   assert.equal(decideSwipe(-8, -velocity, 400), 'left');
 });
 
-test('velocity direction wins when a release reverses direction', () => {
+test('release decision uses projected position so a reversal does not commit the wrong way', () => {
   assert.equal(decideSwipe(120, -discoveryDeckPhysics.velocityThreshold, 400), 'left');
+  assert.equal(projectedTranslation(20, 1_000), 180);
+});
+
+test('drag is linear until the edge then applies bounded resistance', () => {
+  const edge = 400 * discoveryDeckPhysics.edgeRatio;
+  assert.equal(resistedTranslation(edge, 400), edge);
+  assert.equal(resistedTranslation(edge + 100, 400), edge + 100 * discoveryDeckPhysics.edgeResistance);
+  assert.equal(resistedTranslation(-edge - 100, 400), -edge - 100 * discoveryDeckPhysics.edgeResistance);
 });
 
 test('advancing a deck is immutable and reveals the next profile', () => {

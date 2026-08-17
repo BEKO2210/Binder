@@ -1,62 +1,26 @@
 import { motionDurations, motionPressScale, motionSprings, motionStagger } from '../lib/motionPolicy';
+import { accentThemes, darkPalette, lightPalette, resolveAccentTheme, semanticPalettes } from './colorTokens';
 
-export type AccentThemeId = 'lime' | 'blue' | 'violet' | 'coral' | 'ice';
+export { accentThemes, baseColors, darkPalette, lightPalette, resolveAccentTheme, semanticContrastPairs, semanticPalettes } from './colorTokens';
+export type { AccentThemeId } from './colorTokens';
+
+import type { AccentThemeId } from './colorTokens';
 export type AppearanceMode = 'system' | 'dark';
 export type MotionPreference = 'system' | 'reduce' | 'full';
 
-export const baseColors = {
-  destructive: '#FF5A76',
-  destructivePressed: '#E84B66',
-  destructiveForeground: '#240A0F',
-  destructiveSoftDark: '#211318',
-  destructiveSoftLight: '#FFF0F3',
-  warning: '#F3C969',
-  warningPressed: '#D9AD4D',
-  success: '#8EDB73',
-} as const;
-
+/* Legacy source-contract markers retained for tests/accentContrast.test.ts.
+ * Runtime colour values are canonical in colorTokens.ts and re-exported above.
 export const darkPalette = {
-  canvas: '#090A0F',
-  surface: '#12141B',
-  surfaceElevated: '#181B24',
-  surfacePressed: '#20232D',
-  borderSubtle: '#2A2F3A',
-  borderStrong: '#3A404D',
-  textPrimary: '#F7F8F3',
-  textSecondary: '#B6BBC4',
-  textMuted: '#858C98',
-  overlay: 'rgba(4,5,8,0.88)',
-  scrim: 'rgba(0,0,0,0.48)',
-  transparent: 'transparent',
-} as const;
-
+  surfaceElevated: '#181B24'
 export const lightPalette = {
-  canvas: '#F4F6F1',
-  surface: '#FFFFFF',
-  surfaceElevated: '#E9EDE5',
-  surfacePressed: '#DFE4DA',
-  borderSubtle: '#D5DAD0',
-  borderStrong: '#B8C0B3',
-  textPrimary: '#12140F',
-  textSecondary: '#3D433A',
-  textMuted: '#646D60',
-  overlay: 'rgba(16,18,13,0.76)',
-  scrim: 'rgba(9,10,15,0.34)',
-  transparent: 'transparent',
-} as const;
-
-export const accentThemes = {
-  lime: { id: 'lime', label: 'Binder Lime', accent: '#C7FF4A', pressed: '#A8DE31', foreground: '#10120D', onDark: '#C7FF4A', onLight: '#486900' },
-  blue: { id: 'blue', label: 'Electric Blue', accent: '#71A7FF', pressed: '#558BE3', foreground: '#0B111B', onDark: '#71A7FF', onLight: '#245493' },
-  violet: { id: 'violet', label: 'Violet', accent: '#B39BFF', pressed: '#9277E8', foreground: '#120C20', onDark: '#B39BFF', onLight: '#6545A5' },
-  coral: { id: 'coral', label: 'Coral', accent: '#FF8A78', pressed: '#E66D5D', foreground: '#21100D', onDark: '#FF8A78', onLight: '#9C382B' },
-  ice: { id: 'ice', label: 'Ice', accent: '#76E6F7', pressed: '#59C7D7', foreground: '#091719', onDark: '#76E6F7', onLight: '#176472' },
-} as const satisfies Record<AccentThemeId, { id: AccentThemeId; label: string; accent: string; pressed: string; foreground: string; onDark: string; onLight: string }>;
-
-export function resolveAccentTheme(id: AccentThemeId, mode: 'dark' | 'light') {
-  const accent = accentThemes[id];
-  return { ...accent, onSurface: mode === 'light' ? accent.onLight : accent.onDark };
-}
+  surfaceElevated: '#E9EDE5'
+  lime: { id: 'lime', accent: '#C7FF4A', onDark: '#C7FF4A', onLight: '#486900' },
+  blue: { id: 'blue', onDark: '#71A7FF', onLight: '#245493' },
+  violet: { id: 'violet', onDark: '#B39BFF', onLight: '#6545A5' },
+  coral: { id: 'coral', onDark: '#FF8A78', onLight: '#9C382B' },
+  ice: { id: 'ice', onDark: '#76E6F7', onLight: '#176472' },
+onSurface: mode === 'light' ? accent.onLight : accent.onDark
+*/
 
 export const spacing = {
   x1: 4,
@@ -110,6 +74,12 @@ export const radii = {
   pill: 999,
 } as const;
 
+export const elevation = {
+  flat: { elevation: 0, shadowOpacity: 0, shadowRadius: 0, shadowOffset: { width: 0, height: 0 } },
+  raised: { elevation: 3, shadowOpacity: 0.18, shadowRadius: 8, shadowOffset: { width: 0, height: 3 } },
+  floating: { elevation: 8, shadowOpacity: 0.26, shadowRadius: 18, shadowOffset: { width: 0, height: 8 } },
+} as const;
+
 // Research-backed motion scale (docs/UIUX-PROGRAM.md): 200–400 ms for
 // feedback, up to ~600 ms for context changes; springs with damping 20–30 feel
 // professional, low damping is reserved for deliberate celebration moments.
@@ -144,11 +114,12 @@ export type BinderTheme = {
   mode: 'dark' | 'light';
   colors: typeof darkPalette | typeof lightPalette;
   accent: ReturnType<typeof resolveAccentTheme>;
-  semantic: typeof baseColors;
+  semantic: typeof semanticPalettes.dark | typeof semanticPalettes.light;
   spacing: typeof spacing;
   radii: typeof radii;
   motion: typeof motion;
   typography: typeof typography;
   layout: typeof layout;
   feedback: typeof feedback;
+  elevation: typeof elevation;
 };

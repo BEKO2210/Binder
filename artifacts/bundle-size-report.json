@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "totalBytes": 5186934,
+  "jsBytes": 4183823,
+  "moduleMetric": "UTF-8 bytes of Metro source input; diagnostic attribution, not emitted bytecode size",
+  "topModules": [
+    {
+      "path": "node_modules/react-native/Libraries/Renderer/implementations/ReactFabric-prod.js",
+      "sourceBytes": 361091
+    },
+    {
+      "path": "node_modules/@supabase/auth-js/dist/main/GoTrueClient.js",
+      "sourceBytes": 267067
+    },
+    {
+      "path": "node_modules/@supabase/storage-js/dist/index.cjs",
+      "sourceBytes": 109629
+    },
+    {
+      "path": "node_modules/@supabase/postgrest-js/dist/index.cjs",
+      "sourceBytes": 106822
+    },
+    {
+      "path": "node_modules/react-native/Libraries/Components/ScrollView/ScrollView.js",
+      "sourceBytes": 72461
+    },
+    {
+      "path": "node_modules/@react-native/virtualized-lists/Lists/VirtualizedList.js",
+      "sourceBytes": 67458
+    },
+    {
+      "path": "node_modules/expo/virtual/streams.js",
+      "sourceBytes": 65886
+    },
+    {
+      "path": "node_modules/aes-js/index.js",
+      "sourceBytes": 63732
+    },
+    {
+      "path": "node_modules/@supabase/phoenix/priv/static/phoenix.cjs.js",
+      "sourceBytes": 57208
+    },
+    {
+      "path": "node_modules/buffer/index.js",
+      "sourceBytes": 50097
+    },
+    {
+      "path": "node_modules/@supabase/auth-js/dist/main/GoTrueAdminApi.js",
+      "sourceBytes": 41480
+    },
+    {
+      "path": "node_modules/@supabase/supabase-js/dist/index.cjs",
+      "sourceBytes": 38839
+    },
+    {
+      "path": "node_modules/react-native/Libraries/Components/Touchable/Touchable.js",
+      "sourceBytes": 36363
+    },
+    {
+      "path": "node_modules/whatwg-url-minimum/dist/whatwg-url-minimum.mjs",
+      "sourceBytes": 35949
+    },
+    {
+      "path": "node_modules/@supabase/auth-js/dist/main/lib/webauthn.js",
+      "sourceBytes": 35801
+    }
+  ],
+  "largestFiles": [
+    {
+      "path": "_expo/static/js/android/index-425dcb5d05e5e7e4afbec4cb8fd0f5ea.hbc",
+      "bytes": 4183823
+    },
+    {
+      "path": "assets/96032e7aed600e905412ba2e0281f754",
+      "bytes": 962968
+    },
+    {
+      "path": "assets/0c86159db3a79c1bb450f17bebd0b8b5",
+      "bytes": 39868
+    },
+    {
+      "path": "metadata.json",
+      "bytes": 275
+    }
+  ],
+  "budgets": {
+    "maxJsBytes": 4404019,
+    "maxTotalBytes": 5505024
+  }
+}

@@ -19,6 +19,8 @@ test('impossible calendar dates never compose', () => {
 test('age counts completed years around the birthday', () => {
   assert.equal(ageOn('1995-08-16', ref), 31);
   assert.equal(ageOn('1995-08-17', ref), 30);
+  assert.equal(ageOn('1995-02-31', ref), null);
+  assert.equal(ageOn('1995-08-16T00:00:00Z', ref), null);
 });
 
 test('assessment walks incomplete, invalid, underage and ok', () => {

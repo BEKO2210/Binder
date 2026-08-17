@@ -1,6 +1,7 @@
 import * as Crypto from 'expo-crypto';
 
 import { recordBetaEvent } from './beta';
+import { abortable, throwIfAborted } from './reliability';
 import { supabase } from './supabase';
 import type { Database } from '../types/database';
 
@@ -28,21 +29,23 @@ export type ReportReason =
   | 'violence'
   | 'other';
 
-async function signProfilePhoto(storagePath: string | null | undefined): Promise<string | null> {
+export type RequestOptions = { signal?: AbortSignal };
+
+async function signProfilePhoto(storagePath: string | null | undefined, signal?: AbortSignal): Promise<string | null> {
   if (!storagePath) return null;
 
-  const { data, error } = await supabase.storage
+  const { data, error } = await abortable(supabase.storage
     .from('profile-media')
-    .createSignedUrl(storagePath, 60 * 60);
+    .createSignedUrl(storagePath, 60 * 60), signal);
 
   if (error) throw error;
   return data.signedUrl;
 }
 
-export async function fetchMatches(): Promise<MatchSummary[]> {
+export async function fetchMatches(options: RequestOptions = {}): Promise<MatchSummary[]> {
   const startedAt = Date.now();
   try {
-    const { data, error } = await supabase.rpc('get_my_matches');
+    const { data, error } = await supabase.rpc('get_my_matches').abortSignal(options.signal ?? new AbortController().signal);
     if (error) throw error;
 
     const matches = await Promise.all(
@@ -52,7 +55,7 @@ export async function fetchMatches(): Promise<MatchSummary[]> {
         firstName: match.first_name,
         age: match.age,
         bio: match.bio,
-        photoUrl: await signProfilePhoto(match.primary_photo_path),
+        photoUrl: await signProfilePhoto(match.primary_photo_path, options.signal),
         matchedAt: match.matched_at,
         lastMessageBody: match.last_message_body ?? null,
         lastMessageAt: match.last_message_at ?? null,
@@ -60,21 +63,23 @@ export async function fetchMatches(): Promise<MatchSummary[]> {
       })),
     );
 
-    void recordBetaEvent('matches_load', 'matches', {
-      durationMs: Date.now() - startedAt,
-      value: matches.length,
-      outcome: matches.length === 0 ? 'empty' : 'ok',
-    });
+    if (!options.signal) {
+      void recordBetaEvent('matches_load', 'matches', {
+        durationMs: Date.now() - startedAt,
+        value: matches.length,
+        outcome: matches.length === 0 ? 'empty' : 'ok',
+      });
+    }
     return matches;
   } catch (error) {
-    void recordBetaEvent('matches_load', 'matches', { durationMs: Date.now() - startedAt, outcome: 'error' });
+    if (!options.signal) void recordBetaEvent('matches_load', 'matches', { durationMs: Date.now() - startedAt, outcome: 'error' });
     throw error;
   }
 }
 
 export type MessagePage = { messages: Message[]; hasMore: boolean };
 
-export async function fetchMessagesPage(matchId: string, before?: Message, limit = 50): Promise<MessagePage> {
+export async function fetchMessagesPage(matchId: string, before?: Message, limit = 50, options: RequestOptions = {}): Promise<MessagePage> {
   const startedAt = Date.now();
   try {
     const { data, error } = await supabase.rpc('get_match_messages_page', {
@@ -82,24 +87,26 @@ export async function fetchMessagesPage(matchId: string, before?: Message, limit
       p_before_created_at: before?.created_at,
       p_before_id: before?.id,
       p_limit: limit,
-    });
+    }).abortSignal(options.signal ?? new AbortController().signal);
 
     if (error) throw error;
     const messages = [...(data ?? [])].reverse();
-    void recordBetaEvent('chat_load', 'chat', {
-      durationMs: Date.now() - startedAt,
-      value: messages.length,
-      outcome: messages.length === 0 ? 'empty' : 'ok',
-    });
+    if (!options.signal) {
+      void recordBetaEvent('chat_load', 'chat', {
+        durationMs: Date.now() - startedAt,
+        value: messages.length,
+        outcome: messages.length === 0 ? 'empty' : 'ok',
+      });
+    }
     return { messages, hasMore: messages.length === limit };
   } catch (error) {
-    void recordBetaEvent('chat_load', 'chat', { durationMs: Date.now() - startedAt, outcome: 'error' });
+    if (!options.signal) void recordBetaEvent('chat_load', 'chat', { durationMs: Date.now() - startedAt, outcome: 'error' });
     throw error;
   }
 }
 
-export async function fetchMessages(matchId: string): Promise<Message[]> {
-  return (await fetchMessagesPage(matchId)).messages;
+export async function fetchMessages(matchId: string, options: RequestOptions = {}): Promise<Message[]> {
+  return (await fetchMessagesPage(matchId, undefined, 50, options)).messages;
 }
 
 export function createClientMessageId(): string {
@@ -110,12 +117,13 @@ export async function sendMessage(
   matchId: string,
   clientMessageId: string,
   body: string,
+  options: RequestOptions = {},
 ): Promise<Message> {
   const { data, error } = await supabase.rpc('send_message', {
     p_match_id: matchId,
     p_client_message_id: clientMessageId,
     p_body: body,
-  });
+  }).abortSignal(options.signal ?? new AbortController().signal);
 
   if (error) throw error;
   const message = data?.[0];
@@ -127,27 +135,28 @@ export async function sendMessage(
   };
 }
 
-export async function markMatchRead(matchId: string): Promise<void> {
-  const { error } = await supabase.rpc('mark_match_read', { p_match_id: matchId });
+export async function markMatchRead(matchId: string, options: RequestOptions = {}): Promise<void> {
+  const { error } = await supabase.rpc('mark_match_read', { p_match_id: matchId }).abortSignal(options.signal ?? new AbortController().signal);
   if (error) throw error;
 }
 
-export async function unmatch(matchId: string): Promise<boolean> {
-  const { data, error } = await supabase.rpc('unmatch', { p_match_id: matchId });
+export async function unmatch(matchId: string, options: RequestOptions = {}): Promise<boolean> {
+  const { data, error } = await supabase.rpc('unmatch', { p_match_id: matchId }).abortSignal(options.signal ?? new AbortController().signal);
   if (error) throw error;
   return data;
 }
 
-export async function blockUser(userId: string): Promise<void> {
-  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+export async function blockUser(userId: string, options: RequestOptions = {}): Promise<void> {
+  const { data: sessionData, error: sessionError } = await abortable(supabase.auth.getSession(), options.signal);
   if (sessionError) throw sessionError;
   const currentUserId = sessionData.session?.user.id;
   if (!currentUserId) throw new Error('Authentication required.');
 
+  throwIfAborted(options.signal);
   const { error } = await supabase.from('blocks').upsert(
     { blocker_id: currentUserId, blocked_id: userId },
     { onConflict: 'blocker_id,blocked_id', ignoreDuplicates: true },
-  );
+  ).abortSignal(options.signal ?? new AbortController().signal);
   if (error) throw error;
 }
 
@@ -158,6 +167,7 @@ export async function reportUser(options: {
   matchId?: string;
   messageId?: string;
   block?: boolean;
+  signal?: AbortSignal;
 }): Promise<string> {
   const { data, error } = await supabase.rpc('report_user', {
     p_reported_id: options.reportedUserId,
@@ -166,7 +176,7 @@ export async function reportUser(options: {
     p_match_id: options.matchId,
     p_message_id: options.messageId,
     p_block: options.block ?? true,
-  });
+  }).abortSignal(options.signal ?? new AbortController().signal);
 
   if (error) throw error;
   return data;

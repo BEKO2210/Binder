@@ -1,61 +1,102 @@
-import { readdirSync, statSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { dirname, join, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const root = 'dist';
+const reportPath = 'artifacts/bundle-size-report.json';
 const phase5JsBaselineMiB = 2.39;
-// Deliberate re-baseline 2026-08-16 (UI/UX program): four measured runtime
-// dependencies joined — react-native-reanimated + react-native-gesture-handler
-// (UI-thread discovery deck), react-native-keyboard-controller (the only
-// working keyboard handling under enforced edge-to-edge) and
-// react-native-safe-area-context (system-bar insets). Measured JS/Hermes
-// after adoption: 3.84 MiB. The budget stays a hard ceiling with ~10%
-// headroom so future growth still fails loudly.
 const maxJsMiB = 4.2;
-// Phase 6 measured 3.44 MiB after adopting one canonical Expo Symbols family.
-// 0.92 MiB of that export is the Material Symbols font asset; the JS/Hermes
-// payload dominates the rest. Keep separate budgets so future JS growth
-// cannot hide behind an approved, measured visual-system asset.
-// Total re-baseline 2026-08-16: measured 4.80 MiB after the UI/UX program.
 const phase6TotalBaselineMiB = 3.44;
 const maxTotalMiB = 5.25;
-let total = 0;
-const files = [];
 
-function walk(dir) {
+export function collectBundleReport(exportRoot) {
+  let totalBytes = 0;
+  const files = [];
+  walk(exportRoot, exportRoot, files, (bytes, path) => { if (!path.endsWith('.map')) totalBytes += bytes; });
+  files.sort((a, b) => b.bytes - a.bytes || a.path.localeCompare(b.path));
+  const jsBytes = files.filter((file) => /\.(js|hbc)$/.test(file.path)).reduce((sum, file) => sum + file.bytes, 0);
+  const map = files.find((file) => /\.(js|hbc)\.map$/.test(file.path));
+  const modules = map ? sourceModules(join(exportRoot, map.path)) : [];
+  return {
+    schemaVersion: 1,
+    totalBytes,
+    jsBytes,
+    moduleMetric: 'UTF-8 bytes of Metro source input; diagnostic attribution, not emitted bytecode size',
+    topModules: modules.slice(0, 15),
+    largestFiles: files.slice(0, 10),
+    budgets: { maxJsBytes: mibBytes(maxJsMiB), maxTotalBytes: mibBytes(maxTotalMiB) },
+  };
+}
+
+function walk(dir, exportRoot, files, addBytes) {
   for (const name of readdirSync(dir)) {
     const path = join(dir, name);
     const stat = statSync(path);
-    if (stat.isDirectory()) walk(path);
+    if (stat.isDirectory()) walk(path, exportRoot, files, addBytes);
     else {
-      total += stat.size;
-      files.push({ path: relative(root, path), bytes: stat.size });
+      const relativePath = relative(exportRoot, path);
+      addBytes(stat.size, relativePath);
+      files.push({ path: relativePath, bytes: stat.size });
     }
   }
 }
 
-walk(root);
-files.sort((a, b) => b.bytes - a.bytes);
-const js = files.filter((file) => /\.(js|hbc)$/.test(file.path)).reduce((sum, file) => sum + file.bytes, 0);
-const toMiB = (bytes) => bytes / 1024 / 1024;
-const mb = (bytes) => toMiB(bytes).toFixed(2);
-
-console.log(`Binder Android export total: ${mb(total)} MiB`);
-console.log(`Binder JS/Hermes payload: ${mb(js)} MiB`);
-console.log(`Phase 5 JS baseline: ${phase5JsBaselineMiB.toFixed(2)} MiB`);
-console.log(`Phase 6 measured total baseline: ${phase6TotalBaselineMiB.toFixed(2)} MiB`);
-console.log(`JS/Hermes hard budget: ${maxJsMiB.toFixed(2)} MiB`);
-console.log(`Total export hard budget: ${maxTotalMiB.toFixed(2)} MiB`);
-console.log('Largest export files:');
-for (const file of files.slice(0, 8)) console.log(`${mb(file.bytes)} MiB  ${file.path}`);
-
-if (toMiB(js) > maxJsMiB) {
-  console.error(`JS/Hermes budget exceeded: ${mb(js)} MiB > ${maxJsMiB.toFixed(2)} MiB.`);
-  process.exit(1);
+function sourceModules(mapPath) {
+  const map = JSON.parse(readFileSync(mapPath, 'utf8'));
+  if (!Array.isArray(map.sources) || !Array.isArray(map.sourcesContent)) return [];
+  return map.sources.map((source, index) => ({
+    path: String(source).replace(/^\//, ''),
+    sourceBytes: Buffer.byteLength(map.sourcesContent[index] ?? '', 'utf8'),
+  })).filter((module) => module.sourceBytes > 0)
+    .sort((a, b) => b.sourceBytes - a.sourceBytes || a.path.localeCompare(b.path));
 }
 
-if (toMiB(total) > maxTotalMiB) {
-  console.error(`Android export budget exceeded: ${mb(total)} MiB > ${maxTotalMiB.toFixed(2)} MiB.`);
-  process.exit(1);
+const mibBytes = (value) => Math.round(value * 1024 * 1024);
+const mb = (bytes) => (bytes / 1024 / 1024).toFixed(2);
+
+export function formatBundleReport(report) {
+  const lines = [
+    `Binder Android export total: ${mb(report.totalBytes)} MiB`,
+    `Binder JS/Hermes payload: ${mb(report.jsBytes)} MiB`,
+    `Phase 5 JS baseline: ${phase5JsBaselineMiB.toFixed(2)} MiB`,
+    `Phase 6 measured total baseline: ${phase6TotalBaselineMiB.toFixed(2)} MiB`,
+    `JS/Hermes hard budget: ${maxJsMiB.toFixed(2)} MiB`,
+    `Total export hard budget: ${maxTotalMiB.toFixed(2)} MiB`,
+    'Largest export files:',
+    ...report.largestFiles.map((file) => `${mb(file.bytes)} MiB  ${file.path}`),
+  ];
+  if (report.topModules.length) {
+    lines.push('Top Metro source modules (source-input bytes):');
+    lines.push(...report.topModules.map((module) => `${mb(module.sourceBytes)} MiB  ${module.path}`));
+  } else {
+    lines.push('Top Metro modules unavailable: export with --source-maps external for attribution.');
+  }
+  return lines.join('\n');
 }
 
-console.log('Binder Android export budgets PASS');
+function main() {
+  const report = collectBundleReport(root);
+  if (!report.topModules.length) {
+    const analysisRoot = mkdtempSync('/tmp/binder-bundle-analysis-');
+    console.log('Generating temporary Metro source map for module attribution…');
+    execFileSync(process.execPath, [
+      'node_modules/expo/bin/cli', 'export', '--platform', 'android',
+      '--output-dir', analysisRoot, '--source-maps', 'external',
+    ], { stdio: 'inherit' });
+    report.topModules = collectBundleReport(analysisRoot).topModules;
+  }
+  mkdirSync(dirname(reportPath), { recursive: true });
+  writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`);
+  console.log(formatBundleReport(report));
+  console.log(`Machine-readable report: ${reportPath}`);
+  if (report.jsBytes > report.budgets.maxJsBytes) {
+    console.error(`JS/Hermes budget exceeded: ${mb(report.jsBytes)} MiB > ${maxJsMiB.toFixed(2)} MiB.`);
+    process.exitCode = 1;
+  } else if (report.totalBytes > report.budgets.maxTotalBytes) {
+    console.error(`Android export budget exceeded: ${mb(report.totalBytes)} MiB > ${maxTotalMiB.toFixed(2)} MiB.`);
+    process.exitCode = 1;
+  } else console.log('Binder Android export budgets PASS');
+}
+
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) main();

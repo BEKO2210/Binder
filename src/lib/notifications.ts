@@ -6,6 +6,7 @@ import { Linking, Platform } from 'react-native';
 
 import type { AppSettings } from '../theme/ThemeProvider';
 import { supabase } from './supabase';
+import { abortable, throwIfAborted } from './reliability';
 
 const INSTALLATION_KEY = 'binder:push-installation:v1';
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -67,14 +68,14 @@ export function notificationChannelId(category: NotificationCategory, sound: boo
   return `binder_${category}_${behaviorName(sound, vibration)}_v1`;
 }
 
-export async function ensureAndroidNotificationChannels(): Promise<void> {
+export async function ensureAndroidNotificationChannels(signal?: AbortSignal): Promise<void> {
   if (Platform.OS !== 'android') return;
 
   for (const category of categories) {
     for (const sound of [true, false]) {
       for (const vibration of [true, false]) {
         const behavior = behaviorName(sound, vibration);
-        await Notifications.setNotificationChannelAsync(notificationChannelId(category.id, sound, vibration), {
+        await abortable(Notifications.setNotificationChannelAsync(notificationChannelId(category.id, sound, vibration), {
           name: `${category.name} — ${behavior.replace('_', ', ')}`,
           description: `${category.name} with ${sound ? 'sound' : 'no sound'} and ${vibration ? 'vibration' : 'no vibration'}.`,
           importance: category.importance,
@@ -85,30 +86,31 @@ export async function ensureAndroidNotificationChannels(): Promise<void> {
           showBadge: category.id === 'new_message' || category.id === 'new_match',
           enableLights: category.id === 'safety_alert',
           lightColor: '#C7FF4A',
-        });
+        }), signal);
       }
     }
   }
 }
 
-async function registerCurrentToken(requestPermission: boolean): Promise<PushRegistrationResult> {
+async function registerCurrentToken(requestPermission: boolean, signal?: AbortSignal): Promise<PushRegistrationResult> {
   if (Platform.OS !== 'android' && Platform.OS !== 'ios') return { status: 'unsupported' };
   const projectId = getProjectId();
   if (!projectId) return { status: 'missing-project-id' };
 
-  await ensureAndroidNotificationChannels();
-  const existing = await Notifications.getPermissionsAsync();
+  await ensureAndroidNotificationChannels(signal);
+  const existing = await abortable(Notifications.getPermissionsAsync(), signal);
   let status = existing.status;
-  if (status !== 'granted' && requestPermission) status = (await Notifications.requestPermissionsAsync()).status;
+  if (status !== 'granted' && requestPermission) status = (await abortable(Notifications.requestPermissionsAsync(), signal)).status;
   if (status !== 'granted') return { status: 'denied' };
 
   try {
-    const token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
+    const token = (await abortable(Notifications.getExpoPushTokenAsync({ projectId }), signal)).data;
+    throwIfAborted(signal);
     const { error } = await supabase.rpc('register_push_token', {
       p_token: token,
       p_platform: Platform.OS,
-      p_installation_id: await installationId(),
-    });
+      p_installation_id: await abortable(installationId(), signal),
+    }).abortSignal(signal ?? new AbortController().signal);
     if (error) throw error;
     return { status: 'registered', token };
   } catch (error) {
@@ -119,13 +121,13 @@ async function registerCurrentToken(requestPermission: boolean): Promise<PushReg
   }
 }
 
-export async function enablePushNotifications(): Promise<PushRegistrationResult> {
-  return registerCurrentToken(true);
+export async function enablePushNotifications(signal?: AbortSignal): Promise<PushRegistrationResult> {
+  return registerCurrentToken(true, signal);
 }
 
-export async function getNotificationPermissionStatus(): Promise<'granted' | 'denied' | 'undetermined'> {
+export async function getNotificationPermissionStatus(signal?: AbortSignal): Promise<'granted' | 'denied' | 'undetermined'> {
   if (Platform.OS !== 'android' && Platform.OS !== 'ios') return 'undetermined';
-  const current = await Notifications.getPermissionsAsync();
+  const current = await abortable(Notifications.getPermissionsAsync(), signal);
   if (current.status === 'granted') return 'granted';
   // canAskAgain=false means the user actively revoked or permanently denied it.
   return current.canAskAgain ? 'undetermined' : 'denied';

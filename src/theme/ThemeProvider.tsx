@@ -4,9 +4,9 @@ import { AccessibilityInfo, useColorScheme } from 'react-native';
 
 import {
   accentThemes,
-  baseColors,
   darkPalette,
   feedback,
+  elevation,
   layout,
   lightPalette,
   motion,
@@ -14,6 +14,7 @@ import {
   spacing,
   typography,
   resolveAccentTheme,
+  semanticPalettes,
   type AccentThemeId,
   type AppearanceMode,
   type BinderTheme,
@@ -162,13 +163,14 @@ export function BinderThemeProvider({ children }: PropsWithChildren) {
     mode: resolvedMode,
     colors: resolvedMode === 'light' ? lightPalette : darkPalette,
     accent: resolveAccentTheme(settings.accentTheme, resolvedMode),
-    semantic: baseColors,
+    semantic: semanticPalettes[resolvedMode],
     spacing,
     radii,
     motion,
     typography,
     layout,
     feedback,
+    elevation,
   }), [resolvedMode, settings.accentTheme]);
 
   const value = useMemo<ThemeContextValue>(() => ({

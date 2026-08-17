@@ -66,6 +66,9 @@ jobs:
       - name: Verify Phase 7 push and communication reliability
         run: npm run verify:phase7-push
 
+      - name: Verify auditable design contract
+        run: npm run verify:design-contract
+
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:

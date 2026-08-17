@@ -1,12 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 
 import { supabase } from '../lib/supabase';
+import { discoveryCountDebounceMs, likelyEmptyFilter } from '../lib/discoveryPreferencesPolicy';
 import type { Gender } from '../lib/validation';
 import { useBinderTheme } from '../theme/ThemeProvider';
 import { DiscoveryPreferences, discoveryDefaults, type DiscoveryPreferenceValues } from './DiscoveryPreferences';
-import { BinderButton, BinderCard, BinderIconButton, BinderScreenHeader, ScreenState } from './ui';
+import { BinderButton, BinderCard, BinderIconButton, BinderScreenHeader, BinderText, ScreenState } from './ui';
 
 type Props = { initialValues: DiscoveryPreferenceValues | null; onClose: () => void; onApplied: (values: DiscoveryPreferenceValues) => void };
 type LoadedProfile = { first_name: string; gender: Gender; bio: string; interests: string[] };
@@ -15,10 +16,14 @@ type GroupErrors = { audience?: string; age?: string; distance?: string };
 export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied }: Props) {
   const { theme, reduceMotion } = useBinderTheme();
   const [profile, setProfile] = useState<LoadedProfile | null>(null);
+  const [viewerId, setViewerId] = useState('');
   const [values, setValues] = useState(initialValues ?? discoveryDefaults);
   const [loadError, setLoadError] = useState('');
   const [errors, setErrors] = useState<GroupErrors>({});
   const [busy, setBusy] = useState(false);
+  const [passingCount, setPassingCount] = useState<number | null>(null);
+  const [countBusy, setCountBusy] = useState(false);
+  const countRequest = useRef(0);
 
   useEffect(() => {
     let active = true;
@@ -32,12 +37,34 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
       ]);
       if (profileResult.error || preferencesResult?.error) throw new Error('Could not load your discovery settings.');
       if (!active) return;
+      setViewerId(uid);
       setProfile(profileResult.data as LoadedProfile);
       if (preferencesResult?.data) setValues({ interestedIn: preferencesResult.data.interested_in as Gender[], minAge: preferencesResult.data.min_age, maxAge: preferencesResult.data.max_age, distance: preferencesResult.data.max_distance_km });
     }
     void load().catch((cause: unknown) => { if (active) setLoadError(cause instanceof Error ? cause.message : 'Could not load your discovery settings.'); });
     return () => { active = false; };
   }, [initialValues]);
+
+  useEffect(() => {
+    if (!profile || !viewerId) return;
+    const request = ++countRequest.current;
+    const controller = new AbortController();
+    setCountBusy(true);
+    const timer = setTimeout(() => {
+      void supabase.from('profiles')
+        .select('user_id', { count: 'exact', head: true })
+        .neq('user_id', viewerId)
+        .eq('onboarding_complete', true)
+        .in('gender', values.interestedIn)
+        .abortSignal(controller.signal)
+        .then(({ count, error }) => {
+          if (request !== countRequest.current || controller.signal.aborted) return;
+          setCountBusy(false);
+          if (!error) setPassingCount(count ?? 0);
+        });
+    }, discoveryCountDebounceMs);
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [profile, values, viewerId]);
 
   async function apply() {
     if (!profile || busy) return;
@@ -66,7 +93,8 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
         {loadError ? <ScreenState kind="error" icon="retry" title="Filters did not load" message={loadError} actionLabel="Close" onAction={onClose} /> : !profile ? <ScreenState kind="loading" message="Loading your filters…" /> : (
           <>
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: theme.spacing.x5, paddingTop: theme.spacing.x4, paddingBottom: theme.spacing.x8 }}>
-              <DiscoveryPreferences {...values} onChange={(next) => { setValues(next); setErrors({}); }} errors={errors} />
+              <DiscoveryPreferences {...values} showPresets onChange={(next) => { setValues(next); setErrors({}); }} errors={errors} />
+              <CountConsequence count={passingCount} loading={countBusy} cause={likelyEmptyFilter(values)} />
             </ScrollView>
             <View style={{ paddingHorizontal: theme.spacing.x5, paddingTop: theme.spacing.x3, paddingBottom: theme.spacing.x5, borderTopWidth: 1, borderTopColor: theme.colors.borderSubtle, backgroundColor: theme.colors.surface }}>
               <BinderButton label="Apply filters" loading={busy} onPress={() => void apply()} />
@@ -77,4 +105,13 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
       </BinderCard>
     </Animated.View>
   );
+}
+
+function CountConsequence({ count, loading, cause }: { count: number | null; loading: boolean; cause: 'audience' | 'age' | 'distance' }) {
+  const { theme } = useBinderTheme();
+  const causeCopy = cause === 'audience' ? 'who you want to meet' : cause === 'age' ? 'age range' : 'distance';
+  return <View accessibilityLiveRegion="polite" style={{ marginTop: theme.spacing.x8 }}>
+    <BinderText variant="title">{loading || count === null ? 'Checking who fits…' : count === 0 ? 'No one currently fits' : `${count} ${count === 1 ? 'person' : 'people'} currently fit`}</BinderText>
+    {count === 0 && !loading ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x2 }}>Your {causeCopy} is the likely cause. Widen it before applying.</BinderText> : <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>This updates as you shape your search.</BinderText>}
+  </View>;
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 
 import { BinderBrand, BinderButton, BinderCard, BinderIcon, BinderText, SectionHeader } from '../components/ui';
@@ -14,11 +14,14 @@ export default function LegalGateScreen({ gate, onAccepted }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
-  async function open(url: string) {
+  const open = useCallback(async (url: string) => {
     setError('');
     try { await openBinderUrl(url); }
     catch (cause) { setError(cause instanceof Error ? cause.message : 'Could not open this page.'); }
-  }
+  }, []);
+
+  const openTerms = useCallback(() => void open(TERMS_URL), [open]);
+  const openPrivacy = useCallback(() => void open(PRIVACY_URL), [open]);
 
   async function accept() {
     if (!confirmed || busy) return;
@@ -36,8 +39,8 @@ export default function LegalGateScreen({ gate, onAccepted }: Props) {
         <SectionHeader eyebrow="BEFORE YOU CREATE OR SHARE" title="Clear rules before conversation." copy="Binder is 18+ and built around mutual choice. Before you create a profile, upload a photo or send a message, accept the current Terms & Community Rules and Privacy Policy." />
       </View>
       <View style={{ gap: theme.spacing.x3, marginTop: theme.spacing.x6 }}>
-        <PolicyCard index="01" icon="legal" title="Terms & Community Rules" copy="18+ only · consent · no harassment · no sexual exploitation · no impersonation, scams or block evasion." version={gate.terms_version} onPress={() => void open(TERMS_URL)} />
-        <PolicyCard index="02" icon="privacy" title="Privacy Policy" copy="What Binder stores, why location stays private, how safety records work and how to delete your account." version={gate.privacy_version} onPress={() => void open(PRIVACY_URL)} />
+        <PolicyCard index="01" icon="legal" title="Terms & Community Rules" copy="18+ only · consent · no harassment · no sexual exploitation · no impersonation, scams or block evasion." version={gate.terms_version} onPress={openTerms} />
+        <PolicyCard index="02" icon="privacy" title="Privacy Policy" copy="What Binder stores, why location stays private, how safety records work and how to delete your account." version={gate.privacy_version} onPress={openPrivacy} />
       </View>
       <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: confirmed }} onPress={() => setConfirmed((value) => !value)} style={({ pressed }) => ({ marginTop: theme.spacing.x5, flexDirection: 'row', gap: theme.spacing.x3, padding: theme.spacing.x4, borderRadius: theme.radii.control, borderWidth: 1, borderColor: confirmed ? theme.accent.accent : theme.colors.borderStrong, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface })}>
         <View style={{ width: 24, height: 24, borderRadius: 8, borderWidth: 1, borderColor: confirmed ? theme.accent.accent : theme.colors.borderStrong, backgroundColor: confirmed ? theme.accent.accent : 'transparent', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -52,7 +55,7 @@ export default function LegalGateScreen({ gate, onAccepted }: Props) {
   );
 }
 
-function PolicyCard({ index, icon, title, copy, version, onPress }: { index: string; icon: 'legal' | 'privacy'; title: string; copy: string; version: string; onPress: () => void }) {
+const PolicyCard = memo(function PolicyCard({ index, icon, title, copy, version, onPress }: { index: string; icon: 'legal' | 'privacy'; title: string; copy: string; version: string; onPress: () => void }) {
   const { theme } = useBinderTheme();
   return (
     <Pressable accessibilityRole="link" onPress={onPress}>
@@ -69,4 +72,4 @@ function PolicyCard({ index, icon, title, copy, version, onPress }: { index: str
       )}
     </Pressable>
   );
-}
+});

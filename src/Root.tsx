@@ -1,6 +1,6 @@
 import type { Session } from '@supabase/supabase-js';
 import { useEffect, useRef, useState } from 'react';
-import { BackHandler, View } from 'react-native';
+import { BackHandler, Linking, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { StatusBar } from 'expo-status-bar';
@@ -10,6 +10,7 @@ import Animated, { FadeInUp, FadeOutDown, SlideInRight, SlideOutRight, ZoomIn, Z
 import BinderErrorBoundary from './components/BinderErrorBoundary';
 import { BinderIcon, BinderText, MotionPressable, ScreenState, type BinderIconName } from './components/ui';
 import { initializeBetaDiagnostics, recordBetaEvent } from './lib/beta';
+import { parseRecoveryCallback } from './lib/deepLinks';
 import { fetchMatches, type MatchSummary } from './lib/conversation';
 import {
   observeForegroundNotifications,
@@ -22,6 +23,7 @@ import {
   type NotificationRoute,
 } from './lib/notifications';
 import { getLegalGate, type LegalGate } from './lib/safety';
+import { safeLog } from './lib/safeLog';
 import { supabase } from './lib/supabase';
 import AboutScreen from './screens/AboutScreen';
 import AppSettingsScreen from './screens/AppSettingsScreen';
@@ -91,6 +93,37 @@ function BinderApp() {
       setSession(nextSession); setLegalGate(undefined); setOnboardingComplete(undefined); setNotificationPreferencesReadyFor(null); setLoadError(''); setActiveMatch(null); setProfileRoute('home'); setTab('discover'); appSessionRecorded.current = false;
     });
     return () => { active = false; data.subscription.unsubscribe(); };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+
+    async function handleUrl(rawUrl: string | null) {
+      if (!active || !rawUrl) return;
+      const callback = parseRecoveryCallback(rawUrl);
+      if (!callback) {
+        safeLog('warn', 'auth_callback_rejected');
+        return;
+      }
+      try {
+        const { error } = await supabase.auth.exchangeCodeForSession(callback.code);
+        if (!active) return;
+        if (error) {
+          safeLog('warn', 'auth_callback_failed', { errorCode: error.code });
+          setLoadError('This password reset link is invalid or has expired. Request a new one.');
+          return;
+        }
+        setRecovering(true);
+      } catch {
+        if (!active) return;
+        safeLog('warn', 'auth_callback_failed');
+        setLoadError('This password reset link could not be opened. Try again.');
+      }
+    }
+
+    void Linking.getInitialURL().then(handleUrl).catch(() => safeLog('warn', 'auth_callback_initial_url_failed'));
+    const subscription = Linking.addEventListener('url', ({ url }) => { void handleUrl(url); });
+    return () => { active = false; subscription.remove(); };
   }, []);
 
   useEffect(() => {

@@ -39,7 +39,14 @@ export class LargeSecureStore {
 
   async setItem(key: string, value: string): Promise<void> {
     const encrypted = await this.encrypt(key, value);
-    await AsyncStorage.setItem(key, encrypted);
+    try {
+      await AsyncStorage.setItem(key, encrypted);
+    } catch (error) {
+      // Do not strand a new encryption key if the ciphertext could not be
+      // persisted. The original storage error remains the caller's signal.
+      await SecureStore.deleteItemAsync(key).catch(() => undefined);
+      throw error;
+    }
   }
 
   async removeItem(key: string): Promise<void> {

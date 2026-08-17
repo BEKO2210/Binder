@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { Switch, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
@@ -30,14 +30,14 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
     return () => { active = false; };
   }, []);
 
-  async function toggleDiagnostics(next: boolean) {
+  const toggleDiagnostics = useCallback(async (next: boolean) => {
     setDiagnosticsLoading(true); setMessage('');
     try { setDiagnostics(await setBetaDiagnostics(next)); await haptic('selection'); }
     catch (error) { setMessage(error instanceof Error ? error.message : 'Could not update diagnostics.'); }
     finally { setDiagnosticsLoading(false); }
-  }
+  }, [haptic]);
 
-  async function togglePush(next: boolean) {
+  const togglePush = useCallback(async (next: boolean) => {
     setMessage('');
     try {
       if (!next) {
@@ -64,7 +64,10 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Could not update push notifications.');
     }
-  }
+  }, [updateNotifications]);
+
+  const toggleHaptics = useCallback((value: boolean) => void updateSettings({ hapticsEnabled: value }), [updateSettings]);
+  const toggleQuietHours = useCallback((value: boolean) => void updateQuietHours({ enabled: value }), [updateQuietHours]);
 
   if (!hydrated) return <ScreenState kind="loading" message="Loading app settings…" />;
 
@@ -88,7 +91,7 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
       </SettingsSection>
 
       <SettingsSection title="Haptics & motion">
-        <SwitchRow label="Haptics" copy="Subtle feedback for meaningful actions." value={settings.hapticsEnabled} onValueChange={(value) => void updateSettings({ hapticsEnabled: value })} />
+        <SwitchRow label="Haptics" copy="Subtle feedback for meaningful actions." value={settings.hapticsEnabled} onValueChange={toggleHaptics} />
         <BinderText variant="label" tone="secondary" style={{ marginTop: theme.spacing.x4, marginBottom: theme.spacing.x2 }}>Motion</BinderText>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>
           {(['system','reduce','full'] as MotionPreference[]).map((value) => <BinderChip key={value} label={value === 'system' ? 'System' : value === 'reduce' ? 'Reduce' : 'Full'} selected={settings.motion === value} onPress={() => void updateSettings({ motion: value })} />)}
@@ -96,18 +99,18 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
       </SettingsSection>
 
       <SettingsSection title="Notifications" copy="Permission applies to this installation. Categories, sound and vibration follow your Binder account and are rechecked server-side before every send.">
-        <SwitchRow label="Remote push" value={settings.notifications.enabled} onValueChange={(value) => void togglePush(value)} />
-        <SwitchRow label="New matches" value={settings.notifications.newMatches} disabled={!settings.notifications.enabled} onValueChange={(value) => void updateNotifications({ newMatches: value })} />
-        <SwitchRow label="Messages" value={settings.notifications.messages} disabled={!settings.notifications.enabled} onValueChange={(value) => void updateNotifications({ messages: value })} />
-        <SwitchRow label="Moderation" value={settings.notifications.moderation} disabled={!settings.notifications.enabled} onValueChange={(value) => void updateNotifications({ moderation: value })} />
-        <SwitchRow label="Safety" value={settings.notifications.safety} disabled={!settings.notifications.enabled} onValueChange={(value) => void updateNotifications({ safety: value })} />
-        <SwitchRow label="Product updates" copy="Off by default." value={settings.notifications.product} disabled={!settings.notifications.enabled} onValueChange={(value) => void updateNotifications({ product: value })} />
-        <SwitchRow label="Sound" value={settings.notifications.sound} disabled={!settings.notifications.enabled} onValueChange={(value) => void updateNotifications({ sound: value })} />
-        <SwitchRow label="Vibration" value={settings.notifications.vibration} disabled={!settings.notifications.enabled} onValueChange={(value) => void updateNotifications({ vibration: value })} />
+        <SwitchRow label="Remote push" value={settings.notifications.enabled} onValueChange={togglePush} />
+        <NotificationSwitchRow field="newMatches" label="New matches" value={settings.notifications.newMatches} disabled={!settings.notifications.enabled} update={updateNotifications} />
+        <NotificationSwitchRow field="messages" label="Messages" value={settings.notifications.messages} disabled={!settings.notifications.enabled} update={updateNotifications} />
+        <NotificationSwitchRow field="moderation" label="Moderation" value={settings.notifications.moderation} disabled={!settings.notifications.enabled} update={updateNotifications} />
+        <NotificationSwitchRow field="safety" label="Safety" value={settings.notifications.safety} disabled={!settings.notifications.enabled} update={updateNotifications} />
+        <NotificationSwitchRow field="product" label="Product updates" copy="Off by default." value={settings.notifications.product} disabled={!settings.notifications.enabled} update={updateNotifications} />
+        <NotificationSwitchRow field="sound" label="Sound" value={settings.notifications.sound} disabled={!settings.notifications.enabled} update={updateNotifications} />
+        <NotificationSwitchRow field="vibration" label="Vibration" value={settings.notifications.vibration} disabled={!settings.notifications.enabled} update={updateNotifications} />
       </SettingsSection>
 
       <SettingsSection title="Quiet hours" copy="Match, message, moderation and product pushes wait until the local end time. Urgent safety alerts remain immediate.">
-        <SwitchRow label="Use quiet hours" value={settings.quietHours.enabled} onValueChange={(value) => void updateQuietHours({ enabled: value })} />
+        <SwitchRow label="Use quiet hours" value={settings.quietHours.enabled} onValueChange={toggleQuietHours} />
         <View style={{ flexDirection: 'row', gap: theme.spacing.x3, marginTop: theme.spacing.x3 }}>
           <View style={{ flex: 1 }}><BinderInput label="Start" value={settings.quietHours.start} onChangeText={(value) => void updateQuietHours({ start: value })} placeholder="22:00" /></View>
           <View style={{ flex: 1 }}><BinderInput label="End" value={settings.quietHours.end} onChangeText={(value) => void updateQuietHours({ end: value })} placeholder="08:00" /></View>
@@ -115,7 +118,7 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
       </SettingsSection>
 
       <SettingsSection title="Diagnostics" copy="Optional technical events only. No bio, messages, raw stack traces or precise location.">
-        {diagnosticsLoading ? <ScreenState kind="loading" message="Checking diagnostics…" /> : <SwitchRow label="Share optional diagnostics" value={diagnostics} onValueChange={(value) => void toggleDiagnostics(value)} />}
+        {diagnosticsLoading ? <ScreenState kind="loading" message="Checking diagnostics…" /> : <SwitchRow label="Share optional diagnostics" value={diagnostics} onValueChange={toggleDiagnostics} />}
       </SettingsSection>
 
       {message ? <BinderText variant="caption" tone={/are active|are off/.test(message) ? 'accent' : 'destructive'} style={{ marginTop: theme.spacing.x4 }}>{message}</BinderText> : null}
@@ -130,7 +133,14 @@ function SettingsSection({ title, copy, children }: { title: string; copy?: stri
   return <BinderCard style={{ marginTop: theme.spacing.x5 }}><BinderText variant="title">{title}</BinderText>{copy ? <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1, marginBottom: theme.spacing.x4 }}>{copy}</BinderText> : <View style={{ height: theme.spacing.x4 }} />}{children}</BinderCard>;
 }
 
-function SwitchRow({ label, copy, value, disabled, onValueChange }: { label: string; copy?: string; value: boolean; disabled?: boolean; onValueChange: (value: boolean) => void }) {
+const SwitchRow = memo(function SwitchRow({ label, copy, value, disabled, onValueChange }: { label: string; copy?: string; value: boolean; disabled?: boolean; onValueChange: (value: boolean) => void }) {
   const { theme } = useBinderTheme();
   return <View style={{ minHeight: theme.layout.controlHeight + theme.spacing.x1, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3, opacity: disabled ? theme.feedback.disabledOpacity : 1 }}><View style={{ flex: 1 }}><BinderText variant="label">{label}</BinderText>{copy ? <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1 }}>{copy}</BinderText> : null}</View><Switch accessibilityLabel={label} accessibilityHint={copy} disabled={disabled} value={value} onValueChange={onValueChange} trackColor={{ false: theme.colors.borderStrong, true: theme.accent.accent }} thumbColor={theme.colors.textPrimary} /></View>;
-}
+});
+
+type NotificationField = 'newMatches' | 'messages' | 'moderation' | 'safety' | 'product' | 'sound' | 'vibration';
+
+const NotificationSwitchRow = memo(function NotificationSwitchRow({ field, update, ...row }: { field: NotificationField; update: (patch: Partial<Record<NotificationField | 'enabled', boolean>>) => Promise<void>; label: string; copy?: string; value: boolean; disabled: boolean }) {
+  const onValueChange = useCallback((value: boolean) => void update({ [field]: value }), [field, update]);
+  return <SwitchRow {...row} onValueChange={onValueChange} />;
+});
