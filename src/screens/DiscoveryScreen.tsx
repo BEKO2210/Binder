@@ -24,18 +24,17 @@ import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
 
-const REPORT_REASONS: { value: DiscoveryReportReason; label: string; detail: string }[] = [
-  { value: 'underage', label: 'May be under 18', detail: 'Highest-priority safety review.' },
-  { value: 'harassment', label: 'Harassment or threats', detail: 'Abusive, coercive or threatening behavior.' },
-  { value: 'fake', label: 'Fake or impersonation', detail: 'Identity or profile appears deceptive.' },
-  { value: 'spam', label: 'Spam or scam', detail: 'Commercial spam, fraud or suspicious solicitation.' },
-  { value: 'sexual_content', label: 'Sexual content', detail: 'Explicit or unwanted sexual profile content.' },
-  { value: 'violence', label: 'Violence', detail: 'Threats or graphic violent content.' },
-  { value: 'other', label: 'Other safety concern', detail: 'A concern not covered above.' },
-];
-
 export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match: MatchSummary) => void }) {
-  const { theme, reduceMotion } = useBinderTheme();
+  const { theme, reduceMotion, t } = useBinderTheme();
+  const reportReasons: { value: DiscoveryReportReason; label: string; detail: string }[] = [
+    { value: 'underage', label: t('discovery.safety.reasons.underage.label'), detail: t('discovery.safety.reasons.underage.detail') },
+    { value: 'harassment', label: t('discovery.safety.reasons.harassment.label'), detail: t('discovery.safety.reasons.harassment.detail') },
+    { value: 'fake', label: t('discovery.safety.reasons.fake.label'), detail: t('discovery.safety.reasons.fake.detail') },
+    { value: 'spam', label: t('discovery.safety.reasons.spam.label'), detail: t('discovery.safety.reasons.spam.detail') },
+    { value: 'sexual_content', label: t('discovery.safety.reasons.sexualContent.label'), detail: t('discovery.safety.reasons.sexualContent.detail') },
+    { value: 'violence', label: t('discovery.safety.reasons.violence.label'), detail: t('discovery.safety.reasons.violence.detail') },
+    { value: 'other', label: t('discovery.safety.reasons.other.label'), detail: t('discovery.safety.reasons.other.detail') },
+  ];
   // Read from the live window: rotation and split-screen change the width, and
   // a threshold measured at import time would decide swipes by the old one.
   const { width: SCREEN_WIDTH } = useWindowDimensions();
@@ -84,7 +83,7 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
       setProfiles(batch);
     } catch (cause) {
       if (!current()) return;
-      setError(cause instanceof Error ? cause.message : 'Could not load discovery.');
+      setError(cause instanceof Error ? cause.message : t('discovery.errors.load'));
     } finally { if (current()) setLoading(false); }
   }
 
@@ -138,7 +137,7 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
       if (target && onOpenMatch) onOpenMatch(target);
     } catch {
       // Keep the moment; the match is safe under Matches either way.
-      setError('Could not open the conversation. You will find it under Matches.');
+      setError(t('discovery.errors.openConversation'));
       setMatch(null);
     } finally { setOpeningConversation(false); }
   }
@@ -234,7 +233,7 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
       finishDismiss(current, result.matched);
     } catch (cause) {
       setDecisionPending(false);
-      setError(cause instanceof Error ? cause.message : 'Could not save your decision.');
+      setError(cause instanceof Error ? cause.message : t('discovery.errors.saveDecision'));
       springBack();
     }
   }
@@ -261,7 +260,7 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
       y.value = 0;
       setProfiles((current) => current.filter((item) => item.id !== targetId));
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Could not submit the safety report.');
+      setError(cause instanceof Error ? cause.message : t('discovery.errors.safetyReport'));
     } finally { setSafetyBusy(false); }
   }
 
@@ -302,25 +301,25 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
 
   if (error && profiles.length === 0) {
     const locationRelated = /location|permission|denied|gps/i.test(error);
-    if (locationRelated) return <ScreenState kind="permission" icon="discover" title="Discovery paused" message={`${error}\n\nBinder uses foreground location only to calculate nearby candidates. Exact coordinates are never sent to another user.`} actionLabel="Try again" onAction={() => void loadDiscovery(true)} />;
-    return <ScreenState kind="error" icon="retry" title="Discovery did not load" message="No connection. Check your internet and try again." actionLabel="Try again" onAction={() => void loadDiscovery(true)} />;
+    if (locationRelated) return <ScreenState kind="permission" icon="discover" title={t('discovery.states.pausedTitle')} message={t('discovery.states.locationMessage', { error })} actionLabel={t('discovery.actions.tryAgain')} onAction={() => void loadDiscovery(true)} />;
+    return <ScreenState kind="error" icon="retry" title={t('discovery.states.loadErrorTitle')} message={t('discovery.states.offlineMessage')} actionLabel={t('discovery.actions.tryAgain')} onAction={() => void loadDiscovery(true)} />;
   }
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
-      <BinderScreenHeader title="Discover" titleVisual={<View><BinderBrand compact /><BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>People who fit both sides.</BinderText></View>} trailing={<View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
-          {decisionPending ? <BinderText variant="caption" tone="accent">Saving…</BinderText> : null}
-          <Animated.View key={filterValues ? `${filterValues.minAge}-${filterValues.maxAge}-${filterValues.distance}` : 'filters'} entering={reduceMotion ? undefined : FadeIn.duration(theme.motion.standard)} exiting={reduceMotion ? undefined : FadeOut.duration(theme.motion.fast)}><BinderChip label={filterValues ? `${filterValues.minAge}–${filterValues.maxAge} · ${filterValues.distance} km` : 'Filters'} selected={filtersOpen} disabled={decisionPending} accessibilityLabel="Open discovery filters" onPress={() => setFiltersOpen(true)} /></Animated.View>
+      <BinderScreenHeader title={t('discovery.header.title')} titleVisual={<View><BinderBrand compact /><BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>{t('discovery.header.copy')}</BinderText></View>} trailing={<View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
+          {decisionPending ? <BinderText variant="caption" tone="accent">{t('discovery.states.saving')}</BinderText> : null}
+          <Animated.View key={filterValues ? `${filterValues.minAge}-${filterValues.maxAge}-${filterValues.distance}` : 'filters'} entering={reduceMotion ? undefined : FadeIn.duration(theme.motion.standard)} exiting={reduceMotion ? undefined : FadeOut.duration(theme.motion.fast)}><BinderChip label={filterValues ? t('discovery.filters.summary', { minAge: filterValues.minAge, maxAge: filterValues.maxAge, distance: filterValues.distance }) : t('discovery.filters.label')} selected={filtersOpen} disabled={decisionPending} accessibilityLabel={t('discovery.accessibility.openFilters')} onPress={() => setFiltersOpen(true)} /></Animated.View>
         </View>} />
 
       <View style={{ flex: 1, marginHorizontal: theme.spacing.x4, marginTop: theme.spacing.x1, marginBottom: theme.spacing.x3, justifyContent: 'center' }}>
         {loading ? <View style={{ position: 'absolute', inset: 0, zIndex: 2, backgroundColor: theme.colors.canvas }}><DiscoveryLoading /></View> : null}
         {!profile ? (
           <BinderCard>
-            <BinderText variant="micro" tone="accent">YOU'RE CAUGHT UP</BinderText>
-            <BinderText variant="heading" style={{ marginTop: theme.spacing.x2 }}>Your deck is clear for now.</BinderText>
-            <BinderText variant="body" tone="secondary" style={{ marginTop: theme.spacing.x3 }}>Widen your age range or distance to meet more people. New approved profiles will appear here automatically.</BinderText>
-            <BinderButton label="Change filters" icon="discover" onPress={() => setFiltersOpen(true)} style={{ marginTop: theme.spacing.x5 }} />
+            <BinderText variant="micro" tone="accent">{t('discovery.empty.eyebrow')}</BinderText>
+            <BinderText variant="heading" style={{ marginTop: theme.spacing.x2 }}>{t('discovery.empty.title')}</BinderText>
+            <BinderText variant="body" tone="secondary" style={{ marginTop: theme.spacing.x3 }}>{t('discovery.empty.message')}</BinderText>
+            <BinderButton label={t('discovery.actions.changeFilters')} icon="discover" onPress={() => setFiltersOpen(true)} style={{ marginTop: theme.spacing.x5 }} />
           </BinderCard>
         ) : (
           <>
@@ -332,11 +331,11 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
             <GestureDetector gesture={panGesture}>
               <Animated.View style={[{ position: 'absolute', inset: 0 }, topCardStyle]}>
                 <ProfileCard key={profile.id} profile={profile} onOpenProfile={() => openProfile(profile)} />
-                <Animated.View pointerEvents="none" style={[{ position: 'absolute', inset: 0, borderRadius: theme.radii.hero, borderRightWidth: theme.spacing.x1, borderColor: theme.accent.accent, alignItems: 'flex-end', justifyContent: 'center', paddingRight: theme.spacing.x5 }, bindStampStyle]}><BinderText variant="title" tone="accent">BIND</BinderText></Animated.View>
-                <Animated.View pointerEvents="none" style={[{ position: 'absolute', inset: 0, borderRadius: theme.radii.hero, borderLeftWidth: theme.spacing.x1, borderColor: theme.semantic.destructive, justifyContent: 'center', paddingLeft: theme.spacing.x5 }, passStampStyle]}><BinderText variant="title" tone="destructive">PASS</BinderText></Animated.View>
+                <Animated.View pointerEvents="none" style={[{ position: 'absolute', inset: 0, borderRadius: theme.radii.hero, borderRightWidth: theme.spacing.x1, borderColor: theme.accent.accent, alignItems: 'flex-end', justifyContent: 'center', paddingRight: theme.spacing.x5 }, bindStampStyle]}><BinderText variant="title" tone="accent">{t('discovery.actions.bindStamp')}</BinderText></Animated.View>
+                <Animated.View pointerEvents="none" style={[{ position: 'absolute', inset: 0, borderRadius: theme.radii.hero, borderLeftWidth: theme.spacing.x1, borderColor: theme.semantic.destructive, justifyContent: 'center', paddingLeft: theme.spacing.x5 }, passStampStyle]}><BinderText variant="title" tone="destructive">{t('discovery.actions.passStamp')}</BinderText></Animated.View>
               </Animated.View>
             </GestureDetector>
-            <View style={{ position: 'absolute', top: theme.spacing.x3, right: theme.spacing.x3 }}><BinderIconButton name="safety" accessibilityLabel={`Safety options for ${profile.name}`} onPress={openSafety} /></View>
+            <View style={{ position: 'absolute', top: theme.spacing.x3, right: theme.spacing.x3 }}><BinderIconButton name="safety" accessibilityLabel={t('discovery.accessibility.safetyOptions', { name: profile.name })} onPress={openSafety} /></View>
           </>
         )}
       </View>
@@ -376,17 +375,17 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
       {safetyOpen && profile ? (
         <View style={{ position: 'absolute', inset: 0, backgroundColor: theme.colors.overlay, justifyContent: 'flex-end' }}>
           <BinderCard style={{ maxHeight: '92%', borderBottomLeftRadius: 0, borderBottomRightRadius: 0, borderColor: theme.colors.borderStrong }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3 }}><BinderIcon name="safety" color={theme.semantic.destructive} /><View style={{ flex: 1 }}><BinderText variant="micro" tone="destructive">SAFETY · {profile.name.toUpperCase()}</BinderText><BinderText variant="heading" style={{ marginTop: theme.spacing.x1 }}>What should Binder review?</BinderText></View><BinderIconButton name="close" accessibilityLabel="Close safety options" onPress={() => { setSafetyOpen(false); setSafetyReason(null); }} /></View>
-            <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>Reporting also blocks this profile immediately. They are not told who reported or blocked them.</BinderText>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3 }}><BinderIcon name="safety" color={theme.semantic.destructive} /><View style={{ flex: 1 }}><BinderText variant="micro" tone="destructive">{t('discovery.safety.eyebrow', { name: profile.name.toUpperCase() })}</BinderText><BinderText variant="heading" style={{ marginTop: theme.spacing.x1 }}>{t('discovery.safety.title')}</BinderText></View><BinderIconButton name="close" accessibilityLabel={t('discovery.accessibility.closeSafetyOptions')} onPress={() => { setSafetyOpen(false); setSafetyReason(null); }} /></View>
+            <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>{t('discovery.safety.message')}</BinderText>
             <ScrollView style={{ marginTop: theme.spacing.x4 }} contentContainerStyle={{ gap: theme.spacing.x2 }}>
-              {REPORT_REASONS.map((reason) => (
+              {reportReasons.map((reason) => (
                 <Pressable key={reason.value} accessibilityRole="radio" accessibilityState={{ selected: safetyReason === reason.value }} onPress={() => setSafetyReason(reason.value)}>
                   {({ pressed }) => <BinderCard style={{ padding: theme.spacing.x3, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3, borderColor: safetyReason === reason.value ? theme.semantic.destructive : theme.colors.borderSubtle, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface }}><View style={{ flex: 1 }}><BinderText variant="label">{reason.label}</BinderText><BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1 }}>{reason.detail}</BinderText></View>{safetyReason === reason.value ? <BinderIcon name="check" size={20} color={theme.semantic.destructive} /> : null}</BinderCard>}
                 </Pressable>
               ))}
             </ScrollView>
-            <BinderButton label="Report & block" icon="report" variant="destructive" disabled={!safetyReason} loading={safetyBusy} onPress={() => void submitSafetyReport()} style={{ marginTop: theme.spacing.x4 }} />
-            <BinderButton label="Cancel" variant="ghost" disabled={safetyBusy} onPress={() => { setSafetyOpen(false); setSafetyReason(null); }} style={{ marginTop: theme.spacing.x2 }} />
+            <BinderButton label={t('discovery.actions.reportAndBlock')} icon="report" variant="destructive" disabled={!safetyReason} loading={safetyBusy} onPress={() => void submitSafetyReport()} style={{ marginTop: theme.spacing.x4 }} />
+            <BinderButton label={t('discovery.actions.cancel')} variant="ghost" disabled={safetyBusy} onPress={() => { setSafetyOpen(false); setSafetyReason(null); }} style={{ marginTop: theme.spacing.x2 }} />
           </BinderCard>
         </View>
       ) : null}
@@ -395,29 +394,29 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
 }
 
 function DiscoveryAction({ kind, disabled, onPress }: { kind: 'pass' | 'bind'; disabled: boolean; onPress: () => void }) {
-  const { theme, reduceMotion } = useBinderTheme();
+  const { theme, reduceMotion, t } = useBinderTheme();
   const bind = kind === 'bind';
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={bind ? 'Bind profile' : 'Pass profile'} disabled={disabled} onPress={onPress} style={({ pressed }) => ({ width: theme.spacing.x16, height: theme.spacing.x16, borderRadius: theme.radii.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: bind ? theme.accent.accent : theme.colors.surface, borderWidth: 1, borderColor: bind ? theme.accent.accent : theme.colors.borderStrong, opacity: disabled ? 0.42 : pressed ? 0.78 : 1, transform: [{ scale: pressed && !reduceMotion ? theme.motion.pressScale : 1 }] })}>
+    <Pressable accessibilityRole="button" accessibilityLabel={bind ? t('discovery.accessibility.bindProfile') : t('discovery.accessibility.passProfile')} disabled={disabled} onPress={onPress} style={({ pressed }) => ({ width: theme.spacing.x16, height: theme.spacing.x16, borderRadius: theme.radii.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: bind ? theme.accent.accent : theme.colors.surface, borderWidth: 1, borderColor: bind ? theme.accent.accent : theme.colors.borderStrong, opacity: disabled ? 0.42 : pressed ? 0.78 : 1, transform: [{ scale: pressed && !reduceMotion ? theme.motion.pressScale : 1 }] })}>
       <BinderIcon name={bind ? 'matches' : 'close'} size={theme.spacing.x8} color={bind ? theme.accent.foreground : theme.semantic.destructive} />
     </Pressable>
   );
 }
 
 function ProfileCard({ profile, back = false, onOpenProfile }: { profile: DiscoveryProfile; back?: boolean; onOpenProfile?: () => void }) {
-  const { theme } = useBinderTheme();
+  const { theme, t } = useBinderTheme();
   const { width } = useWindowDimensions();
   const backCardOffset = width * discoveryDeckPhysics.backCardOffsetRatio;
   const photos = profile.photoUrls.length > 0 ? profile.photoUrls : [profile.photoUrl];
 
   return (
     <View style={{ position: 'absolute', inset: 0, borderRadius: theme.radii.hero, overflow: 'hidden', backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.borderSubtle, transform: back ? [{ scale: discoveryDeckPhysics.backCardScale }, { translateY: backCardOffset }] : undefined, opacity: back ? discoveryDeckPhysics.backCardOpacity : 1 }}>
-      <PhotoPager photos={photos} name={`${profile.name}, ${profile.age}, ${profile.distanceKm} kilometers away`} interactive={!back} onOpen={onOpenProfile ? () => onOpenProfile() : undefined} />
+      <PhotoPager photos={photos} name={t('discovery.accessibility.profileSummary', { name: profile.name, age: profile.age, distance: profile.distanceKm })} interactive={!back} onOpen={onOpenProfile ? () => onOpenProfile() : undefined} />
       <LinearGradient pointerEvents="none" colors={[theme.colors.transparent, theme.colors.scrim, theme.colors.overlay]} locations={[0, 0.52, 1]} style={{ position: 'absolute', inset: 0 }} />
 
       <View pointerEvents="none" style={{ position: 'absolute', left: theme.spacing.x5, right: theme.spacing.x5, bottom: theme.spacing.x5 }}>
         <BinderText variant="displayL" style={{ color: theme.colors.textPrimary }} numberOfLines={1}>{profile.name} <BinderText variant="heading" style={{ color: theme.colors.textPrimary }}>{profile.age}</BinderText></BinderText>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, marginTop: theme.spacing.x2 }}><BinderText variant="caption" style={{ color: theme.colors.textSecondary }}>{profile.distanceKm} km away</BinderText><BinderText variant="caption" style={{ color: theme.colors.textMuted }}>· Photos reviewed</BinderText></View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, marginTop: theme.spacing.x2 }}><BinderText variant="caption" style={{ color: theme.colors.textSecondary }}>{t('discovery.profile.away', { distance: profile.distanceKm })}</BinderText><BinderText variant="caption" style={{ color: theme.colors.textMuted }}>{t('discovery.profile.photosReviewed')}</BinderText></View>
         {profile.bio ? <BinderText variant="body" style={{ color: theme.colors.textPrimary, marginTop: theme.spacing.x2 }} numberOfLines={2}>{profile.bio}</BinderText> : null}
         <View style={{ flexDirection: 'row', gap: theme.spacing.x2, marginTop: theme.spacing.x3, overflow: 'hidden' }}>
           {profile.tags.slice(0, 3).map((tag) => <View key={tag} style={{ maxWidth: '32%', backgroundColor: theme.colors.overlay, borderWidth: 1, borderColor: theme.colors.borderStrong, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x1 }}><BinderText variant="caption" style={{ color: theme.colors.textPrimary }} numberOfLines={1} ellipsizeMode="tail">{tag}</BinderText></View>)}

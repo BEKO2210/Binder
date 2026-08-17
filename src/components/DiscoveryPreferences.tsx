@@ -24,25 +24,25 @@ type Props = DiscoveryPreferenceValues & {
 export const discoveryDefaults: DiscoveryPreferenceValues = { interestedIn: ['woman', 'man', 'nonbinary'], minAge: 18, maxAge: 45, distance: 50 };
 
 export function DiscoveryPreferences({ interestedIn, minAge, maxAge, distance, onChange, errors = {}, showPresets = false }: Props) {
-  const { theme } = useBinderTheme();
+  const { theme, t } = useBinderTheme();
   const current = { interestedIn, minAge, maxAge, distance };
   return (
     <View style={{ gap: theme.spacing.x10 }}>
-      {showPresets ? <PreferenceGroup title="Start with a preset">
+      {showPresets ? <PreferenceGroup title={t('discoveryPreferences.groups.preset')}>
         <View style={{ gap: theme.spacing.x2 }}>
           {discoveryPresets.map((preset) => <BinderChip key={preset.id} label={`${preset.label} · ${preset.description}`} selected={matchingDiscoveryPreset(current) === preset.id} onPress={() => onChange({ ...current, minAge: preset.minAge, maxAge: preset.maxAge, distance: preset.distance })} />)}
         </View>
       </PreferenceGroup> : null}
-      <PreferenceGroup title="Who I want to meet" error={errors.audience}>
+      <PreferenceGroup title={t('discoveryPreferences.groups.audience')} error={errors.audience}>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>
           {GENDERS.map((item) => <BinderChip key={item.value} label={item.label} selected={interestedIn.includes(item.value)} onPress={() => onChange({ ...current, interestedIn: interestedIn.includes(item.value) ? interestedIn.filter((value) => value !== item.value) : [...interestedIn, item.value] })} />)}
         </View>
       </PreferenceGroup>
-      <PreferenceGroup title="Age" error={errors.age}>
-        <BinderDial mode="range" steps={ageSteps} lowValue={minAge} highValue={maxAge} minimumSpan={1} lowAccessibilityLabel="Minimum age" highAccessibilityLabel="Maximum age" caption="years" onChange={(low, high) => onChange({ ...current, minAge: low, maxAge: high })} />
+      <PreferenceGroup title={t('discoveryPreferences.groups.age')} error={errors.age}>
+        <BinderDial mode="range" steps={ageSteps} lowValue={minAge} highValue={maxAge} minimumSpan={1} lowAccessibilityLabel={t('discoveryPreferences.accessibility.minimumAge')} highAccessibilityLabel={t('discoveryPreferences.accessibility.maximumAge')} caption={t('discoveryPreferences.units.years')} onChange={(low, high) => onChange({ ...current, minAge: low, maxAge: high })} />
       </PreferenceGroup>
-      <PreferenceGroup title="Distance" error={errors.distance}>
-        <BinderDial mode="single" steps={radiusSteps} value={distance} accessibilityLabel="Search radius" caption="km" onChange={(value) => onChange({ ...current, distance: value })} />
+      <PreferenceGroup title={t('discoveryPreferences.groups.distance')} error={errors.distance}>
+        <BinderDial mode="single" steps={radiusSteps} value={distance} accessibilityLabel={t('discoveryPreferences.accessibility.searchRadius')} caption={t('discoveryPreferences.units.km')} onChange={(value) => onChange({ ...current, distance: value })} />
       </PreferenceGroup>
     </View>
   );

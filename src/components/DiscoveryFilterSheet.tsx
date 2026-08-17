@@ -14,7 +14,7 @@ type LoadedProfile = { first_name: string; gender: Gender; bio: string; interest
 type GroupErrors = { audience?: string; age?: string; distance?: string };
 
 export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied }: Props) {
-  const { theme, reduceMotion } = useBinderTheme();
+  const { theme, reduceMotion, t } = useBinderTheme();
   const [profile, setProfile] = useState<LoadedProfile | null>(null);
   const [viewerId, setViewerId] = useState('');
   const [values, setValues] = useState(initialValues ?? discoveryDefaults);
@@ -35,18 +35,18 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
     async function load() {
       const { data: userData } = await supabase.auth.getUser();
       const uid = userData.user?.id;
-      if (!uid) throw new Error('Authentication required.');
+      if (!uid) throw new Error(t('discoveryFilterSheet.errors.authentication'));
       const [profileResult, preferencesResult] = await Promise.all([
         supabase.from('profiles').select('first_name,gender,bio,interests').eq('user_id', uid).single(),
         initialValues ? Promise.resolve(null) : supabase.from('user_preferences').select('interested_in,min_age,max_age,max_distance_km').eq('user_id', uid).single(),
       ]);
-      if (profileResult.error || preferencesResult?.error) throw new Error('Could not load your discovery settings.');
+      if (profileResult.error || preferencesResult?.error) throw new Error(t('discoveryFilterSheet.errors.load'));
       if (!active) return;
       setViewerId(uid);
       setProfile(profileResult.data as LoadedProfile);
       if (preferencesResult?.data) setValues({ interestedIn: preferencesResult.data.interested_in as Gender[], minAge: preferencesResult.data.min_age, maxAge: preferencesResult.data.max_age, distance: preferencesResult.data.max_distance_km });
     }
-    void load().catch((cause: unknown) => { if (active) setLoadError(cause instanceof Error ? cause.message : 'Could not load your discovery settings.'); });
+    void load().catch((cause: unknown) => { if (active) setLoadError(cause instanceof Error ? cause.message : t('discoveryFilterSheet.errors.load')); });
     return () => { active = false; };
   }, [initialValues, loadAttempt]);
 
@@ -87,9 +87,9 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
   async function apply() {
     if (!profile || busy) return;
     const nextErrors: GroupErrors = {};
-    if (values.interestedIn.length === 0) nextErrors.audience = 'Choose at least one person you want to meet.';
-    if (values.minAge < 18 || values.maxAge > 100 || values.minAge >= values.maxAge) nextErrors.age = 'Choose an age range of at least one year.';
-    if (values.distance < 1 || values.distance > 500) nextErrors.distance = 'Choose a distance from 1 to 500 km.';
+    if (values.interestedIn.length === 0) nextErrors.audience = t('discoveryFilterSheet.errors.audience');
+    if (values.minAge < 18 || values.maxAge > 100 || values.minAge >= values.maxAge) nextErrors.age = t('discoveryFilterSheet.errors.age');
+    if (values.distance < 1 || values.distance > 500) nextErrors.distance = t('discoveryFilterSheet.errors.distance');
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
     setBusy(true);
@@ -98,7 +98,7 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
       if (error) throw error;
       onApplied(values);
     } catch {
-      setErrors({ distance: 'Binder could not save these filters. Check your connection and try again.' });
+      setErrors({ distance: t('discoveryFilterSheet.errors.save') });
       setBusy(false);
     }
   }
@@ -107,16 +107,16 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
     <Animated.View entering={reduceMotion ? undefined : SlideInDown.duration(theme.motion.deliberate)} exiting={reduceMotion ? undefined : SlideOutDown.duration(theme.motion.deliberate)} style={{ position: 'absolute', inset: 0, backgroundColor: theme.colors.overlay, justifyContent: 'flex-end' }}>
       <BinderCard style={{ height: '94%', padding: 0, borderBottomLeftRadius: 0, borderBottomRightRadius: 0, borderColor: theme.colors.borderStrong, overflow: 'hidden' }}>
         <View style={{ alignItems: 'center', paddingTop: theme.spacing.x2 }}><View style={{ width: theme.spacing.x10, height: theme.spacing.x1, borderRadius: theme.radii.pill, backgroundColor: theme.colors.borderStrong }} /></View>
-        <BinderScreenHeader title="Your search" eyebrow="DISCOVERY" trailing={<BinderIconButton name="close" accessibilityLabel="Close discovery filters" onPress={onClose} />} />
-        {loadError ? <ScreenState kind="error" icon="retry" title="Filters did not load" message={loadError} actionLabel="Try again" onAction={() => setLoadAttempt((value) => value + 1)} secondaryActionLabel="Close" onSecondaryAction={onClose} /> : !profile ? <ScreenState kind="loading" message="Loading your filters…" /> : (
+        <BinderScreenHeader title={t('discoveryFilterSheet.header.title')} eyebrow={t('discoveryFilterSheet.header.eyebrow')} trailing={<BinderIconButton name="close" accessibilityLabel={t('discoveryFilterSheet.accessibility.close')} onPress={onClose} />} />
+        {loadError ? <ScreenState kind="error" icon="retry" title={t('discoveryFilterSheet.states.loadErrorTitle')} message={loadError} actionLabel={t('discoveryFilterSheet.actions.tryAgain')} onAction={() => setLoadAttempt((value) => value + 1)} secondaryActionLabel={t('discoveryFilterSheet.actions.close')} onSecondaryAction={onClose} /> : !profile ? <ScreenState kind="loading" message={t('discoveryFilterSheet.states.loading')} /> : (
           <>
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: theme.spacing.x5, paddingTop: theme.spacing.x4, paddingBottom: theme.spacing.x8 }}>
               <DiscoveryPreferences {...values} showPresets onChange={(next) => { setValues(next); setErrors({}); }} errors={errors} />
               <CountConsequence count={passingCount} loading={countBusy} failed={countError} cause={likelyEmptyFilter(values)} />
             </ScrollView>
             <View style={{ paddingHorizontal: theme.spacing.x5, paddingTop: theme.spacing.x3, paddingBottom: theme.spacing.x5, borderTopWidth: 1, borderTopColor: theme.colors.borderSubtle, backgroundColor: theme.colors.surface }}>
-              <BinderButton label="Apply filters" loading={busy} onPress={() => void apply()} />
-              <BinderButton label="Reset to defaults" variant="ghost" disabled={busy} onPress={() => { setValues(discoveryDefaults); setErrors({}); }} style={{ marginTop: theme.spacing.x2 }} />
+              <BinderButton label={t('discoveryFilterSheet.actions.apply')} loading={busy} onPress={() => void apply()} />
+              <BinderButton label={t('discoveryFilterSheet.actions.reset')} variant="ghost" disabled={busy} onPress={() => { setValues(discoveryDefaults); setErrors({}); }} style={{ marginTop: theme.spacing.x2 }} />
             </View>
           </>
         )}
@@ -126,12 +126,12 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
 }
 
 function CountConsequence({ count, loading, failed, cause }: { count: number | null; loading: boolean; failed: boolean; cause: 'audience' | 'age' | 'distance' }) {
-  const { theme } = useBinderTheme();
-  const causeCopy = cause === 'audience' ? 'who you want to meet' : cause === 'age' ? 'age range' : 'distance';
+  const { theme, t } = useBinderTheme();
+  const causeCopy = cause === 'audience' ? t('discoveryFilterSheet.count.causes.audience') : cause === 'age' ? t('discoveryFilterSheet.count.causes.age') : t('discoveryFilterSheet.count.causes.distance');
   return <View accessibilityLiveRegion="polite" style={{ marginTop: theme.spacing.x8 }}>
-    <BinderText variant="title">{failed && !loading ? 'Count unavailable' : loading || count === null ? 'Checking who fits…' : count === 0 ? 'No one currently fits' : `${count} ${count === 1 ? 'person' : 'people'} currently fit`}</BinderText>
-    {failed && !loading ? <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>Binder could not check right now. Change a filter to try again — your settings still apply.</BinderText>
-      : count === 0 && !loading ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x2 }}>Your {causeCopy} is the likely cause. Widen it before applying.</BinderText>
-      : <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>This updates as you shape your search.</BinderText>}
+    <BinderText variant="title">{failed && !loading ? t('discoveryFilterSheet.count.unavailable') : loading || count === null ? t('discoveryFilterSheet.count.checking') : count === 0 ? t('discoveryFilterSheet.count.none') : t(count === 1 ? 'discoveryFilterSheet.count.personOne' : 'discoveryFilterSheet.count.personOther', { count })}</BinderText>
+    {failed && !loading ? <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>{t('discoveryFilterSheet.count.failed')}</BinderText>
+      : count === 0 && !loading ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x2 }}>{t('discoveryFilterSheet.count.likelyCause', { cause: causeCopy })}</BinderText>
+      : <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>{t('discoveryFilterSheet.count.updates')}</BinderText>}
   </View>;
 }

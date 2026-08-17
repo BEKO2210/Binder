@@ -168,5 +168,126 @@
     "loading": "Opening profile…",
     "photosReviewed": "Photos reviewed",
     "away": "{distance} km away"
+  },
+  "discovery": {
+    "errors": {
+      "load": "Could not load discovery.",
+      "openConversation": "Could not open the conversation. You will find it under Matches.",
+      "saveDecision": "Could not save your decision.",
+      "safetyReport": "Could not submit the safety report."
+    },
+    "states": {
+      "pausedTitle": "Discovery paused",
+      "locationMessage": "{error}\n\nBinder uses foreground location only to calculate nearby candidates. Exact coordinates are never sent to another user.",
+      "loadErrorTitle": "Discovery did not load",
+      "offlineMessage": "No connection. Check your internet and try again.",
+      "saving": "Saving…"
+    },
+    "header": {
+      "title": "Discover",
+      "copy": "People who fit both sides."
+    },
+    "filters": {
+      "summary": "{minAge}–{maxAge} · {distance} km",
+      "label": "Filters"
+    },
+    "empty": {
+      "eyebrow": "YOU'RE CAUGHT UP",
+      "title": "Your deck is clear for now.",
+      "message": "Widen your age range or distance to meet more people. New approved profiles will appear here automatically."
+    },
+    "actions": {
+      "tryAgain": "Try again",
+      "changeFilters": "Change filters",
+      "bindStamp": "BIND",
+      "passStamp": "PASS",
+      "reportAndBlock": "Report & block",
+      "cancel": "Cancel"
+    },
+    "accessibility": {
+      "openFilters": "Open discovery filters",
+      "safetyOptions": "Safety options for {name}",
+      "closeSafetyOptions": "Close safety options",
+      "bindProfile": "Bind profile",
+      "passProfile": "Pass profile",
+      "profileSummary": "{name}, {age}, {distance} kilometers away"
+    },
+    "safety": {
+      "eyebrow": "SAFETY · {name}",
+      "title": "What should Binder review?",
+      "message": "Reporting also blocks this profile immediately. They are not told who reported or blocked them.",
+      "reasons": {
+        "underage": { "label": "May be under 18", "detail": "Highest-priority safety review." },
+        "harassment": { "label": "Harassment or threats", "detail": "Abusive, coercive or threatening behavior." },
+        "fake": { "label": "Fake or impersonation", "detail": "Identity or profile appears deceptive." },
+        "spam": { "label": "Spam or scam", "detail": "Commercial spam, fraud or suspicious solicitation." },
+        "sexualContent": { "label": "Sexual content", "detail": "Explicit or unwanted sexual profile content." },
+        "violence": { "label": "Violence", "detail": "Threats or graphic violent content." },
+        "other": { "label": "Other safety concern", "detail": "A concern not covered above." }
+      }
+    },
+    "profile": {
+      "away": "{distance} km away",
+      "photosReviewed": "· Photos reviewed"
+    }
+  },
+  "discoveryFilterSheet": {
+    "errors": {
+      "authentication": "Authentication required.",
+      "load": "Could not load your discovery settings.",
+      "audience": "Choose at least one person you want to meet.",
+      "age": "Choose an age range of at least one year.",
+      "distance": "Choose a distance from 1 to 500 km.",
+      "save": "Binder could not save these filters. Check your connection and try again."
+    },
+    "header": {
+      "title": "Your search",
+      "eyebrow": "DISCOVERY"
+    },
+    "states": {
+      "loadErrorTitle": "Filters did not load",
+      "loading": "Loading your filters…"
+    },
+    "actions": {
+      "tryAgain": "Try again",
+      "close": "Close",
+      "apply": "Apply filters",
+      "reset": "Reset to defaults"
+    },
+    "accessibility": {
+      "close": "Close discovery filters"
+    },
+    "count": {
+      "unavailable": "Count unavailable",
+      "checking": "Checking who fits…",
+      "none": "No one currently fits",
+      "personOne": "{count} person currently fit",
+      "personOther": "{count} people currently fit",
+      "failed": "Binder could not check right now. Change a filter to try again — your settings still apply.",
+      "likelyCause": "Your {cause} is the likely cause. Widen it before applying.",
+      "updates": "This updates as you shape your search.",
+      "causes": {
+        "audience": "who you want to meet",
+        "age": "age range",
+        "distance": "distance"
+      }
+    }
+  },
+  "discoveryPreferences": {
+    "groups": {
+      "preset": "Start with a preset",
+      "audience": "Who I want to meet",
+      "age": "Age",
+      "distance": "Distance"
+    },
+    "accessibility": {
+      "minimumAge": "Minimum age",
+      "maximumAge": "Maximum age",
+      "searchRadius": "Search radius"
+    },
+    "units": {
+      "years": "years",
+      "km": "km"
+    }
   }
 }
