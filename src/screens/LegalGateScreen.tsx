@@ -48,7 +48,7 @@ export default function LegalGateScreen({ gate, onAccepted }: Props) {
         </View>
         <BinderText variant="label" tone="secondary" style={{ flex: 1 }}>{t('legalGate.confirmation')}</BinderText>
       </Pressable>
-      {error ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x4 }}>{error}</BinderText> : null}
+      {error ? <BinderText accessibilityLiveRegion="assertive" variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x4 }}>{error}</BinderText> : null}
       <BinderButton label={t('legalGate.actions.agree')} loading={busy} disabled={!confirmed} onPress={() => void accept()} style={{ marginTop: theme.spacing.x5 }} />
       <BinderText variant="caption" tone="muted" align="center" style={{ marginTop: theme.spacing.x4 }}>{t('legalGate.noSkip')}</BinderText>
     </ScrollView>

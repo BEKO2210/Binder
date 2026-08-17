@@ -43,6 +43,7 @@ export function BinderButton({ label, variant = 'primary', loading = false, icon
       onPressIn={onPressIn}
       onPressOut={onPressOut}
       accessibilityRole="button"
+      accessibilityLabel={label}
       accessibilityState={{ disabled: isDisabled, busy: loading }}
       disabled={isDisabled}
       style={({ pressed }) => [{
@@ -70,7 +71,7 @@ export function BinderButton({ label, variant = 'primary', loading = false, icon
         {icon ? <BinderIcon name={icon} size={20} color={foreground} /> : null}
         <BinderText variant="label" style={{ color: foreground }}>{label}</BinderText>
       </View>
-      {loading ? <View pointerEvents="none" style={{ position: 'absolute', inset: 0, alignItems: 'center', justifyContent: 'center' }}><ActivityIndicator color={foreground} /></View> : null}
+      {loading ? <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ position: 'absolute', inset: 0, alignItems: 'center', justifyContent: 'center' }}><ActivityIndicator color={foreground} /></View> : null}
     </MotionPressable>
   );
 }

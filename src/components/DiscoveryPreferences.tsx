@@ -50,5 +50,5 @@ export function DiscoveryPreferences({ interestedIn, minAge, maxAge, distance, o
 
 function PreferenceGroup({ title, error, children }: { title: string; error?: string; children: React.ReactNode }) {
   const { theme } = useBinderTheme();
-  return <View><BinderText variant="title" style={{ marginBottom: theme.spacing.x4 }}>{title}</BinderText>{children}{error ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x3 }}>{error}</BinderText> : null}</View>;
+  return <View><BinderText variant="title" style={{ marginBottom: theme.spacing.x4 }}>{title}</BinderText>{children}{error ? <BinderText accessibilityLiveRegion="assertive" variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x3 }}>{error}</BinderText> : null}</View>;
 }

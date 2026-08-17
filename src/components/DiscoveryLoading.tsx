@@ -162,8 +162,10 @@ export function DiscoveryLoading() {
   // The skeleton is the discovery card's own geometry — full-bleed media, the
   // same scrim, the same bottom block — so nothing moves when the deck lands.
   return (
-    <View style={{ flex: 1 }} accessibilityRole="progressbar" accessibilityLabel={t('discoveryLoading.accessibility.finding')}>
+    <View style={{ flex: 1 }} accessibilityRole="progressbar" accessibilityLabel={t('discoveryLoading.accessibility.finding')} accessibilityLiveRegion="polite">
       <View
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
         onLayout={(event) => {
           const { width, height } = event.nativeEvent.layout;
           setSize((current) => (current.width === width && current.height === height ? current : { width, height }));

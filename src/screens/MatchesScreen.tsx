@@ -106,7 +106,7 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
                 : pushState === 'enabled' ? t('matches.notifications.enabledCopy')
                 : t('matches.notifications.copy')}
             </BinderText>
-            {pushError ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x2 }}>{pushError.message}</BinderText> : null}
+            {pushError ? <BinderText accessibilityLiveRegion="assertive" variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x2 }}>{pushError.message}</BinderText> : null}
           </View>
           {bannerOffersEnable(pushState) ? <BinderButton label={pushState === 'offline' ? t('matches.actions.retry') : t('matches.actions.enable')} variant="secondary" fullWidth={false} loading={pushState === 'busy'} onPress={() => void enablePush()} /> : null}
           {pushState === 'denied' ? <BinderButton label={t('matches.actions.openSettings')} variant="secondary" fullWidth={false} onPress={() => void openSystemNotificationSettings().catch(() => undefined)} /> : null}
@@ -142,7 +142,7 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
           )}
         />
       )}
-      {error && matches.length > 0 ? <View style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, paddingBottom: theme.spacing.x3 }}><BinderText variant="caption" tone="destructive" style={{ flex: 1 }}>{error.message}</BinderText><BinderButton label={error.recovery === 'refresh' ? t('matches.actions.refresh') : t('matches.actions.retry')} variant="ghost" fullWidth={false} onPress={() => void load()} /></View> : null}
+      {error && matches.length > 0 ? <View accessibilityLiveRegion="assertive" style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, paddingBottom: theme.spacing.x3 }}><BinderText variant="caption" tone="destructive" style={{ flex: 1 }}>{error.message}</BinderText><BinderButton label={error.recovery === 'refresh' ? t('matches.actions.refresh') : t('matches.actions.retry')} variant="ghost" fullWidth={false} onPress={() => void load()} /></View> : null}
     </View>
   );
 }

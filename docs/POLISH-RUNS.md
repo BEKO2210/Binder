@@ -59,6 +59,7 @@ leaves the running system intact.
 | 038 | State changes that were only visible are announced to a screen reader | Gates green | done |
 | 039 | Tab labels stop growing before they push the bar over the content; icon boxes are fixed | 200 % font on the S23: labels fit, row height stable | done |
 | 040 | Icon glyphs are clipped at a 200 % system font | Root cause found in expo-symbols' SymbolView: the Android glyph is a <Text> without allowFontScaling={false}. BinderIcon draws the same font and codepoint itself with scaling off. Verified at 100 % and 200 % on the S23 | done |
+| 041 | TalkBack wiring pass: roles, states, values, live regions, decorative nodes hidden, composed rows grouped | Tree dump on device: zero clickable nodes without a label | done |
 | 017 | Language section in App settings — appears only when a translation exists, endonym plus flag, same chip rhythm as Appearance | Screenshot: Sprache / Wie mein Gerät / 🇬🇧 English / 🇩🇪 Deutsch | done |
 
 ## Backlog
@@ -87,7 +88,7 @@ Ordered by what a user notices first. Each line becomes one run.
 - [ ] First run on a fresh install: what the deck shows before location permission.
 
 ### Accessibility
-- [ ] TalkBack pass over every screen: labels, focus order, decorative nodes hidden.
+- [x] TalkBack pass over every screen: labels, states, values, live regions, decorative nodes hidden.
 - [x] Large font settings (200 %): text wraps, chrome keeps its height, labels are capped.
 - [x] Icon glyphs at 200 %: fixed by drawing the glyph ourselves with font scaling off (run 040).
 - [ ] Contrast of every state that is not covered by the token test (pressed, disabled, over media).

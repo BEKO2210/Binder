@@ -29,6 +29,8 @@ export function BinderInput({ label, error, helper, style, editable = true, inpu
       <View style={{ justifyContent: 'center' }}>
         <TextInput
           {...props}
+          accessibilityLabel={props.accessibilityLabel ?? label}
+          accessibilityState={{ disabled: !editable }}
           secureTextEntry={secure}
           ref={inputRef}
           editable={editable}
@@ -74,7 +76,7 @@ export function BinderInput({ label, error, helper, style, editable = true, inpu
           </Pressable>
         ) : null}
       </View>
-      {error ? <BinderText variant="caption" tone="destructive">{error}</BinderText> : helper ? <BinderText variant="caption" tone="muted">{helper}</BinderText> : null}
+      {error ? <BinderText accessibilityLiveRegion="assertive" variant="caption" tone="destructive">{error}</BinderText> : helper ? <BinderText variant="caption" tone="muted">{helper}</BinderText> : null}
     </View>
   );
 }

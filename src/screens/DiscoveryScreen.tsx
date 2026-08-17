@@ -325,7 +325,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
       <BinderScreenHeader title={t('discovery.header.title')} titleVisual={<View><BinderBrand compact /><BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>{t('discovery.header.copy')}</BinderText></View>} trailing={<View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
-          {decisionPending ? <BinderText variant="caption" tone="accent">{t('discovery.states.saving')}</BinderText> : null}
+          {decisionPending ? <BinderText accessibilityLiveRegion="polite" variant="caption" tone="accent">{t('discovery.states.saving')}</BinderText> : null}
           <Animated.View key={filterValues ? `${filterValues.minAge}-${filterValues.maxAge}-${filterValues.distance}` : 'filters'} entering={reduceMotion ? undefined : FadeIn.duration(theme.motion.standard)} exiting={reduceMotion ? undefined : FadeOut.duration(theme.motion.fast)}><BinderChip label={filterValues ? t('discovery.filters.summary', { minAge: filterValues.minAge, maxAge: filterValues.maxAge, distance: filterValues.distance }) : t('discovery.filters.label')} selected={filtersOpen} disabled={decisionPending} accessibilityLabel={t('discovery.accessibility.openFilters')} onPress={() => setFiltersOpen(true)} /></Animated.View>
         </View>} />
 
@@ -341,15 +341,15 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
         ) : (
           <>
             {nextProfile ? (
-              <Animated.View style={[{ position: 'absolute', inset: 0 }, reduceMotion ? undefined : backCardStyle]}>
+              <Animated.View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[{ position: 'absolute', inset: 0 }, reduceMotion ? undefined : backCardStyle]}>
                 <ProfileCard key={nextProfile.id} profile={nextProfile} back={reduceMotion} />
               </Animated.View>
             ) : null}
             <GestureDetector gesture={panGesture}>
               <Animated.View style={[{ position: 'absolute', inset: 0 }, topCardStyle]}>
                 <ProfileCard key={profile.id} profile={profile} onOpenProfile={() => openProfile(profile)} />
-                <Animated.View pointerEvents="none" style={[{ position: 'absolute', inset: 0, borderRadius: theme.radii.hero, borderRightWidth: theme.spacing.x1, borderColor: theme.accent.accent, alignItems: 'flex-end', justifyContent: 'center', paddingRight: theme.spacing.x5 }, bindStampStyle]}><BinderText variant="title" tone="accent">{t('discovery.actions.bindStamp')}</BinderText></Animated.View>
-                <Animated.View pointerEvents="none" style={[{ position: 'absolute', inset: 0, borderRadius: theme.radii.hero, borderLeftWidth: theme.spacing.x1, borderColor: theme.semantic.destructive, justifyContent: 'center', paddingLeft: theme.spacing.x5 }, passStampStyle]}><BinderText variant="title" tone="destructive">{t('discovery.actions.passStamp')}</BinderText></Animated.View>
+                <Animated.View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[{ position: 'absolute', inset: 0, borderRadius: theme.radii.hero, borderRightWidth: theme.spacing.x1, borderColor: theme.accent.accent, alignItems: 'flex-end', justifyContent: 'center', paddingRight: theme.spacing.x5 }, bindStampStyle]}><BinderText variant="title" tone="accent">{t('discovery.actions.bindStamp')}</BinderText></Animated.View>
+                <Animated.View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[{ position: 'absolute', inset: 0, borderRadius: theme.radii.hero, borderLeftWidth: theme.spacing.x1, borderColor: theme.semantic.destructive, justifyContent: 'center', paddingLeft: theme.spacing.x5 }, passStampStyle]}><BinderText variant="title" tone="destructive">{t('discovery.actions.passStamp')}</BinderText></Animated.View>
               </Animated.View>
             </GestureDetector>
             <View style={{ position: 'absolute', top: theme.spacing.x3, right: theme.spacing.x3 }}><BinderIconButton name="safety" accessibilityLabel={t('discovery.accessibility.safetyOptions', { name: profile.name })} onPress={openSafety} /></View>
@@ -357,7 +357,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
         )}
       </View>
 
-      {error ? <BinderText variant="caption" tone="destructive" align="center" style={{ paddingHorizontal: theme.spacing.x5, paddingBottom: theme.spacing.x1 }}>{error.message}</BinderText> : null}
+      {error ? <BinderText accessibilityLiveRegion="assertive" variant="caption" tone="destructive" align="center" style={{ paddingHorizontal: theme.spacing.x5, paddingBottom: theme.spacing.x1 }}>{error.message}</BinderText> : null}
       <View style={{ minHeight: theme.layout.discoveryActionBarHeight, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: theme.spacing.x3, paddingBottom: theme.spacing.x3 }}>
         {/* Two buttons, one axis: a trailing spacer used to sit here and pushed
             the pair off the screen's centre line by half a button. */}
@@ -414,7 +414,7 @@ function DiscoveryAction({ kind, disabled, onPress, onPressIn, onPressOut }: { k
   const { theme, reduceMotion, t } = useBinderTheme();
   const bind = kind === 'bind';
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={bind ? t('discovery.accessibility.bindProfile') : t('discovery.accessibility.passProfile')} disabled={disabled} onPressIn={onPressIn} onPressOut={onPressOut} onPress={onPress} style={({ pressed }) => ({ width: theme.spacing.x16, height: theme.spacing.x16, borderRadius: theme.radii.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: bind ? theme.accent.accent : theme.colors.surface, borderWidth: 1, borderColor: bind ? theme.accent.accent : theme.colors.borderStrong, opacity: disabled ? 0.42 : pressed ? 0.78 : 1, transform: [{ scale: pressed && !reduceMotion ? theme.motion.pressScale : 1 }] })}>
+    <Pressable accessibilityRole="button" accessibilityLabel={bind ? t('discovery.accessibility.bindProfile') : t('discovery.accessibility.passProfile')} accessibilityState={{ disabled }} disabled={disabled} onPressIn={onPressIn} onPressOut={onPressOut} onPress={onPress} style={({ pressed }) => ({ width: theme.spacing.x16, height: theme.spacing.x16, borderRadius: theme.radii.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: bind ? theme.accent.accent : theme.colors.surface, borderWidth: 1, borderColor: bind ? theme.accent.accent : theme.colors.borderStrong, opacity: disabled ? 0.42 : pressed ? 0.78 : 1, transform: [{ scale: pressed && !reduceMotion ? theme.motion.pressScale : 1 }] })}>
       <BinderIcon name={bind ? 'matches' : 'close'} size={theme.spacing.x8} color={bind ? theme.accent.foreground : theme.semantic.destructive} />
     </Pressable>
   );

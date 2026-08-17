@@ -116,7 +116,7 @@ export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, o
           <PolicyRow icon="info" label={t('profile.safety.deletionDetails')} onPress={() => void open(DELETE_ACCOUNT_URL)} />
         </View>
       </View>
-      {message ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x4 }}>{message}</BinderText> : null}
+      {message ? <BinderText accessibilityLiveRegion="assertive" variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x4 }}>{message}</BinderText> : null}
       <View style={{ marginTop: theme.spacing.x10, paddingTop: theme.spacing.x6, borderTopWidth: 1, borderTopColor: theme.colors.borderSubtle }}><BinderText variant="micro" tone="muted">{t('profile.account.eyebrow')}</BinderText><BinderButton label={t('profile.actions.signOut')} icon="logout" variant="secondary" disabled={busy} onPress={confirmSignOut} style={{ marginTop: theme.spacing.x4 }} /></View>
       <BinderCard style={{ marginTop: theme.spacing.x8, borderColor: theme.semantic.destructive, backgroundColor: theme.mode === 'dark' ? theme.semantic.destructiveSoftDark : theme.semantic.destructiveSoftLight }}>
         <BinderText variant="micro" tone="destructive">{t('profile.account.irreversible')}</BinderText>

@@ -24,7 +24,8 @@ export function ScreenState({ kind, title, message, actionLabel, onAction, secon
   if (kind === 'loading') {
     const rows = loadingShape === 'conversation' ? 5 : 4;
     return (
-      <View accessibilityRole="progressbar" accessibilityLabel={message} style={{ flex: 1, padding: theme.spacing.x4, backgroundColor: theme.colors.canvas, gap: theme.spacing.x3 }}>
+      <View accessibilityRole="progressbar" accessibilityLabel={message} accessibilityLiveRegion="polite" style={{ flex: 1, padding: theme.spacing.x4, backgroundColor: theme.colors.canvas, gap: theme.spacing.x3 }}>
+        <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ gap: theme.spacing.x3 }}>
         {Array.from({ length: rows }, (_, index) => loadingShape === 'conversation' ? (
           <View key={index} style={{ alignSelf: index % 2 === 0 ? 'flex-end' : 'flex-start', width: index % 3 === 0 ? '72%' : '56%', minHeight: theme.spacing.x12, borderRadius: theme.radii.control, backgroundColor: theme.colors.surfaceElevated }} />
         ) : (
@@ -36,14 +37,17 @@ export function ScreenState({ kind, title, message, actionLabel, onAction, secon
             </View>
           </View>
         ))}
+        </View>
       </View>
     );
   }
   return (
     <View style={{ flex: 1, padding: theme.spacing.x6, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.canvas }}>
-      {icon ? <BinderIcon name={icon} size={32} color={kind === 'error' ? theme.semantic.destructive : theme.colors.textSecondary} /> : null}
-      {title ? <BinderText variant="title" align="center" style={{ marginTop: theme.spacing.x4 }}>{title}</BinderText> : null}
-      <BinderText variant="body" tone="secondary" align="center" style={{ marginTop: theme.spacing.x3, maxWidth: 360 }}>{message}</BinderText>
+      <View accessible accessibilityLabel={title ? `${title}. ${message}` : message} accessibilityLiveRegion={kind === 'error' || kind === 'offline' || kind === 'permission' ? 'assertive' : 'polite'} style={{ alignItems: 'center' }}>
+        {icon ? <BinderIcon name={icon} size={32} color={kind === 'error' ? theme.semantic.destructive : theme.colors.textSecondary} /> : null}
+        {title ? <BinderText variant="title" align="center" style={{ marginTop: theme.spacing.x4 }}>{title}</BinderText> : null}
+        <BinderText variant="body" tone="secondary" align="center" style={{ marginTop: theme.spacing.x3, maxWidth: 360 }}>{message}</BinderText>
+      </View>
       {actionLabel && onAction ? <BinderButton label={actionLabel} variant="secondary" fullWidth={false} onPress={onAction} style={{ marginTop: theme.spacing.x5 }} /> : null}
       {secondaryActionLabel && onSecondaryAction ? <BinderButton label={secondaryActionLabel} variant="ghost" fullWidth={false} onPress={onSecondaryAction} style={{ marginTop: theme.spacing.x2 }} /> : null}
     </View>

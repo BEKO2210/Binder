@@ -59,7 +59,7 @@ export default function BetaScreen({ onClose }: { onClose: () => void }) {
       <BinderCard style={{ marginTop: theme.spacing.x6 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x4 }}>
           <View style={{ flex: 1 }}><BinderText variant="title">{t('beta.diagnostics.title')}</BinderText><BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1 }}>{t('beta.diagnostics.copy')}</BinderText></View>
-          <Switch accessibilityLabel={t('beta.diagnostics.accessibilityLabel')} disabled={!settings || busy} value={settings?.diagnostics_enabled ?? false} onValueChange={toggleDiagnostics} trackColor={{ false: theme.colors.borderStrong, true: theme.accent.accent }} thumbColor={theme.colors.textPrimary} />
+          <Switch accessibilityRole="switch" accessibilityLabel={t('beta.diagnostics.accessibilityLabel')} accessibilityState={{ checked: settings?.diagnostics_enabled ?? false, disabled: !settings || busy }} disabled={!settings || busy} value={settings?.diagnostics_enabled ?? false} onValueChange={toggleDiagnostics} trackColor={{ false: theme.colors.borderStrong, true: theme.accent.accent }} thumbColor={theme.colors.textPrimary} />
         </View>
         <View style={{ height: 1, backgroundColor: theme.colors.borderSubtle, marginVertical: theme.spacing.x5 }} />
         <BinderText variant="micro" tone="muted">{t('beta.diagnostics.canRecord')}</BinderText>
@@ -82,7 +82,7 @@ export default function BetaScreen({ onClose }: { onClose: () => void }) {
       <BinderText variant="label" tone="secondary" style={{ marginTop: theme.spacing.x5, marginBottom: theme.spacing.x2 }}>{t('beta.feedback.overallExperience')}</BinderText>
       <View style={{ flexDirection: 'row', gap: theme.spacing.x2 }}>{[1,2,3,4,5].map((value) => <View key={value} style={{ flex: 1 }}><BinderChip label={String(value)} selected={rating === value} onPress={() => setRating(value)} /></View>)}</View>
       <View style={{ marginTop: theme.spacing.x5 }}><BinderInput label={t('beta.feedback.details')} helper={t('beta.feedback.characterCount', { count: details.length })} value={details} onChangeText={setDetails} maxLength={1500} multiline textAlignVertical="top" placeholder={t('beta.feedback.placeholder')} style={{ minHeight: theme.layout.feedbackInputHeight }} /></View>
-      {message ? <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x4 }}>{message}</BinderText> : null}
+      {message ? <BinderText accessibilityLiveRegion="polite" variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x4 }}>{message}</BinderText> : null}
       <BinderButton label={t('beta.feedback.send')} loading={busy} onPress={submit} style={{ marginTop: theme.spacing.x5 }} />
       </KeyboardAwareScrollView>
     </View>

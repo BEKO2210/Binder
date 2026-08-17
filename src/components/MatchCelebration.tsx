@@ -36,8 +36,8 @@ export function MatchCelebration({ profile, myPhotoUrl, onSaySomething, onKeepDi
   const copyStyle = useAnimatedStyle(() => ({ opacity: copyProgress.value, transform: [{ translateY: (1 - copyProgress.value) * 14 }] }));
 
   return (
-    <View style={{ position: 'absolute', inset: 0, backgroundColor: theme.colors.overlay, alignItems: 'center', justifyContent: 'center', padding: theme.spacing.x6 }}>
-      <View style={{ position: 'absolute', inset: 0, backgroundColor: theme.colors.scrim }} pointerEvents="none" />
+    <View accessibilityViewIsModal style={{ position: 'absolute', inset: 0, backgroundColor: theme.colors.overlay, alignItems: 'center', justifyContent: 'center', padding: theme.spacing.x6 }}>
+      <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ position: 'absolute', inset: 0, backgroundColor: theme.colors.scrim }} pointerEvents="none" />
 
       <View style={{ width: '100%', maxWidth: 440, alignItems: 'center' }}>
         <Animated.View style={[{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: portrait + theme.spacing.x6 }, photoStyle]}>

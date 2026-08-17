@@ -167,7 +167,7 @@ export default function AuthScreen({ recovery = false, onRecoveryHandled }: { re
             />
           ) : null}
         </View>
-        {message ? <BinderText variant="caption" tone={messageTone} style={{ marginTop: theme.spacing.x4 }}>{message}</BinderText> : null}
+        {message ? <BinderText accessibilityLiveRegion={messageTone === 'destructive' ? 'assertive' : 'polite'} variant="caption" tone={messageTone} style={{ marginTop: theme.spacing.x4 }}>{message}</BinderText> : null}
         <BinderButton label={recovery ? t('auth.actions.savePassword') : mode === 'signin' ? t('auth.actions.signIn') : mode === 'signup' ? t('auth.actions.createAccount') : t('auth.actions.sendResetLink')} loading={busy} onPress={() => void submit()} style={{ marginTop: theme.spacing.x5 }} />
         {mode === 'signin' && !recovery ? <BinderButton label={t('auth.actions.forgotPassword')} variant="ghost" disabled={busy} onPress={() => switchMode('reset')} style={{ marginTop: theme.spacing.x2 }} /> : null}
         {recovery ? null : <BinderButton
