@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1098973922981-8ku4erhio1omdvhe2m9vjfhk1fkt0ap8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "de.beko2210.binder",
+            "certificate_hash": "2aaaf1aba275d78d09e53e5fc58efe5e88f2a9ab"
+          }
+        },
+        {
           "client_id": "1098973922981-d6fn35rv190k555nlpu5jc4jkcq7jq0h.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
