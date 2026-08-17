@@ -1,7 +1,23 @@
 import * as Location from 'expo-location';
 
 import { recordBetaEvent } from './beta';
+import { mapDiscoveryPreferences, type DiscoveryPreferencesRow } from './discoveryPreferences';
 import { supabase } from './supabase';
+import type { DiscoveryPreferenceValues } from '../components/DiscoveryPreferences';
+
+export async function loadDiscoveryPreferences(): Promise<DiscoveryPreferenceValues> {
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (userError) throw userError;
+  const uid = userData.user?.id;
+  if (!uid) throw new Error('Authentication required.');
+  const { data, error } = await supabase
+    .from('user_preferences')
+    .select('interested_in,min_age,max_age,max_distance_km')
+    .eq('user_id', uid)
+    .single();
+  if (error) throw error;
+  return mapDiscoveryPreferences(data as DiscoveryPreferencesRow);
+}
 
 export type DiscoveryProfile = {
   id: string;

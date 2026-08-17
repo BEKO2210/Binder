@@ -8,7 +8,7 @@ import { MotionPressable as Pressable } from '../components/ui';
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderInput, BinderText } from '../components/ui';
 import { assessBirthDate, sanitizeDigits } from '../lib/birthdate';
 import { pickAndPrepareProfileImage, type PreparedImage } from '../lib/images';
-import { addProfileImage } from '../lib/media';
+import { addProfileImage, listMyProfileMedia } from '../lib/media';
 import { resolveSpring } from '../lib/motionPolicy';
 import { hasErrors, onboardingPosition, ONBOARDING_STEPS, type OnboardingStep, validateDiscovery, validateIdentity } from '../lib/onboardingFlow';
 import { supabase } from '../lib/supabase';
@@ -68,7 +68,11 @@ export default function OnboardingScreen({ userId, onComplete }: Props) {
     try {
       const { error } = await supabase.rpc('complete_my_onboarding', { p_first_name: firstName.trim(), p_birth_date: birthDate, p_gender: gender, p_bio: bio.trim(), p_interests: interests, p_interested_in: preferences.interestedIn, p_min_age: preferences.minAge, p_max_age: preferences.maxAge, p_max_distance_km: preferences.distance });
       if (error) throw error;
-      if (uploadedPhotoUri !== photo.uri) { await addProfileImage(userId, photo); setUploadedPhotoUri(photo.uri); }
+      if (uploadedPhotoUri !== photo.uri) {
+        const existingMedia = await listMyProfileMedia();
+        if (existingMedia.length === 0) await addProfileImage(userId, photo);
+        setUploadedPhotoUri(photo.uri);
+      }
       const { error: finalizeError } = await supabase.rpc('finalize_my_onboarding'); if (finalizeError) throw finalizeError;
       onComplete();
     } catch (error) { setSubmitError(error instanceof Error ? error.message : t('onboarding.errors.complete')); } finally { inFlight.current = false; setBusy(false); }

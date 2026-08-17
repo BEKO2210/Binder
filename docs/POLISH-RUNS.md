@@ -66,6 +66,8 @@ leaves the running system intact.
 | 045 | Dates, times, day labels, distances and counts formatted by locale through one pure module | 89 tests including en/de edge cases; chat times unchanged on device | done |
 | 046 | Play Data-safety answers derived from the code, with the file that proves each line | `docs/DATA-SAFETY.md` | done |
 | 047 | Screenshot set captured from the shipping build (discovery, filters, matches, chat, profile) | `/home/belkis/Binder-Release/screenshots-v0.5.29/` | done |
+| 048 | Onboarding asks the server before uploading, so a failed finalisation cannot duplicate the photo | 90 tests; server state is the truth, no new local cache | done |
+| 049 | Discovery preferences are read once and flow from one place into header and sheet | Preset applied on device, header and sheet agree | done |
 | 017 | Language section in App settings — appears only when a translation exists, endonym plus flag, same chip rhythm as Appearance | Screenshot: Sprache / Wie mein Gerät / 🇬🇧 English / 🇩🇪 Deutsch | done |
 
 ## Backlog
@@ -107,8 +109,8 @@ Ordered by what a user notices first. Each line becomes one run.
 - [x] Memory while paging a gallery: `scripts/measure-gallery-memory.sh`.
 
 ### Correctness left from the review
-- [ ] Onboarding must not re-upload the same photo after a failed finalisation.
-- [ ] Discovery: the deck and the filter sheet share one source of truth for preferences.
+- [x] Onboarding must not re-upload the same photo after a failed finalisation.
+- [x] Discovery: the deck and the filter sheet share one source of truth for preferences.
 - [ ] Push: tapping a notification lands on the exact conversation from a cold start.
 - [ ] Quiet hours are honoured server-side, verified end to end.
 

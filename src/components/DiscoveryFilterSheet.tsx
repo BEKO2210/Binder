@@ -4,6 +4,7 @@ import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 
 import { supabase } from '../lib/supabase';
 import { announce } from '../lib/announce';
+import { loadDiscoveryPreferences } from '../lib/discovery';
 import { discoveryCountDebounceMs, likelyEmptyFilter } from '../lib/discoveryPreferencesPolicy';
 import { formatCount } from '../lib/format';
 import type { Gender } from '../lib/validation';
@@ -40,13 +41,13 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
       if (!uid) throw new Error(t('discoveryFilterSheet.errors.authentication'));
       const [profileResult, preferencesResult] = await Promise.all([
         supabase.from('profiles').select('first_name,gender,bio,interests').eq('user_id', uid).single(),
-        initialValues ? Promise.resolve(null) : supabase.from('user_preferences').select('interested_in,min_age,max_age,max_distance_km').eq('user_id', uid).single(),
+        initialValues ? Promise.resolve(null) : loadDiscoveryPreferences(),
       ]);
-      if (profileResult.error || preferencesResult?.error) throw new Error(t('discoveryFilterSheet.errors.load'));
+      if (profileResult.error) throw new Error(t('discoveryFilterSheet.errors.load'));
       if (!active) return;
       setViewerId(uid);
       setProfile(profileResult.data as LoadedProfile);
-      if (preferencesResult?.data) setValues({ interestedIn: preferencesResult.data.interested_in as Gender[], minAge: preferencesResult.data.min_age, maxAge: preferencesResult.data.max_age, distance: preferencesResult.data.max_distance_km });
+      if (preferencesResult) setValues(preferencesResult);
     }
     void load().catch((cause: unknown) => { if (active) setLoadError(cause instanceof Error ? cause.message : t('discoveryFilterSheet.errors.load')); });
     return () => { active = false; };

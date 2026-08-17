@@ -13,7 +13,7 @@ import { MotionPressable as Pressable } from '../components/ui';
 import { BinderBrand, BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import { fetchMatches, type MatchSummary } from '../lib/conversation';
 import { announce } from '../lib/announce';
-import { fetchDiscoveryBatch, recordDecision, refreshDiscoveryLocation, type DiscoveryProfile } from '../lib/discovery';
+import { fetchDiscoveryBatch, loadDiscoveryPreferences, recordDecision, refreshDiscoveryLocation, type DiscoveryProfile } from '../lib/discovery';
 import { advanceDeck, decideSwipe, discoveryDeckPhysics, resistedTranslation, type SwipeDirection } from '../lib/discoveryDeck';
 import { formatCount, formatDistanceKm } from '../lib/format';
 import { listMyProfileMedia } from '../lib/media';
@@ -21,7 +21,6 @@ import { resolveSpring } from '../lib/motionPolicy';
 import { reportAndBlockDiscoveryProfile, type DiscoveryReportReason } from '../lib/safety';
 import { supabase } from '../lib/supabase';
 import { classifyError, type ReliabilityError } from '../lib/reliability';
-import type { Gender } from '../lib/validation';
 import PartnerProfileScreen from './PartnerProfileScreen';
 import { useBinderHaptics } from '../theme/haptics';
 import { darkPalette } from '../theme/tokens';
@@ -104,12 +103,10 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
   useEffect(() => {
     let active = true;
     async function loadFilterSummary() {
-      const { data: userData } = await supabase.auth.getUser();
-      if (!userData.user) return;
-      const { data } = await supabase.from('user_preferences').select('interested_in,min_age,max_age,max_distance_km').eq('user_id', userData.user.id).single();
-      if (active && data) setFilterValues({ interestedIn: data.interested_in as Gender[], minAge: data.min_age, maxAge: data.max_age, distance: data.max_distance_km });
+      const values = await loadDiscoveryPreferences();
+      if (active) setFilterValues(values);
     }
-    void loadFilterSummary();
+    void loadFilterSummary().catch(() => undefined);
     return () => { active = false; };
   }, []);
 
