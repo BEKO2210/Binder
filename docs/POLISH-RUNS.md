@@ -65,6 +65,7 @@ leaves the running system intact.
 | 044 | A repeatable memory probe for paging a gallery | `scripts/measure-gallery-memory.sh` | done |
 | 045 | Dates, times, day labels, distances and counts formatted by locale through one pure module | 89 tests including en/de edge cases; chat times unchanged on device | done |
 | 046 | Play Data-safety answers derived from the code, with the file that proves each line | `docs/DATA-SAFETY.md` | done |
+| 047 | Screenshot set captured from the shipping build (discovery, filters, matches, chat, profile) | `/home/belkis/Binder-Release/screenshots-v0.5.29/` | done |
 | 017 | Language section in App settings — appears only when a translation exists, endonym plus flag, same chip rhythm as Appearance | Screenshot: Sprache / Wie mein Gerät / 🇬🇧 English / 🇩🇪 Deutsch | done |
 
 ## Backlog
@@ -118,6 +119,7 @@ Ordered by what a user notices first. Each line becomes one run.
 - [ ] German copy for the store listing and the in-app legal surfaces.
 
 ### Store readiness (wave K)
-- [ ] Screenshots regenerated from the current build for every listed surface.
+- [x] Screenshots captured from the current build (`Binder-Release/screenshots-v0.5.29/`).
+- [ ] Store-ready content for those screenshots: the deck currently shows a labelled test account, which is right for testing and wrong for a listing. Decide with the owner whether the listing uses staged profiles.
 - [x] Data-safety answers derived from the code (`docs/DATA-SAFETY.md`).
 - [ ] The demo clip matches what the app looks like today.
