@@ -114,7 +114,15 @@
       "signInPrompt": "アカウントをお持ちですか？ログイン",
       "backToSignIn": "ログインに戻る"
     },
-    "ageRequirement": "Binderを利用するには18歳以上である必要があります。"
+    "ageRequirement": "Binderを利用するには18歳以上である必要があります。",
+    "google": {
+      "divider": "または",
+      "action": "Googleで続ける",
+      "note": "確認メールは不要です。Googleがすでにアドレスを確認しています。",
+      "unavailable": "このバージョンではGoogleログインを利用できません。",
+      "playServices": "この端末にGoogle Playサービスがないか、更新が必要です。",
+      "failed": "Googleログインに失敗しました。もう一度試すか、メールアドレスをお使いください。"
+    }
   },
   "matches": {
     "header": {
@@ -935,6 +943,12 @@
     "legalGate": {
       "failedTitle": "安全確認に失敗しました",
       "failedMessage": "Binderのポリシー状態を確認できませんでした。"
+    },
+    "authCallback": {
+      "resetInvalid": "このパスワード再設定リンクは無効か期限切れです。新しいリンクをリクエストしてください。",
+      "resetFailed": "このパスワード再設定リンクを開けませんでした。もう一度お試しください。",
+      "confirmInvalid": "この確認リンクは無効か期限切れです。もう一度登録して新しいリンクを受け取ってください。",
+      "confirmFailed": "この確認リンクを開けませんでした。もう一度お試しください。"
     }
   }
 }

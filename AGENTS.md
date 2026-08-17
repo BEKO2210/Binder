@@ -228,30 +228,48 @@ staged in `/home/belkis/Binder-Release/promo/`, and a 1280×720 version is
 embedded on the public site. Play accepts no video upload — only a YouTube link
 in the listing.
 
-## Email verification — measured, and its ceiling
+## Email verification, its ceiling, and Google sign-in
 
 Sign-up requires a confirmed address, and the whole path was tested end to end
-on 2026-08-17 with a real inbox (AgentMail): sign-up returns a user without a
-session, the mail arrives ("Confirm your email address"), the link
-`…/auth/v1/verify?token=…&type=signup&redirect_to=https://beko2210.github.io/Binder/`
-answers 303 and `email_confirmed_at` is set. Test accounts and inbox removed
-afterwards.
+on 2026-08-17 against a real inbox: sign-up returns a user without a session,
+the mail arrives, the verify link answers 303 and `email_confirmed_at` is set.
+Test accounts and inbox removed afterwards. Two facts came out of that test and
+both now have an answer in the repo:
 
-Two facts that matter before the store listing goes public:
+1. **The built-in Supabase mailer allows two mails an hour.** A third sign-up in
+   the same hour was refused with `over_email_send_rate_limit` (HTTP 429) —
+   measured, not assumed. The fix is custom SMTP on the project. Brevo already
+   authenticates `it-handwerk-stuttgart.de` (DKIM CNAMEs and the brevo-code TXT
+   are in Cloudflare), so the sender is `no-reply@it-handwerk-stuttgart.de` and
+   the credentials are the existing Brevo SMTP relay ones. **Setting this on the
+   project needs the owner's Supabase access token** (rule 4: production config
+   is his call), and until it is set, two confirmations an hour is the ceiling.
+2. **The confirmation link now comes back into the app.** Sign-up passes
+   `emailRedirectTo: binder://confirm-email`; `parseAuthCallback` accepts that
+   host and `reset-password`, both PKCE-code-only, and a confirmation link can
+   never unlock the password screen (tested). The URL still has to be added to
+   the project's redirect allow list, or Supabase falls back to the site URL.
 
-1. **The mail comes from Supabase's built-in service, which allows two per
-   hour.** A third sign-up in the same hour was refused with
-   `over_email_send_rate_limit` (HTTP 429) — proven, not assumed. That is fine
-   for a beta and unusable the day more than two strangers sign up in an hour.
-   The fix is custom SMTP on Auth (a provider plus a sender on a domain the
-   owner controls); until then this is the hard ceiling on sign-ups.
-2. **The confirmation link lands on the website, not in the app.** It confirms
-   correctly and the person then signs in, but a deep link back into Binder
-   would be the finished version.
+`auth.errors.rateLimit` exists in all fifteen locales, so somebody who hits the
+ceiling reads their own language instead of "email rate limit exceeded".
 
-`auth.errors.rateLimit` exists in all fifteen locales so that a person who hits
-the ceiling reads a sentence in their own language rather than
-"email rate limit exceeded".
+`npm run mail:templates` generates the four branded mails in
+`supabase/templates/` (confirm, magic link, recovery, address change): Binder's
+dark ground, the lime button, the logo as a hosted PNG, table markup because a
+mail client is a hostile renderer. CI fails if they drift from the generator.
+
+**Google sign-in** is built in and deliberately invisible until it is
+configured: `isGoogleSignInConfigured()` gates the button on
+`EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`, so no build ever shows a button that opens
+a Google sheet and then fails. It removes the confirmation mail entirely —
+Google has already proven the address — which also makes it the sign-in path
+that survives a spent mail budget. What is still needed, all of it in the
+owner's consoles: the Google provider enabled in Firebase (which creates the
+web and Android OAuth clients), a refreshed `google-services.json`, the Play
+app-signing SHA-1 registered on the Android client, and the web client id both
+in Supabase's Google provider and in `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`.
+**Untested against a real Google account until those exist — do not claim it
+works.**
 
 ## What the app collects
 

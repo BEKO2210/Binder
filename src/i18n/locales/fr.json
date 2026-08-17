@@ -114,7 +114,15 @@
       "signInPrompt": "Vous avez déjà un compte ? Se connecter",
       "backToSignIn": "Retour à la connexion"
     },
-    "ageRequirement": "Vous devez avoir au moins 18 ans pour utiliser Binder."
+    "ageRequirement": "Vous devez avoir au moins 18 ans pour utiliser Binder.",
+    "google": {
+      "divider": "ou",
+      "action": "Continuer avec Google",
+      "note": "Pas d'e-mail de confirmation — Google a déjà vérifié ton adresse.",
+      "unavailable": "La connexion Google n'est pas disponible dans cette version.",
+      "playServices": "Les services Google Play sont absents ou obsolètes sur ce téléphone.",
+      "failed": "La connexion Google n'a pas fonctionné. Réessaie ou utilise ton adresse e-mail."
+    }
   },
   "matches": {
     "header": {
@@ -935,6 +943,12 @@
     "legalGate": {
       "failedTitle": "Échec de la vérification de sécurité",
       "failedMessage": "Impossible de vérifier l’état des politiques de Binder."
+    },
+    "authCallback": {
+      "resetInvalid": "Ce lien de réinitialisation est invalide ou expiré. Demandes-en un nouveau.",
+      "resetFailed": "Ce lien de réinitialisation n'a pas pu être ouvert. Réessaie.",
+      "confirmInvalid": "Ce lien de confirmation est invalide ou expiré. Inscris-toi à nouveau pour en recevoir un autre.",
+      "confirmFailed": "Ce lien de confirmation n'a pas pu être ouvert. Réessaie."
     }
   }
 }

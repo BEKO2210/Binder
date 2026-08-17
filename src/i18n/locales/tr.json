@@ -114,7 +114,15 @@
       "signInPrompt": "Zaten hesabınız var mı? Giriş yapın",
       "backToSignIn": "Girişe dön"
     },
-    "ageRequirement": "Binder'ı kullanmak için en az 18 yaşında olmalısınız."
+    "ageRequirement": "Binder'ı kullanmak için en az 18 yaşında olmalısınız.",
+    "google": {
+      "divider": "veya",
+      "action": "Google ile devam et",
+      "note": "Onay e-postası yok — Google adresini zaten doğruladı.",
+      "unavailable": "Google ile giriş bu sürümde kullanılamıyor.",
+      "playServices": "Bu telefonda Google Play hizmetleri yok ya da güncel değil.",
+      "failed": "Google ile giriş çalışmadı. Tekrar dene ya da e-posta adresini kullan."
+    }
   },
   "matches": {
     "header": {
@@ -935,6 +943,12 @@
     "legalGate": {
       "failedTitle": "Güvenlik kontrolü başarısız",
       "failedMessage": "Binder politika durumu doğrulanamadı."
+    },
+    "authCallback": {
+      "resetInvalid": "Bu sıfırlama bağlantısı geçersiz veya süresi dolmuş. Yenisini iste.",
+      "resetFailed": "Bu sıfırlama bağlantısı açılamadı. Tekrar dene.",
+      "confirmInvalid": "Bu onay bağlantısı geçersiz veya süresi dolmuş. Yeni bir tane için tekrar kaydol.",
+      "confirmFailed": "Bu onay bağlantısı açılamadı. Tekrar dene."
     }
   }
 }

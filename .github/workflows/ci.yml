@@ -45,6 +45,9 @@ jobs:
       - name: Verify public policy site
         run: node scripts/verify-site.mjs
 
+      - name: Verify branded email templates
+        run: npm run verify:mail-templates
+
       - name: Verify site language page matches bundled locales
         run: npm run verify:site-languages
 

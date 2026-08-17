@@ -10,7 +10,7 @@ import Animated, { FadeInUp, FadeOutDown, SlideInRight, SlideOutRight, ZoomIn, Z
 import BinderErrorBoundary from './components/BinderErrorBoundary';
 import { BinderIcon, BinderText, MotionPressable, ScreenState, type BinderIconName } from './components/ui';
 import { initializeBetaDiagnostics, recordBetaEvent } from './lib/beta';
-import { parseRecoveryCallback } from './lib/deepLinks';
+import { parseAuthCallback } from './lib/deepLinks';
 import { fetchMatches, type MatchSummary } from './lib/conversation';
 import {
   observeForegroundNotifications,
@@ -130,24 +130,28 @@ function BinderApp() {
 
     async function handleUrl(rawUrl: string | null) {
       if (!active || !rawUrl) return;
-      const callback = parseRecoveryCallback(rawUrl);
+      const callback = parseAuthCallback(rawUrl);
       if (!callback) {
         safeLog('warn', 'auth_callback_rejected');
         return;
       }
+      const confirming = callback.kind === 'confirm-email';
       try {
         const { error } = await supabase.auth.exchangeCodeForSession(callback.code);
         if (!active) return;
         if (error) {
           safeLog('warn', 'auth_callback_failed', { errorCode: error.code });
-          setLoadError('This password reset link is invalid or has expired. Request a new one.');
+          setLoadError(t(confirming ? 'root.authCallback.confirmInvalid' : 'root.authCallback.resetInvalid'));
           return;
         }
-        setRecovering(true);
+        // A confirmation link exchanges into a real session: the person tapped
+        // the mail on their phone and is now signed in, which is the whole
+        // point of sending them back into the app rather than to a web page.
+        if (!confirming) setRecovering(true);
       } catch {
         if (!active) return;
         safeLog('warn', 'auth_callback_failed');
-        setLoadError('This password reset link could not be opened. Try again.');
+        setLoadError(t(confirming ? 'root.authCallback.confirmFailed' : 'root.authCallback.resetFailed'));
       }
     }
 

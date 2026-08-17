@@ -4,12 +4,14 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BinderBrand, BinderButton, BinderInput, BinderText, SectionHeader } from '../components/ui';
 import { hasAuthErrors, MIN_PASSWORD_LENGTH, validateAuthForm, type AuthFieldErrors, type AuthMode } from '../lib/authForm';
+import { isGoogleSignInConfigured, signInWithGoogle } from '../lib/googleAuth';
 import { supabase } from '../lib/supabase';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
 // The reset link has to come back to this app, not to a web page that cannot
 // finish the job. The scheme is declared in app.json.
 const PASSWORD_RESET_REDIRECT = 'binder://reset-password';
+const EMAIL_CONFIRM_REDIRECT = 'binder://confirm-email';
 
 function mapAuthError(error: unknown, t: (key: string, values?: Record<string, string | number>) => string): string {
   const raw = error instanceof Error ? error.message : '';
@@ -44,6 +46,24 @@ export default function AuthScreen({ recovery = false, onRecoveryHandled }: { re
   const confirmPasswordRef = useRef<TextInput>(null);
   const [message, setMessage] = useState('');
   const [messageTone, setMessageTone] = useState<'secondary' | 'destructive'>('destructive');
+  const [googleBusy, setGoogleBusy] = useState(false);
+  const googleAvailable = isGoogleSignInConfigured();
+
+  async function continueWithGoogle() {
+    if (googleBusy || busy) return;
+    setGoogleBusy(true);
+    setMessage('');
+    const outcome = await signInWithGoogle();
+    setGoogleBusy(false);
+    // A cancel is a decision, not an error: saying nothing is the right answer.
+    if (outcome.status === 'signed-in' || outcome.status === 'cancelled') return;
+    setMessageTone('destructive');
+    setMessage(t(outcome.status === 'unavailable'
+      ? 'auth.google.unavailable'
+      : outcome.reason === 'play-services'
+        ? 'auth.google.playServices'
+        : 'auth.google.failed'));
+  }
 
   const errors: AuthFieldErrors = useMemo(
     () => validateAuthForm(mode, email, password, confirmPassword),
@@ -88,7 +108,14 @@ export default function AuthScreen({ recovery = false, onRecoveryHandled }: { re
         const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
         if (error) throw error;
       } else {
-        const { data, error } = await supabase.auth.signUp({ email: email.trim(), password });
+        // Back into Binder, not onto the website: the confirmation link carries
+        // a PKCE code that only this device can exchange, so the person lands
+        // signed in instead of reading "email confirmed" in a browser.
+        const { data, error } = await supabase.auth.signUp({
+          email: email.trim(),
+          password,
+          options: { emailRedirectTo: EMAIL_CONFIRM_REDIRECT },
+        });
         if (error) throw error;
         if (!data.session) {
           setMessageTone('secondary');
@@ -181,6 +208,20 @@ export default function AuthScreen({ recovery = false, onRecoveryHandled }: { re
           onPress={() => switchMode(mode === 'signin' ? 'signup' : 'signin')}
           style={{ marginTop: theme.spacing.x3 }}
         />}
+        {googleAvailable && !recovery && mode !== 'reset' ? (
+          <View style={{ marginTop: theme.spacing.x5 }}>
+            <BinderText variant="caption" tone="muted" align="center">{t('auth.google.divider')}</BinderText>
+            <BinderButton
+              label={t('auth.google.action')}
+              variant="secondary"
+              loading={googleBusy}
+              disabled={busy}
+              onPress={() => void continueWithGoogle()}
+              style={{ marginTop: theme.spacing.x3 }}
+            />
+            <BinderText variant="caption" tone="muted" align="center" style={{ marginTop: theme.spacing.x2 }}>{t('auth.google.note')}</BinderText>
+          </View>
+        ) : null}
         <BinderText variant="caption" tone="muted" align="center" style={{ marginTop: theme.spacing.x3 }}>{t('auth.ageRequirement')}</BinderText>
       </View>
     </KeyboardAwareScrollView>

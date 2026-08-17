@@ -114,7 +114,15 @@
       "signInPrompt": "Masz już konto? Zaloguj się",
       "backToSignIn": "Wróć do logowania"
     },
-    "ageRequirement": "Aby korzystać z Binder, musisz mieć co najmniej 18 lat."
+    "ageRequirement": "Aby korzystać z Binder, musisz mieć co najmniej 18 lat.",
+    "google": {
+      "divider": "albo",
+      "action": "Kontynuuj z Google",
+      "note": "Bez maila potwierdzającego — Google już zweryfikował Twój adres.",
+      "unavailable": "Logowanie przez Google nie jest dostępne w tej wersji.",
+      "playServices": "Usługi Google Play są niedostępne lub nieaktualne na tym telefonie.",
+      "failed": "Logowanie przez Google nie zadziałało. Spróbuj ponownie lub użyj adresu e-mail."
+    }
   },
   "matches": {
     "header": {
@@ -935,6 +943,12 @@
     "legalGate": {
       "failedTitle": "Kontrola bezpieczeństwa nie powiodła się",
       "failedMessage": "Nie udało się zweryfikować stanu zasad Binder."
+    },
+    "authCallback": {
+      "resetInvalid": "Ten link do resetu jest nieprawidłowy lub wygasł. Poproś o nowy.",
+      "resetFailed": "Nie udało się otworzyć tego linku do resetu. Spróbuj ponownie.",
+      "confirmInvalid": "Ten link potwierdzający jest nieprawidłowy lub wygasł. Zarejestruj się ponownie, aby dostać nowy.",
+      "confirmFailed": "Nie udało się otworzyć tego linku potwierdzającego. Spróbuj ponownie."
     }
   }
 }

@@ -114,7 +114,15 @@
       "signInPrompt": "Sudah punya akun? Masuk",
       "backToSignIn": "Kembali ke masuk"
     },
-    "ageRequirement": "Anda harus berusia setidaknya 18 tahun untuk menggunakan Binder."
+    "ageRequirement": "Anda harus berusia setidaknya 18 tahun untuk menggunakan Binder.",
+    "google": {
+      "divider": "atau",
+      "action": "Lanjutkan dengan Google",
+      "note": "Tanpa email konfirmasi — Google sudah memverifikasi alamatmu.",
+      "unavailable": "Masuk dengan Google tidak tersedia di versi ini.",
+      "playServices": "Layanan Google Play tidak ada atau sudah usang di ponsel ini.",
+      "failed": "Masuk dengan Google gagal. Coba lagi atau pakai alamat emailmu."
+    }
   },
   "matches": {
     "header": {
@@ -935,6 +943,12 @@
     "legalGate": {
       "failedTitle": "Pemeriksaan keselamatan gagal",
       "failedMessage": "Tidak dapat memverifikasi status kebijakan Binder."
+    },
+    "authCallback": {
+      "resetInvalid": "Tautan atur ulang ini tidak valid atau sudah kedaluwarsa. Minta yang baru.",
+      "resetFailed": "Tautan atur ulang ini tidak bisa dibuka. Coba lagi.",
+      "confirmInvalid": "Tautan konfirmasi ini tidak valid atau sudah kedaluwarsa. Daftar lagi untuk mendapat yang baru.",
+      "confirmFailed": "Tautan konfirmasi ini tidak bisa dibuka. Coba lagi."
     }
   }
 }

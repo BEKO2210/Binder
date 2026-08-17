@@ -114,7 +114,15 @@
       "signInPrompt": "已有账户？登录",
       "backToSignIn": "返回登录"
     },
-    "ageRequirement": "你必须年满 18 岁才能使用 Binder。"
+    "ageRequirement": "你必须年满 18 岁才能使用 Binder。",
+    "google": {
+      "divider": "或",
+      "action": "使用 Google 继续",
+      "note": "无需确认邮件 —— Google 已验证你的邮箱地址。",
+      "unavailable": "此版本暂不支持 Google 登录。",
+      "playServices": "此手机缺少 Google Play 服务或版本过旧。",
+      "failed": "Google 登录失败。请重试或改用邮箱地址。"
+    }
   },
   "matches": {
     "header": {
@@ -935,6 +943,12 @@
     "legalGate": {
       "failedTitle": "安全检查失败",
       "failedMessage": "无法验证 Binder 的政策状态。"
+    },
+    "authCallback": {
+      "resetInvalid": "此重置链接无效或已过期。请重新申请。",
+      "resetFailed": "无法打开此重置链接。请重试。",
+      "confirmInvalid": "此确认链接无效或已过期。请重新注册以获取新链接。",
+      "confirmFailed": "无法打开此确认链接。请重试。"
     }
   }
 }

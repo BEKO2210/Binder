@@ -1,7 +1,13 @@
 export type RecoveryCallback = { code: string };
+export type AuthCallbackKind = 'reset-password' | 'confirm-email';
+export type AuthCallback = { kind: AuthCallbackKind; code: string };
 
 const CALLBACK_SCHEME = 'binder:';
-const CALLBACK_HOST = 'reset-password';
+// Supabase sends the confirmation mail back to whichever URL the sign-up asked
+// for. Both callbacks carry a PKCE code and nothing else, and both are parsed
+// by the same strict rules — a second host must not mean a second, looser
+// parser.
+const CALLBACK_HOSTS: readonly AuthCallbackKind[] = ['reset-password', 'confirm-email'];
 const MAX_CALLBACK_URL_LENGTH = 8192;
 const MAX_TOKEN_LENGTH = 4096;
 const OPAQUE_PATTERN = /^[A-Za-z0-9._~-]+$/;
@@ -17,6 +23,12 @@ function validOpaque(value: string | null): value is string {
 
 /** Parse only Binder's password-recovery callback. Never returns raw URL data in an error. */
 export function parseRecoveryCallback(rawUrl: string): RecoveryCallback | null {
+  const callback = parseAuthCallback(rawUrl);
+  return callback?.kind === 'reset-password' ? { code: callback.code } : null;
+}
+
+/** Parse either auth callback Binder accepts. Never returns raw URL data in an error. */
+export function parseAuthCallback(rawUrl: string): AuthCallback | null {
   if (!rawUrl || rawUrl.length > MAX_CALLBACK_URL_LENGTH) return null;
 
   let url: URL;
@@ -28,7 +40,7 @@ export function parseRecoveryCallback(rawUrl: string): RecoveryCallback | null {
 
   if (
     url.protocol !== CALLBACK_SCHEME
-    || url.hostname !== CALLBACK_HOST
+    || !CALLBACK_HOSTS.includes(url.hostname as AuthCallbackKind)
     || url.username
     || url.password
     || url.port
@@ -42,5 +54,5 @@ export function parseRecoveryCallback(rawUrl: string): RecoveryCallback | null {
   // URL fragments are deliberately never accepted.
   if (url.hash || !validOpaque(code)) return null;
   for (const key of query.keys()) if (key !== 'code') return null;
-  return { code };
+  return { kind: url.hostname as AuthCallbackKind, code };
 }

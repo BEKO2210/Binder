@@ -114,7 +114,15 @@
       "signInPrompt": "Schon registriert? Anmelden",
       "backToSignIn": "Zurück zur Anmeldung"
     },
-    "ageRequirement": "Du musst mindestens 18 Jahre alt sein, um Binder zu nutzen."
+    "ageRequirement": "Du musst mindestens 18 Jahre alt sein, um Binder zu nutzen.",
+    "google": {
+      "divider": "oder",
+      "action": "Mit Google fortfahren",
+      "note": "Keine Bestätigungsmail — Google hat deine Adresse bereits geprüft.",
+      "unavailable": "Die Google-Anmeldung ist in dieser Version nicht verfügbar.",
+      "playServices": "Die Google-Play-Dienste fehlen auf diesem Telefon oder sind veraltet.",
+      "failed": "Die Google-Anmeldung hat nicht geklappt. Versuche es erneut oder nimm deine E-Mail-Adresse."
+    }
   },
   "matches": {
     "header": {
@@ -935,6 +943,12 @@
     "legalGate": {
       "failedTitle": "Sicherheitsprüfung fehlgeschlagen",
       "failedMessage": "Der Richtlinienstatus von Binder konnte nicht geprüft werden."
+    },
+    "authCallback": {
+      "resetInvalid": "Dieser Link zum Zurücksetzen ist ungültig oder abgelaufen. Fordere einen neuen an.",
+      "resetFailed": "Dieser Link zum Zurücksetzen ließ sich nicht öffnen. Versuche es erneut.",
+      "confirmInvalid": "Dieser Bestätigungslink ist ungültig oder abgelaufen. Melde dich erneut an, um einen neuen zu bekommen.",
+      "confirmFailed": "Dieser Bestätigungslink ließ sich nicht öffnen. Versuche es erneut."
     }
   }
 }

@@ -114,7 +114,15 @@
       "signInPrompt": "Already have an account? Sign in",
       "backToSignIn": "Back to sign in"
     },
-    "ageRequirement": "You must be at least 18 years old to use Binder."
+    "ageRequirement": "You must be at least 18 years old to use Binder.",
+    "google": {
+      "divider": "or",
+      "action": "Continue with Google",
+      "note": "No confirmation mail — Google has already verified your address.",
+      "unavailable": "Google sign-in is not available in this version.",
+      "playServices": "Google Play services are missing or out of date on this phone.",
+      "failed": "Google sign-in did not work. Try again or use your email address."
+    }
   },
   "matches": {
     "header": {
@@ -935,6 +943,12 @@
     "legalGate": {
       "failedTitle": "Safety check failed",
       "failedMessage": "Could not verify Binder policy state."
+    },
+    "authCallback": {
+      "resetInvalid": "This password reset link is invalid or has expired. Ask for a new one.",
+      "resetFailed": "This password reset link could not be opened. Try again.",
+      "confirmInvalid": "This confirmation link is invalid or has expired. Sign up again to get a new one.",
+      "confirmFailed": "This confirmation link could not be opened. Try again."
     }
   }
 }

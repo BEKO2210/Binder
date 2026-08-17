@@ -114,7 +114,15 @@
       "signInPrompt": "Heb je al een account? Log in",
       "backToSignIn": "Terug naar inloggen"
     },
-    "ageRequirement": "Je moet minimaal 18 jaar zijn om Binder te gebruiken."
+    "ageRequirement": "Je moet minimaal 18 jaar zijn om Binder te gebruiken.",
+    "google": {
+      "divider": "of",
+      "action": "Doorgaan met Google",
+      "note": "Geen bevestigingsmail — Google heeft je adres al geverifieerd.",
+      "unavailable": "Inloggen met Google is niet beschikbaar in deze versie.",
+      "playServices": "Google Play-services ontbreken of zijn verouderd op deze telefoon.",
+      "failed": "Inloggen met Google lukte niet. Probeer het opnieuw of gebruik je e-mailadres."
+    }
   },
   "matches": {
     "header": {
@@ -935,6 +943,12 @@
     "legalGate": {
       "failedTitle": "Veiligheidscontrole mislukt",
       "failedMessage": "De beleidsstatus van Binder kon niet worden gecontroleerd."
+    },
+    "authCallback": {
+      "resetInvalid": "Deze herstellink is ongeldig of verlopen. Vraag een nieuwe aan.",
+      "resetFailed": "Deze herstellink kon niet worden geopend. Probeer het opnieuw.",
+      "confirmInvalid": "Deze bevestigingslink is ongeldig of verlopen. Meld je opnieuw aan voor een nieuwe.",
+      "confirmFailed": "Deze bevestigingslink kon niet worden geopend. Probeer het opnieuw."
     }
   }
 }
