@@ -1,5 +1,13 @@
-import { SymbolView } from 'expo-symbols';
-import { View, type ColorValue, type ViewStyle } from 'react-native';
+import { loadAsync } from 'expo-font';
+// Internals of expo-symbols, deliberately: its SymbolView renders the Android
+// glyph as a <Text> without allowFontScaling={false}, so a 200 % system font
+// doubles the glyph inside a fixed box and clips it (run 040). Rendering the
+// same font and codepoint ourselves with scaling off is the entire fix; the
+// import paths are pinned by the exact expo-symbols version in the lockfile.
+import { androidSymbolToString } from 'expo-symbols/build/android';
+import { getFont } from 'expo-symbols/build/utils';
+import { useEffect, useState } from 'react';
+import { Text, View, type ColorValue, type ViewStyle } from 'react-native';
 
 import { useBinderTheme } from '../../theme/ThemeProvider';
 import { MotionPressable } from './MotionPressable';
@@ -50,13 +58,6 @@ export function BinderIcon({ name, size = 24, color }: IconProps) {
   // labels like ", Complete profile". The wrapper takes the icon out of
   // the accessibility tree so only the control's own label survives; passing the
   // props to SymbolView alone was not enough.
-  // Known limitation, measured on the S23 at a 200 % system font: the Android
-  // symbol glyph is clipped inside expo-symbols' own view. Two attempts made it
-  // worse — requesting a smaller glyph shrank the icon (so the glyph itself does
-  // not scale), and transform-scaling the result kept the clipping, which means
-  // it happens inside SymbolView before anything of ours applies. The box stays
-  // fixed here so the row height cannot drift, and the clipping is written down
-  // in docs/POLISH-RUNS.md as its own run rather than papered over.
   return (
     <View
       accessible={false}
@@ -64,8 +65,38 @@ export function BinderIcon({ name, size = 24, color }: IconProps) {
       importantForAccessibility="no-hide-descendants"
       style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}
     >
-      <SymbolView name={symbols[name]} size={size} tintColor={color ?? theme.colors.textPrimary} />
+      <MaterialGlyph name={symbols[name].android} size={size} color={color ?? theme.colors.textPrimary} />
     </View>
+  );
+}
+
+// The icon font from expo-symbols, drawn at exactly `size` regardless of the
+// system font scale. An icon is geometry, not text: scaling it with the font
+// clipped every glyph at 200 % (run 040).
+const iconFont = getFont(undefined);
+let iconFontLoaded = false;
+const iconFontWaiters = new Set<() => void>();
+void loadAsync({ [iconFont.name]: { uri: iconFont.font } })
+  .then(() => {
+    iconFontLoaded = true;
+    for (const notify of iconFontWaiters) notify();
+    iconFontWaiters.clear();
+  })
+  .catch(() => undefined);
+
+function MaterialGlyph({ name, size, color }: { name: string; size: number; color: ColorValue }) {
+  const [loaded, setLoaded] = useState(iconFontLoaded);
+  useEffect(() => {
+    if (loaded) return;
+    const notify = () => setLoaded(true);
+    iconFontWaiters.add(notify);
+    return () => { iconFontWaiters.delete(notify); };
+  }, [loaded]);
+  if (!loaded) return null;
+  return (
+    <Text allowFontScaling={false} style={{ fontFamily: iconFont.name, fontSize: size, lineHeight: size, color }}>
+      {androidSymbolToString(name)}
+    </Text>
   );
 }
 
