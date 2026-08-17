@@ -60,6 +60,7 @@ leaves the running system intact.
 | 039 | Tab labels stop growing before they push the bar over the content; icon boxes are fixed | 200 % font on the S23: labels fit, row height stable | done |
 | 040 | Icon glyphs are clipped at a 200 % system font | Root cause found in expo-symbols' SymbolView: the Android glyph is a <Text> without allowFontScaling={false}. BinderIcon draws the same font and codepoint itself with scaling off. Verified at 100 % and 200 % on the S23 | done |
 | 041 | TalkBack wiring pass: roles, states, values, live regions, decorative nodes hidden, composed rows grouped | Tree dump on device: zero clickable nodes without a label | done |
+| 042 | Thumbnails decode at their display size (matches avatar, gallery tiles, celebration photos) | Cold start median 402 ms, memory measured after | done |
 | 017 | Language section in App settings — appears only when a translation exists, endonym plus flag, same chip rhythm as Appearance | Screenshot: Sprache / Wie mein Gerät / 🇬🇧 English / 🇩🇪 Deutsch | done |
 
 ## Backlog
@@ -96,7 +97,7 @@ Ordered by what a user notices first. Each line becomes one run.
 
 ### Performance
 - [ ] Frame timing for the match celebration and the profile expansion (wave C leaves them open).
-- [ ] Image decode sizes: no full-resolution decode for a thumbnail.
+- [x] Image decode sizes: fixed-size thumbnails decode downsampled (resizeMethod="resize").
 - [ ] Cold start after the Skia addition, tracked per build rather than once.
 - [ ] Memory while paging a six-photo gallery.
 

@@ -262,7 +262,7 @@ function PhotoTile({ item, index, total, busy, onLeft, onRight, onPrimary, onRem
   return (
     <BinderCard style={{ width: '47%', padding: 0, overflow: 'hidden' }}>
       <Pressable pressedSurface={false} pressScale={false} accessibilityRole="imagebutton" accessibilityLabel={t('profileSettings.accessibility.viewPhoto', { number: index + 1 })} onPress={onView}>
-        <Image source={{ uri: item.signedUrl }} style={{ width: '100%', height: theme.layout.photoTileHeight }} resizeMode="cover" />
+        <Image source={{ uri: item.signedUrl }} resizeMethod="resize" style={{ width: '100%', height: theme.layout.photoTileHeight }} resizeMode="cover" />
       </Pressable>
       <View style={{ padding: theme.spacing.x3, gap: theme.spacing.x2 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}><View style={{ width: theme.layout.statusDot, height: theme.layout.statusDot, borderRadius: theme.radii.pill, backgroundColor: statusTone }} /><BinderText variant="caption" style={{ color: statusTone }}>{statusCopy}</BinderText></View>

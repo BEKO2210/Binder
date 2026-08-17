@@ -71,5 +71,5 @@ function Portrait({ uri, size, borderColor, fallbackLabel }: { uri: string | nul
       </View>
     );
   }
-  return <Image source={{ uri }} style={{ width: size, height: size, borderRadius: radius, borderWidth: 3, borderColor, backgroundColor: theme.colors.surfaceElevated }} />;
+  return <Image source={{ uri }} resizeMethod="resize" style={{ width: size, height: size, borderRadius: radius, borderWidth: 3, borderColor, backgroundColor: theme.colors.surfaceElevated }} />;
 }
