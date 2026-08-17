@@ -120,12 +120,20 @@ device proves it.** No "should be fine".
 
 The only sanctioned new dependency: `@shopify/react-native-skia`.
 
-- [ ] Fragment shader for the discovery loading state: aurora field with real
-      glow and grain, driven by reanimated uniforms on the UI thread.
-- [ ] A skeleton beneath it in the exact shape of the discovery card, so
-      nothing moves when the deck arrives.
-- [ ] Reduced motion renders one still frame that still communicates waiting.
-- [ ] Costs stated before install, measured after: APK size, JS bundle, cold
-      start, and janky frames while the state is on screen.
-- [ ] If the measured cost is worse than promised, say so and offer the
-      dependency-free fallback rather than quietly shipping it.
+- [x] Fragment shader for the discovery loading state: three aurora curtains
+      with white-hot filaments, a cool falloff edge, striation and luminance-
+      weighted grain, driven by one reanimated uniform on the UI thread and
+      periodic in it, so the loop has no seam.
+- [x] A skeleton beneath it in the exact shape of the discovery card — same
+      full-bleed media well, same scrim, same bottom block — so nothing moves
+      when the deck arrives.
+- [x] Reduced motion renders one still frame that still communicates waiting:
+      measured at 0 rendered frames over 4 seconds.
+- [x] Costs stated before install (commit `0bdcadd`), measured after on the S23
+      and the Tab S9: APK +41.57 MiB universal / +10.85 MiB per arm64 device,
+      JS +0.56 MiB, cold start −20 ms / +23 ms, 0.00 % / 0.16 % janky frames
+      while the state is on screen. Full record: `docs/WAVE-L-LOADING-SURFACE.md`.
+- [x] The measured cost came in worse than promised for size (native per ABI and
+      JS payload) — stated in that document rather than quietly shipped. The
+      owner took the cost and raised the two bundle budgets once, with the
+      measurement written down beside them.

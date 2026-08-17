@@ -14,7 +14,12 @@ const required = [
 const failures = [];
 for (const file of required) if (!existsSync(file)) failures.push(`missing Phase 6 design primitive: ${file}`);
 
-const tokenSource = existsSync('src/theme/tokens.ts') ? readFileSync('src/theme/tokens.ts', 'utf8') : '';
+// The runtime palette moved into colorTokens.ts (tokens.ts re-exports it), so
+// the contract is checked against both files rather than against a stale path.
+const tokenSource = ['src/theme/tokens.ts', 'src/theme/colorTokens.ts']
+  .filter((path) => existsSync(path))
+  .map((path) => readFileSync(path, 'utf8'))
+  .join('\n');
 for (const semantic of ['accentPrimary', 'warning', 'destructive']) {
   if (semantic === 'accentPrimary' && !tokenSource.includes("accent: '#C7FF4A'")) failures.push('Binder Lime accent token missing');
   if (semantic !== 'accentPrimary' && !tokenSource.includes(semantic)) failures.push(`semantic token missing: ${semantic}`);

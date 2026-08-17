@@ -287,7 +287,6 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
     void submitDecision(direction);
   }
 
-  if (loading && profiles.length === 0) return <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}><DiscoveryLoading /></View>;
   if (error && profiles.length === 0) {
     const locationRelated = /location|permission|denied|gps/i.test(error);
     if (locationRelated) return <ScreenState kind="permission" icon="discover" title="Discovery paused" message={`${error}\n\nBinder uses foreground location only to calculate nearby candidates. Exact coordinates are never sent to another user.`} actionLabel="Try again" onAction={() => void loadDiscovery(true)} />;
@@ -302,7 +301,7 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
         </View>} />
 
       <View style={{ flex: 1, marginHorizontal: theme.spacing.x4, marginTop: theme.spacing.x1, marginBottom: theme.spacing.x3, justifyContent: 'center' }}>
-        {loading ? <View style={{ position: 'absolute', inset: 0, zIndex: 2, backgroundColor: theme.colors.canvas }}><DiscoveryLoading compact /></View> : null}
+        {loading ? <View style={{ position: 'absolute', inset: 0, zIndex: 2, backgroundColor: theme.colors.canvas }}><DiscoveryLoading /></View> : null}
         {!profile ? (
           <BinderCard>
             <BinderText variant="micro" tone="accent">YOU'RE CAUGHT UP</BinderText>

@@ -9,7 +9,10 @@ every agent session must follow. Human owner: Belkis (GitHub `BEKO2210`).
    ever. Do not add monetization surfaces or copy that hints at them.
 2. **Never weaken a gate.** CI steps, verifiers (`scripts/verify-*.mjs`),
    pgTAP/concurrency suites and `npm test` may become stricter, never removed,
-   bypassed or softened to get green.
+   bypassed or softened to get green. The one way a budget number moves is the
+   owner deciding it, with the measurement that justified it written down —
+   that happened once, for the Skia bundle budgets (see
+   `docs/WAVE-L-LOADING-SURFACE.md`).
 3. **No secrets in repo, logs or chat.** FCM service-account JSON, Expo tokens,
    dispatch secrets, DB passwords: never print, never commit. The only
    committed credential-like file is `google-services.json` (public by design).
@@ -40,6 +43,12 @@ every agent session must follow. Human owner: Belkis (GitHub `BEKO2210`).
 - Every fix/feature that has pure logic gets a node:test file under `tests/`
   (`npm test`, Node --experimental-strip-types; test files import from `src`
   with explicit `.ts` extension; `tests/` is excluded from tsc).
+- **Every shippable build goes through `npm run release`** (owner rule since
+  2026-08-17): it raises the version (patch by default, `--minor`/`--major`, or
+  `--keep-version`), writes it into `app.json` *and* the generated
+  `android/app/build.gradle`, builds signed release artifacts and stages them in
+  `/home/belkis/Binder-Release/` as `Binder-v<version>-vc<code>.apk`. Add
+  `--bundle` for the store AAB. Never hand-edit the version in two places.
 - On-device proof: EAS preview build via
   `gh workflow run eas-preview-build.yml --ref main`, install on the connected
   device (`adb`), screenshot the touched states. Local native compile check:
@@ -65,9 +74,15 @@ every agent session must follow. Human owner: Belkis (GitHub `BEKO2210`).
   would have crashed for every tester. Use `npx expo install <package>`.
 - Supabase CLI: `~/.local/bin/supabase`, logged in, project linked. Remote SQL
   runs with `supabase db query --linked -f <file>`.
-- Devices over USB: Samsung S23 Ultra (SM-S918B) and Tab S9 Ultra (SM-X910).
-  Sideloading needs the Play build uninstalled first — Play App Signing means
-  the store copy carries Google's signature, not the upload key.
+- Devices over USB: Samsung S23 Ultra (SM-S918B, `R5CW604HG1R`) and Tab S9 Ultra
+  (SM-X910, `R52W7007RHF`). Sideloading needs the Play build uninstalled first —
+  Play App Signing means the store copy carries Google's signature, not the
+  upload key.
+- `adb` on this server needs a udev rule for Samsung, otherwise a plugged-in
+  phone shows up as `no permissions`:
+  `/etc/udev/rules.d/51-android.rules` with
+  `SUBSYSTEM=="usb", ATTR{idVendor}=="04e8", MODE="0664", GROUP="plugdev"`,
+  then `udevadm control --reload-rules && udevadm trigger` and `adb kill-server`.
 
 ## Signing and the store
 
@@ -130,19 +145,18 @@ node scripts/verify-brand-assets.mjs         # plus the other verify-*.mjs
 - Documents: `docs/DESIGN-SYSTEM.md` (the contract), `docs/FLAGSHIP-ROADMAP.md`
   (waves A–K, what is still open), `docs/UI-HARDENING-ROADMAP.md` (phases and
   the device measurements table).
+- **Discovery loading state — done 2026-08-17 (wave L).** `@shopify/react-native-skia`
+  2.6.2 (the version Expo SDK 57 pins) is in, and it stays the only exception to
+  the no-new-dependency rule. The surface is an aurora fragment shader over a
+  skeleton in the exact discovery-card geometry; reduced motion is a still frame
+  that renders zero frames. Costs were stated before the install and measured
+  after on both devices — `docs/WAVE-L-LOADING-SURFACE.md` holds the numbers and
+  the owner's budget decision. Shipped as `v0.5.4` (versionCode 7).
 - Open, in priority order:
-  1. **Discovery loading state — approved 2026-08-17.** The owner rejected the
-     current one and gave an explicit GO to add `@shopify/react-native-skia`,
-     which is the one exception to the no-new-dependency rule. Build the loading
-     surface as a fragment shader (aurora, real glow, grain) over a skeleton in
-     the shape of the discovery card. Conditions he set: state the expected
-     bundle and start-up cost before installing it, and measure both afterwards
-     on the device (`am start -W`, `scripts/report-bundle-size.mjs`,
-     `dumpsys gfxinfo` during the loading state). Keep the reduced-motion path:
-     a still frame that still says something.
-  2. Full crawler run on both devices in both themes, then work the findings.
-  3. Replace the broken closed-testing build.
-  4. Waves G–K: session expiry as a state, filter presets with a live count,
+  1. Full crawler run on both devices in both themes, then work the findings.
+  2. Replace the broken closed-testing build (the staged `v0.5.4` APK is the
+     current candidate; the store needs an AAB via `npm run release -- --bundle`).
+  3. Waves G–K: session expiry as a state, filter presets with a live count,
      notification quality, German locale, store evidence from the current build.
 - The deck has never been exercised with a real candidate: the only two
   accounts are already matched. No fake profiles were created in production to

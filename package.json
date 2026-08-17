@@ -15,6 +15,7 @@
     "ios": "expo start --ios",
     "preweb": "node scripts/materialize-brand-assets.mjs",
     "web": "expo start --web",
+    "release": "node scripts/release-build.mjs",
     "typecheck": "tsc --noEmit",
     "prebundlecheck": "node scripts/materialize-brand-assets.mjs",
     "bundlecheck": "expo export --platform android --output-dir dist",
@@ -32,6 +33,7 @@
   "dependencies": {
     "@expo-google-fonts/manrope": "0.4.2",
     "@react-native-async-storage/async-storage": "^2.2.0",
+    "@shopify/react-native-skia": "2.6.2",
     "@supabase/supabase-js": "2.112.3",
     "aes-js": "^3.1.2",
     "expo": "~57.0.8",

@@ -6,9 +6,19 @@ import { fileURLToPath } from 'node:url';
 const root = 'dist';
 const reportPath = 'artifacts/bundle-size-report.json';
 const phase5JsBaselineMiB = 2.39;
-const maxJsMiB = 4.2;
 const phase6TotalBaselineMiB = 3.44;
-const maxTotalMiB = 5.25;
+
+// Wave L raised these two numbers, and only these two. Measured before and
+// after `@shopify/react-native-skia` on the same tree (docs/WAVE-L-LOADING-SURFACE.md):
+// JS/Hermes 4.18 → 4.55 MiB, total export 4.95 → 5.50 MiB. The library brings
+// its own React reconciler, which is the bulk of it. The owner took that cost
+// on 2026-08-17 for the loading surface; the budget was raised to the measured
+// value plus a deliberate ~0.35 MiB of headroom, not to whatever made it green.
+// Anything that pushes past this is a new decision, not a rounding error.
+const waveLJsBaselineMiB = 4.55;
+const maxJsMiB = 4.9;
+const waveLTotalBaselineMiB = 5.5;
+const maxTotalMiB = 5.9;
 
 export function collectBundleReport(exportRoot) {
   let totalBytes = 0;
@@ -61,6 +71,8 @@ export function formatBundleReport(report) {
     `Binder JS/Hermes payload: ${mb(report.jsBytes)} MiB`,
     `Phase 5 JS baseline: ${phase5JsBaselineMiB.toFixed(2)} MiB`,
     `Phase 6 measured total baseline: ${phase6TotalBaselineMiB.toFixed(2)} MiB`,
+    `Wave L JS baseline (with Skia): ${waveLJsBaselineMiB.toFixed(2)} MiB`,
+    `Wave L total baseline (with Skia): ${waveLTotalBaselineMiB.toFixed(2)} MiB`,
     `JS/Hermes hard budget: ${maxJsMiB.toFixed(2)} MiB`,
     `Total export hard budget: ${maxTotalMiB.toFixed(2)} MiB`,
     'Largest export files:',
