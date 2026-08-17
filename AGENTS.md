@@ -187,23 +187,18 @@ frames rendered. Universal APK 124 MiB; a Play install downloads its own ABI
 
 ## Test accounts
 
-Two labelled accounts exist in production: `Claude (Testkonto)`
-`18bd1d01-2a21-4b01-9e59-f44deac49492` and `Codex (Testkonto)`
-`9f13d0ff-ae7d-4871-97b5-598e3952f893` (switched to `woman` so the owner's own
-filter has a candidate). Passwords: `vault get BINDER_TEST_CLAUDE_PASSWORD`,
-`vault get BINDER_TEST_CODEX_PASSWORD`.
+**None exist any more.** `Claude (Testkonto)` and `Codex (Testkonto)` were
+deleted from production on 2026-08-18 at the owner's request, together with
+their photos in storage — production now holds only real people. The passwords
+in the vault (`BINDER_TEST_CLAUDE_PASSWORD`, `BINDER_TEST_CODEX_PASSWORD`) and
+`scripts/as-test-user.sh` still work; they just have no accounts to sign in to.
 
-```
-scripts/as-test-user.sh claude rpc get_discovery_batch '{"p_limit":5}'
-scripts/as-test-user.sh codex  rpc record_decision '{"p_target_user_id":"<uuid>","p_decision":"bind"}'
-```
-
-Removing them and everything they produced is one statement:
-
-```sql
-delete from auth.users where id in
-  ('18bd1d01-2a21-4b01-9e59-f44deac49492','9f13d0ff-ae7d-4871-97b5-598e3952f893');
-```
+Recreating one is a sign-up like any other, and it must be labelled in the
+profile name the way those two were, so nobody has to guess later which rows
+are real. Whatever is created, delete it again when the work is done: a dating
+app whose database is half test accounts cannot answer "how many real people
+signed up" — and every fake profile in discovery is a real person's wasted
+swipe.
 
 ## Store screenshots and the promo film
 
