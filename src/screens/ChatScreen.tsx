@@ -301,7 +301,10 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: theme.colors.canvas }} behavior="padding" keyboardVerticalOffset={Platform.OS === 'ios' ? theme.spacing.x2 : 0}>
+    // Edge-to-edge Android no longer resizes the window for the keyboard, so
+    // "padding" left the composer underneath it. Translating the whole screen
+    // keeps the composer and the newest message visible on both platforms.
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: theme.colors.canvas }} behavior="translate-with-padding" keyboardVerticalOffset={Platform.OS === 'ios' ? theme.spacing.x2 : 0}>
       <BinderScreenHeader title={`${match.firstName}, ${match.age}`} eyebrow="VIEW PROFILE" centered leading={{ icon: 'back', accessibilityLabel: 'Back to matches', onPress: onClose }} onTitlePress={() => setShowPartnerProfile(true)} titleAccessibilityLabel={`Open ${match.firstName}'s profile`} trailing={<BinderIconButton name="more" accessibilityLabel="Conversation safety controls" selected={showSafety} onPress={() => { if (showSafety) closeSafety(); else { setSafetyMode('menu'); setShowSafety(true); } }} />} />
 
       {showSafety ? (

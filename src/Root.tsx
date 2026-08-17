@@ -1,6 +1,6 @@
 import type { Session } from '@supabase/supabase-js';
 import { useEffect, useRef, useState } from 'react';
-import { BackHandler, Linking, View } from 'react-native';
+import { BackHandler, useWindowDimensions, Linking, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { StatusBar } from 'expo-status-bar';
@@ -71,6 +71,9 @@ function BinderApp() {
   const haptic = useBinderHaptics();
   const [session, setSession] = useState<Session | null | undefined>(undefined);
   const [recovering, setRecovering] = useState(false);
+  // On a tablet the centred column needs an edge, otherwise the interface looks
+  // like a phone screenshot pasted onto a large canvas.
+  const { width: windowWidth } = useWindowDimensions();
   const [legalGate, setLegalGate] = useState<LegalGate | null | undefined>(undefined);
   const [legalRefreshKey, setLegalRefreshKey] = useState(0);
   const [onboardingComplete, setOnboardingComplete] = useState<boolean | undefined>(undefined);
@@ -271,20 +274,26 @@ function BinderApp() {
   if (profileRoute === 'beta') return <RouteFrame route="trailing"><BetaScreen onClose={() => setProfileRoute('home')} /></RouteFrame>;
   if (profileRoute === 'about') return <RouteFrame route="trailing"><AboutScreen onClose={() => setProfileRoute('home')} /></RouteFrame>;
 
+  const wideScreen = windowWidth > theme.layout.tabletContentMaxWidth;
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
       {/* On a tablet the same layout used to stretch a phone-shaped interface
           across 1240 dp: rows a metre wide, a header hugging the left edge. The
           content column is capped and centred instead, on every surface. */}
-      <View style={{ flex: 1, width: '100%', maxWidth: theme.layout.tabletContentMaxWidth, alignSelf: 'center' }}>
+      <View style={{ flex: 1, width: '100%', maxWidth: theme.layout.tabletContentMaxWidth, alignSelf: 'center', borderLeftWidth: wideScreen ? 1 : 0, borderRightWidth: wideScreen ? 1 : 0, borderColor: theme.colors.borderSubtle }}>
         {tab === 'discover' ? <DiscoveryScreen onOpenMatch={(target) => { setActiveMatch(target); setMatchesRefreshKey((value) => value + 1); }} /> : null}
         {tab === 'matches' ? <MatchesScreen refreshKey={matchesRefreshKey} onOpenMatch={setActiveMatch} onOpenDiscovery={() => setTab('discover')} /> : null}
         {tab === 'profile' ? <ProfileScreen userId={session.user.id} onEditProfile={() => setProfileRoute('edit')} onOpenSettings={() => setProfileRoute('settings')} onOpenBeta={() => setProfileRoute('beta')} onOpenAbout={() => setProfileRoute('about')} /> : null}
       </View>
-      <View style={{ minHeight: theme.layout.screenHeaderHeight + theme.spacing.x1, width: '100%', maxWidth: theme.layout.tabletContentMaxWidth, alignSelf: 'center', flexDirection: 'row', paddingHorizontal: theme.spacing.x3, paddingTop: theme.spacing.x2, paddingBottom: theme.spacing.x2, backgroundColor: theme.colors.surface, borderTopColor: theme.colors.borderSubtle, borderTopWidth: 1 }}>
+      {/* Chrome spans the full width, its content stays in the centred column:
+          a tab bar that stops at 720 dp leaves a floating bar with visible ends
+          on a tablet. */}
+      <View style={{ width: '100%', backgroundColor: theme.colors.surface, borderTopColor: theme.colors.borderSubtle, borderTopWidth: 1 }}>
+      <View style={{ minHeight: theme.layout.screenHeaderHeight + theme.spacing.x1, width: '100%', maxWidth: theme.layout.tabletContentMaxWidth, alignSelf: 'center', flexDirection: 'row', paddingHorizontal: theme.spacing.x3, paddingTop: theme.spacing.x2, paddingBottom: theme.spacing.x2 }}>
         <NavItem icon="discover" label="Discover" active={tab === 'discover'} onPress={() => setTab('discover')} />
         <NavItem icon="matches" label="Matches" active={tab === 'matches'} onPress={() => { setTab('matches'); setMatchesRefreshKey((value) => value + 1); }} />
         <NavItem icon="profile" label="Profile" active={tab === 'profile'} onPress={() => { setTab('profile'); setProfileRoute('home'); }} />
+      </View>
       </View>
     </View>
   );
