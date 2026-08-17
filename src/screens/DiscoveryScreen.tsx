@@ -18,13 +18,14 @@ import { listMyProfileMedia } from '../lib/media';
 import { resolveSpring } from '../lib/motionPolicy';
 import { reportAndBlockDiscoveryProfile, type DiscoveryReportReason } from '../lib/safety';
 import { supabase } from '../lib/supabase';
+import { classifyError, type ReliabilityError } from '../lib/reliability';
 import type { Gender } from '../lib/validation';
 import PartnerProfileScreen from './PartnerProfileScreen';
 import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
 
-export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match: MatchSummary) => void }) {
+export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onOpenMatch?: (match: MatchSummary) => void; onSessionExpired: () => void }) {
   const { theme, reduceMotion, t } = useBinderTheme();
   const reportReasons: { value: DiscoveryReportReason; label: string; detail: string }[] = [
     { value: 'underage', label: t('discovery.safety.reasons.underage.label'), detail: t('discovery.safety.reasons.underage.detail') },
@@ -46,7 +47,7 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
   const [profiles, setProfiles] = useState<DiscoveryProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [decisionPending, setDecisionPending] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<ReliabilityError | null>(null);
   const [match, setMatch] = useState<DiscoveryProfile | null>(null);
   const [myPhotoUrl, setMyPhotoUrl] = useState<string | null>(null);
   const [openingConversation, setOpeningConversation] = useState(false);
@@ -75,7 +76,7 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
     const token = ++loadToken.current;
     const current = () => mounted.current && loadToken.current === token;
     setLoading(true);
-    setError('');
+    setError(null);
     try {
       if (refreshLocation) await refreshDiscoveryLocation();
       const batch = await fetchDiscoveryBatch(20);
@@ -83,7 +84,9 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
       setProfiles(batch);
     } catch (cause) {
       if (!current()) return;
-      setError(cause instanceof Error ? cause.message : t('discovery.errors.load'));
+      const failure = classifyError(cause);
+      if (failure.kind === 'permission-denied') onSessionExpired();
+      else setError(failure);
     } finally { if (current()) setLoading(false); }
   }
 
@@ -137,7 +140,7 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
       if (target && onOpenMatch) onOpenMatch(target);
     } catch {
       // Keep the moment; the match is safe under Matches either way.
-      setError(t('discovery.errors.openConversation'));
+      setError(classifyError(t('discovery.errors.openConversation')));
       setMatch(null);
     } finally { setOpeningConversation(false); }
   }
@@ -218,7 +221,7 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
     if (!profile || decisionPending || safetyOpen) return;
     const current = profile;
     setDecisionPending(true);
-    setError('');
+    setError(null);
     void haptic('impact');
     if (reduceMotion) {
       x.value = direction === 'right' ? SWIPE_OUT : -SWIPE_OUT;
@@ -233,7 +236,9 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
       finishDismiss(current, result.matched);
     } catch (cause) {
       setDecisionPending(false);
-      setError(cause instanceof Error ? cause.message : t('discovery.errors.saveDecision'));
+      const failure = classifyError(cause);
+      if (failure.kind === 'permission-denied') onSessionExpired();
+      else setError(failure);
       springBack();
     }
   }
@@ -242,7 +247,7 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
     if (!profile || decisionPending) return;
     springBack();
     setSafetyReason(null);
-    setError('');
+    setError(null);
     setSafetyOpen(true);
   }
 
@@ -250,7 +255,7 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
     if (!profile || !safetyReason || safetyBusy) return;
     const targetId = profile.id;
     setSafetyBusy(true);
-    setError('');
+    setError(null);
     try {
       await reportAndBlockDiscoveryProfile(targetId, safetyReason);
       await haptic('destructive');
@@ -260,7 +265,9 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
       y.value = 0;
       setProfiles((current) => current.filter((item) => item.id !== targetId));
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : t('discovery.errors.safetyReport'));
+      const failure = classifyError(cause);
+      if (failure.kind === 'permission-denied') onSessionExpired();
+      else setError(failure);
     } finally { setSafetyBusy(false); }
   }
 
@@ -300,9 +307,9 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
   }
 
   if (error && profiles.length === 0) {
-    const locationRelated = /location|permission|denied|gps/i.test(error);
-    if (locationRelated) return <ScreenState kind="permission" icon="discover" title={t('discovery.states.pausedTitle')} message={t('discovery.states.locationMessage', { error })} actionLabel={t('discovery.actions.tryAgain')} onAction={() => void loadDiscovery(true)} />;
-    return <ScreenState kind="error" icon="retry" title={t('discovery.states.loadErrorTitle')} message={t('discovery.states.offlineMessage')} actionLabel={t('discovery.actions.tryAgain')} onAction={() => void loadDiscovery(true)} />;
+    const locationRelated = /location|gps/i.test(error.message);
+    if (locationRelated) return <ScreenState kind="permission" icon="discover" title={t('discovery.states.pausedTitle')} message={t('discovery.states.locationMessage', { error: error.message })} actionLabel={t('discovery.actions.tryAgain')} onAction={() => void loadDiscovery(true)} />;
+    return <ScreenState kind={error.kind === 'offline' ? 'offline' : 'error'} icon="retry" title={error.kind === 'offline' ? t('discovery.states.offlineTitle') : t('discovery.states.loadErrorTitle')} message={error.kind === 'offline' ? t('discovery.states.offlineMessage') : error.message} actionLabel={t('discovery.actions.tryAgain')} onAction={() => void loadDiscovery(true)} />;
   }
 
   return (
@@ -340,7 +347,7 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
         )}
       </View>
 
-      {error ? <BinderText variant="caption" tone="destructive" align="center" style={{ paddingHorizontal: theme.spacing.x5, paddingBottom: theme.spacing.x1 }}>{error}</BinderText> : null}
+      {error ? <BinderText variant="caption" tone="destructive" align="center" style={{ paddingHorizontal: theme.spacing.x5, paddingBottom: theme.spacing.x1 }}>{error.message}</BinderText> : null}
       <View style={{ minHeight: theme.layout.discoveryActionBarHeight, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: theme.spacing.x3, paddingBottom: theme.spacing.x3 }}>
         {/* Two buttons, one axis: a trailing spacer used to sit here and pushed
             the pair off the screen's centre line by half a button. */}

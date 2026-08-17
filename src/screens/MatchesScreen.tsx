@@ -13,7 +13,7 @@ import { classifyError, isAbortError, withRetry, type ReliabilityError } from '.
 import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
-export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery }: { refreshKey: number; onOpenMatch: (match: MatchSummary) => void; onOpenDiscovery: () => void }) {
+export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery, onSessionExpired }: { refreshKey: number; onOpenMatch: (match: MatchSummary) => void; onOpenDiscovery: () => void; onSessionExpired: () => void }) {
   const { theme, settings, updateNotifications, reduceMotion, t } = useBinderTheme();
   const haptic = useBinderHaptics();
   const [matches, setMatches] = useState<MatchSummary[]>([]);
@@ -44,11 +44,15 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
       const next = await withRetry((signal) => fetchMatches({ signal }), { attempts: 3, signal: controller.signal });
       if (mountedRef.current && !controller.signal.aborted) setMatches(next);
     } catch (nextError) {
-      if (mountedRef.current && !isAbortError(nextError)) setError(classifyError(nextError));
+      if (mountedRef.current && !isAbortError(nextError)) {
+        const failure = classifyError(nextError);
+        if (failure.kind === 'permission-denied') onSessionExpired();
+        else setError(failure);
+      }
     } finally {
       if (mountedRef.current && !controller.signal.aborted) setLoading(false);
     }
-  }, []);
+  }, [onSessionExpired]);
 
   useEffect(() => { void load(); }, [load, refreshKey]);
   const { newMatches, conversations } = splitConversationPreviews(matches);
@@ -109,7 +113,7 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
         </View>
       </BinderCard>
 
-      {loading && matches.length === 0 ? <ScreenState kind="loading" loadingShape="matches" message={t('matches.states.loading')} /> : error && matches.length === 0 ? <ScreenState kind={error.kind === 'offline' ? 'offline' : error.kind === 'permission-denied' ? 'permission' : 'error'} icon="retry" title={error.kind === 'offline' ? t('matches.states.offlineTitle') : t('matches.states.errorTitle')} message={error.message} actionLabel={error.recovery === 'refresh' ? t('matches.actions.refresh') : t('matches.actions.tryAgain')} onAction={() => void load()} /> : matches.length === 0 ? <ScreenState kind="empty" icon="matches" title={t('matches.empty.title')} message={t('matches.empty.message')} actionLabel={t('matches.actions.goToDiscovery')} onAction={onOpenDiscovery} /> : (
+      {loading && matches.length === 0 ? <ScreenState kind="loading" loadingShape="matches" message={t('matches.states.loading')} /> : error && matches.length === 0 ? <ScreenState kind={error.kind === 'offline' ? 'offline' : 'error'} icon="retry" title={error.kind === 'offline' ? t('matches.states.offlineTitle') : t('matches.states.errorTitle')} message={error.kind === 'offline' ? t('matches.states.offlineMessage') : error.message} actionLabel={t('matches.actions.tryAgain')} onAction={() => void load()} /> : matches.length === 0 ? <ScreenState kind="empty" icon="matches" title={t('matches.empty.title')} message={t('matches.empty.message')} actionLabel={t('matches.actions.goToDiscovery')} onAction={onOpenDiscovery} /> : (
         <FlatList
           data={conversations}
           keyExtractor={(item) => item.matchId}

@@ -45,6 +45,10 @@ export function isAbortError(value: unknown): boolean {
   return value instanceof Error && value.name === 'AbortError';
 }
 
+export function isConversationEndedError(value: unknown): boolean {
+  return /conversation is no longer active|active match membership required/i.test(errorText(value));
+}
+
 export function throwIfAborted(signal?: AbortSignal): void {
   if (!signal?.aborted) return;
   const error = new Error('The request was cancelled.');

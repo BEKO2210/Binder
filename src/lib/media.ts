@@ -56,7 +56,8 @@ async function uploadPreparedImage(userId: string, image: PreparedImage): Promis
   return { path, byteSize: payload.byteLength };
 }
 
-export async function addProfileImage(userId: string, image: PreparedImage): Promise<RegisteredMediaRow> {
+export async function addProfileImage(userId: string, image: PreparedImage, onUploading?: () => void): Promise<RegisteredMediaRow> {
+  onUploading?.();
   const uploaded = await uploadPreparedImage(userId, image);
   const { data, error } = await phase6Rpc<RegisteredMediaRow[]>('register_profile_media', {
     p_storage_path: uploaded.path,

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert, Image, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
@@ -6,15 +6,16 @@ import { PhotoPager } from '../components/PhotoPager';
 import { DiscoveryPreferences } from '../components/DiscoveryPreferences';
 import { MotionPressable as Pressable } from '../components/ui';
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderInput, BinderScreenHeader, BinderText, ScreenState, SectionHeader } from '../components/ui';
-import { pickAndPrepareProfileImage } from '../lib/images';
+import { pickAndPrepareProfileImage, type PreparedImage } from '../lib/images';
 import { addProfileImage, listMyProfileMedia, removeProfileMedia, reorderProfileMedia, setPrimaryProfileMedia, type GalleryMedia } from '../lib/media';
 import { hasErrors, validateDiscovery, validateIdentity } from '../lib/onboardingFlow';
+import { classifyError } from '../lib/reliability';
 import { supabase } from '../lib/supabase';
 import { GENDERS, INTERESTS, type Gender } from '../lib/validation';
 import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
-export default function ProfileSettingsScreen({ userId, onClose }: { userId: string; onClose: () => void }) {
+export default function ProfileSettingsScreen({ userId, onClose, onSessionExpired }: { userId: string; onClose: () => void; onSessionExpired: () => void }) {
   const { theme, t } = useBinderTheme();
   const haptic = useBinderHaptics();
   const [loading, setLoading] = useState(true);
@@ -30,10 +31,18 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
   const [maxAge, setMaxAge] = useState(45);
   const [distance, setDistance] = useState(50);
   const [media, setMedia] = useState<GalleryMedia[]>([]);
+  const [upload, setUpload] = useState<{ phase: 'preparing' | 'uploading' | 'error'; image: PreparedImage | null; error?: string } | null>(null);
+  const uploadLockedRef = useRef(false);
   const [profileErrors, setProfileErrors] = useState<ReturnType<typeof validateIdentity>>({ firstName: undefined, gender: undefined });
   const [discoveryErrors, setDiscoveryErrors] = useState<ReturnType<typeof validateDiscovery>>({ audience: undefined, age: undefined, distance: undefined });
 
   useEffect(() => { void load(); }, [userId]);
+
+  function errorMessage(error: unknown, fallback: string) {
+    const failure = classifyError(error);
+    if (failure.kind === 'permission-denied') onSessionExpired();
+    return error instanceof Error ? error.message : fallback;
+  }
 
   async function load() {
     setLoading(true);
@@ -55,23 +64,41 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
       setMaxAge(preferences.data.max_age);
       setDistance(preferences.data.max_distance_km);
       setMedia(gallery);
-    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : t('profileSettings.errors.load')); }
+    } catch (error) { setMessageKind('error'); setMessage(errorMessage(error, t('profileSettings.errors.load'))); }
     finally { setLoading(false); }
   }
 
   async function addPhoto() {
-    if (media.length >= 6 || busy) return;
-    setBusy(true);
+    if (media.length >= 6 || busy || uploadLockedRef.current) return;
+    uploadLockedRef.current = true;
+    setUpload({ phase: 'preparing', image: null });
     setMessage('');
     try {
       const image = await pickAndPrepareProfileImage();
-      if (!image) return;
-      await addProfileImage(userId, image);
+      if (!image) { setUpload(null); return; }
+      await uploadPhoto(image);
+    } catch (error) {
+      setUpload({ phase: 'error', image: null, error: errorMessage(error, t('profileSettings.errors.addPhoto')) });
+    } finally { uploadLockedRef.current = false; }
+  }
+
+  async function uploadPhoto(image: PreparedImage) {
+    try {
+      await addProfileImage(userId, image, () => setUpload({ phase: 'uploading', image }));
       await haptic('selection');
       setMedia(await listMyProfileMedia());
+      setUpload(null);
       setMessage(t('profileSettings.messages.photoAdded')); setMessageKind('success');
-    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : t('profileSettings.errors.addPhoto')); }
-    finally { setBusy(false); }
+    } catch (error) {
+      setUpload({ phase: 'error', image, error: errorMessage(error, t('profileSettings.errors.addPhoto')) });
+    }
+  }
+
+  async function retryUpload() {
+    if (uploadLockedRef.current || upload?.phase !== 'error' || !upload.image) return;
+    uploadLockedRef.current = true;
+    await uploadPhoto(upload.image);
+    uploadLockedRef.current = false;
   }
 
   async function movePhoto(index: number, delta: -1 | 1) {
@@ -89,7 +116,7 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
       await reorderProfileMedia(next.map((item) => item.id));
       await haptic('selection');
       setMedia(await listMyProfileMedia());
-    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : t('profileSettings.errors.reorderPhotos')); }
+    } catch (error) { setMessageKind('error'); setMessage(errorMessage(error, t('profileSettings.errors.reorderPhotos'))); }
     finally { setBusy(false); }
   }
 
@@ -101,7 +128,7 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
       await setPrimaryProfileMedia(item.id);
       await haptic('selection');
       setMedia(await listMyProfileMedia());
-    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : t('profileSettings.errors.makePrimary')); }
+    } catch (error) { setMessageKind('error'); setMessage(errorMessage(error, t('profileSettings.errors.makePrimary'))); }
     finally { setBusy(false); }
   }
 
@@ -119,7 +146,7 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
       await removeProfileMedia(item.id);
       await haptic('destructive');
       setMedia(await listMyProfileMedia());
-    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : t('profileSettings.errors.removePhoto')); }
+    } catch (error) { setMessageKind('error'); setMessage(errorMessage(error, t('profileSettings.errors.removePhoto'))); }
     finally { setBusy(false); }
   }
 
@@ -133,7 +160,7 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
       if (error) throw error;
       await haptic('selection');
       setMessageKind('success'); setMessage(t('profileSettings.messages.saved'));
-    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : t('profileSettings.errors.save')); }
+    } catch (error) { setMessageKind('error'); setMessage(errorMessage(error, t('profileSettings.errors.save'))); }
     finally { setBusy(false); }
   }
 
@@ -176,7 +203,7 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
         <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>{t('profileSettings.photos.orderCopy')}</BinderText>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x3, marginTop: theme.spacing.x3 }}>
           {media.map((item, index) => <PhotoTile key={item.id} item={item} index={index} total={media.length} busy={busy} onLeft={() => void movePhoto(index, -1)} onRight={() => void movePhoto(index, 1)} onPrimary={() => void makePrimary(item)} onRemove={() => confirmRemove(item)} onView={() => setViewerIndex(index)} />)}
-          {media.length < 6 ? <AddPhotoTile disabled={busy} onPress={() => void addPhoto()} /> : null}
+          {upload ? <UploadPhotoTile upload={upload} onRetry={() => void retryUpload()} /> : media.length < 6 ? <AddPhotoTile disabled={busy} onPress={() => void addPhoto()} /> : null}
         </View>
         {message ? <BinderText variant="caption" tone={messageKind === 'success' ? 'accent' : 'destructive'} style={{ marginTop: theme.spacing.x3 }}>{message}</BinderText> : null}
       </View>
@@ -195,6 +222,11 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
       </KeyboardAwareScrollView>
     </View>
   );
+}
+
+function UploadPhotoTile({ upload, onRetry }: { upload: { phase: 'preparing' | 'uploading' | 'error'; error?: string }; onRetry: () => void }) {
+  const { theme, t } = useBinderTheme();
+  return <BinderCard style={{ width: '47%', minHeight: theme.layout.photoAddTileHeight, alignItems: 'center', justifyContent: 'center', gap: theme.spacing.x3 }}><BinderIcon name={upload.phase === 'error' ? 'retry' : 'addPhoto'} color={upload.phase === 'error' ? theme.semantic.destructive : theme.accent.onSurface} /><BinderText variant="label" tone={upload.phase === 'error' ? 'destructive' : 'accent'} align="center">{upload.phase === 'preparing' ? t('profileSettings.photos.preparing') : upload.phase === 'uploading' ? t('profileSettings.photos.uploading') : t('profileSettings.photos.uploadFailed')}</BinderText>{upload.phase === 'error' ? <><BinderText variant="caption" tone="destructive" align="center">{upload.error ?? t('profileSettings.errors.addPhoto')}</BinderText><BinderButton label={t('profileSettings.actions.retryUpload')} variant="secondary" onPress={onRetry} /></> : null}</BinderCard>;
 }
 
 function Choice({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {

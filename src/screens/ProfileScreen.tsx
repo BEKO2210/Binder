@@ -6,6 +6,7 @@ import { MotionPressable as Pressable } from '../components/ui';
 import { recordBetaEvent } from '../lib/beta';
 import { listMyProfileMedia } from '../lib/media';
 import { profileCompleteness } from '../lib/profileCompleteness';
+import { classifyError, type ReliabilityError } from '../lib/reliability';
 import { DELETE_ACCOUNT_URL, PRIVACY_URL, TERMS_URL, deleteCurrentAccount, openBinderUrl } from '../lib/safety';
 import { supabase } from '../lib/supabase';
 import { useBinderTheme } from '../theme/ThemeProvider';
@@ -16,9 +17,10 @@ type Props = {
   onOpenSettings: () => void;
   onOpenBeta: () => void;
   onOpenAbout: () => void;
+  onSessionExpired: () => void;
 };
 
-export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, onOpenBeta, onOpenAbout }: Props) {
+export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, onOpenBeta, onOpenAbout, onSessionExpired }: Props) {
   const { theme, t } = useBinderTheme();
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -28,6 +30,7 @@ export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, o
   const [photoCount, setPhotoCount] = useState(0);
   const [interestCount, setInterestCount] = useState(0);
   const [message, setMessage] = useState('');
+  const [loadError, setLoadError] = useState<ReliabilityError | null>(null);
 
   useEffect(() => { void load(); }, [userId]);
 
@@ -35,6 +38,7 @@ export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, o
     const startedAt = Date.now();
     setLoading(true);
     setMessage('');
+    setLoadError(null);
     try {
       const [profile, media] = await Promise.all([
         supabase.from('profiles').select('first_name,bio,interests').eq('user_id', userId).single(),
@@ -48,7 +52,9 @@ export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, o
       setInterestCount(profile.data.interests?.length ?? 0);
       void recordBetaEvent('profile_load', 'profile', { durationMs: Date.now() - startedAt, outcome: 'ok' });
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : t('profile.errors.load'));
+      const failure = classifyError(error);
+      if (failure.kind === 'permission-denied') onSessionExpired();
+      else setLoadError(failure);
       void recordBetaEvent('profile_load', 'profile', { durationMs: Date.now() - startedAt, outcome: 'error' });
     } finally { setLoading(false); }
   }
@@ -81,6 +87,7 @@ export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, o
   }
 
   if (loading) return <ScreenState kind="loading" message={t('profile.states.loading')} />;
+  if (loadError) return <ScreenState kind={loadError.kind === 'offline' ? 'offline' : 'error'} icon="retry" title={loadError.kind === 'offline' ? t('profile.states.offlineTitle') : t('profile.states.errorTitle')} message={loadError.kind === 'offline' ? t('profile.states.offlineMessage') : loadError.message} actionLabel={t('profile.actions.tryAgain')} onAction={() => void load()} />;
 
   const completeness = profileCompleteness({ photoCount, bio, interestCount });
 

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { abortable, backoffDelay, classifyError, withRetry } from '../src/lib/reliability.ts';
+import { abortable, backoffDelay, classifyError, isConversationEndedError, withRetry } from '../src/lib/reliability.ts';
 
 test('classifies every reliability family with distinct recovery', () => {
   const cases = [
@@ -53,4 +53,10 @@ test('a foreign-key violation is refused, not reported as a concurrent edit', ()
   assert.equal(classifyError({ code: '23503', message: 'insert or update violates foreign key constraint' }).kind, 'server-refusal');
   assert.equal(classifyError({ code: '23505', message: 'duplicate key value violates unique constraint' }).kind, 'conflict');
   assert.equal(classifyError({ code: '23503' }).retryable, false);
+});
+
+test('recognizes only server-confirmed terminal conversation errors', () => {
+  assert.equal(isConversationEndedError(new Error('This conversation is no longer active.')), true);
+  assert.equal(isConversationEndedError({ code: '42501', message: 'Active match membership required.' }), true);
+  assert.equal(isConversationEndedError(new Error('Network request failed')), false);
 });

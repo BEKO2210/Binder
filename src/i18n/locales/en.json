@@ -6,6 +6,11 @@
     "translatedBy": "Binder",
     "sourceOfTruth": true
   },
+  "sessionExpired": {
+    "title": "Your session has ended",
+    "message": "Sign in again to continue using Binder.",
+    "action": "Sign in again"
+  },
   "settings": {
     "title": "App settings",
     "eyebrow": "PREFERENCES",
@@ -135,6 +140,7 @@
     "states": {
       "loading": "Loading your matches…",
       "offlineTitle": "You are offline",
+      "offlineMessage": "Check your connection and try loading your matches again.",
       "errorTitle": "Matches did not load"
     },
     "empty": {
@@ -180,6 +186,7 @@
       "pausedTitle": "Discovery paused",
       "locationMessage": "{error}\n\nBinder uses foreground location only to calculate nearby candidates. Exact coordinates are never sent to another user.",
       "loadErrorTitle": "Discovery did not load",
+      "offlineTitle": "You are offline",
       "offlineMessage": "No connection. Check your internet and try again.",
       "saving": "Saving…"
     },
@@ -256,6 +263,11 @@
       "loadEarlierMessages": "Load earlier messages",
       "retry": "Retry",
       "discard": "Discard"
+      ,"backToMatches": "Back to Matches"
+    },
+    "ended": {
+      "title": "This conversation has ended",
+      "message": "This Bind is no longer active. The conversation is now closed."
     },
     "safety": {
       "title": "Safety controls",
@@ -323,10 +335,14 @@
       "deleteAccount": "Delete account",
       "staySignedIn": "Stay signed in",
       "signOut": "Sign out",
-      "completeProfile": "Complete profile"
+      "completeProfile": "Complete profile",
+      "tryAgain": "Try again"
     },
     "states": {
-      "loading": "Loading your profile…"
+      "loading": "Loading your profile…",
+      "offlineTitle": "You are offline",
+      "offlineMessage": "Check your connection and try loading your profile again.",
+      "errorTitle": "Your profile did not load"
     },
     "header": {
       "title": "Your profile",
@@ -390,7 +406,8 @@
       "remove": "Remove",
       "saveProfile": "Save profile",
       "addPhoto": "Add photo",
-      "makePrimary": "Make primary"
+      "makePrimary": "Make primary",
+      "retryUpload": "Retry upload"
     },
     "states": {
       "loading": "Loading profile settings…"
@@ -418,6 +435,9 @@
       "eyebrow": "PHOTOS · {count}/6",
       "orderCopy": "Drag is not required: use the arrow controls to set the exact order. Photo 1 is the photo people see first.",
       "optimized": "Optimized before upload",
+      "preparing": "Preparing photo…",
+      "uploading": "Uploading photo…",
+      "uploadFailed": "Photo upload failed",
       "primary": "PHOTO 1 · PRIMARY",
       "dimensions": "{size} KB · {width} by {height}",
       "status": {

@@ -186,6 +186,7 @@ export function subscribeToMessages(
   matchId: string,
   onMessage: (message: Message) => void,
   onError?: (message: string) => void,
+  onMatchEnded?: () => void,
 ): () => void {
   const channel = supabase
     .channel(`messages:${matchId}:${Crypto.randomUUID()}`)
@@ -199,6 +200,13 @@ export function subscribeToMessages(
       },
       (payload) => {
         onMessage(payload.new as Message);
+      },
+    )
+    .on(
+      'postgres_changes',
+      { event: 'UPDATE', schema: 'public', table: 'matches', filter: `id=eq.${matchId}` },
+      (payload) => {
+        if ((payload.new as { status?: string }).status !== 'active') onMatchEnded?.();
       },
     )
     .subscribe((status, error) => {

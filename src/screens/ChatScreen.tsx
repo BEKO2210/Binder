@@ -6,7 +6,7 @@ import Animated, { FadeInDown, FadeInUp, FadeOutDown, useAnimatedStyle } from 'r
 import { buildChatTimeline, timeLabel, type TimelineItem } from '../lib/chatTimeline';
 import { composerBody } from '../lib/conversationPresentation';
 import { resolveStaggerDelay } from '../lib/motionPolicy';
-import { classifyError, isAbortError, withRetry, type ReliabilityError } from '../lib/reliability';
+import { classifyError, isAbortError, isConversationEndedError, withRetry, type ReliabilityError } from '../lib/reliability';
 
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import { MotionPressable as Pressable } from '../components/ui';
@@ -99,11 +99,12 @@ const ChatMessageRow = memo(function ChatMessageRow({ type, label, messageId, bo
 
 const chatTimelineKey = (item: TimelineItem<Message>) => item.id;
 
-export default function ChatScreen({ match, currentUserId, onClose, onConversationEnded }: {
+export default function ChatScreen({ match, currentUserId, onClose, onConversationEnded, onSessionExpired }: {
   match: MatchSummary;
   currentUserId: string;
   onClose: () => void;
   onConversationEnded: () => void;
+  onSessionExpired: () => void;
 }) {
   const { theme, reduceMotion, t } = useBinderTheme();
   const haptic = useBinderHaptics();
@@ -133,6 +134,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   const [reporting, setReporting] = useState(false);
   const [safetyError, setSafetyError] = useState<ReliabilityError | null>(null);
   const [showPartnerProfile, setShowPartnerProfile] = useState(false);
+  const [conversationEnded, setConversationEnded] = useState(false);
   const mountedRef = useRef(true);
   const lifecycleControllerRef = useRef(new AbortController());
 
@@ -177,7 +179,11 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         setLoadError(null);
         void markMatchRead(match.matchId, { signal: requestController.signal }).catch(() => undefined);
       } catch (nextError) {
-        if (active && !isAbortError(nextError)) setLoadError(classifyError(nextError));
+        if (active && !isAbortError(nextError)) {
+          const failure = classifyError(nextError);
+          if (failure.kind === 'permission-denied') onSessionExpired();
+          else setLoadError(failure);
+        }
       } finally {
         if (active && initial) setLoading(false);
       }
@@ -217,6 +223,9 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
             void load(false);
           },delay);
         },
+        () => {
+          if (active) setConversationEnded(true);
+        },
       );
     }
 
@@ -246,7 +255,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
       unsubscribe?.();
       appState.remove();
     };
-  }, [currentUserId, match.matchId, reduceMotion, reloadKey]);
+  }, [currentUserId, match.matchId, onSessionExpired, reduceMotion, reloadKey]);
 
   async function loadOlder() {
     const oldest = messages[0];
@@ -308,7 +317,17 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
       await haptic('selection');
     } catch (nextError) {
       if (mountedRef.current && !isAbortError(nextError)) {
+        if (isConversationEndedError(nextError)) {
+          setConversationEnded(true);
+          discardAttempt(clientId);
+          return;
+        }
         const failure = classifyError(nextError);
+        if (failure.kind === 'permission-denied') {
+          discardAttempt(clientId);
+          onSessionExpired();
+          return;
+        }
         setAttempts((current) => current.map((attempt) => attempt.clientId === clientId ? { ...attempt, status: 'failed' as const, error: failure } : attempt));
       }
     } finally { if (mountedRef.current) setSending(false); }
@@ -385,6 +404,8 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   if (showPartnerProfile) {
     return <Animated.View entering={reduceMotion ? undefined : FadeInUp.duration(theme.motion.entrance)} exiting={reduceMotion ? undefined : FadeOutDown.duration(theme.motion.deliberate)} style={{ flex: 1 }}><PartnerProfileScreen userId={match.otherUserId} fallbackName={match.firstName} onClose={() => setShowPartnerProfile(false)} /></Animated.View>;
   }
+
+  if (conversationEnded) return <ScreenState kind="empty" icon="matches" title={t('chat.ended.title')} message={t('chat.ended.message')} actionLabel={t('chat.actions.backToMatches')} onAction={onConversationEnded} />;
 
   return (
     // Edge-to-edge Android stopped resizing the window for the keyboard, so a

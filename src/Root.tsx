@@ -1,5 +1,5 @@
 import type { Session } from '@supabase/supabase-js';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { BackHandler, useWindowDimensions, Linking, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
@@ -67,10 +67,11 @@ function TopInset({ children }: { children: React.ReactNode }) {
 }
 
 function BinderApp() {
-  const { theme, settings, hydrated, updateSettings } = useBinderTheme();
+  const { theme, settings, hydrated, updateSettings, t } = useBinderTheme();
   const haptic = useBinderHaptics();
   const [session, setSession] = useState<Session | null | undefined>(undefined);
   const [recovering, setRecovering] = useState(false);
+  const [sessionExpired, setSessionExpired] = useState(false);
   // On a tablet the centred column needs an edge, otherwise the interface looks
   // like a phone screenshot pasted onto a large canvas.
   const { width: windowWidth } = useWindowDimensions();
@@ -86,17 +87,25 @@ function BinderApp() {
   const [pendingNotificationRoute, setPendingNotificationRoute] = useState<NotificationRoute | null>(null);
   const [notificationPreferencesReadyFor, setNotificationPreferencesReadyFor] = useState<string | null>(null);
   const appSessionRecorded = useRef(false);
+  const hadSessionRef = useRef(false);
 
   useEffect(() => {
     let active = true;
-    supabase.auth.getSession().then(({ data, error }) => { if (!active) return; if (error) setLoadError(error.message); setSession(data.session); });
+    supabase.auth.getSession().then(({ data, error }) => { if (!active) return; if (error) setLoadError(error.message); hadSessionRef.current = Boolean(data.session); setSession(data.session); });
     const { data } = supabase.auth.onAuthStateChange((event, nextSession) => {
       // A reset link signs the person in with a recovery session. Until they
       // have actually chosen a new password, that session may only do that.
       if (event === 'PASSWORD_RECOVERY') setRecovering(true);
+      if (event === 'SIGNED_OUT' && hadSessionRef.current) setSessionExpired(true);
+      hadSessionRef.current = Boolean(nextSession);
       setSession(nextSession); setLegalGate(undefined); setOnboardingComplete(undefined); setNotificationPreferencesReadyFor(null); setLoadError(''); setActiveMatch(null); setProfileRoute('home'); setTab('discover'); appSessionRecorded.current = false;
     });
     return () => { active = false; data.subscription.unsubscribe(); };
+  }, []);
+
+  const handleSessionExpired = useCallback(() => setSessionExpired(true), []);
+  const returnToSignIn = useCallback(() => {
+    void supabase.auth.signOut().finally(() => setSessionExpired(false));
   }, []);
 
   useEffect(() => {
@@ -261,6 +270,7 @@ function BinderApp() {
     });
   }, [pendingNotificationRoute, session?.user.id, legalGate?.accepted, onboardingComplete]);
 
+  if (sessionExpired) return <ScreenState kind="permission" icon="profile" title={t('sessionExpired.title')} message={t('sessionExpired.message')} actionLabel={t('sessionExpired.action')} onAction={returnToSignIn} />;
   if (session === undefined) return <ScreenState kind="loading" message={loadError || 'Loading Binder…'} />;
   if (!session) return <AuthScreen />;
   if (recovering) return <AuthScreen recovery onRecoveryHandled={() => setRecovering(false)} />;
@@ -271,8 +281,8 @@ function BinderApp() {
   if (!onboardingComplete) return <OnboardingScreen userId={session.user.id} onComplete={() => { setOnboardingComplete(true); setTab('discover'); }} />;
   // Full-screen routes live outside the tab shell, so they need the same centred
   // column — a conversation stretched across a tablet reads as a wall of text.
-  if (activeMatch) return <CenteredColumn wide={wideScreen}><RouteFrame route="expand"><ChatScreen match={activeMatch} currentUserId={session.user.id} onClose={() => { setActiveMatch(null); setMatchesRefreshKey((value) => value + 1); }} onConversationEnded={() => { setActiveMatch(null); setTab('matches'); setMatchesRefreshKey((value) => value + 1); }} /></RouteFrame></CenteredColumn>;
-  if (profileRoute === 'edit') return <RouteFrame route="lift"><ProfileSettingsScreen userId={session.user.id} onClose={() => setProfileRoute('home')} /></RouteFrame>;
+  if (activeMatch) return <CenteredColumn wide={wideScreen}><RouteFrame route="expand"><ChatScreen match={activeMatch} currentUserId={session.user.id} onClose={() => { setActiveMatch(null); setMatchesRefreshKey((value) => value + 1); }} onConversationEnded={() => { setActiveMatch(null); setTab('matches'); setMatchesRefreshKey((value) => value + 1); }} onSessionExpired={handleSessionExpired} /></RouteFrame></CenteredColumn>;
+  if (profileRoute === 'edit') return <RouteFrame route="lift"><ProfileSettingsScreen userId={session.user.id} onClose={() => setProfileRoute('home')} onSessionExpired={handleSessionExpired} /></RouteFrame>;
   if (profileRoute === 'settings') return <RouteFrame route="trailing"><AppSettingsScreen onClose={() => setProfileRoute('home')} /></RouteFrame>;
   if (profileRoute === 'beta') return <RouteFrame route="trailing"><BetaScreen onClose={() => setProfileRoute('home')} /></RouteFrame>;
   if (profileRoute === 'about') return <RouteFrame route="trailing"><AboutScreen onClose={() => setProfileRoute('home')} /></RouteFrame>;
@@ -283,9 +293,9 @@ function BinderApp() {
           across 1240 dp: rows a metre wide, a header hugging the left edge. The
           content column is capped and centred instead, on every surface. */}
       <View style={{ flex: 1, width: '100%', maxWidth: theme.layout.tabletContentMaxWidth, alignSelf: 'center', borderLeftWidth: wideScreen ? 1 : 0, borderRightWidth: wideScreen ? 1 : 0, borderColor: theme.colors.borderSubtle }}>
-        {tab === 'discover' ? <DiscoveryScreen onOpenMatch={(target) => { setActiveMatch(target); setMatchesRefreshKey((value) => value + 1); }} /> : null}
-        {tab === 'matches' ? <MatchesScreen refreshKey={matchesRefreshKey} onOpenMatch={setActiveMatch} onOpenDiscovery={() => setTab('discover')} /> : null}
-        {tab === 'profile' ? <ProfileScreen userId={session.user.id} onEditProfile={() => setProfileRoute('edit')} onOpenSettings={() => setProfileRoute('settings')} onOpenBeta={() => setProfileRoute('beta')} onOpenAbout={() => setProfileRoute('about')} /> : null}
+        {tab === 'discover' ? <DiscoveryScreen onOpenMatch={(target) => { setActiveMatch(target); setMatchesRefreshKey((value) => value + 1); }} onSessionExpired={handleSessionExpired} /> : null}
+        {tab === 'matches' ? <MatchesScreen refreshKey={matchesRefreshKey} onOpenMatch={setActiveMatch} onOpenDiscovery={() => setTab('discover')} onSessionExpired={handleSessionExpired} /> : null}
+        {tab === 'profile' ? <ProfileScreen userId={session.user.id} onEditProfile={() => setProfileRoute('edit')} onOpenSettings={() => setProfileRoute('settings')} onOpenBeta={() => setProfileRoute('beta')} onOpenAbout={() => setProfileRoute('about')} onSessionExpired={handleSessionExpired} /> : null}
       </View>
       {/* Chrome spans the full width, its content stays in the centred column:
           a tab bar that stops at 720 dp leaves a floating bar with visible ends
