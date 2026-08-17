@@ -61,6 +61,8 @@ leaves the running system intact.
 | 040 | Icon glyphs are clipped at a 200 % system font | Root cause found in expo-symbols' SymbolView: the Android glyph is a <Text> without allowFontScaling={false}. BinderIcon draws the same font and codepoint itself with scaling off. Verified at 100 % and 200 % on the S23 | done |
 | 041 | TalkBack wiring pass: roles, states, values, live regions, decorative nodes hidden, composed rows grouped | Tree dump on device: zero clickable nodes without a label | done |
 | 042 | Thumbnails decode at their display size (matches avatar, gallery tiles, celebration photos) | Cold start median 402 ms, memory measured after | done |
+| 043 | Contrast of the states the token test never covered: pressed, disabled, and text over media | Test extended; light textMuted darkened to pass; media text now drawn from the dark palette in both schemes | done |
+| 044 | A repeatable memory probe for paging a gallery | `scripts/measure-gallery-memory.sh` | done |
 | 017 | Language section in App settings — appears only when a translation exists, endonym plus flag, same chip rhythm as Appearance | Screenshot: Sprache / Wie mein Gerät / 🇬🇧 English / 🇩🇪 Deutsch | done |
 
 ## Backlog
@@ -92,14 +94,14 @@ Ordered by what a user notices first. Each line becomes one run.
 - [x] TalkBack pass over every screen: labels, states, values, live regions, decorative nodes hidden.
 - [x] Large font settings (200 %): text wraps, chrome keeps its height, labels are capped.
 - [x] Icon glyphs at 200 %: fixed by drawing the glyph ourselves with font scaling off (run 040).
-- [ ] Contrast of every state that is not covered by the token test (pressed, disabled, over media).
+- [x] Contrast of pressed, disabled and over-media states.
 - [x] Announcements for state changes that only show visually (sent, failed, applied).
 
 ### Performance
 - [ ] Frame timing for the match celebration and the profile expansion (wave C leaves them open).
 - [x] Image decode sizes: fixed-size thumbnails decode downsampled (resizeMethod="resize").
 - [ ] Cold start after the Skia addition, tracked per build rather than once.
-- [ ] Memory while paging a six-photo gallery.
+- [x] Memory while paging a gallery: `scripts/measure-gallery-memory.sh`.
 
 ### Correctness left from the review
 - [ ] Onboarding must not re-upload the same photo after a failed finalisation.

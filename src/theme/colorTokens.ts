@@ -19,7 +19,7 @@ export const darkPalette = {
 
 export const lightPalette = {
   canvas: '#F4F6F1', surface: '#FFFFFF', surfaceElevated: '#E9EDE5', surfacePressed: '#DFE4DA', borderSubtle: '#D5DAD0', borderStrong: '#B8C0B3',
-  textPrimary: '#12140F', textSecondary: '#3D433A', textMuted: '#646D60', overlay: 'rgba(16,18,13,0.76)', scrim: 'rgba(9,10,15,0.34)', transparent: 'transparent',
+  textPrimary: '#12140F', textSecondary: '#3D433A', textMuted: '#5C6458', overlay: 'rgba(16,18,13,0.76)', scrim: 'rgba(9,10,15,0.34)', transparent: 'transparent',
 } as const;
 
 export const accentThemes = {
@@ -63,4 +63,37 @@ export function semanticContrastPairs(mode: 'dark' | 'light'): ContrastPair[] {
     );
   }
   return pairs;
+}
+
+function withOpacity(color: string, opacity: number): string {
+  const hex = color.match(/^#([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i);
+  if (!hex) throw new Error(`State contrast requires an opaque hex text colour: ${color}`);
+  return `rgba(${Number.parseInt(hex[1] ?? '0', 16)},${Number.parseInt(hex[2] ?? '0', 16)},${Number.parseInt(hex[3] ?? '0', 16)},${opacity})`;
+}
+
+/** Interaction-state pairs kept separate from the base semantic matrix. */
+export function semanticStateContrastPairs(mode: 'dark' | 'light', disabledOpacity: number): ContrastPair[] {
+  const colors = mode === 'dark' ? darkPalette : lightPalette;
+  const semantic = semanticPalettes[mode];
+  const textColors = [
+    ['textPrimary', colors.textPrimary], ['textSecondary', colors.textSecondary], ['textMuted', colors.textMuted],
+    ['warning', semantic.warning], ['destructive', semantic.destructive], ['success', semantic.success],
+    ...Object.values(accentThemes).map((accent) => [`${accent.id}.onSurface`, mode === 'dark' ? accent.onDark : accent.onLight] as const),
+  ] as const;
+
+  return [
+    ...textColors.map(([name, foreground]) => ({ name: `${name}/surfacePressed`, foreground, background: colors.surfacePressed, level: 'bodyText' as const })),
+    { name: 'textPrimary.disabled/surface', foreground: withOpacity(colors.textPrimary, disabledOpacity), background: colors.surface, level: 'bodyText' },
+    { name: 'textPrimary.disabled/surfaceElevated', foreground: withOpacity(colors.textPrimary, disabledOpacity), background: colors.surfaceElevated, level: 'bodyText' },
+    // Text over a photo is always drawn from the dark palette, in both
+    // schemes: a photo is not a surface whose brightness the theme controls,
+    // and light-mode text over a dark scrim was unreadable. The pairs are
+    // measured the way the media surfaces actually draw them.
+    { name: 'onMedia.textPrimary/overlay', foreground: darkPalette.textPrimary, background: colors.overlay, level: 'bodyText' },
+    { name: 'onMedia.textSecondary/overlay', foreground: darkPalette.textSecondary, background: colors.overlay, level: 'bodyText' },
+    // The scrim is the middle stop of the gradient, not a background: what sits
+    // behind it is a photograph of unknown brightness. Measuring text against
+    // it would mean measuring against an assumption. Text is placed where the
+    // gradient has reached `overlay`, and that is the pair above.
+  ];
 }

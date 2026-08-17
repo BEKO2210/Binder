@@ -1,8 +1,10 @@
 import { motionDurations, motionPressScale, motionSprings, motionStagger } from '../lib/motionPolicy';
 import { accentThemes, darkPalette, lightPalette, resolveAccentTheme, semanticPalettes } from './colorTokens';
+import { feedback } from './feedbackTokens';
 
 export { accentThemes, baseColors, darkPalette, lightPalette, resolveAccentTheme, semanticContrastPairs, semanticPalettes } from './colorTokens';
 export type { AccentThemeId } from './colorTokens';
+export { feedback } from './feedbackTokens';
 
 import type { AccentThemeId } from './colorTokens';
 export type AppearanceMode = 'system' | 'dark';
@@ -67,11 +69,6 @@ export const layout = {
   // Chrome (tab bar, headers) stops growing here so a 200 % system font cannot
   // push the navigation over the content it navigates.
   chromeFontScaleCap: 1.4,
-} as const;
-
-export const feedback = {
-  // Keeps disabled primary text at 4.58:1 on the light elevated surface.
-  disabledOpacity: 0.6,
 } as const;
 
 export const radii = {

@@ -10,7 +10,12 @@ everywhere a human can see them.
 | Account | User id | Email | Profile |
 | --- | --- | --- | --- |
 | Claude (Testkonto) | `18bd1d01-2a21-4b01-9e59-f44deac49492` | `belkis.aslani+binder.claude@gmail.com` | man, 34, Freiberg, photo reads **TESTKONTO CLAUDE — KEIN ECHTER NUTZER** |
-| Codex (Testkonto) | `9f13d0ff-ae7d-4871-97b5-598e3952f893` | `belkis.aslani+binder.codex@gmail.com` | man, 37, Freiberg, photo reads **TESTKONTO CODEX — KEIN ECHTER NUTZER** |
+| Codex (Testkonto) | `9f13d0ff-ae7d-4871-97b5-598e3952f893` | `belkis.aslani+binder.codex@gmail.com` | woman since 2026-08-17, 37, Freiberg, photo reads **TESTKONTO CODEX — KEIN ECHTER NUTZER** |
+
+The Codex account switched sex on 2026-08-17 for one reason: the owner's own
+discovery filter is "woman" only, so both male test accounts were correctly
+invisible and the deck could not be exercised. Nothing else about the account
+changed.
 
 Both carry the bio "Testkonto für Binder. Kein echter Nutzer", both accept the
 current legal versions, both have one approved photo, and both are visible to

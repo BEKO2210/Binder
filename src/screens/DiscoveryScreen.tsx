@@ -23,6 +23,7 @@ import { classifyError, type ReliabilityError } from '../lib/reliability';
 import type { Gender } from '../lib/validation';
 import PartnerProfileScreen from './PartnerProfileScreen';
 import { useBinderHaptics } from '../theme/haptics';
+import { darkPalette } from '../theme/tokens';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
 
@@ -425,6 +426,10 @@ function ProfileCard({ profile, back = false, onOpenProfile }: { profile: Discov
   const { width } = useWindowDimensions();
   const backCardOffset = width * discoveryDeckPhysics.backCardOffsetRatio;
   const photos = profile.photoUrls.length > 0 ? profile.photoUrls : [profile.photoUrl];
+  // A photo is not a surface whose brightness the theme controls. In light mode
+  // the card drew near-black text onto the dark scrim over the photo, which was
+  // unreadable; text over media always comes from the dark palette.
+  const onMedia = darkPalette;
 
   return (
     <View style={{ position: 'absolute', inset: 0, borderRadius: theme.radii.hero, overflow: 'hidden', backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.borderSubtle, transform: back ? [{ scale: discoveryDeckPhysics.backCardScale }, { translateY: backCardOffset }] : undefined, opacity: back ? discoveryDeckPhysics.backCardOpacity : 1 }}>
@@ -432,11 +437,11 @@ function ProfileCard({ profile, back = false, onOpenProfile }: { profile: Discov
       <LinearGradient pointerEvents="none" colors={[theme.colors.transparent, theme.colors.scrim, theme.colors.overlay]} locations={[0, 0.52, 1]} style={{ position: 'absolute', inset: 0 }} />
 
       <View pointerEvents="none" style={{ position: 'absolute', left: theme.spacing.x5, right: theme.spacing.x5, bottom: theme.spacing.x5 }}>
-        <BinderText variant="displayL" style={{ color: theme.colors.textPrimary }} numberOfLines={1}>{profile.name} <BinderText variant="heading" style={{ color: theme.colors.textPrimary }}>{profile.age}</BinderText></BinderText>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, marginTop: theme.spacing.x2 }}><BinderText variant="caption" style={{ color: theme.colors.textSecondary }}>{t('discovery.profile.away', { distance: profile.distanceKm })}</BinderText><BinderText variant="caption" style={{ color: theme.colors.textMuted }}>{t('discovery.profile.photosReviewed')}</BinderText></View>
-        {profile.bio ? <BinderText variant="body" style={{ color: theme.colors.textPrimary, marginTop: theme.spacing.x2 }} numberOfLines={2}>{profile.bio}</BinderText> : null}
+        <BinderText variant="displayL" style={{ color: onMedia.textPrimary }} numberOfLines={1}>{profile.name} <BinderText variant="heading" style={{ color: onMedia.textPrimary }}>{profile.age}</BinderText></BinderText>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, marginTop: theme.spacing.x2 }}><BinderText variant="caption" style={{ color: onMedia.textSecondary }}>{t('discovery.profile.away', { distance: profile.distanceKm })}</BinderText><BinderText variant="caption" style={{ color: onMedia.textMuted }}>{t('discovery.profile.photosReviewed')}</BinderText></View>
+        {profile.bio ? <BinderText variant="body" style={{ color: onMedia.textPrimary, marginTop: theme.spacing.x2 }} numberOfLines={2}>{profile.bio}</BinderText> : null}
         <View style={{ flexDirection: 'row', gap: theme.spacing.x2, marginTop: theme.spacing.x3, overflow: 'hidden' }}>
-          {profile.tags.slice(0, 3).map((tag) => <View key={tag} style={{ maxWidth: '32%', backgroundColor: theme.colors.overlay, borderWidth: 1, borderColor: theme.colors.borderStrong, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x1 }}><BinderText variant="caption" style={{ color: theme.colors.textPrimary }} numberOfLines={1} ellipsizeMode="tail">{tag}</BinderText></View>)}
+          {profile.tags.slice(0, 3).map((tag) => <View key={tag} style={{ maxWidth: '32%', backgroundColor: theme.colors.overlay, borderWidth: 1, borderColor: theme.colors.borderStrong, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x1 }}><BinderText variant="caption" style={{ color: onMedia.textPrimary }} numberOfLines={1} ellipsizeMode="tail">{tag}</BinderText></View>)}
         </View>
       </View>
     </View>
