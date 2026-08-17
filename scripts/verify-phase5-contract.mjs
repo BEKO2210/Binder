@@ -37,8 +37,11 @@ if (!ranking.includes('attach_decision_to_impression')) failures.push('Durable d
 
 if (!boundary.includes("recordBetaEvent('client_render_error'")) failures.push('Crash fallback does not emit the bounded render-error signal');
 if (boundary.includes('error.message') || boundary.includes('componentStack')) failures.push('Crash telemetry risks sending raw error or component-stack content');
-if (!screen.includes('NEVER IN OPTIONAL DIAGNOSTICS')) failures.push('Beta UI does not explain the diagnostic data boundary');
-if (!screen.includes('Report & Block')) failures.push('Beta feedback UI does not redirect safety reports to moderation controls');
+// The beta screen's copy moved into the locale file; the promise it has to
+// make to the user is unchanged, so the check follows the words.
+const screenCopy = `${screen}\n${read('src/i18n/locales/en.json')}`;
+if (!screenCopy.includes('NEVER IN OPTIONAL DIAGNOSTICS')) failures.push('Beta UI does not explain the diagnostic data boundary');
+if (!screenCopy.includes('Report & Block')) failures.push('Beta feedback UI does not redirect safety reports to moderation controls');
 
 if (failures.length) {
   console.error(failures.join('\n'));
