@@ -1,0 +1,939 @@
+{
+  "$meta": {
+    "name": "Turkish",
+    "endonym": "Türkçe",
+    "flag": "🇹🇷",
+    "translatedBy": "Binder",
+    "sourceOfTruth": false
+  },
+  "sessionExpired": {
+    "title": "Oturumunuz sona erdi",
+    "message": "Binder'ı kullanmaya devam etmek için yeniden giriş yapın.",
+    "action": "Yeniden giriş yap"
+  },
+  "settings": {
+    "title": "Uygulama ayarları",
+    "eyebrow": "TERCİHLER",
+    "language": {
+      "title": "Dil",
+      "copy": "Binder, desteklediğinde cihazınızın dilini kullanır. Bunu değiştirmek için bir dil seçin.",
+      "systemLabel": "Cihazımla eşleştir",
+      "systemCopy": "Cihazınızın dilini kullanır",
+      "back": "Ayarlara dön"
+    },
+    "appearance": {
+      "title": "Görünüm",
+      "copy": "Cihazınızın ayarlarını izleyin veya Binder'ı açık ya da koyu temada sabitleyin.",
+      "system": "Cihazımla eşleştir",
+      "dark": "Her zaman koyu",
+      "light": "Her zaman açık"
+    },
+    "motion": {
+      "title": "Hareket",
+      "copy": "Azaltılmış hareket tüm durum değişikliklerini korur, yalnızca animasyonları durdurur.",
+      "system": "Cihazımla eşleştir",
+      "full": "Tam hareket",
+      "reduce": "Azaltılmış hareket"
+    },
+    "haptics": {
+      "title": "Dokunsal geri bildirim",
+      "copy": "Kısa titreşimler eşikleri ve onayları belirtir.",
+      "label": "Etkileşimlerde titreşim"
+    },
+    "quietHours": {
+      "title": "Sessiz saatler",
+      "copy": "Bind, mesaj, moderasyon ve ürün bildirimleri yerel bitiş saatine kadar bekler. Acil güvenlik uyarıları hemen gönderilir.",
+      "label": "Sessiz saatleri kullan",
+      "start": "Başlangıç",
+      "end": "Bitiş",
+      "invalid": "HH:MM kullanın"
+    },
+    "diagnostics": {
+      "title": "Tanılama",
+      "copy": "Yalnızca isteğe bağlı teknik olaylar. Biyografi, mesajlar, ham yığın izleri veya kesin konum yok.",
+      "label": "İsteğe bağlı tanılamayı paylaş",
+      "checking": "Tanılama kontrol ediliyor…"
+    },
+    "reset": {
+      "action": "Uygulama ayarlarını sıfırla",
+      "confirmTitle": "Uygulama ayarları sıfırlansın mı?",
+      "confirmCopy": "Görünüm, hareket, dokunsal geri bildirim, vurgu rengi, bildirim kategorileri ve sessiz saatler varsayılanlarına döner. Profiliniz ve konuşmalarınız etkilenmez.",
+      "cancel": "Ayarlarımı koru",
+      "confirm": "Sıfırla",
+      "done": "Uygulama ayarları varsayılanlarına döndü.",
+      "failed": "Ayarlar sıfırlanamadı."
+    }
+  },
+  "common": {
+    "retry": "Tekrar dene",
+    "close": "Kapat",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "loading": "Yükleniyor…"
+  },
+  "auth": {
+    "errors": {
+      "connection": "Bağlantı yok. İnternetinizi kontrol edip tekrar deneyin.",
+      "credentials": "E-posta veya parola yanlış.",
+      "registered": "Bu e-posta zaten kayıtlı. Bunun yerine giriş yapın.",
+      "passwordLength": "Parola en az 8 karakter olmalıdır.",
+      "email": "Geçerli bir e-posta adresi girin.",
+      "generic": "Bir şeyler ters gitti. Tekrar deneyin."
+    },
+    "messages": {
+      "passwordChanged": "Parola değiştirildi. Giriş yaptınız.",
+      "resetSent": "Bu adresin bir hesabı varsa sıfırlama bağlantısı yolda. Bu telefonda açın.",
+      "accountCreated": "Hesap oluşturuldu. E-postayı doğrulayın, ardından giriş yapın."
+    },
+    "headers": {
+      "recoveryTitle": "Yeni bir parola belirleyin.",
+      "signInTitle": "Tekrar hoş geldiniz.",
+      "signUpTitle": "Gerçek sizle başlayın.",
+      "resetTitle": "Giriş yapamıyor musunuz?",
+      "recoveryCopy": "Burada daha önce kullanmadığınız bir parola seçin. Bu cihazda oturumunuz açık kalır.",
+      "resetCopy": "Kayıt olurken kullandığınız adresi girin; yeni parola belirlemeniz için bağlantı gönderelim.",
+      "defaultCopy": "Yetişkinler için flört. Sohbetten önce karşılıklı ilgi."
+    },
+    "fields": {
+      "emailLabel": "E-posta",
+      "emailPlaceholder": "siz@example.com",
+      "passwordLabel": "Parola",
+      "passwordPlaceholder": "En az {length} karakter",
+      "repeatPasswordLabel": "Parolayı tekrarla",
+      "repeatPasswordPlaceholder": "Bir kez daha yazın",
+      "repeatPasswordHelper": "Hesap oluşturulmadan önce iki giriş aynı olmalıdır."
+    },
+    "actions": {
+      "savePassword": "Yeni parolayı kaydet",
+      "signIn": "Giriş yap",
+      "createAccount": "Hesap oluştur",
+      "sendResetLink": "Sıfırlama bağlantısı gönder",
+      "forgotPassword": "Parolanızı mı unuttunuz?",
+      "createAccountPrompt": "Yeni misiniz? Hesap oluşturun",
+      "signInPrompt": "Zaten hesabınız var mı? Giriş yapın",
+      "backToSignIn": "Girişe dön"
+    },
+    "ageRequirement": "Binder'ı kullanmak için en az 18 yaşında olmalısınız."
+  },
+  "matches": {
+    "header": {
+      "title": "Bind'leriniz",
+      "eyebrow": "KONUŞMALAR"
+    },
+    "notifications": {
+      "enabledTitle": "Mesaj uyarıları etkin",
+      "enablingTitle": "Uyarılar etkinleştiriliyor…",
+      "blockedTitle": "Uyarılar engellendi",
+      "title": "Mesaj uyarıları",
+      "unavailableCopy": "Anlık bildirimler bu cihazda desteklenmiyor. Sohbet normal şekilde çalışmaya devam eder.",
+      "offlineCopy": "Anlık bildirim hizmetine ulaşılamadı. Bağlantınızı kontrol edip tekrar deneyin.",
+      "blockedCopy": "Android, Binder bildirimlerini engelliyor. Sistem ayarlarından izin verin.",
+      "enabledCopy": "Bildirim kategorileri Uygulama Ayarları'ndan değiştirilebilir.",
+      "copy": "Yeni Bind'ler ve mesajlar için uyarıları etkinleştirin."
+    },
+    "actions": {
+      "refresh": "Yenile",
+      "retry": "Yeniden dene",
+      "enable": "Etkinleştir",
+      "openSettings": "Ayarları aç",
+      "tryAgain": "Tekrar dene",
+      "goToDiscovery": "Keşfet'e git"
+    },
+    "states": {
+      "loading": "Bind'leriniz yükleniyor…",
+      "offlineTitle": "Çevrimdışısınız",
+      "offlineMessage": "Bağlantınızı kontrol edip Bind'lerinizi tekrar yüklemeyi deneyin.",
+      "errorTitle": "Bind'ler yüklenemedi"
+    },
+    "empty": {
+      "title": "Bir Bind birlikte başlar",
+      "message": "Siz ve Keşfet'teki biri karşılıklı olarak Bind'i seçtiğinizde burada görünür ve ikinizden biri konuşmayı başlatabilir.",
+      "conversations": "İlk mesajdan sonra konuşmalarınız burada görünür."
+    },
+    "newMatches": {
+      "heading": "YENİ BIND'LER · BİR ŞEY BAŞLAT",
+      "sayHello": "Merhaba de"
+    },
+    "accessibility": {
+      "startConversation": "{name} ile konuşma başlat",
+      "openConversation": "{name} ile konuşmayı aç",
+      "unreadOne": "{count} okunmamış mesaj",
+      "unreadOther": "{count} okunmamış mesaj"
+    }
+  },
+  "partnerProfile": {
+    "errors": {
+      "load": "Bu profil yüklenemedi.",
+      "title": "Profil kullanılamıyor"
+    },
+    "actions": {
+      "back": "Geri"
+    },
+    "accessibility": {
+      "close": "Tam profili kapat",
+      "photosReviewed": "Fotoğraflar Keşfet'te görünmeden önce incelenir"
+    },
+    "loading": "Profil açılıyor…",
+    "photosReviewed": "Fotoğraflar incelendi",
+    "away": "{distance} km uzakta"
+  },
+  "discovery": {
+    "errors": {
+      "load": "Keşfet yüklenemedi.",
+      "openConversation": "Konuşma açılamadı. Binds bölümünde bulabilirsiniz.",
+      "saveDecision": "Kararınız kaydedilemedi.",
+      "safetyReport": "Güvenlik bildirimi gönderilemedi."
+    },
+    "states": {
+      "loadErrorTitle": "Keşfet yüklenemedi",
+      "offlineTitle": "Çevrimdışısınız",
+      "offlineMessage": "Bağlantı yok. İnternetinizi kontrol edip tekrar deneyin.",
+      "saving": "Kaydediliyor…"
+    },
+    "location": {
+      "title": "Konum, listenizi oluşturmaya yardımcı olur",
+      "message": "Binder yakındaki kişileri bulmak için ön plandaki konumunuzu kullanır. Kesin konumunuz hiç kimseye gösterilmez."
+    },
+    "header": {
+      "title": "Keşfet",
+      "copy": "Her iki tarafa da uyan kişiler."
+    },
+    "filters": {
+      "summary": "{minAge}–{maxAge} · {distance} km",
+      "label": "Filtreler"
+    },
+    "empty": {
+      "filteredEyebrow": "FİLTRELER LİSTENİZİ DARALTIYOR",
+      "filteredTitle": "Şu anda bu filtrelere uyan kimse yok.",
+      "filteredMessage": "Binder'ın standart filtreleriyle uygun kişiler var. Kimlerin uyduğunu görmek için filtrelerinizi değiştirin.",
+      "genuineEyebrow": "GÜNCELSİNİZ",
+      "genuineTitle": "Listeniz şimdilik boş.",
+      "genuineMessage": "Şu anda her iki tarafa da uyan yeni onaylı profil yok. Yeni eşleşmeler burada otomatik olarak görünecek."
+    },
+    "actions": {
+      "tryAgain": "Tekrar dene",
+      "allowLocation": "Konuma izin ver",
+      "changeFilters": "Filtreleri değiştir",
+      "bindStamp": "BIND",
+      "passStamp": "GEÇ",
+      "reportAndBlock": "Bildir ve engelle",
+      "cancel": "İptal"
+    },
+    "accessibility": {
+      "openFilters": "Keşfet filtrelerini aç",
+      "matchCreated": "{name} ile Bind oldunuz.",
+      "safetyOptions": "{name} için güvenlik seçenekleri",
+      "closeSafetyOptions": "Güvenlik seçeneklerini kapat",
+      "bindProfile": "Profili Bind et",
+      "passProfile": "Profili geç",
+      "profileSummary": "{name}, {age}, {distance} kilometre uzakta"
+    },
+    "safety": {
+      "eyebrow": "GÜVENLİK · {name}",
+      "title": "Binder neyi incelemeli?",
+      "message": "Bildirim bu profili hemen engeller. Kimin bildirdiği veya engellediği karşı tarafa söylenmez.",
+      "reasons": {
+        "underage": {
+          "label": "18 yaşından küçük olabilir",
+          "detail": "En yüksek öncelikli güvenlik incelemesi."
+        },
+        "harassment": {
+          "label": "Taciz veya tehdit",
+          "detail": "Kötü niyetli, zorlayıcı veya tehditkâr davranış."
+        },
+        "fake": {
+          "label": "Sahte profil veya kimliğe bürünme",
+          "detail": "Kimlik veya profil aldatıcı görünüyor."
+        },
+        "spam": {
+          "label": "Spam veya dolandırıcılık",
+          "detail": "Ticari spam, dolandırıcılık veya şüpheli talep."
+        },
+        "sexualContent": {
+          "label": "Cinsel içerik",
+          "detail": "Açık veya istenmeyen cinsel profil içeriği."
+        },
+        "violence": {
+          "label": "Şiddet",
+          "detail": "Tehditler veya grafik şiddet içeriği."
+        },
+        "other": {
+          "label": "Diğer güvenlik endişesi",
+          "detail": "Yukarıda yer almayan bir endişe."
+        }
+      }
+    },
+    "profile": {
+      "away": "{distance} km uzakta",
+      "photosReviewed": "· Fotoğraflar incelendi"
+    }
+  },
+  "chat": {
+    "day": {
+      "today": "Bugün",
+      "yesterday": "Dün"
+    },
+    "header": {
+      "title": "{name}, {age}",
+      "eyebrow": "PROFİLİ GÖR"
+    },
+    "alerts": {
+      "messageActions": "Mesaj işlemleri",
+      "unmatchTitle": "{name} ile Bind kaldırılsın mı?",
+      "unmatchMessage": "Konuşma ikiniz için de hemen kapanır.",
+      "blockTitle": "{name} engellensin mi?",
+      "blockMessage": "Birbirinizden kaybolursunuz ve konuşma hemen kapanır."
+    },
+    "actions": {
+      "copy": "Kopyala",
+      "report": "Bildir",
+      "cancel": "İptal",
+      "unmatch": "Bind'i kaldır",
+      "block": "Engelle",
+      "reportAndBlock": "Bildir ve engelle",
+      "backToSafetyControls": "Güvenlik kontrollerine dön",
+      "refresh": "Yenile",
+      "tryAgain": "Tekrar dene",
+      "loadEarlierMessages": "Önceki mesajları yükle",
+      "retry": "Yeniden dene",
+      "discard": "Vazgeç",
+      "backToMatches": "Bind'lere dön"
+    },
+    "ended": {
+      "title": "Bu konuşma sona erdi",
+      "message": "Bu Bind artık etkin değil. Konuşma kapatıldı."
+    },
+    "safety": {
+      "title": "Güvenlik kontrolleri",
+      "reportMessage": "Bu mesajı bildir",
+      "reportPerson": "{name} adlı kişiyi bildir",
+      "detailsPlaceholder": "Güvenlik ekibi için isteğe bağlı ayrıntılar",
+      "reasons": {
+        "harassment": "Taciz",
+        "spam": "Spam",
+        "fake": "Sahte profil",
+        "underage": "18 yaş altı",
+        "sexualContent": "Cinsel içerik",
+        "violence": "Şiddet",
+        "other": "Diğer"
+      }
+    },
+    "states": {
+      "opening": "Konuşma açılıyor…",
+      "offlineTitle": "Çevrimdışısınız",
+      "loadErrorTitle": "Konuşma yüklenemedi"
+    },
+    "empty": {
+      "title": "Bind oldunuz.",
+      "message": "Normal sohbet yalnızca karşılıklı ilgiden sonra açılır. Gerçek bir şey söyleyin."
+    },
+    "message": {
+      "sentAt": "{time} · Gönderildi",
+      "new": "Yeni mesaj",
+      "sending": "Gönderiliyor…",
+      "placeholder": "{name} kişisine mesaj"
+    },
+    "errors": {
+      "messageNotSent": "Mesaj gönderilmedi."
+    },
+    "accessibility": {
+      "backToMatches": "Bind'lere dön",
+      "openProfile": "{name} profilini aç",
+      "safetyControls": "Konuşma güvenlik kontrolleri",
+      "closeSafetyControls": "Güvenlik kontrollerini kapat",
+      "reportDetails": "Bildirim ayrıntıları",
+      "holdToCopy": "Bu mesajı kopyalamak için basılı tut",
+      "holdToCopyOrReport": "Bu mesajı kopyalamak veya bildirmek için basılı tut",
+      "messageSent": "Mesaj gönderildi.",
+      "messageFailed": "Mesaj gönderilmedi.",
+      "scrollToNewMessage": "Yeni mesaja kaydır",
+      "retrySending": "\"{message}\" mesajını göndermeyi yeniden dene",
+      "discardUnsent": "Gönderilmemiş \"{message}\" mesajını sil",
+      "messagePerson": "{name} kişisine mesaj gönder",
+      "sendingMessage": "Mesaj gönderiliyor",
+      "sendMessageTo": "{name} kişisine mesaj gönder"
+    }
+  },
+  "profile": {
+    "errors": {
+      "load": "Profil yüklenemedi.",
+      "openInformation": "Binder bilgileri açılamadı.",
+      "deleteAccount": "Hesabınız silinemedi."
+    },
+    "alerts": {
+      "deleteTitle": "Binder hesabı silinsin mi?",
+      "deleteMessage": "Bu işlem Binder hesabınızı ve normal ürün verilerini kalıcı olarak siler. Geri alınamaz.",
+      "signOutTitle": "Binder'dan çıkış yapılsın mı?",
+      "signOutMessage": "Tekrar giriş yapana kadar bu cihazda uygulama içi güncellemeler almazsınız. Profiliniz, Bind'leriniz ve mesajlarınız Binder'da kalır."
+    },
+    "actions": {
+      "cancel": "İptal",
+      "deleteAccount": "Hesabı sil",
+      "staySignedIn": "Oturumu açık tut",
+      "signOut": "Çıkış yap",
+      "completeProfile": "Profili tamamla",
+      "tryAgain": "Tekrar dene"
+    },
+    "states": {
+      "loading": "Profiliniz yükleniyor…",
+      "offlineTitle": "Çevrimdışısınız",
+      "offlineMessage": "Bağlantınızı kontrol edip profilinizi tekrar yüklemeyi deneyin.",
+      "errorTitle": "Profiliniz yüklenemedi"
+    },
+    "header": {
+      "title": "Profiliniz",
+      "eyebrow": "BINDER"
+    },
+    "accessibility": {
+      "primaryPhoto": "Birincil profil fotoğrafınız"
+    },
+    "notice": {
+      "warningEyebrow": "HESAP BİLDİRİMİ",
+      "warningTitle": "Hesabınızla ilgili bir not",
+      "suspendedEyebrow": "HESAP DURUMU",
+      "suspendedTitle": "Hesabınız askıya alındı",
+      "reasonUnavailable": "Ek ayrıntı mevcut değil.",
+      "warnedOn": "Yayınlanma tarihi: {date}",
+      "suspendedEffect": "Askıya alma süresince Keşfet ve mesajlar duraklatılır."
+    },
+    "empty": {
+      "addFirstPhoto": "İlk fotoğrafınızı ekleyin",
+      "addBio": "İnsanların size ne soracağını bilmesi için kendinizle ilgili birkaç gerçek cümle ekleyin."
+    },
+    "completeness": {
+      "eyebrow": "PROFİL GÜCÜ",
+      "percent": "%{percent} tamamlandı",
+      "done": "{item} · tamam",
+      "items": {
+        "photos": "Üç fotoğraf ekle",
+        "bio": "Bir biyografi yaz",
+        "interests": "Üç ilgi alanı seç"
+      }
+    },
+    "hub": {
+      "profileTitle": "Profil ve fotoğraflar",
+      "profileCopy": "Profilinizi, keşif tercihlerinizi ve moderasyondan geçen en fazla altı fotoğrafı düzenleyin.",
+      "settingsTitle": "Uygulama ayarları",
+      "settingsCopy": "Görünüm, dokunsal geri bildirim, hareket, bildirim tercihleri ve sessiz saatler.",
+      "betaTitle": "Beta programı",
+      "betaCopy": "İsteğe bağlı tanılama ve özel geri bildirim.",
+      "aboutTitle": "Hakkında ve yasal bildirim",
+      "aboutCopy": "Yasal bilgiler, politikalar ve kullandığınız sürüm."
+    },
+    "safety": {
+      "eyebrow": "GÜVENLİK VE GİZLİLİK",
+      "terms": "Şartlar ve Topluluk Kuralları",
+      "privacy": "Gizlilik Politikası",
+      "deletionDetails": "Silme ve saklama ayrıntıları"
+    },
+    "account": {
+      "eyebrow": "HESAP İŞLEMLERİ",
+      "irreversible": "GERİ ALINAMAZ",
+      "deleteTitle": "Binder hesabını sil",
+      "deleteCopy": "Keşfet'i ve konuşmaları durdurur, profil medyasını kaldırır ve kimlik doğrulama kimliğinizi siler."
+    }
+  },
+  "profileSettings": {
+    "errors": {
+      "load": "Profil ayarları yüklenemedi.",
+      "addPhoto": "Fotoğraf eklenemedi.",
+      "reorderPhotos": "Fotoğraflar yeniden sıralanamadı.",
+      "makePrimary": "Bu fotoğraf birincil yapılamadı.",
+      "removePhoto": "Fotoğraf kaldırılamadı.",
+      "replacePhoto": "Fotoğraf değiştirilemedi.",
+      "save": "Profil ayarları kaydedilemedi."
+    },
+    "messages": {
+      "photoAdded": "Fotoğraf optimize edildi, yüklendi ve güvenlik incelemesine gönderildi.",
+      "saved": "Profil ayarları kaydedildi."
+    },
+    "alerts": {
+      "removeTitle": "Profil fotoğrafı kaldırılsın mı?",
+      "removePrimaryMessage": "Binder birincil fotoğrafı yalnızca başka bir onaylı fotoğraf onun yerini alabiliyorsa kaldırır.",
+      "removeMessage": "Bu fotoğraf profilinizden ve depolamadan kaldırılacaktır."
+    },
+    "actions": {
+      "cancel": "İptal",
+      "remove": "Kaldır",
+      "saveProfile": "Profili kaydet",
+      "addPhoto": "Fotoğraf ekle",
+      "makePrimary": "Birincil yap",
+      "retryUpload": "Yüklemeyi yeniden dene",
+      "replacePhoto": "Fotoğrafı değiştir"
+    },
+    "states": {
+      "loading": "Profil ayarları yükleniyor…"
+    },
+    "gallery": {
+      "photoOf": "{total} fotoğraftan {current}.",
+      "photo": "Fotoğraf",
+      "name": "galeriniz"
+    },
+    "header": {
+      "title": "Profil ayarları",
+      "sectionTitle": "İnsanların gördüğü profili şekillendirin.",
+      "sectionCopy": "Doğum tarihiniz kilitli kalır. Her fotoğraf Keşfet'te görünmeden önce bağımsız olarak incelenir."
+    },
+    "accessibility": {
+      "closeFullPhoto": "Tam fotoğrafı kapat",
+      "backToProfile": "Profile dön",
+      "photoUploaded": "Fotoğraf yüklendi.",
+      "photoRemoved": "Fotoğraf kaldırıldı.",
+      "addPhoto": "Profil fotoğrafı ekle",
+      "viewPhoto": "{number}. fotoğrafı tam görüntüle",
+      "moveLeft": "{number}. fotoğrafı sola taşı",
+      "removePhoto": "{number}. fotoğrafı kaldır",
+      "moveRight": "{number}. fotoğrafı sağa taşı"
+    },
+    "photos": {
+      "eyebrow": "FOTOĞRAFLAR · {count}/6",
+      "orderCopy": "Sürükleme gerekmez: tam sırayı belirlemek için ok kontrollerini kullanın. Fotoğraf 1 insanların ilk gördüğü fotoğraftır.",
+      "optimized": "Yüklemeden önce optimize edildi",
+      "preparing": "Fotoğraf hazırlanıyor…",
+      "uploading": "Fotoğraf yükleniyor…",
+      "uploadFailed": "Fotoğraf yüklenemedi",
+      "primary": "FOTOĞRAF 1 · BİRİNCİL",
+      "dimensions": "{size} KB · {width} × {height}",
+      "rejectionReason": "Neden: {reason}",
+      "rejectionReasonUnavailable": "Bir neden belirtilmedi.",
+      "status": {
+        "approved": "Onaylandı",
+        "pending": "İnceleniyor",
+        "rejected": "Onaylanmadı",
+        "removed": "Kaldırıldı"
+      }
+    },
+    "details": {
+      "eyebrow": "PROFİL AYRINTILARI",
+      "copy": "İnsanların gördüğü kimlik ve bağlam budur."
+    },
+    "fields": {
+      "firstName": "Ad",
+      "bio": "Biyografi",
+      "bioCount": "{count}/500",
+      "gender": "Ben",
+      "interests": "İlgi alanları"
+    },
+    "discovery": {
+      "eyebrow": "KEŞİF TERCİHLERİ",
+      "title": "Keşif aralığı",
+      "copy": "Keşfet listenizde kimlerin görünebileceğini belirler."
+    }
+  },
+  "discoveryFilterSheet": {
+    "errors": {
+      "authentication": "Kimlik doğrulama gerekli.",
+      "load": "Keşif ayarlarınız yüklenemedi.",
+      "audience": "Tanışmak istediğiniz en az bir kişi grubunu seçin.",
+      "age": "En az bir yıllık yaş aralığı seçin.",
+      "distance": "1 ile 500 km arasında bir mesafe seçin.",
+      "save": "Binder bu filtreleri kaydedemedi. Bağlantınızı kontrol edip tekrar deneyin."
+    },
+    "header": {
+      "title": "Aramanız",
+      "eyebrow": "KEŞFET"
+    },
+    "states": {
+      "loadErrorTitle": "Filtreler yüklenemedi",
+      "loading": "Filtreleriniz yükleniyor…"
+    },
+    "actions": {
+      "tryAgain": "Tekrar dene",
+      "close": "Kapat",
+      "apply": "Filtreleri uygula",
+      "reset": "Varsayılanlara sıfırla"
+    },
+    "accessibility": {
+      "close": "Keşif filtrelerini kapat",
+      "filtersApplied": "Filtreler uygulandı."
+    },
+    "count": {
+      "unavailable": "Sayı kullanılamıyor",
+      "checking": "Kimlerin uyduğu kontrol ediliyor…",
+      "none": "Şu anda uyan kimse yok",
+      "personOne": "Şu anda {count} kişi uyuyor",
+      "personOther": "Şu anda {count} kişi uyuyor",
+      "failed": "Binder şu anda kontrol edemiyor. Tekrar denemek için bir filtreyi değiştirin — ayarlarınız uygulanmaya devam eder.",
+      "likelyCause": "Muhtemel neden {cause}. Uygulamadan önce aralığı genişletin.",
+      "updates": "Aramanızı şekillendirdikçe bu güncellenir.",
+      "causes": {
+        "audience": "tanışmak istediğiniz kişiler",
+        "age": "yaş aralığınız",
+        "distance": "mesafeniz"
+      }
+    }
+  },
+  "onboarding": {
+    "progress": "ADIM {number}/{total}",
+    "steps": {
+      "eligibility": {
+        "eyebrow": "UYGUNLUK · 18+",
+        "title": "Önce yaşınızı doğrulayın.",
+        "copy": "Binder yalnızca yetişkinler içindir. Doğum tarihiniz bir kez kontrol edilir, ilk kurulumdan sonra kilitlenir ve diğer kişilere asla gösterilmez.",
+        "next": "Sırada: adınız ve cinsiyetiniz"
+      },
+      "identity": {
+        "eyebrow": "TEMEL BİLGİLER",
+        "title": "İnsanlar sizi nasıl tanısın?",
+        "copy": "Kullandığınız adı yazın. Bu bilgiler profilinizde görünür.",
+        "next": "Sırada: biyografiniz ve ilgi alanlarınız"
+      },
+      "profile": {
+        "eyebrow": "HAKKINIZDA",
+        "title": "İnsanlara merhaba demeleri için bir neden verin.",
+        "copy": "Kısa ve belirgin bir biyografi ile birkaç ilgi alanı gerçek bir sohbet başlatmayı kolaylaştırır.",
+        "next": "Sırada: kimi tanımak istediğiniz"
+      },
+      "discovery": {
+        "eyebrow": "KEŞFET",
+        "title": "Size uygun kişileri seçin.",
+        "copy": "Bu tercihler Keşfet'i şekillendirir ve daha sonra değiştirilebilir.",
+        "next": "Sırada: ilk fotoğrafınızı ekleyin"
+      },
+      "photo": {
+        "eyebrow": "FOTOĞRAFINIZ",
+        "title": "Profile bir yüz ekleyin.",
+        "copy": "İlk fotoğrafınız insanların ilk gördüğü fotoğraftır. Görünmeden önce optimize edilir ve güvenlik için incelenir.",
+        "next": "Bitir ve Binder'a gir"
+      }
+    },
+    "errors": {
+      "preparePhoto": "Fotoğraf hazırlanamadı.",
+      "photoRequired": "Devam etmek için bir profil fotoğrafı ekleyin.",
+      "complete": "İlk kurulum tamamlanamadı."
+    },
+    "identity": {
+      "firstName": "Ad",
+      "gender": "Ben"
+    },
+    "profile": {
+      "bioLabel": "Biyografi · isteğe bağlı",
+      "bioHelper": "{count}/500 · Daha sonra değiştirebilirsiniz",
+      "bioPlaceholder": "Örneğin: pazar yürüyüşleri, canlı müzik ve harika kahve.",
+      "interests": "İlgi alanları · en fazla 12 seçin ({count})"
+    },
+    "photo": {
+      "replaceAccessibility": "Birincil profil fotoğrafını değiştir",
+      "chooseAccessibility": "Birincil profil fotoğrafını seç",
+      "preparing": "Fotoğraf hazırlanıyor…",
+      "choose": "Fotoğraf seç",
+      "resizing": "Yüklemeden önce yeniden boyutlandırılıyor ve sıkıştırılıyor",
+      "openLibrary": "Fotoğraf kitaplığınızı açmak için dokunun"
+    },
+    "actions": {
+      "back": "Geri",
+      "finish": "Profili tamamla",
+      "continue": "Devam et"
+    },
+    "birthDate": {
+      "title": "18 yaşında veya daha büyük olmalısınız",
+      "copy": "Gerçek doğum tarihinizi girin. 18 yaşından küçükseniz Binder profili oluşturamazsınız.",
+      "day": "Gün",
+      "month": "Ay",
+      "year": "Yıl",
+      "dayPlaceholder": "23",
+      "monthPlaceholder": "04",
+      "yearPlaceholder": "1995",
+      "eligible": "Uygun · yaş {age}",
+      "underage": "Binder'ı kullanmak için en az 18 yaşında olmalısınız.",
+      "invalid": "Bu tarih mevcut değil. Gün ve ayı kontrol edin.",
+      "implausible": "Girdiğiniz yılı kontrol edin.",
+      "private": "Kesin doğum tarihiniz gizli kalır."
+    }
+  },
+  "beta": {
+    "errors": {
+      "load": "Beta ayarları yüklenemedi.",
+      "updateDiagnostics": "Beta tanılaması güncellenemedi.",
+      "submitFeedback": "Beta geri bildirimi gönderilemedi."
+    },
+    "messages": {
+      "diagnosticsEnabled": "İsteğe bağlı tanılama etkin. Binder yalnızca sabit teknik olay alanlarını kaydeder.",
+      "diagnosticsDisabled": "İsteğe bağlı tanılama kapatıldı. Mevcut isteğe bağlı istemci tanılama verileri silindi.",
+      "feedbackReceived": "Geri bildirim alındı. Binder'ı test ettiğiniz için teşekkürler."
+    },
+    "loading": "Beta programı yükleniyor…",
+    "header": {
+      "title": "Beta programı",
+      "backAccessibility": "Profile dön"
+    },
+    "intro": {
+      "title": "Binder'ı ölçülebilir yapın, müdahaleci değil.",
+      "copy": "Sıralama kalitesi Binder'ın kendi sunucu olaylarından gelir. İsteğe bağlı istemci tanılaması ayrı bir tercihtir ve varsayılan olarak kapalıdır."
+    },
+    "diagnostics": {
+      "title": "İsteğe bağlı tanılama",
+      "copy": "Beta sırasında yükleme süresi ve görüntüleme hatalarını ayıklamak için yararlıdır.",
+      "accessibilityLabel": "İsteğe bağlı Binder beta tanılaması",
+      "canRecord": "KAYDEDEBİLİR",
+      "recorded": "Sabit ekran/olay adı, süre, küçük sayaç, başarı/hata sonucu, platform ve uygulama sürümü.",
+      "never": "İSTEĞE BAĞLI TANILAMADA ASLA",
+      "excluded": "Mesaj metni, biyografi/profil metni, fotoğraflar, kesin konum, kişiler, serbest biçimli meta veriler, ham istisna mesajları veya yığın izleri.",
+      "retention": "İstemci tanılaması: {clientDays} gün · sıralama gözlemleri: {rankingDays} gün"
+    },
+    "ranking": {
+      "eyebrow": "SIRALAMA GÖZLEMLENEBİLİRLİĞİ",
+      "title": "Binder listeden ne öğrenir.",
+      "copy": "Sunucu sıralama konumunu, ortak ilgi sayısını, 10 km'lik mesafe grubunu ve sonraki Bind/Geç sonucunu kaydeder. Kesin koordinatlar ve profil içeriği sıralama telemetrisine kopyalanmaz."
+    },
+    "feedback": {
+      "eyebrow": "ÖZEL BETA GERİ BİLDİRİMİ",
+      "title": "Neyin bozulduğunu veya yanlış hissettirdiğini anlatın.",
+      "copy": "Tacizci veya güvensiz bir kişi için profilinde ya da sohbette Bildir ve engelle'yi kullanın. Bu form ürün geri bildirimi içindir, moderasyon kuyruğu değildir.",
+      "overallExperience": "Genel deneyim",
+      "details": "Ayrıntılar",
+      "characterCount": "{count}/1500",
+      "placeholder": "Ne oldu? Bunun yerine ne olmasını bekliyordunuz?",
+      "send": "Beta geri bildirimi gönder"
+    },
+    "categories": {
+      "bug": "Hata",
+      "ux": "UX",
+      "safety": "Güvenlik",
+      "performance": "Performans",
+      "other": "Diğer"
+    }
+  },
+  "legalGate": {
+    "errors": {
+      "open": "Bu sayfa açılamadı.",
+      "accept": "Kabulünüz kaydedilemedi."
+    },
+    "header": {
+      "eyebrow": "OLUŞTURMADAN VEYA PAYLAŞMADAN ÖNCE",
+      "title": "Sohbetten önce açık kurallar.",
+      "copy": "Binder 18+ içindir ve karşılıklı seçime dayanır. Profil oluşturmadan, fotoğraf yüklemeden veya mesaj göndermeden önce mevcut Şartlar ve Topluluk Kuralları ile Gizlilik Politikası'nı kabul edin."
+    },
+    "policies": {
+      "terms": {
+        "title": "Şartlar ve Topluluk Kuralları",
+        "copy": "Yalnızca 18+ · rıza · taciz yok · cinsel istismar yok · kimliğe bürünme, dolandırıcılık veya engel aşma yok."
+      },
+      "privacy": {
+        "title": "Gizlilik Politikası",
+        "copy": "Binder'ın neleri sakladığı, konumun neden gizli kaldığı, güvenlik kayıtlarının nasıl çalıştığı ve hesabın nasıl silineceği."
+      },
+      "version": "Sürüm {version}"
+    },
+    "confirmation": "Mevcut Şartlar ve Topluluk Kuralları ile Gizlilik Politikası'nı okudum ve kabul ediyorum.",
+    "actions": {
+      "agree": "Kabul et ve devam et"
+    },
+    "noSkip": "Atlama seçeneği yoktur. Önemli politika değişiklikleri, daha fazla kullanıcı içeriği oluşturulmadan önce yeniden kabul gerektirebilir."
+  },
+  "discoveryPreferences": {
+    "groups": {
+      "preset": "Bir hazır ayarla başla",
+      "audience": "Tanışmak istediğim kişiler",
+      "age": "Yaş",
+      "distance": "Mesafe"
+    },
+    "accessibility": {
+      "minimumAge": "Minimum yaş",
+      "maximumAge": "Maksimum yaş",
+      "searchRadius": "Arama yarıçapı"
+    },
+    "units": {
+      "years": "yıl",
+      "km": "km"
+    }
+  },
+  "about": {
+    "errors": {
+      "openPage": "Bu sayfa açılamadı. Daha sonra tekrar deneyin."
+    },
+    "header": {
+      "title": "Binder hakkında"
+    },
+    "accessibility": {
+      "backToProfile": "Profile dön"
+    },
+    "intro": {
+      "title": "Tek bir ücretsiz ürün.",
+      "copy": "Binder bağımsız, ticari olmayan bir proje olarak geliştirilir ve işletilir. Reklam yok, ücretli plan yok, veri simsarı yok."
+    },
+    "policies": {
+      "eyebrow": "POLİTİKALAR",
+      "terms": "Şartlar ve Topluluk Kuralları",
+      "privacy": "Gizlilik Politikası",
+      "deletion": "Hesap silme ve saklama"
+    },
+    "version": "Binder {version}"
+  },
+  "appSettings": {
+    "common": {
+      "system": "Sistem"
+    },
+    "errors": {
+      "loadDiagnostics": "Tanılama tercihi yüklenemedi.",
+      "updateDiagnostics": "Tanılama güncellenemedi.",
+      "updatePush": "Anlık bildirimler güncellenemedi."
+    },
+    "messages": {
+      "pushOff": "Bu kurulumda anlık bildirimler kapalı.",
+      "pushActive": "Bu kurulumda anlık bildirimler etkin.",
+      "pushDenied": "Android bildirim izni reddedildi. Binder'a sistem ayarlarından izin verebilirsiniz.",
+      "missingProject": "Bu derleme henüz EAS projesine bağlı değil.",
+      "pushOffline": "Anlık bildirim hizmetine ulaşılamadı. Çevrimiçi olduğunuzda tekrar deneyin.",
+      "pushUnavailable": "Uzak anlık bildirim yalnızca Android veya iOS geliştirme/yayın derlemesinde kullanılabilir."
+    },
+    "states": {
+      "loading": "Uygulama ayarları yükleniyor…"
+    },
+    "header": {
+      "title": "Uygulama ayarları",
+      "sectionTitle": "Binder'ı size uygun hale getirin.",
+      "sectionCopy": "Görsel tercihler güvenlik renklerini asla değiştirmez. Anlık bildirim teslim kuralları Binder sunucusu tarafından uygulanır."
+    },
+    "accessibility": {
+      "backToProfile": "Profile dön"
+    },
+    "appearance": {
+      "title": "Görünüm",
+      "copy": "Cihazınızı izleyin veya Binder'ı koyu tutun.",
+      "dark": "Koyu",
+      "light": "Her zaman açık"
+    },
+    "accent": {
+      "title": "Vurgu",
+      "copy": "Yalnızca birincil/güven vurguları değişir. Uyarı ve yıkıcı renkler sabit kalır.",
+      "options": {
+        "lime": "Binder Lime",
+        "blue": "Elektrik Mavisi",
+        "violet": "Mor",
+        "coral": "Mercan",
+        "ice": "Buz"
+      }
+    },
+    "hapticsMotion": {
+      "title": "Dokunsal geri bildirim ve hareket",
+      "haptics": "Dokunsal geri bildirim",
+      "copy": "Anlamlı işlemler için hafif geri bildirim.",
+      "motion": "Hareket",
+      "reduce": "Azalt",
+      "full": "Tam"
+    },
+    "notifications": {
+      "title": "Bildirimler",
+      "copy": "İzin bu kuruluma uygulanır. Kategoriler, ses ve titreşim Binder hesabınızı izler ve her gönderimden önce sunucu tarafında yeniden kontrol edilir.",
+      "remotePush": "Uzak anlık bildirim",
+      "newMatches": "Yeni Bind'ler",
+      "messages": "Mesajlar",
+      "moderation": "Moderasyon",
+      "safety": "Güvenlik",
+      "product": "Ürün güncellemeleri",
+      "productCopy": "Varsayılan olarak kapalı.",
+      "sound": "Ses",
+      "vibration": "Titreşim"
+    },
+    "quietHours": {
+      "title": "Sessiz saatler",
+      "copy": "Bind, mesaj, moderasyon ve ürün bildirimleri yerel bitiş saatine kadar bekler. Acil güvenlik uyarıları hemen gönderilir.",
+      "use": "Sessiz saatleri kullan",
+      "start": "Başlangıç",
+      "end": "Bitiş",
+      "invalid": "HH:MM kullanın",
+      "startPlaceholder": "22:00",
+      "endPlaceholder": "08:00"
+    },
+    "diagnostics": {
+      "title": "Tanılama",
+      "copy": "Yalnızca isteğe bağlı teknik olaylar. Biyografi, mesajlar, ham yığın izleri veya kesin konum yok.",
+      "checking": "Tanılama kontrol ediliyor…",
+      "share": "İsteğe bağlı tanılamayı paylaş"
+    },
+    "reset": {
+      "action": "Uygulama ayarlarını sıfırla",
+      "confirmTitle": "Uygulama ayarları sıfırlansın mı?",
+      "confirmCopy": "Görünüm, hareket, dokunsal geri bildirim, vurgu rengi, bildirim kategorileri ve sessiz saatler varsayılanlarına döner. Profiliniz ve konuşmalarınız etkilenmez.",
+      "cancel": "Ayarlarımı koru",
+      "confirm": "Sıfırla",
+      "done": "Uygulama ayarları varsayılanlarına döndü.",
+      "failed": "Ayarlar sıfırlanamadı."
+    }
+  },
+  "binderErrorBoundary": {
+    "recovery": {
+      "eyebrow": "BINDER EKRANI KURTARDI",
+      "title": "Bir şey görüntülenemedi.",
+      "message": "Hesap verileriniz tanılama olayına dahil edilmedi. Ekranı tekrar deneyin; sorun tekrarlanırsa Binder açıldıktan sonra Beta Programı geri bildirimini kullanın."
+    },
+    "actions": {
+      "retry": "Binder'ı tekrar dene"
+    }
+  },
+  "photoPager": {
+    "errors": {
+      "load": "Bu fotoğraf yüklenemedi."
+    },
+    "accessibility": {
+      "position": "{name}, {count} fotoğraftan {current}.",
+      "previous": "{name} için önceki fotoğraf",
+      "openProfile": "{name} için tam profili aç",
+      "next": "{name} için sonraki fotoğraf"
+    }
+  },
+  "discoveryLoading": {
+    "states": {
+      "finding": "Her iki tarafa da uyan kişiler bulunuyor…"
+    },
+    "accessibility": {
+      "finding": "Her iki tarafa da uyan kişiler bulunuyor"
+    }
+  },
+  "binderDial": {
+    "labels": {
+      "minimum": "MİN",
+      "maximum": "MAKS",
+      "adjust": "AYARLA"
+    },
+    "accessibility": {
+      "decreaseMinimum": "Minimumu azalt",
+      "decreaseMaximum": "Maksimumu azalt",
+      "decrease": "{caption} azalt",
+      "increaseMinimum": "Minimumu artır",
+      "increaseMaximum": "Maksimumu artır",
+      "increase": "{caption} artır"
+    }
+  },
+  "binderInput": {
+    "accessibility": {
+      "hidePassword": "Parolayı gizle",
+      "showPassword": "Parolayı göster"
+    }
+  },
+  "binderScreenHeader": {},
+  "binderBrand": {
+    "accessibility": {
+      "name": "Binder"
+    },
+    "copy": {
+      "name": "BINDER"
+    }
+  },
+  "screenState": {},
+  "matchCelebration": {
+    "fallback": {
+      "you": "Sen"
+    },
+    "copy": {
+      "eyebrow": "BU BİR BIND",
+      "title": "Sen ve {name} birbirinizi seçtiniz.",
+      "message": "Oyun yok. Konuşma ikiniz için de açık."
+    },
+    "actions": {
+      "saySomething": "Gerçek bir şey söyle",
+      "keepDiscovering": "Keşfetmeye devam et"
+    }
+  },
+  "root": {
+    "offline": {
+      "title": "Çevrimdışısınız",
+      "message": "Binder'ın mevcut güvenlik kurallarını kontrol etmesi için bağlantı gerekir. Tekrar çevrimiçi olduğunuzda çalışacaktır."
+    },
+    "legalGate": {
+      "failedTitle": "Güvenlik kontrolü başarısız",
+      "failedMessage": "Binder politika durumu doğrulanamadı."
+    }
+  }
+}

@@ -1,0 +1,939 @@
+{
+  "$meta": {
+    "name": "Indonesian",
+    "endonym": "Bahasa Indonesia",
+    "flag": "🇮🇩",
+    "translatedBy": "Binder",
+    "sourceOfTruth": false
+  },
+  "sessionExpired": {
+    "title": "Sesi Anda telah berakhir",
+    "message": "Masuk lagi untuk terus menggunakan Binder.",
+    "action": "Masuk lagi"
+  },
+  "settings": {
+    "title": "Pengaturan aplikasi",
+    "eyebrow": "PREFERENSI",
+    "language": {
+      "title": "Bahasa",
+      "copy": "Binder menggunakan bahasa perangkat Anda jika bahasa tersebut tersedia. Pilih satu untuk menggantinya.",
+      "systemLabel": "Ikuti perangkat saya",
+      "systemCopy": "Mengikuti perangkat Anda",
+      "back": "Kembali ke pengaturan"
+    },
+    "appearance": {
+      "title": "Tampilan",
+      "copy": "Ikuti perangkat Anda, atau tetapkan Binder ke mode terang atau gelap.",
+      "system": "Ikuti perangkat saya",
+      "dark": "Selalu gelap",
+      "light": "Selalu terang"
+    },
+    "motion": {
+      "title": "Animasi",
+      "copy": "Animasi yang dikurangi tetap mempertahankan setiap perubahan status, hanya tanpa menganimasikannya.",
+      "system": "Ikuti perangkat saya",
+      "full": "Animasi penuh",
+      "reduce": "Kurangi animasi"
+    },
+    "haptics": {
+      "title": "Haptik",
+      "copy": "Getaran singkat menandai batas dan konfirmasi.",
+      "label": "Bergetar saat berinteraksi"
+    },
+    "quietHours": {
+      "title": "Jam tenang",
+      "copy": "Notifikasi Bind, pesan, moderasi, dan produk menunggu hingga waktu berakhir setempat. Peringatan keselamatan mendesak tetap dikirim segera.",
+      "label": "Gunakan jam tenang",
+      "start": "Mulai",
+      "end": "Selesai",
+      "invalid": "Gunakan HH:MM"
+    },
+    "diagnostics": {
+      "title": "Diagnostik",
+      "copy": "Hanya peristiwa teknis opsional. Tanpa bio, pesan, stack trace mentah, atau lokasi presisi.",
+      "label": "Bagikan diagnostik opsional",
+      "checking": "Memeriksa diagnostik…"
+    },
+    "reset": {
+      "action": "Atur ulang pengaturan aplikasi",
+      "confirmTitle": "Atur ulang pengaturan aplikasi?",
+      "confirmCopy": "Tampilan, animasi, haptik, aksen, kategori notifikasi, dan jam tenang akan kembali ke pengaturan awal. Profil dan percakapan Anda tidak akan berubah.",
+      "cancel": "Pertahankan pengaturan saya",
+      "confirm": "Atur ulang",
+      "done": "Pengaturan aplikasi telah kembali ke pengaturan awal.",
+      "failed": "Tidak dapat mengatur ulang pengaturan."
+    }
+  },
+  "common": {
+    "retry": "Coba lagi",
+    "close": "Tutup",
+    "cancel": "Batal",
+    "save": "Simpan",
+    "loading": "Memuat…"
+  },
+  "auth": {
+    "errors": {
+      "connection": "Tidak ada koneksi. Periksa internet Anda dan coba lagi.",
+      "credentials": "Email atau kata sandi salah.",
+      "registered": "Email ini sudah terdaftar. Masuk sebagai gantinya.",
+      "passwordLength": "Kata sandi harus terdiri dari setidaknya 8 karakter.",
+      "email": "Masukkan alamat email yang valid.",
+      "generic": "Terjadi kesalahan. Coba lagi."
+    },
+    "messages": {
+      "passwordChanged": "Kata sandi diubah. Anda sudah masuk.",
+      "resetSent": "Jika alamat tersebut memiliki akun, tautan pengaturan ulang sedang dikirim. Buka tautan itu di ponsel ini.",
+      "accountCreated": "Akun dibuat. Konfirmasikan email, lalu masuk."
+    },
+    "headers": {
+      "recoveryTitle": "Tetapkan kata sandi baru.",
+      "signInTitle": "Selamat datang kembali.",
+      "signUpTitle": "Mulai dengan diri Anda yang sebenarnya.",
+      "resetTitle": "Tidak bisa masuk?",
+      "recoveryCopy": "Pilih sesuatu yang belum pernah Anda gunakan di sini. Anda akan tetap masuk di perangkat ini.",
+      "resetCopy": "Masukkan alamat yang Anda gunakan saat mendaftar dan kami akan mengirim tautan untuk menetapkan kata sandi baru.",
+      "defaultCopy": "Kencan untuk orang dewasa. Minat harus saling berbalas sebelum percakapan dimulai."
+    },
+    "fields": {
+      "emailLabel": "Email",
+      "emailPlaceholder": "anda@contoh.com",
+      "passwordLabel": "Kata sandi",
+      "passwordPlaceholder": "Setidaknya {length} karakter",
+      "repeatPasswordLabel": "Ulangi kata sandi",
+      "repeatPasswordPlaceholder": "Ketik sekali lagi",
+      "repeatPasswordHelper": "Kedua entri harus sama sebelum akun dibuat."
+    },
+    "actions": {
+      "savePassword": "Simpan kata sandi baru",
+      "signIn": "Masuk",
+      "createAccount": "Buat akun",
+      "sendResetLink": "Kirim tautan pengaturan ulang",
+      "forgotPassword": "Lupa kata sandi?",
+      "createAccountPrompt": "Baru di sini? Buat akun",
+      "signInPrompt": "Sudah punya akun? Masuk",
+      "backToSignIn": "Kembali ke masuk"
+    },
+    "ageRequirement": "Anda harus berusia setidaknya 18 tahun untuk menggunakan Binder."
+  },
+  "matches": {
+    "header": {
+      "title": "Bind Anda",
+      "eyebrow": "PERCAKAPAN"
+    },
+    "notifications": {
+      "enabledTitle": "Peringatan pesan diaktifkan",
+      "enablingTitle": "Mengaktifkan peringatan…",
+      "blockedTitle": "Peringatan diblokir",
+      "title": "Peringatan pesan",
+      "unavailableCopy": "Notifikasi push tidak didukung di perangkat ini. Chat tetap berfungsi seperti biasa.",
+      "offlineCopy": "Tidak dapat menghubungi layanan push. Periksa koneksi Anda dan coba lagi.",
+      "blockedCopy": "Android memblokir notifikasi Binder. Izinkan di pengaturan sistem.",
+      "enabledCopy": "Kategori notifikasi dapat disesuaikan di Pengaturan Aplikasi.",
+      "copy": "Aktifkan peringatan untuk Bind dan pesan baru."
+    },
+    "actions": {
+      "refresh": "Segarkan",
+      "retry": "Coba lagi",
+      "enable": "Aktifkan",
+      "openSettings": "Buka pengaturan",
+      "tryAgain": "Coba lagi",
+      "goToDiscovery": "Buka Discovery"
+    },
+    "states": {
+      "loading": "Memuat Bind Anda…",
+      "offlineTitle": "Anda sedang offline",
+      "offlineMessage": "Periksa koneksi Anda dan coba muat Bind lagi.",
+      "errorTitle": "Bind tidak dapat dimuat"
+    },
+    "empty": {
+      "title": "Sebuah Bind dimulai bersama",
+      "message": "Ketika Anda dan seseorang di Discovery sama-sama memilih Bind, mereka muncul di sini dan salah satu dari Anda dapat memulai percakapan.",
+      "conversations": "Percakapan Anda akan muncul di sini setelah pesan pertama."
+    },
+    "newMatches": {
+      "heading": "BIND BARU · MULAI SESUATU",
+      "sayHello": "Sapa"
+    },
+    "accessibility": {
+      "startConversation": "Mulai percakapan dengan {name}",
+      "openConversation": "Buka percakapan dengan {name}",
+      "unreadOne": "{count} pesan belum dibaca",
+      "unreadOther": "{count} pesan belum dibaca"
+    }
+  },
+  "partnerProfile": {
+    "errors": {
+      "load": "Tidak dapat memuat profil ini.",
+      "title": "Profil tidak tersedia"
+    },
+    "actions": {
+      "back": "Kembali"
+    },
+    "accessibility": {
+      "close": "Tutup profil lengkap",
+      "photosReviewed": "Foto ditinjau sebelum muncul di Discovery"
+    },
+    "loading": "Membuka profil…",
+    "photosReviewed": "Foto ditinjau",
+    "away": "Berjarak {distance} km"
+  },
+  "discovery": {
+    "errors": {
+      "load": "Tidak dapat memuat Discovery.",
+      "openConversation": "Tidak dapat membuka percakapan. Anda akan menemukannya di Matches.",
+      "saveDecision": "Tidak dapat menyimpan pilihan Anda.",
+      "safetyReport": "Tidak dapat mengirim laporan keselamatan."
+    },
+    "states": {
+      "loadErrorTitle": "Discovery tidak dapat dimuat",
+      "offlineTitle": "Anda sedang offline",
+      "offlineMessage": "Tidak ada koneksi. Periksa internet Anda dan coba lagi.",
+      "saving": "Menyimpan…"
+    },
+    "location": {
+      "title": "Lokasi membantu menyusun pilihan Anda",
+      "message": "Binder menggunakan lokasi foreground Anda untuk menemukan orang di sekitar. Lokasi persis Anda tidak pernah ditampilkan kepada siapa pun."
+    },
+    "header": {
+      "title": "Temukan",
+      "copy": "Orang yang cocok dari kedua sisi."
+    },
+    "filters": {
+      "summary": "{minAge}–{maxAge} · {distance} km",
+      "label": "Filter"
+    },
+    "empty": {
+      "filteredEyebrow": "FILTER MEMPERSEMPIT PILIHAN ANDA",
+      "filteredTitle": "Saat ini tidak ada yang cocok dengan filter ini.",
+      "filteredMessage": "Ada orang yang tersedia dengan filter standar Binder. Ubah filter Anda untuk melihat siapa yang cocok.",
+      "genuineEyebrow": "ANDA SUDAH MELIHAT SEMUANYA",
+      "genuineTitle": "Pilihan Anda kosong untuk saat ini.",
+      "genuineMessage": "Saat ini tidak ada profil baru yang disetujui dan cocok dari kedua sisi. Kecocokan baru akan muncul di sini secara otomatis."
+    },
+    "actions": {
+      "tryAgain": "Coba lagi",
+      "allowLocation": "Izinkan lokasi",
+      "changeFilters": "Ubah filter",
+      "bindStamp": "BIND",
+      "passStamp": "LEWATI",
+      "reportAndBlock": "Laporkan & blokir",
+      "cancel": "Batal"
+    },
+    "accessibility": {
+      "openFilters": "Buka filter Discovery",
+      "matchCreated": "Anda cocok dengan {name}.",
+      "safetyOptions": "Opsi keselamatan untuk {name}",
+      "closeSafetyOptions": "Tutup opsi keselamatan",
+      "bindProfile": "Bind profil",
+      "passProfile": "Lewati profil",
+      "profileSummary": "{name}, {age}, berjarak {distance} kilometer"
+    },
+    "safety": {
+      "eyebrow": "KESELAMATAN · {name}",
+      "title": "Apa yang harus ditinjau Binder?",
+      "message": "Melaporkan juga langsung memblokir profil ini. Mereka tidak akan diberi tahu siapa yang melaporkan atau memblokir mereka.",
+      "reasons": {
+        "underage": {
+          "label": "Mungkin di bawah 18 tahun",
+          "detail": "Tinjauan keselamatan dengan prioritas tertinggi."
+        },
+        "harassment": {
+          "label": "Pelecehan atau ancaman",
+          "detail": "Perilaku kasar, memaksa, atau mengancam."
+        },
+        "fake": {
+          "label": "Palsu atau menyamar",
+          "detail": "Identitas atau profil tampak menipu."
+        },
+        "spam": {
+          "label": "Spam atau penipuan",
+          "detail": "Spam komersial, penipuan, atau ajakan mencurigakan."
+        },
+        "sexualContent": {
+          "label": "Konten seksual",
+          "detail": "Konten profil seksual yang eksplisit atau tidak diinginkan."
+        },
+        "violence": {
+          "label": "Kekerasan",
+          "detail": "Ancaman atau konten kekerasan grafis."
+        },
+        "other": {
+          "label": "Masalah keselamatan lainnya",
+          "detail": "Masalah yang tidak tercakup di atas."
+        }
+      }
+    },
+    "profile": {
+      "away": "Berjarak {distance} km",
+      "photosReviewed": "· Foto ditinjau"
+    }
+  },
+  "chat": {
+    "day": {
+      "today": "Hari ini",
+      "yesterday": "Kemarin"
+    },
+    "header": {
+      "title": "{name}, {age}",
+      "eyebrow": "LIHAT PROFIL"
+    },
+    "alerts": {
+      "messageActions": "Tindakan pesan",
+      "unmatchTitle": "Batalkan Bind dengan {name}?",
+      "unmatchMessage": "Percakapan langsung ditutup untuk Anda berdua.",
+      "blockTitle": "Blokir {name}?",
+      "blockMessage": "Anda akan saling menghilang dan percakapan langsung ditutup."
+    },
+    "actions": {
+      "copy": "Salin",
+      "report": "Laporkan",
+      "cancel": "Batal",
+      "unmatch": "Batalkan Bind",
+      "block": "Blokir",
+      "reportAndBlock": "Laporkan & blokir",
+      "backToSafetyControls": "Kembali ke kontrol keselamatan",
+      "refresh": "Segarkan",
+      "tryAgain": "Coba lagi",
+      "loadEarlierMessages": "Muat pesan sebelumnya",
+      "retry": "Coba lagi",
+      "discard": "Buang",
+      "backToMatches": "Kembali ke Matches"
+    },
+    "ended": {
+      "title": "Percakapan ini telah berakhir",
+      "message": "Bind ini tidak lagi aktif. Percakapan sekarang ditutup."
+    },
+    "safety": {
+      "title": "Kontrol keselamatan",
+      "reportMessage": "Laporkan pesan ini",
+      "reportPerson": "Laporkan {name}",
+      "detailsPlaceholder": "Detail opsional untuk tim keselamatan",
+      "reasons": {
+        "harassment": "Pelecehan",
+        "spam": "Spam",
+        "fake": "Profil palsu",
+        "underage": "Di bawah 18 tahun",
+        "sexualContent": "Konten seksual",
+        "violence": "Kekerasan",
+        "other": "Lainnya"
+      }
+    },
+    "states": {
+      "opening": "Membuka percakapan…",
+      "offlineTitle": "Anda sedang offline",
+      "loadErrorTitle": "Percakapan tidak dapat dimuat"
+    },
+    "empty": {
+      "title": "Anda cocok.",
+      "message": "Chat biasa hanya terbuka setelah minat saling berbalas. Katakan sesuatu yang tulus."
+    },
+    "message": {
+      "sentAt": "{time} · Terkirim",
+      "new": "Pesan baru",
+      "sending": "Mengirim…",
+      "placeholder": "Pesan untuk {name}"
+    },
+    "errors": {
+      "messageNotSent": "Pesan tidak terkirim."
+    },
+    "accessibility": {
+      "backToMatches": "Kembali ke Matches",
+      "openProfile": "Buka profil {name}",
+      "safetyControls": "Kontrol keselamatan percakapan",
+      "closeSafetyControls": "Tutup kontrol keselamatan",
+      "reportDetails": "Detail laporan",
+      "holdToCopy": "Tahan untuk menyalin pesan ini",
+      "holdToCopyOrReport": "Tahan untuk menyalin atau melaporkan pesan ini",
+      "messageSent": "Pesan terkirim.",
+      "messageFailed": "Pesan tidak terkirim.",
+      "scrollToNewMessage": "Gulir ke pesan baru",
+      "retrySending": "Coba kirim lagi \"{message}\"",
+      "discardUnsent": "Buang pesan yang belum terkirim \"{message}\"",
+      "messagePerson": "Kirim pesan kepada {name}",
+      "sendingMessage": "Mengirim pesan",
+      "sendMessageTo": "Kirim pesan kepada {name}"
+    }
+  },
+  "profile": {
+    "errors": {
+      "load": "Tidak dapat memuat profil.",
+      "openInformation": "Tidak dapat membuka informasi Binder.",
+      "deleteAccount": "Tidak dapat menghapus akun Anda."
+    },
+    "alerts": {
+      "deleteTitle": "Hapus akun Binder?",
+      "deleteMessage": "Ini akan menghapus akun Binder dan data produk normal Anda secara permanen. Tindakan ini tidak dapat dibatalkan.",
+      "signOutTitle": "Keluar dari Binder?",
+      "signOutMessage": "Anda akan berhenti menerima pembaruan dalam aplikasi di perangkat ini sampai Anda masuk lagi. Profil, Bind, dan pesan Anda tetap tersimpan di Binder."
+    },
+    "actions": {
+      "cancel": "Batal",
+      "deleteAccount": "Hapus akun",
+      "staySignedIn": "Tetap masuk",
+      "signOut": "Keluar",
+      "completeProfile": "Lengkapi profil",
+      "tryAgain": "Coba lagi"
+    },
+    "states": {
+      "loading": "Memuat profil Anda…",
+      "offlineTitle": "Anda sedang offline",
+      "offlineMessage": "Periksa koneksi Anda dan coba muat profil lagi.",
+      "errorTitle": "Profil Anda tidak dapat dimuat"
+    },
+    "header": {
+      "title": "Profil Anda",
+      "eyebrow": "BINDER"
+    },
+    "accessibility": {
+      "primaryPhoto": "Foto profil utama Anda"
+    },
+    "notice": {
+      "warningEyebrow": "PEMBERITAHUAN AKUN",
+      "warningTitle": "Catatan tentang akun Anda",
+      "suspendedEyebrow": "STATUS AKUN",
+      "suspendedTitle": "Akun Anda ditangguhkan",
+      "reasonUnavailable": "Tidak ada detail tambahan yang tersedia.",
+      "warnedOn": "Diterbitkan pada {date}",
+      "suspendedEffect": "Discovery dan pesan dijeda selama penangguhan berlaku."
+    },
+    "empty": {
+      "addFirstPhoto": "Tambahkan foto pertama Anda",
+      "addBio": "Tambahkan beberapa kalimat nyata tentang diri Anda agar orang tahu apa yang bisa ditanyakan."
+    },
+    "completeness": {
+      "eyebrow": "KEKUATAN PROFIL",
+      "percent": "{percent}% selesai",
+      "done": "{item} · selesai",
+      "items": {
+        "photos": "Tambahkan tiga foto",
+        "bio": "Tulis bio",
+        "interests": "Pilih tiga minat"
+      }
+    },
+    "hub": {
+      "profileTitle": "Profil & foto",
+      "profileCopy": "Edit profil, preferensi Discovery, dan hingga enam foto yang dimoderasi.",
+      "settingsTitle": "Pengaturan aplikasi",
+      "settingsCopy": "Tampilan, haptik, animasi, preferensi notifikasi, dan jam tenang.",
+      "betaTitle": "Program beta",
+      "betaCopy": "Diagnostik opsional dan umpan balik pribadi.",
+      "aboutTitle": "Tentang & pemberitahuan hukum",
+      "aboutCopy": "Impresum, kebijakan, dan versi yang Anda jalankan."
+    },
+    "safety": {
+      "eyebrow": "KESELAMATAN & PRIVASI",
+      "terms": "Ketentuan & Aturan Komunitas",
+      "privacy": "Kebijakan Privasi",
+      "deletionDetails": "Detail penghapusan & retensi"
+    },
+    "account": {
+      "eyebrow": "TINDAKAN AKUN",
+      "irreversible": "TIDAK DAPAT DIBATALKAN",
+      "deleteTitle": "Hapus akun Binder",
+      "deleteCopy": "Menghentikan Discovery dan percakapan, menghapus media profil, dan menghapus identitas autentikasi Anda."
+    }
+  },
+  "profileSettings": {
+    "errors": {
+      "load": "Tidak dapat memuat pengaturan profil.",
+      "addPhoto": "Tidak dapat menambahkan foto.",
+      "reorderPhotos": "Tidak dapat mengurutkan ulang foto.",
+      "makePrimary": "Tidak dapat menjadikan foto ini sebagai utama.",
+      "removePhoto": "Tidak dapat menghapus foto.",
+      "replacePhoto": "Tidak dapat mengganti foto.",
+      "save": "Tidak dapat menyimpan pengaturan profil."
+    },
+    "messages": {
+      "photoAdded": "Foto dioptimalkan, diunggah, dan dikirim untuk tinjauan keselamatan.",
+      "saved": "Pengaturan profil disimpan."
+    },
+    "alerts": {
+      "removeTitle": "Hapus foto profil?",
+      "removePrimaryMessage": "Binder hanya akan menghapus foto utama jika foto lain yang disetujui dapat menggantikannya.",
+      "removeMessage": "Foto ini akan dihapus dari profil dan penyimpanan Anda."
+    },
+    "actions": {
+      "cancel": "Batal",
+      "remove": "Hapus",
+      "saveProfile": "Simpan profil",
+      "addPhoto": "Tambah foto",
+      "makePrimary": "Jadikan utama",
+      "retryUpload": "Coba unggah lagi",
+      "replacePhoto": "Ganti foto"
+    },
+    "states": {
+      "loading": "Memuat pengaturan profil…"
+    },
+    "gallery": {
+      "photoOf": "Foto {current} dari {total}",
+      "photo": "Foto",
+      "name": "galeri Anda"
+    },
+    "header": {
+      "title": "Pengaturan profil",
+      "sectionTitle": "Bentuk profil yang dilihat orang.",
+      "sectionCopy": "Tanggal lahir Anda tetap terkunci. Setiap foto ditinjau secara terpisah sebelum dapat muncul di Discovery."
+    },
+    "accessibility": {
+      "closeFullPhoto": "Tutup foto penuh",
+      "backToProfile": "Kembali ke profil",
+      "photoUploaded": "Foto diunggah.",
+      "photoRemoved": "Foto dihapus.",
+      "addPhoto": "Tambah foto profil",
+      "viewPhoto": "Lihat foto {number} dalam ukuran penuh",
+      "moveLeft": "Pindahkan foto {number} ke kiri",
+      "removePhoto": "Hapus foto {number}",
+      "moveRight": "Pindahkan foto {number} ke kanan"
+    },
+    "photos": {
+      "eyebrow": "FOTO · {count}/6",
+      "orderCopy": "Tidak perlu menyeret: gunakan kontrol panah untuk mengatur urutan secara tepat. Foto 1 adalah foto yang pertama kali dilihat orang.",
+      "optimized": "Dioptimalkan sebelum unggah",
+      "preparing": "Menyiapkan foto…",
+      "uploading": "Mengunggah foto…",
+      "uploadFailed": "Unggah foto gagal",
+      "primary": "FOTO 1 · UTAMA",
+      "dimensions": "{size} KB · {width} × {height}",
+      "rejectionReason": "Alasan: {reason}",
+      "rejectionReasonUnavailable": "Tidak ada alasan yang diberikan.",
+      "status": {
+        "approved": "Disetujui",
+        "pending": "Sedang ditinjau",
+        "rejected": "Tidak disetujui",
+        "removed": "Dihapus"
+      }
+    },
+    "details": {
+      "eyebrow": "DETAIL PROFIL",
+      "copy": "Ini adalah identitas dan konteks yang dilihat orang."
+    },
+    "fields": {
+      "firstName": "Nama depan",
+      "bio": "Bio",
+      "bioCount": "{count}/500",
+      "gender": "Saya",
+      "interests": "Minat"
+    },
+    "discovery": {
+      "eyebrow": "PREFERENSI DISCOVERY",
+      "title": "Rentang Discovery",
+      "copy": "Mengatur siapa yang dapat muncul di pilihan Discovery Anda."
+    }
+  },
+  "discoveryFilterSheet": {
+    "errors": {
+      "authentication": "Autentikasi diperlukan.",
+      "load": "Tidak dapat memuat pengaturan Discovery Anda.",
+      "audience": "Pilih setidaknya satu jenis orang yang ingin Anda temui.",
+      "age": "Pilih rentang usia setidaknya satu tahun.",
+      "distance": "Pilih jarak antara 1 hingga 500 km.",
+      "save": "Binder tidak dapat menyimpan filter ini. Periksa koneksi Anda dan coba lagi."
+    },
+    "header": {
+      "title": "Pencarian Anda",
+      "eyebrow": "DISCOVERY"
+    },
+    "states": {
+      "loadErrorTitle": "Filter tidak dapat dimuat",
+      "loading": "Memuat filter Anda…"
+    },
+    "actions": {
+      "tryAgain": "Coba lagi",
+      "close": "Tutup",
+      "apply": "Terapkan filter",
+      "reset": "Atur ulang ke default"
+    },
+    "accessibility": {
+      "close": "Tutup filter Discovery",
+      "filtersApplied": "Filter diterapkan."
+    },
+    "count": {
+      "unavailable": "Jumlah tidak tersedia",
+      "checking": "Memeriksa siapa yang cocok…",
+      "none": "Saat ini tidak ada yang cocok",
+      "personOne": "Saat ini {count} orang cocok",
+      "personOther": "Saat ini {count} orang cocok",
+      "failed": "Binder tidak dapat memeriksa sekarang. Ubah filter untuk mencoba lagi — pengaturan Anda tetap berlaku.",
+      "likelyCause": "{cause} Anda kemungkinan penyebabnya. Perluas sebelum menerapkan.",
+      "updates": "Ini diperbarui saat Anda membentuk pencarian.",
+      "causes": {
+        "audience": "siapa yang ingin Anda temui",
+        "age": "rentang usia",
+        "distance": "jarak"
+      }
+    }
+  },
+  "onboarding": {
+    "progress": "LANGKAH {number} DARI {total}",
+    "steps": {
+      "eligibility": {
+        "eyebrow": "KELAYAKAN · 18+",
+        "title": "Pertama, konfirmasikan usia Anda.",
+        "copy": "Binder hanya untuk orang dewasa. Tanggal lahir Anda diperiksa sekali, dikunci setelah onboarding, dan tidak pernah ditampilkan kepada orang lain.",
+        "next": "Berikutnya: nama dan gender Anda"
+      },
+      "identity": {
+        "eyebrow": "DASAR-DASAR",
+        "title": "Bagaimana orang sebaiknya mengenal Anda?",
+        "copy": "Gunakan nama depan yang biasa Anda gunakan. Detail ini muncul di profil Anda.",
+        "next": "Berikutnya: bio dan minat Anda"
+      },
+      "profile": {
+        "eyebrow": "TENTANG ANDA",
+        "title": "Beri orang alasan untuk menyapa.",
+        "copy": "Bio yang singkat dan spesifik serta beberapa minat membuat percakapan nyata lebih mudah dimulai.",
+        "next": "Berikutnya: siapa yang ingin Anda temui"
+      },
+      "discovery": {
+        "eyebrow": "DISCOVERY",
+        "title": "Pilih siapa yang terasa relevan.",
+        "copy": "Preferensi ini membentuk Discovery dan dapat diubah nanti.",
+        "next": "Berikutnya: tambahkan foto pertama Anda"
+      },
+      "photo": {
+        "eyebrow": "FOTO ANDA",
+        "title": "Beri wajah pada profil Anda.",
+        "copy": "Foto pertama Anda adalah yang pertama dilihat orang. Foto dioptimalkan, lalu ditinjau untuk keselamatan sebelum muncul.",
+        "next": "Selesai dan masuk ke Binder"
+      }
+    },
+    "errors": {
+      "preparePhoto": "Tidak dapat menyiapkan foto.",
+      "photoRequired": "Tambahkan foto profil untuk melanjutkan.",
+      "complete": "Onboarding tidak dapat diselesaikan."
+    },
+    "identity": {
+      "firstName": "Nama depan",
+      "gender": "Saya"
+    },
+    "profile": {
+      "bioLabel": "Bio · opsional",
+      "bioHelper": "{count}/500 · Anda dapat mengubah ini nanti",
+      "bioPlaceholder": "Contoh: hiking hari Minggu, musik live, dan kopi yang enak.",
+      "interests": "Minat · pilih hingga 12 ({count})"
+    },
+    "photo": {
+      "replaceAccessibility": "Ganti foto profil utama",
+      "chooseAccessibility": "Pilih foto profil utama",
+      "preparing": "Menyiapkan foto…",
+      "choose": "Pilih foto",
+      "resizing": "Mengubah ukuran dan mengompres sebelum unggah",
+      "openLibrary": "Ketuk untuk membuka galeri foto"
+    },
+    "actions": {
+      "back": "Kembali",
+      "finish": "Selesaikan profil",
+      "continue": "Lanjutkan"
+    },
+    "birthDate": {
+      "title": "Anda harus berusia 18 tahun atau lebih",
+      "copy": "Masukkan tanggal lahir Anda yang sebenarnya. Jika Anda di bawah 18 tahun, Anda tidak dapat membuat profil Binder.",
+      "day": "Hari",
+      "month": "Bulan",
+      "year": "Tahun",
+      "dayPlaceholder": "23",
+      "monthPlaceholder": "04",
+      "yearPlaceholder": "1995",
+      "eligible": "Memenuhi syarat · usia {age}",
+      "underage": "Anda harus berusia setidaknya 18 tahun untuk menggunakan Binder.",
+      "invalid": "Tanggal itu tidak ada. Periksa hari dan bulan.",
+      "implausible": "Periksa tahun yang Anda masukkan.",
+      "private": "Tanggal lahir persis Anda tetap privat."
+    }
+  },
+  "beta": {
+    "errors": {
+      "load": "Tidak dapat memuat pengaturan beta.",
+      "updateDiagnostics": "Tidak dapat memperbarui diagnostik beta.",
+      "submitFeedback": "Tidak dapat mengirim umpan balik beta."
+    },
+    "messages": {
+      "diagnosticsEnabled": "Diagnostik opsional diaktifkan. Binder hanya mencatat kolom peristiwa teknis yang tetap.",
+      "diagnosticsDisabled": "Diagnostik opsional dinonaktifkan. Diagnostik klien opsional yang ada telah dihapus.",
+      "feedbackReceived": "Umpan balik diterima. Terima kasih telah menguji Binder."
+    },
+    "loading": "Memuat program beta…",
+    "header": {
+      "title": "Program beta",
+      "backAccessibility": "Kembali ke profil"
+    },
+    "intro": {
+      "title": "Buat Binder terukur, bukan invasif.",
+      "copy": "Kualitas peringkat berasal dari peristiwa server Binder sendiri. Diagnostik klien opsional adalah pilihan terpisah dan tetap nonaktif secara default."
+    },
+    "diagnostics": {
+      "title": "Diagnostik opsional",
+      "copy": "Berguna untuk debugging waktu muat dan kegagalan render selama beta.",
+      "accessibilityLabel": "Diagnostik beta Binder opsional",
+      "canRecord": "DAPAT MEREKAM",
+      "recorded": "Nama layar/peristiwa tetap, durasi, jumlah kecil, hasil berhasil/gagal, platform, dan versi aplikasi.",
+      "never": "TIDAK PERNAH DALAM DIAGNOSTIK OPSIONAL",
+      "excluded": "Teks pesan, teks bio/profil, foto, lokasi persis, kontak, metadata bebas, pesan exception mentah, atau stack trace.",
+      "retention": "Diagnostik klien: {clientDays} hari · observasi peringkat: {rankingDays} hari"
+    },
+    "ranking": {
+      "eyebrow": "OBSERVABILITAS PERINGKAT",
+      "title": "Apa yang Binder pelajari dari pilihan Anda.",
+      "copy": "Server mencatat posisi peringkat, jumlah minat bersama, kelompok jarak 10 km, dan hasil Bind/Lewati setelahnya. Koordinat persis dan konten profil tidak disalin ke telemetri peringkat."
+    },
+    "feedback": {
+      "eyebrow": "UMPAN BALIK BETA PRIBADI",
+      "title": "Beri tahu kami apa yang gagal atau terasa salah.",
+      "copy": "Untuk orang yang kasar atau tidak aman, gunakan Laporkan & blokir di profil atau chat mereka. Formulir ini untuk umpan balik produk, bukan antrean moderasi.",
+      "overallExperience": "Pengalaman keseluruhan",
+      "details": "Detail",
+      "characterCount": "{count}/1500",
+      "placeholder": "Apa yang terjadi? Apa yang Anda harapkan terjadi?",
+      "send": "Kirim umpan balik beta"
+    },
+    "categories": {
+      "bug": "Bug",
+      "ux": "UX",
+      "safety": "Keselamatan",
+      "performance": "Performa",
+      "other": "Lainnya"
+    }
+  },
+  "legalGate": {
+    "errors": {
+      "open": "Tidak dapat membuka halaman ini.",
+      "accept": "Tidak dapat menyimpan persetujuan Anda."
+    },
+    "header": {
+      "eyebrow": "SEBELUM ANDA MEMBUAT ATAU MEMBAGIKAN",
+      "title": "Aturan jelas sebelum percakapan.",
+      "copy": "Binder hanya untuk usia 18+ dan dibangun berdasarkan pilihan bersama. Sebelum membuat profil, mengunggah foto, atau mengirim pesan, setujui Ketentuan & Aturan Komunitas dan Kebijakan Privasi saat ini."
+    },
+    "policies": {
+      "terms": {
+        "title": "Ketentuan & Aturan Komunitas",
+        "copy": "Hanya 18+ · persetujuan · tanpa pelecehan · tanpa eksploitasi seksual · tanpa penyamaran, penipuan, atau menghindari pemblokiran."
+      },
+      "privacy": {
+        "title": "Kebijakan Privasi",
+        "copy": "Apa yang disimpan Binder, mengapa lokasi tetap privat, cara kerja catatan keselamatan, dan cara menghapus akun Anda."
+      },
+      "version": "Versi {version}"
+    },
+    "confirmation": "Saya telah membaca dan menyetujui Ketentuan & Aturan Komunitas dan Kebijakan Privasi saat ini.",
+    "actions": {
+      "agree": "Setuju & lanjutkan"
+    },
+    "noSkip": "Tidak ada opsi lewati. Perubahan kebijakan yang penting dapat memerlukan persetujuan baru sebelum lebih banyak konten buatan pengguna dibuat."
+  },
+  "discoveryPreferences": {
+    "groups": {
+      "preset": "Mulai dengan preset",
+      "audience": "Siapa yang ingin saya temui",
+      "age": "Usia",
+      "distance": "Jarak"
+    },
+    "accessibility": {
+      "minimumAge": "Usia minimum",
+      "maximumAge": "Usia maksimum",
+      "searchRadius": "Radius pencarian"
+    },
+    "units": {
+      "years": "tahun",
+      "km": "km"
+    }
+  },
+  "about": {
+    "errors": {
+      "openPage": "Tidak dapat membuka halaman ini. Coba lagi nanti."
+    },
+    "header": {
+      "title": "Tentang Binder"
+    },
+    "accessibility": {
+      "backToProfile": "Kembali ke profil"
+    },
+    "intro": {
+      "title": "Satu produk gratis.",
+      "copy": "Binder dibuat dan dijalankan sebagai proyek independen nonkomersial. Tanpa iklan, tanpa paket berbayar, tanpa broker data."
+    },
+    "policies": {
+      "eyebrow": "KEBIJAKAN",
+      "terms": "Ketentuan & Aturan Komunitas",
+      "privacy": "Kebijakan Privasi",
+      "deletion": "Penghapusan akun & retensi"
+    },
+    "version": "Binder {version}"
+  },
+  "appSettings": {
+    "common": {
+      "system": "Sistem"
+    },
+    "errors": {
+      "loadDiagnostics": "Tidak dapat memuat preferensi diagnostik.",
+      "updateDiagnostics": "Tidak dapat memperbarui diagnostik.",
+      "updatePush": "Tidak dapat memperbarui notifikasi push."
+    },
+    "messages": {
+      "pushOff": "Notifikasi push dinonaktifkan pada instalasi ini.",
+      "pushActive": "Notifikasi push aktif pada instalasi ini.",
+      "pushDenied": "Izin notifikasi Android ditolak. Anda dapat mengizinkan Binder di pengaturan sistem.",
+      "missingProject": "Build ini belum terhubung ke proyek EAS-nya.",
+      "pushOffline": "Tidak dapat menghubungi layanan push. Coba lagi saat Anda online.",
+      "pushUnavailable": "Push jarak jauh hanya tersedia di build pengembangan/rilis Android atau iOS."
+    },
+    "states": {
+      "loading": "Memuat pengaturan aplikasi…"
+    },
+    "header": {
+      "title": "Pengaturan aplikasi",
+      "sectionTitle": "Buat Binder terasa pas.",
+      "sectionCopy": "Preferensi visual tidak pernah mengubah warna keselamatan. Aturan pengiriman push diterapkan oleh server Binder."
+    },
+    "accessibility": {
+      "backToProfile": "Kembali ke profil"
+    },
+    "appearance": {
+      "title": "Tampilan",
+      "copy": "Ikuti perangkat Anda atau pertahankan Binder dalam mode gelap.",
+      "dark": "Gelap",
+      "light": "Selalu terang"
+    },
+    "accent": {
+      "title": "Aksen",
+      "copy": "Hanya aksen utama/kepercayaan yang berubah. Warna peringatan dan destruktif tetap.",
+      "options": {
+        "lime": "Binder Lime",
+        "blue": "Biru Elektrik",
+        "violet": "Ungu",
+        "coral": "Koral",
+        "ice": "Es"
+      }
+    },
+    "hapticsMotion": {
+      "title": "Haptik & animasi",
+      "haptics": "Haptik",
+      "copy": "Umpan balik halus untuk tindakan penting.",
+      "motion": "Animasi",
+      "reduce": "Kurangi",
+      "full": "Penuh"
+    },
+    "notifications": {
+      "title": "Notifikasi",
+      "copy": "Izin berlaku untuk instalasi ini. Kategori, suara, dan getaran mengikuti akun Binder Anda dan diperiksa ulang di server sebelum setiap pengiriman.",
+      "remotePush": "Push jarak jauh",
+      "newMatches": "Bind baru",
+      "messages": "Pesan",
+      "moderation": "Moderasi",
+      "safety": "Keselamatan",
+      "product": "Pembaruan produk",
+      "productCopy": "Nonaktif secara default.",
+      "sound": "Suara",
+      "vibration": "Getaran"
+    },
+    "quietHours": {
+      "title": "Jam tenang",
+      "copy": "Notifikasi Bind, pesan, moderasi, dan produk menunggu hingga waktu berakhir setempat. Peringatan keselamatan mendesak tetap dikirim segera.",
+      "use": "Gunakan jam tenang",
+      "start": "Mulai",
+      "end": "Selesai",
+      "invalid": "Gunakan HH:MM",
+      "startPlaceholder": "22:00",
+      "endPlaceholder": "08:00"
+    },
+    "diagnostics": {
+      "title": "Diagnostik",
+      "copy": "Hanya peristiwa teknis opsional. Tanpa bio, pesan, stack trace mentah, atau lokasi presisi.",
+      "checking": "Memeriksa diagnostik…",
+      "share": "Bagikan diagnostik opsional"
+    },
+    "reset": {
+      "action": "Atur ulang pengaturan aplikasi",
+      "confirmTitle": "Atur ulang pengaturan aplikasi?",
+      "confirmCopy": "Tampilan, animasi, haptik, aksen, kategori notifikasi, dan jam tenang akan kembali ke pengaturan awal. Profil dan percakapan Anda tidak akan berubah.",
+      "cancel": "Pertahankan pengaturan saya",
+      "confirm": "Atur ulang",
+      "done": "Pengaturan aplikasi telah kembali ke pengaturan awal.",
+      "failed": "Tidak dapat mengatur ulang pengaturan."
+    }
+  },
+  "binderErrorBoundary": {
+    "recovery": {
+      "eyebrow": "BINDER MEMULIHKAN LAYAR",
+      "title": "Ada sesuatu yang gagal dirender.",
+      "message": "Data akun Anda tidak disertakan dalam peristiwa diagnostik. Coba layar ini lagi; jika terulang, gunakan umpan balik Program Beta setelah Binder terbuka."
+    },
+    "actions": {
+      "retry": "Coba Binder lagi"
+    }
+  },
+  "photoPager": {
+    "errors": {
+      "load": "Foto ini tidak dapat dimuat."
+    },
+    "accessibility": {
+      "position": "{name}, foto {current} dari {count}",
+      "previous": "Foto sebelumnya dari {name}",
+      "openProfile": "Buka profil lengkap {name}",
+      "next": "Foto berikutnya dari {name}"
+    }
+  },
+  "discoveryLoading": {
+    "states": {
+      "finding": "Mencari orang yang cocok dari kedua sisi…"
+    },
+    "accessibility": {
+      "finding": "Mencari orang yang cocok dari kedua sisi"
+    }
+  },
+  "binderDial": {
+    "labels": {
+      "minimum": "MIN",
+      "maximum": "MAKS",
+      "adjust": "SESUAIKAN"
+    },
+    "accessibility": {
+      "decreaseMinimum": "Kurangi minimum",
+      "decreaseMaximum": "Kurangi maksimum",
+      "decrease": "Kurangi {caption}",
+      "increaseMinimum": "Tambah minimum",
+      "increaseMaximum": "Tambah maksimum",
+      "increase": "Tambah {caption}"
+    }
+  },
+  "binderInput": {
+    "accessibility": {
+      "hidePassword": "Sembunyikan kata sandi",
+      "showPassword": "Tampilkan kata sandi"
+    }
+  },
+  "binderScreenHeader": {},
+  "binderBrand": {
+    "accessibility": {
+      "name": "Binder"
+    },
+    "copy": {
+      "name": "BINDER"
+    }
+  },
+  "screenState": {},
+  "matchCelebration": {
+    "fallback": {
+      "you": "Anda"
+    },
+    "copy": {
+      "eyebrow": "INI SEBUAH BIND",
+      "title": "Anda dan {name} memilih satu sama lain.",
+      "message": "Tanpa permainan. Percakapan terbuka untuk Anda berdua."
+    },
+    "actions": {
+      "saySomething": "Katakan sesuatu yang tulus",
+      "keepDiscovering": "Lanjutkan menemukan"
+    }
+  },
+  "root": {
+    "offline": {
+      "title": "Anda sedang offline",
+      "message": "Binder memerlukan koneksi untuk memeriksa aturan keselamatan saat ini. Binder akan berfungsi segera setelah Anda kembali online."
+    },
+    "legalGate": {
+      "failedTitle": "Pemeriksaan keselamatan gagal",
+      "failedMessage": "Tidak dapat memverifikasi status kebijakan Binder."
+    }
+  }
+}

@@ -1,0 +1,939 @@
+{
+  "$meta": {
+    "name": "Korean",
+    "endonym": "한국어",
+    "flag": "🇰🇷",
+    "translatedBy": "Binder",
+    "sourceOfTruth": false
+  },
+  "sessionExpired": {
+    "title": "세션이 종료되었습니다",
+    "message": "Binder를 계속 사용하려면 다시 로그인하세요.",
+    "action": "다시 로그인"
+  },
+  "settings": {
+    "title": "앱 설정",
+    "eyebrow": "환경설정",
+    "language": {
+      "title": "언어",
+      "copy": "Binder가 기기 언어를 지원하면 해당 언어를 사용합니다. 다른 언어를 선택해 변경할 수 있습니다.",
+      "systemLabel": "기기에 맞추기",
+      "systemCopy": "기기 설정을 따릅니다",
+      "back": "설정으로 돌아가기"
+    },
+    "appearance": {
+      "title": "화면 모드",
+      "copy": "기기 설정을 따르거나 Binder를 라이트 또는 다크 모드로 고정하세요.",
+      "system": "기기에 맞추기",
+      "dark": "항상 다크",
+      "light": "항상 밝게"
+    },
+    "motion": {
+      "title": "모션",
+      "copy": "모션 줄이기를 사용해도 모든 상태 변화는 유지되며 애니메이션만 멈춥니다.",
+      "system": "기기에 맞추기",
+      "full": "전체 모션",
+      "reduce": "모션 줄이기"
+    },
+    "haptics": {
+      "title": "햅틱",
+      "copy": "짧은 진동으로 기준점과 확인을 알려줍니다.",
+      "label": "상호작용 시 진동"
+    },
+    "quietHours": {
+      "title": "방해 금지 시간",
+      "copy": "Bind, 메시지, 운영 검토 및 제품 푸시는 현지 종료 시간까지 기다립니다. 긴급 안전 알림은 즉시 전달됩니다.",
+      "label": "방해 금지 시간 사용",
+      "start": "시작",
+      "end": "종료",
+      "invalid": "HH:MM 형식을 사용하세요"
+    },
+    "diagnostics": {
+      "title": "진단",
+      "copy": "선택적 기술 이벤트만 포함합니다. 소개글, 메시지, 원본 스택 트레이스 또는 정확한 위치는 포함하지 않습니다.",
+      "label": "선택적 진단 공유",
+      "checking": "진단 설정 확인 중…"
+    },
+    "reset": {
+      "action": "앱 설정 초기화",
+      "confirmTitle": "앱 설정을 초기화할까요?",
+      "confirmCopy": "화면 모드, 모션, 햅틱, 강조색, 알림 카테고리 및 방해 금지 시간이 기본값으로 돌아갑니다. 프로필과 대화는 그대로 유지됩니다.",
+      "cancel": "내 설정 유지",
+      "confirm": "초기화",
+      "done": "앱 설정이 기본값으로 돌아갔습니다.",
+      "failed": "설정을 초기화하지 못했습니다."
+    }
+  },
+  "common": {
+    "retry": "다시 시도",
+    "close": "닫기",
+    "cancel": "취소",
+    "save": "저장",
+    "loading": "불러오는 중…"
+  },
+  "auth": {
+    "errors": {
+      "connection": "연결할 수 없습니다. 인터넷 연결을 확인하고 다시 시도하세요.",
+      "credentials": "이메일 또는 비밀번호가 올바르지 않습니다.",
+      "registered": "이미 등록된 이메일입니다. 대신 로그인하세요.",
+      "passwordLength": "비밀번호는 최소 8자여야 합니다.",
+      "email": "올바른 이메일 주소를 입력하세요.",
+      "generic": "문제가 발생했습니다. 다시 시도하세요."
+    },
+    "messages": {
+      "passwordChanged": "비밀번호가 변경되었습니다. 로그인된 상태입니다.",
+      "resetSent": "해당 주소에 계정이 있다면 재설정 링크를 보냈습니다. 이 휴대전화에서 열어주세요.",
+      "accountCreated": "계정이 생성되었습니다. 이메일을 확인한 뒤 로그인하세요."
+    },
+    "headers": {
+      "recoveryTitle": "새 비밀번호를 설정하세요.",
+      "signInTitle": "다시 오신 것을 환영합니다.",
+      "signUpTitle": "있는 그대로의 나로 시작하세요.",
+      "resetTitle": "로그인할 수 없나요?",
+      "recoveryCopy": "여기에서 이전에 사용하지 않은 비밀번호를 선택하세요. 이 기기에서는 로그인 상태가 유지됩니다.",
+      "resetCopy": "가입할 때 사용한 이메일 주소를 입력하면 새 비밀번호 설정 링크를 보내드립니다.",
+      "defaultCopy": "성인을 위한 데이팅. 대화 전에 서로의 관심이 먼저입니다."
+    },
+    "fields": {
+      "emailLabel": "이메일",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "비밀번호",
+      "passwordPlaceholder": "최소 {length}자",
+      "repeatPasswordLabel": "비밀번호 다시 입력",
+      "repeatPasswordPlaceholder": "한 번 더 입력하세요",
+      "repeatPasswordHelper": "계정을 만들기 전에 두 입력값이 일치해야 합니다."
+    },
+    "actions": {
+      "savePassword": "새 비밀번호 저장",
+      "signIn": "로그인",
+      "createAccount": "계정 만들기",
+      "sendResetLink": "재설정 링크 보내기",
+      "forgotPassword": "비밀번호를 잊으셨나요?",
+      "createAccountPrompt": "처음이신가요? 계정 만들기",
+      "signInPrompt": "이미 계정이 있나요? 로그인",
+      "backToSignIn": "로그인으로 돌아가기"
+    },
+    "ageRequirement": "Binder를 사용하려면 만 18세 이상이어야 합니다."
+  },
+  "matches": {
+    "header": {
+      "title": "내 Binds",
+      "eyebrow": "대화"
+    },
+    "notifications": {
+      "enabledTitle": "메시지 알림이 켜졌습니다",
+      "enablingTitle": "알림을 켜는 중…",
+      "blockedTitle": "알림이 차단되었습니다",
+      "title": "메시지 알림",
+      "unavailableCopy": "이 기기에서는 푸시 알림을 지원하지 않습니다. 채팅은 정상적으로 사용할 수 있습니다.",
+      "offlineCopy": "푸시 서비스에 연결할 수 없습니다. 연결을 확인하고 다시 시도하세요.",
+      "blockedCopy": "Android가 Binder 알림을 차단하고 있습니다. 시스템 설정에서 허용하세요.",
+      "enabledCopy": "알림 카테고리는 앱 설정에서 조정할 수 있습니다.",
+      "copy": "새로운 Bind와 메시지 알림을 받도록 설정하세요."
+    },
+    "actions": {
+      "refresh": "새로고침",
+      "retry": "다시 시도",
+      "enable": "사용",
+      "openSettings": "설정 열기",
+      "tryAgain": "다시 시도",
+      "goToDiscovery": "Discovery로 이동"
+    },
+    "states": {
+      "loading": "Binds를 불러오는 중…",
+      "offlineTitle": "오프라인 상태입니다",
+      "offlineMessage": "연결을 확인하고 Binds를 다시 불러오세요.",
+      "errorTitle": "Binds를 불러오지 못했습니다"
+    },
+    "empty": {
+      "title": "Bind는 함께 시작됩니다",
+      "message": "Discovery에서 당신과 상대방이 모두 Bind를 선택하면 이곳에 표시되고, 두 사람 중 누구든 대화를 시작할 수 있습니다.",
+      "conversations": "첫 메시지를 보낸 뒤 대화가 이곳에 표시됩니다."
+    },
+    "newMatches": {
+      "heading": "새로운 BINDS · 대화를 시작하세요",
+      "sayHello": "인사하기"
+    },
+    "accessibility": {
+      "startConversation": "{name}님과 대화 시작",
+      "openConversation": "{name}님과의 대화 열기",
+      "unreadOne": "읽지 않은 메시지 {count}개",
+      "unreadOther": "읽지 않은 메시지 {count}개"
+    }
+  },
+  "partnerProfile": {
+    "errors": {
+      "load": "이 프로필을 불러오지 못했습니다.",
+      "title": "프로필을 사용할 수 없습니다"
+    },
+    "actions": {
+      "back": "뒤로"
+    },
+    "accessibility": {
+      "close": "전체 프로필 닫기",
+      "photosReviewed": "Discovery에 표시되기 전에 사진 검토 완료"
+    },
+    "loading": "프로필을 여는 중…",
+    "photosReviewed": "사진 검토 완료",
+    "away": "{distance}km 거리"
+  },
+  "discovery": {
+    "errors": {
+      "load": "Discovery를 불러오지 못했습니다.",
+      "openConversation": "대화를 열지 못했습니다. Matches에서 찾을 수 있습니다.",
+      "saveDecision": "선택을 저장하지 못했습니다.",
+      "safetyReport": "안전 신고를 제출하지 못했습니다."
+    },
+    "states": {
+      "loadErrorTitle": "Discovery를 불러오지 못했습니다",
+      "offlineTitle": "오프라인 상태입니다",
+      "offlineMessage": "연결이 없습니다. 인터넷 연결을 확인하고 다시 시도하세요.",
+      "saving": "저장 중…"
+    },
+    "location": {
+      "title": "위치 정보로 더 가까운 사람을 찾을 수 있습니다",
+      "message": "Binder는 주변 사람을 찾기 위해 앱 사용 중 위치 정보를 사용합니다. 정확한 위치는 다른 사람에게 절대 표시되지 않습니다."
+    },
+    "header": {
+      "title": "발견하기",
+      "copy": "서로의 조건에 맞는 사람들."
+    },
+    "filters": {
+      "summary": "{minAge}–{maxAge} · {distance}km",
+      "label": "필터"
+    },
+    "empty": {
+      "filteredEyebrow": "필터가 추천 범위를 좁히고 있습니다",
+      "filteredTitle": "현재 이 필터에 맞는 사람이 없습니다.",
+      "filteredMessage": "Binder 기본 필터에서는 만날 수 있는 사람이 있습니다. 필터를 바꿔 확인해 보세요.",
+      "genuineEyebrow": "지금은 모두 확인했습니다",
+      "genuineTitle": "현재 새로운 추천이 없습니다.",
+      "genuineMessage": "지금은 서로의 조건에 맞는 새 승인 프로필이 없습니다. 새로운 후보가 생기면 자동으로 여기에 표시됩니다."
+    },
+    "actions": {
+      "tryAgain": "다시 시도",
+      "allowLocation": "위치 허용",
+      "changeFilters": "필터 변경",
+      "bindStamp": "BIND",
+      "passStamp": "패스",
+      "reportAndBlock": "신고 및 차단",
+      "cancel": "취소"
+    },
+    "accessibility": {
+      "openFilters": "Discovery 필터 열기",
+      "matchCreated": "{name}님과 매치되었습니다.",
+      "safetyOptions": "{name}님의 안전 옵션",
+      "closeSafetyOptions": "안전 옵션 닫기",
+      "bindProfile": "프로필에 Bind 선택",
+      "passProfile": "프로필 패스",
+      "profileSummary": "{name}, {age}세, {distance}킬로미터 거리"
+    },
+    "safety": {
+      "eyebrow": "안전 · {name}",
+      "title": "Binder가 무엇을 검토해야 하나요?",
+      "message": "신고하면 이 프로필도 즉시 차단됩니다. 상대방에게 누가 신고하거나 차단했는지는 알려지지 않습니다.",
+      "reasons": {
+        "underage": {
+          "label": "18세 미만일 수 있음",
+          "detail": "가장 높은 우선순위의 안전 검토입니다."
+        },
+        "harassment": {
+          "label": "괴롭힘 또는 위협",
+          "detail": "모욕적이거나 강압적이거나 위협적인 행동."
+        },
+        "fake": {
+          "label": "가짜 또는 사칭",
+          "detail": "신원이나 프로필이 기만적으로 보입니다."
+        },
+        "spam": {
+          "label": "스팸 또는 사기",
+          "detail": "상업적 스팸, 사기 또는 의심스러운 권유."
+        },
+        "sexualContent": {
+          "label": "성적 콘텐츠",
+          "detail": "노골적이거나 원치 않는 성적 프로필 콘텐츠."
+        },
+        "violence": {
+          "label": "폭력",
+          "detail": "위협 또는 노골적인 폭력 콘텐츠."
+        },
+        "other": {
+          "label": "기타 안전 문제",
+          "detail": "위 항목에 포함되지 않는 문제."
+        }
+      }
+    },
+    "profile": {
+      "away": "{distance}km 거리",
+      "photosReviewed": "· 사진 검토 완료"
+    }
+  },
+  "chat": {
+    "day": {
+      "today": "오늘",
+      "yesterday": "어제"
+    },
+    "header": {
+      "title": "{name}, {age}",
+      "eyebrow": "프로필 보기"
+    },
+    "alerts": {
+      "messageActions": "메시지 작업",
+      "unmatchTitle": "{name}님과의 Bind를 해제할까요?",
+      "unmatchMessage": "두 사람 모두의 대화가 즉시 종료됩니다.",
+      "blockTitle": "{name}님을 차단할까요?",
+      "blockMessage": "서로에게 보이지 않게 되며 대화도 즉시 종료됩니다."
+    },
+    "actions": {
+      "copy": "복사",
+      "report": "신고",
+      "cancel": "취소",
+      "unmatch": "Bind 해제",
+      "block": "차단",
+      "reportAndBlock": "신고 및 차단",
+      "backToSafetyControls": "안전 관리로 돌아가기",
+      "refresh": "새로고침",
+      "tryAgain": "다시 시도",
+      "loadEarlierMessages": "이전 메시지 불러오기",
+      "retry": "다시 시도",
+      "discard": "버리기",
+      "backToMatches": "Binds로 돌아가기"
+    },
+    "ended": {
+      "title": "이 대화는 종료되었습니다",
+      "message": "이 Bind는 더 이상 활성 상태가 아닙니다. 대화가 종료되었습니다."
+    },
+    "safety": {
+      "title": "안전 관리",
+      "reportMessage": "이 메시지 신고",
+      "reportPerson": "{name}님 신고",
+      "detailsPlaceholder": "안전팀을 위한 선택적 세부 정보",
+      "reasons": {
+        "harassment": "괴롭힘",
+        "spam": "스팸",
+        "fake": "가짜 프로필",
+        "underage": "18세 미만",
+        "sexualContent": "성적 콘텐츠",
+        "violence": "폭력",
+        "other": "기타"
+      }
+    },
+    "states": {
+      "opening": "대화를 여는 중…",
+      "offlineTitle": "오프라인 상태입니다",
+      "loadErrorTitle": "대화를 불러오지 못했습니다"
+    },
+    "empty": {
+      "title": "매치되었습니다.",
+      "message": "일반 채팅은 서로 관심을 보인 뒤에만 열립니다. 진솔한 말을 건네보세요."
+    },
+    "message": {
+      "sentAt": "{time} · 전송됨",
+      "new": "새 메시지",
+      "sending": "전송 중…",
+      "placeholder": "{name}님에게 메시지"
+    },
+    "errors": {
+      "messageNotSent": "메시지를 보내지 못했습니다."
+    },
+    "accessibility": {
+      "backToMatches": "Binds로 돌아가기",
+      "openProfile": "{name}님의 프로필 열기",
+      "safetyControls": "대화 안전 관리",
+      "closeSafetyControls": "안전 관리 닫기",
+      "reportDetails": "신고 세부 정보",
+      "holdToCopy": "길게 눌러 이 메시지 복사",
+      "holdToCopyOrReport": "길게 눌러 이 메시지 복사 또는 신고",
+      "messageSent": "메시지를 보냈습니다.",
+      "messageFailed": "메시지를 보내지 못했습니다.",
+      "scrollToNewMessage": "새 메시지로 스크롤",
+      "retrySending": "\"{message}\" 다시 보내기",
+      "discardUnsent": "보내지 않은 메시지 \"{message}\" 버리기",
+      "messagePerson": "{name}님에게 메시지",
+      "sendingMessage": "메시지 전송 중",
+      "sendMessageTo": "{name}님에게 메시지 보내기"
+    }
+  },
+  "profile": {
+    "errors": {
+      "load": "프로필을 불러오지 못했습니다.",
+      "openInformation": "Binder 정보를 열지 못했습니다.",
+      "deleteAccount": "계정을 삭제하지 못했습니다."
+    },
+    "alerts": {
+      "deleteTitle": "Binder 계정을 삭제할까요?",
+      "deleteMessage": "Binder 계정과 일반 제품 데이터가 영구적으로 삭제됩니다. 이 작업은 되돌릴 수 없습니다.",
+      "signOutTitle": "Binder에서 로그아웃할까요?",
+      "signOutMessage": "다시 로그인할 때까지 이 기기에서 앱 내 업데이트를 받지 않습니다. 프로필, Binds 및 메시지는 Binder에 그대로 남습니다."
+    },
+    "actions": {
+      "cancel": "취소",
+      "deleteAccount": "계정 삭제",
+      "staySignedIn": "로그인 유지",
+      "signOut": "로그아웃",
+      "completeProfile": "프로필 완성",
+      "tryAgain": "다시 시도"
+    },
+    "states": {
+      "loading": "프로필을 불러오는 중…",
+      "offlineTitle": "오프라인 상태입니다",
+      "offlineMessage": "연결을 확인하고 프로필을 다시 불러오세요.",
+      "errorTitle": "프로필을 불러오지 못했습니다"
+    },
+    "header": {
+      "title": "내 프로필",
+      "eyebrow": "BINDER"
+    },
+    "accessibility": {
+      "primaryPhoto": "내 기본 프로필 사진"
+    },
+    "notice": {
+      "warningEyebrow": "계정 알림",
+      "warningTitle": "계정에 대한 안내",
+      "suspendedEyebrow": "계정 상태",
+      "suspendedTitle": "계정이 정지되었습니다",
+      "reasonUnavailable": "추가 세부 정보가 없습니다.",
+      "warnedOn": "{date} 발행",
+      "suspendedEffect": "정지 기간 동안 Discovery와 메시지가 일시 중지됩니다."
+    },
+    "empty": {
+      "addFirstPhoto": "첫 사진 추가",
+      "addBio": "상대방이 무엇을 물어볼지 알 수 있도록 나에 대해 진솔한 몇 줄을 추가하세요."
+    },
+    "completeness": {
+      "eyebrow": "프로필 완성도",
+      "percent": "{percent}% 완료",
+      "done": "{item} · 완료",
+      "items": {
+        "photos": "사진 3장 추가",
+        "bio": "소개 작성",
+        "interests": "관심사 3개 선택"
+      }
+    },
+    "hub": {
+      "profileTitle": "프로필 및 사진",
+      "profileCopy": "프로필, Discovery 환경설정 및 최대 6장의 검토된 사진을 수정하세요.",
+      "settingsTitle": "앱 설정",
+      "settingsCopy": "화면 모드, 햅틱, 모션, 알림 환경설정 및 방해 금지 시간.",
+      "betaTitle": "베타 프로그램",
+      "betaCopy": "선택적 진단 및 비공개 피드백.",
+      "aboutTitle": "Binder 정보 및 법적 고지",
+      "aboutCopy": "법적 고지, 정책 및 현재 실행 중인 버전."
+    },
+    "safety": {
+      "eyebrow": "안전 및 개인정보",
+      "terms": "이용약관 및 커뮤니티 규칙",
+      "privacy": "개인정보 처리방침",
+      "deletionDetails": "삭제 및 보관 세부 정보"
+    },
+    "account": {
+      "eyebrow": "계정 작업",
+      "irreversible": "되돌릴 수 없음",
+      "deleteTitle": "Binder 계정 삭제",
+      "deleteCopy": "Discovery와 대화를 중지하고 프로필 미디어를 제거하며 인증 ID를 삭제합니다."
+    }
+  },
+  "profileSettings": {
+    "errors": {
+      "load": "프로필 설정을 불러오지 못했습니다.",
+      "addPhoto": "사진을 추가하지 못했습니다.",
+      "reorderPhotos": "사진 순서를 변경하지 못했습니다.",
+      "makePrimary": "이 사진을 기본 사진으로 설정하지 못했습니다.",
+      "removePhoto": "사진을 제거하지 못했습니다.",
+      "replacePhoto": "사진을 교체하지 못했습니다.",
+      "save": "프로필 설정을 저장하지 못했습니다."
+    },
+    "messages": {
+      "photoAdded": "사진을 최적화하고 업로드한 뒤 안전 검토로 보냈습니다.",
+      "saved": "프로필 설정을 저장했습니다."
+    },
+    "alerts": {
+      "removeTitle": "프로필 사진을 제거할까요?",
+      "removePrimaryMessage": "다른 승인된 사진으로 대체할 수 있는 경우에만 Binder가 기본 사진을 제거합니다.",
+      "removeMessage": "이 사진이 프로필과 저장소에서 제거됩니다."
+    },
+    "actions": {
+      "cancel": "취소",
+      "remove": "제거",
+      "saveProfile": "프로필 저장",
+      "addPhoto": "사진 추가",
+      "makePrimary": "기본으로 설정",
+      "retryUpload": "업로드 다시 시도",
+      "replacePhoto": "사진 교체"
+    },
+    "states": {
+      "loading": "프로필 설정을 불러오는 중…"
+    },
+    "gallery": {
+      "photoOf": "{total}장 중 {current}번째 사진",
+      "photo": "사진",
+      "name": "내 갤러리"
+    },
+    "header": {
+      "title": "프로필 설정",
+      "sectionTitle": "상대방에게 보이는 프로필을 만들어보세요.",
+      "sectionCopy": "생년월일은 잠긴 상태로 유지됩니다. 각 사진은 Discovery에 표시되기 전에 개별적으로 검토됩니다."
+    },
+    "accessibility": {
+      "closeFullPhoto": "전체 사진 닫기",
+      "backToProfile": "프로필로 돌아가기",
+      "photoUploaded": "사진을 업로드했습니다.",
+      "photoRemoved": "사진을 제거했습니다.",
+      "addPhoto": "프로필 사진 추가",
+      "viewPhoto": "사진 {number} 전체 보기",
+      "moveLeft": "사진 {number} 왼쪽으로 이동",
+      "removePhoto": "사진 {number} 제거",
+      "moveRight": "사진 {number} 오른쪽으로 이동"
+    },
+    "photos": {
+      "eyebrow": "사진 · {count}/6",
+      "orderCopy": "드래그할 필요가 없습니다. 화살표로 정확한 순서를 정하세요. 사진 1이 상대방에게 가장 먼저 보입니다.",
+      "optimized": "업로드 전 최적화",
+      "preparing": "사진 준비 중…",
+      "uploading": "사진 업로드 중…",
+      "uploadFailed": "사진 업로드 실패",
+      "primary": "사진 1 · 기본",
+      "dimensions": "{size} KB · {width} × {height}",
+      "rejectionReason": "사유: {reason}",
+      "rejectionReasonUnavailable": "사유가 제공되지 않았습니다.",
+      "status": {
+        "approved": "승인됨",
+        "pending": "검토 중",
+        "rejected": "승인되지 않음",
+        "removed": "제거됨"
+      }
+    },
+    "details": {
+      "eyebrow": "프로필 세부 정보",
+      "copy": "상대방에게 보이는 신원과 배경 정보입니다."
+    },
+    "fields": {
+      "firstName": "이름",
+      "bio": "소개",
+      "bioCount": "{count}/500",
+      "gender": "나는",
+      "interests": "관심사"
+    },
+    "discovery": {
+      "eyebrow": "DISCOVERY 환경설정",
+      "title": "Discovery 범위",
+      "copy": "Discovery 카드에 누가 표시될 수 있는지 결정합니다."
+    }
+  },
+  "discoveryFilterSheet": {
+    "errors": {
+      "authentication": "인증이 필요합니다.",
+      "load": "Discovery 설정을 불러오지 못했습니다.",
+      "audience": "만나고 싶은 사람을 최소 한 가지 선택하세요.",
+      "age": "최소 1년 차이가 있는 연령 범위를 선택하세요.",
+      "distance": "1~500km 사이의 거리를 선택하세요.",
+      "save": "Binder가 이 필터를 저장하지 못했습니다. 연결을 확인하고 다시 시도하세요."
+    },
+    "header": {
+      "title": "내 검색",
+      "eyebrow": "DISCOVERY"
+    },
+    "states": {
+      "loadErrorTitle": "필터를 불러오지 못했습니다",
+      "loading": "필터를 불러오는 중…"
+    },
+    "actions": {
+      "tryAgain": "다시 시도",
+      "close": "닫기",
+      "apply": "필터 적용",
+      "reset": "기본값으로 초기화"
+    },
+    "accessibility": {
+      "close": "Discovery 필터 닫기",
+      "filtersApplied": "필터가 적용되었습니다."
+    },
+    "count": {
+      "unavailable": "인원 수를 확인할 수 없음",
+      "checking": "조건에 맞는 사람을 확인 중…",
+      "none": "현재 조건에 맞는 사람이 없습니다",
+      "personOne": "현재 {count}명이 조건에 맞습니다",
+      "personOther": "현재 {count}명이 조건에 맞습니다",
+      "failed": "Binder가 지금 확인할 수 없습니다. 필터를 변경해 다시 시도하세요. 설정은 계속 적용됩니다.",
+      "likelyCause": "{cause}이(가) 원인일 가능성이 큽니다. 적용하기 전에 범위를 넓혀보세요.",
+      "updates": "검색 조건을 조정하면 이 숫자도 업데이트됩니다.",
+      "causes": {
+        "audience": "만나고 싶은 사람",
+        "age": "연령 범위",
+        "distance": "거리"
+      }
+    }
+  },
+  "onboarding": {
+    "progress": "{total}단계 중 {number}단계",
+    "steps": {
+      "eligibility": {
+        "eyebrow": "이용 조건 · 18+",
+        "title": "먼저 나이를 확인하세요.",
+        "copy": "Binder는 성인 전용입니다. 생년월일은 한 번 확인되고 온보딩 후 잠기며 다른 사람에게 표시되지 않습니다.",
+        "next": "다음: 이름과 성별"
+      },
+      "identity": {
+        "eyebrow": "기본 정보",
+        "title": "사람들이 어떤 이름으로 알아보면 좋을까요?",
+        "copy": "평소 사용하는 이름을 입력하세요. 이 정보는 프로필에 표시됩니다.",
+        "next": "다음: 소개와 관심사"
+      },
+      "profile": {
+        "eyebrow": "나에 대해",
+        "title": "상대방이 말을 걸 이유를 만들어보세요.",
+        "copy": "짧고 구체적인 소개와 몇 가지 관심사가 있으면 진짜 대화를 시작하기 쉬워집니다.",
+        "next": "다음: 만나고 싶은 사람"
+      },
+      "discovery": {
+        "eyebrow": "DISCOVERY",
+        "title": "나에게 맞는 사람을 선택하세요.",
+        "copy": "이 환경설정은 Discovery에 반영되며 나중에 변경할 수 있습니다.",
+        "next": "다음: 첫 사진 추가"
+      },
+      "photo": {
+        "eyebrow": "내 사진",
+        "title": "프로필에 얼굴을 보여주세요.",
+        "copy": "첫 사진은 상대방이 가장 먼저 보는 사진입니다. 최적화한 뒤 안전 검토를 거쳐 표시됩니다.",
+        "next": "완료하고 Binder 시작"
+      }
+    },
+    "errors": {
+      "preparePhoto": "사진을 준비하지 못했습니다.",
+      "photoRequired": "계속하려면 프로필 사진을 추가하세요.",
+      "complete": "온보딩을 완료하지 못했습니다."
+    },
+    "identity": {
+      "firstName": "이름",
+      "gender": "나는"
+    },
+    "profile": {
+      "bioLabel": "소개 · 선택 사항",
+      "bioHelper": "{count}/500 · 나중에 변경할 수 있습니다",
+      "bioPlaceholder": "예: 일요일 하이킹, 라이브 음악, 맛있는 커피.",
+      "interests": "관심사 · 최대 12개 선택 ({count})"
+    },
+    "photo": {
+      "replaceAccessibility": "기본 프로필 사진 교체",
+      "chooseAccessibility": "기본 프로필 사진 선택",
+      "preparing": "사진 준비 중…",
+      "choose": "사진 선택",
+      "resizing": "업로드 전 크기 조정 및 압축 중",
+      "openLibrary": "탭하여 사진 라이브러리 열기"
+    },
+    "actions": {
+      "back": "뒤로",
+      "finish": "프로필 완료",
+      "continue": "계속"
+    },
+    "birthDate": {
+      "title": "만 18세 이상이어야 합니다",
+      "copy": "실제 생년월일을 입력하세요. 만 18세 미만이면 Binder 프로필을 만들 수 없습니다.",
+      "day": "일",
+      "month": "월",
+      "year": "년",
+      "dayPlaceholder": "23",
+      "monthPlaceholder": "04",
+      "yearPlaceholder": "1995",
+      "eligible": "이용 가능 · {age}세",
+      "underage": "Binder를 사용하려면 만 18세 이상이어야 합니다.",
+      "invalid": "존재하지 않는 날짜입니다. 일과 월을 확인하세요.",
+      "implausible": "입력한 연도를 확인하세요.",
+      "private": "정확한 생년월일은 비공개로 유지됩니다."
+    }
+  },
+  "beta": {
+    "errors": {
+      "load": "베타 설정을 불러오지 못했습니다.",
+      "updateDiagnostics": "베타 진단을 업데이트하지 못했습니다.",
+      "submitFeedback": "베타 피드백을 제출하지 못했습니다."
+    },
+    "messages": {
+      "diagnosticsEnabled": "선택적 진단이 켜졌습니다. Binder는 고정된 기술 이벤트 필드만 기록합니다.",
+      "diagnosticsDisabled": "선택적 진단이 꺼졌습니다. 기존의 선택적 클라이언트 진단 데이터가 삭제되었습니다.",
+      "feedbackReceived": "피드백을 받았습니다. Binder 테스트에 참여해 주셔서 감사합니다."
+    },
+    "loading": "베타 프로그램 불러오는 중…",
+    "header": {
+      "title": "베타 프로그램",
+      "backAccessibility": "프로필로 돌아가기"
+    },
+    "intro": {
+      "title": "Binder를 측정 가능하게, 침해적이지 않게.",
+      "copy": "랭킹 품질은 Binder 자체 서버 이벤트에서 나옵니다. 선택적 클라이언트 진단은 별도 선택이며 기본적으로 꺼져 있습니다."
+    },
+    "diagnostics": {
+      "title": "선택적 진단",
+      "copy": "베타 기간의 로드 시간 및 렌더링 실패 디버깅에 유용합니다.",
+      "accessibilityLabel": "선택적 Binder 베타 진단",
+      "canRecord": "기록 가능",
+      "recorded": "고정된 화면/이벤트 이름, 시간, 작은 수치, 성공/오류 결과, 플랫폼 및 앱 버전.",
+      "never": "선택적 진단에 절대 포함되지 않음",
+      "excluded": "메시지 내용, 소개/프로필 텍스트, 사진, 정확한 위치, 연락처, 자유 형식 메타데이터, 원본 예외 메시지 또는 스택 트레이스.",
+      "retention": "클라이언트 진단: {clientDays}일 · 랭킹 관측: {rankingDays}일"
+    },
+    "ranking": {
+      "eyebrow": "랭킹 관측 가능성",
+      "title": "Binder가 추천 카드에서 배우는 것.",
+      "copy": "서버는 랭킹 위치, 공통 관심사 수, 10km 거리 구간 및 이후의 Bind/패스 결과를 기록합니다. 정확한 좌표와 프로필 내용은 랭킹 텔레메트리에 복사되지 않습니다."
+    },
+    "feedback": {
+      "eyebrow": "비공개 베타 피드백",
+      "title": "실패했거나 이상하게 느껴진 점을 알려주세요.",
+      "copy": "모욕적이거나 안전하지 않은 사람은 프로필 또는 채팅에서 신고 및 차단을 사용하세요. 이 양식은 제품 피드백용이며 운영 검토 신고 창구가 아닙니다.",
+      "overallExperience": "전반적인 경험",
+      "details": "세부 정보",
+      "characterCount": "{count}/1500",
+      "placeholder": "무슨 일이 있었나요? 어떻게 되길 기대했나요?",
+      "send": "베타 피드백 보내기"
+    },
+    "categories": {
+      "bug": "버그",
+      "ux": "UX",
+      "safety": "안전",
+      "performance": "성능",
+      "other": "기타"
+    }
+  },
+  "legalGate": {
+    "errors": {
+      "open": "이 페이지를 열지 못했습니다.",
+      "accept": "동의를 저장하지 못했습니다."
+    },
+    "header": {
+      "eyebrow": "만들거나 공유하기 전에",
+      "title": "대화 전에 명확한 규칙을 확인하세요.",
+      "copy": "Binder는 만 18세 이상을 위한 서비스이며 서로의 선택을 바탕으로 합니다. 프로필을 만들거나 사진을 업로드하거나 메시지를 보내기 전에 현재 이용약관 및 커뮤니티 규칙과 개인정보 처리방침에 동의하세요."
+    },
+    "policies": {
+      "terms": {
+        "title": "이용약관 및 커뮤니티 규칙",
+        "copy": "18세 이상만 · 동의 · 괴롭힘 금지 · 성적 착취 금지 · 사칭, 사기 또는 차단 회피 금지."
+      },
+      "privacy": {
+        "title": "개인정보 처리방침",
+        "copy": "Binder가 저장하는 정보, 위치가 비공개로 유지되는 이유, 안전 기록의 작동 방식 및 계정 삭제 방법."
+      },
+      "version": "버전 {version}"
+    },
+    "confirmation": "현재 이용약관 및 커뮤니티 규칙과 개인정보 처리방침을 읽었으며 동의합니다.",
+    "actions": {
+      "agree": "동의하고 계속"
+    },
+    "noSkip": "이 단계는 건너뛸 수 없습니다. 중요한 정책 변경 시 더 많은 사용자 콘텐츠를 만들기 전에 다시 동의해야 할 수 있습니다."
+  },
+  "discoveryPreferences": {
+    "groups": {
+      "preset": "프리셋으로 시작",
+      "audience": "만나고 싶은 사람",
+      "age": "나이",
+      "distance": "거리"
+    },
+    "accessibility": {
+      "minimumAge": "최소 나이",
+      "maximumAge": "최대 나이",
+      "searchRadius": "검색 반경"
+    },
+    "units": {
+      "years": "세",
+      "km": "km"
+    }
+  },
+  "about": {
+    "errors": {
+      "openPage": "이 페이지를 열지 못했습니다. 나중에 다시 시도하세요."
+    },
+    "header": {
+      "title": "Binder 정보"
+    },
+    "accessibility": {
+      "backToProfile": "프로필로 돌아가기"
+    },
+    "intro": {
+      "title": "하나의 무료 제품.",
+      "copy": "Binder는 독립적인 비상업 프로젝트로 만들어지고 운영됩니다. 광고 없음, 유료 등급 없음, 데이터 브로커 없음."
+    },
+    "policies": {
+      "eyebrow": "정책",
+      "terms": "이용약관 및 커뮤니티 규칙",
+      "privacy": "개인정보 처리방침",
+      "deletion": "계정 삭제 및 보관"
+    },
+    "version": "Binder {version}"
+  },
+  "appSettings": {
+    "common": {
+      "system": "시스템"
+    },
+    "errors": {
+      "loadDiagnostics": "진단 환경설정을 불러오지 못했습니다.",
+      "updateDiagnostics": "진단을 업데이트하지 못했습니다.",
+      "updatePush": "푸시 알림을 업데이트하지 못했습니다."
+    },
+    "messages": {
+      "pushOff": "이 설치에서 푸시 알림이 꺼져 있습니다.",
+      "pushActive": "이 설치에서 푸시 알림이 활성화되어 있습니다.",
+      "pushDenied": "Android 알림 권한이 거부되었습니다. 시스템 설정에서 Binder를 허용할 수 있습니다.",
+      "missingProject": "이 빌드는 아직 EAS 프로젝트에 연결되지 않았습니다.",
+      "pushOffline": "푸시 서비스에 연결할 수 없습니다. 온라인 상태에서 다시 시도하세요.",
+      "pushUnavailable": "원격 푸시는 Android 또는 iOS 개발/릴리스 빌드에서만 사용할 수 있습니다."
+    },
+    "states": {
+      "loading": "앱 설정을 불러오는 중…"
+    },
+    "header": {
+      "title": "앱 설정",
+      "sectionTitle": "Binder를 나에게 맞게 설정하세요.",
+      "sectionCopy": "시각적 환경설정은 안전 색상을 변경하지 않습니다. 푸시 전송 규칙은 Binder 서버에서 적용됩니다."
+    },
+    "accessibility": {
+      "backToProfile": "프로필로 돌아가기"
+    },
+    "appearance": {
+      "title": "화면 모드",
+      "copy": "기기 설정을 따르거나 Binder를 다크 모드로 유지하세요.",
+      "dark": "다크",
+      "light": "항상 밝게"
+    },
+    "accent": {
+      "title": "강조색",
+      "copy": "기본/신뢰 강조색만 변경됩니다. 경고 및 위험 색상은 고정됩니다.",
+      "options": {
+        "lime": "Binder 라임",
+        "blue": "일렉트릭 블루",
+        "violet": "바이올렛",
+        "coral": "코랄",
+        "ice": "아이스"
+      }
+    },
+    "hapticsMotion": {
+      "title": "햅틱 및 모션",
+      "haptics": "햅틱",
+      "copy": "중요한 작업에 은은한 피드백을 제공합니다.",
+      "motion": "모션",
+      "reduce": "줄이기",
+      "full": "전체"
+    },
+    "notifications": {
+      "title": "알림",
+      "copy": "권한은 이 설치에 적용됩니다. 카테고리, 소리, 진동은 Binder 계정 설정을 따르며 전송할 때마다 서버에서 다시 확인됩니다.",
+      "remotePush": "원격 푸시",
+      "newMatches": "새 Binds",
+      "messages": "메시지",
+      "moderation": "운영 검토",
+      "safety": "안전",
+      "product": "제품 업데이트",
+      "productCopy": "기본적으로 꺼져 있습니다.",
+      "sound": "소리",
+      "vibration": "진동"
+    },
+    "quietHours": {
+      "title": "방해 금지 시간",
+      "copy": "Bind, 메시지, 운영 검토 및 제품 푸시는 현지 종료 시간까지 기다립니다. 긴급 안전 알림은 즉시 전달됩니다.",
+      "use": "방해 금지 시간 사용",
+      "start": "시작",
+      "end": "종료",
+      "invalid": "HH:MM 형식을 사용하세요",
+      "startPlaceholder": "22:00",
+      "endPlaceholder": "08:00"
+    },
+    "diagnostics": {
+      "title": "진단",
+      "copy": "선택적 기술 이벤트만 포함합니다. 소개글, 메시지, 원본 스택 트레이스 또는 정확한 위치는 포함하지 않습니다.",
+      "checking": "진단 설정 확인 중…",
+      "share": "선택적 진단 공유"
+    },
+    "reset": {
+      "action": "앱 설정 초기화",
+      "confirmTitle": "앱 설정을 초기화할까요?",
+      "confirmCopy": "화면 모드, 모션, 햅틱, 강조색, 알림 카테고리 및 방해 금지 시간이 기본값으로 돌아갑니다. 프로필과 대화는 그대로 유지됩니다.",
+      "cancel": "내 설정 유지",
+      "confirm": "초기화",
+      "done": "앱 설정이 기본값으로 돌아갔습니다.",
+      "failed": "설정을 초기화하지 못했습니다."
+    }
+  },
+  "binderErrorBoundary": {
+    "recovery": {
+      "eyebrow": "BINDER가 화면을 복구했습니다",
+      "title": "화면을 표시하는 중 문제가 발생했습니다.",
+      "message": "진단 이벤트에는 계정 데이터가 포함되지 않았습니다. 화면을 다시 시도하세요. 문제가 반복되면 Binder가 열린 뒤 베타 프로그램 피드백을 이용하세요."
+    },
+    "actions": {
+      "retry": "Binder 다시 시도"
+    }
+  },
+  "photoPager": {
+    "errors": {
+      "load": "이 사진을 불러오지 못했습니다."
+    },
+    "accessibility": {
+      "position": "{name}, 사진 {current}/{count}",
+      "previous": "{name}님의 이전 사진",
+      "openProfile": "{name}님의 전체 프로필 열기",
+      "next": "{name}님의 다음 사진"
+    }
+  },
+  "discoveryLoading": {
+    "states": {
+      "finding": "서로의 조건에 맞는 사람을 찾는 중…"
+    },
+    "accessibility": {
+      "finding": "서로의 조건에 맞는 사람을 찾는 중"
+    }
+  },
+  "binderDial": {
+    "labels": {
+      "minimum": "최소",
+      "maximum": "최대",
+      "adjust": "조정"
+    },
+    "accessibility": {
+      "decreaseMinimum": "최솟값 낮추기",
+      "decreaseMaximum": "최댓값 낮추기",
+      "decrease": "{caption} 낮추기",
+      "increaseMinimum": "최솟값 높이기",
+      "increaseMaximum": "최댓값 높이기",
+      "increase": "{caption} 높이기"
+    }
+  },
+  "binderInput": {
+    "accessibility": {
+      "hidePassword": "비밀번호 숨기기",
+      "showPassword": "비밀번호 표시"
+    }
+  },
+  "binderScreenHeader": {},
+  "binderBrand": {
+    "accessibility": {
+      "name": "Binder"
+    },
+    "copy": {
+      "name": "BINDER"
+    }
+  },
+  "screenState": {},
+  "matchCelebration": {
+    "fallback": {
+      "you": "나"
+    },
+    "copy": {
+      "eyebrow": "IT'S A BIND",
+      "title": "당신과 {name}님이 서로를 선택했습니다.",
+      "message": "밀당은 없습니다. 두 사람 모두에게 대화가 열렸습니다."
+    },
+    "actions": {
+      "saySomething": "진솔하게 말 걸기",
+      "keepDiscovering": "계속 발견하기"
+    }
+  },
+  "root": {
+    "offline": {
+      "title": "오프라인 상태입니다",
+      "message": "Binder는 현재 안전 규칙을 확인하려면 연결이 필요합니다. 다시 온라인이 되면 바로 사용할 수 있습니다."
+    },
+    "legalGate": {
+      "failedTitle": "안전 확인에 실패했습니다",
+      "failedMessage": "Binder 정책 상태를 확인하지 못했습니다."
+    }
+  }
+}

@@ -1,0 +1,939 @@
+{
+  "$meta": {
+    "name": "Japanese",
+    "endonym": "日本語",
+    "flag": "🇯🇵",
+    "translatedBy": "Binder",
+    "sourceOfTruth": false
+  },
+  "sessionExpired": {
+    "title": "セッションが終了しました",
+    "message": "Binderを引き続き使用するには、もう一度ログインしてください。",
+    "action": "もう一度ログイン"
+  },
+  "settings": {
+    "title": "アプリ設定",
+    "eyebrow": "設定",
+    "language": {
+      "title": "言語",
+      "copy": "Binderが端末の言語に対応している場合は、その言語を使用します。別の言語を選んで上書きできます。",
+      "systemLabel": "端末に合わせる",
+      "systemCopy": "端末の設定に従います",
+      "back": "設定に戻る"
+    },
+    "appearance": {
+      "title": "外観",
+      "copy": "端末に合わせるか、Binderをライトまたはダークに固定します。",
+      "system": "端末に合わせる",
+      "dark": "常にダーク",
+      "light": "常にライト"
+    },
+    "motion": {
+      "title": "モーション",
+      "copy": "モーションを減らしても状態の変化はすべて維持され、アニメーションだけが停止します。",
+      "system": "端末に合わせる",
+      "full": "フルモーション",
+      "reduce": "モーションを減らす"
+    },
+    "haptics": {
+      "title": "触覚フィードバック",
+      "copy": "短い振動でしきい値や確認を知らせます。",
+      "label": "操作時に振動する"
+    },
+    "quietHours": {
+      "title": "通知を控える時間",
+      "copy": "Bind、メッセージ、モデレーション、製品通知は、現地の終了時刻まで保留されます。緊急の安全通知はすぐに届きます。",
+      "label": "通知を控える時間を使う",
+      "start": "開始",
+      "end": "終了",
+      "invalid": "HH:MM形式で入力"
+    },
+    "diagnostics": {
+      "title": "診断",
+      "copy": "任意の技術イベントのみ。自己紹介、メッセージ、生のスタックトレース、正確な位置情報は含みません。",
+      "label": "任意の診断情報を共有",
+      "checking": "診断設定を確認中…"
+    },
+    "reset": {
+      "action": "アプリ設定をリセット",
+      "confirmTitle": "アプリ設定をリセットしますか？",
+      "confirmCopy": "外観、モーション、触覚フィードバック、アクセント、通知カテゴリ、通知を控える時間が初期設定に戻ります。プロフィールと会話は変更されません。",
+      "cancel": "設定を維持",
+      "confirm": "リセット",
+      "done": "アプリ設定を初期設定に戻しました。",
+      "failed": "設定をリセットできませんでした。"
+    }
+  },
+  "common": {
+    "retry": "再試行",
+    "close": "閉じる",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "loading": "読み込み中…"
+  },
+  "auth": {
+    "errors": {
+      "connection": "接続できません。インターネット接続を確認して再試行してください。",
+      "credentials": "メールアドレスまたはパスワードが正しくありません。",
+      "registered": "このメールアドレスは登録済みです。ログインしてください。",
+      "passwordLength": "パスワードは8文字以上必要です。",
+      "email": "有効なメールアドレスを入力してください。",
+      "generic": "問題が発生しました。再試行してください。"
+    },
+    "messages": {
+      "passwordChanged": "パスワードを変更しました。ログイン済みです。",
+      "resetSent": "そのアドレスにアカウントがある場合、リセット用リンクを送信しました。この端末で開いてください。",
+      "accountCreated": "アカウントを作成しました。メールを確認してからログインしてください。"
+    },
+    "headers": {
+      "recoveryTitle": "新しいパスワードを設定。",
+      "signInTitle": "おかえりなさい。",
+      "signUpTitle": "ありのままの自分から始めよう。",
+      "resetTitle": "ログインできませんか？",
+      "recoveryCopy": "ここで以前使ったことのないものを選んでください。この端末ではログイン状態が維持されます。",
+      "resetCopy": "登録時に使ったメールアドレスを入力してください。新しいパスワードを設定するリンクを送ります。",
+      "defaultCopy": "大人のための出会い。会話の前に、お互いの関心を。"
+    },
+    "fields": {
+      "emailLabel": "メール",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "パスワード",
+      "passwordPlaceholder": "{length}文字以上",
+      "repeatPasswordLabel": "パスワードを再入力",
+      "repeatPasswordPlaceholder": "もう一度入力",
+      "repeatPasswordHelper": "アカウント作成前に、2つの入力が一致している必要があります。"
+    },
+    "actions": {
+      "savePassword": "新しいパスワードを保存",
+      "signIn": "ログイン",
+      "createAccount": "アカウントを作成",
+      "sendResetLink": "リセットリンクを送信",
+      "forgotPassword": "パスワードを忘れた場合",
+      "createAccountPrompt": "初めてですか？アカウントを作成",
+      "signInPrompt": "アカウントをお持ちですか？ログイン",
+      "backToSignIn": "ログインに戻る"
+    },
+    "ageRequirement": "Binderを利用するには18歳以上である必要があります。"
+  },
+  "matches": {
+    "header": {
+      "title": "あなたのBinds",
+      "eyebrow": "会話"
+    },
+    "notifications": {
+      "enabledTitle": "メッセージ通知が有効です",
+      "enablingTitle": "通知を有効にしています…",
+      "blockedTitle": "通知がブロックされています",
+      "title": "メッセージ通知",
+      "unavailableCopy": "この端末ではプッシュ通知を利用できません。チャットは通常どおり使えます。",
+      "offlineCopy": "プッシュサービスに接続できません。接続を確認して再試行してください。",
+      "blockedCopy": "AndroidがBinderの通知をブロックしています。システム設定で許可してください。",
+      "enabledCopy": "通知カテゴリはアプリ設定で調整できます。",
+      "copy": "新しいBindやメッセージの通知を受け取ります。"
+    },
+    "actions": {
+      "refresh": "更新",
+      "retry": "再試行",
+      "enable": "有効にする",
+      "openSettings": "設定を開く",
+      "tryAgain": "再試行",
+      "goToDiscovery": "Discoveryへ"
+    },
+    "states": {
+      "loading": "Bindsを読み込み中…",
+      "offlineTitle": "オフラインです",
+      "offlineMessage": "接続を確認して、Bindsをもう一度読み込んでください。",
+      "errorTitle": "Bindsを読み込めませんでした"
+    },
+    "empty": {
+      "title": "Bindは二人で始まる",
+      "message": "あなたとDiscoveryの相手がどちらもBindを選ぶと、ここに表示され、どちらからでも会話を始められます。",
+      "conversations": "最初のメッセージの後、会話がここに表示されます。"
+    },
+    "newMatches": {
+      "heading": "新しいBINDS · 話してみよう",
+      "sayHello": "あいさつする"
+    },
+    "accessibility": {
+      "startConversation": "{name}と会話を始める",
+      "openConversation": "{name}との会話を開く",
+      "unreadOne": "未読メッセージ {count}件",
+      "unreadOther": "未読メッセージ {count}件"
+    }
+  },
+  "partnerProfile": {
+    "errors": {
+      "load": "このプロフィールを読み込めませんでした。",
+      "title": "プロフィールを利用できません"
+    },
+    "actions": {
+      "back": "戻る"
+    },
+    "accessibility": {
+      "close": "プロフィール全体を閉じる",
+      "photosReviewed": "Discoveryに表示される前に写真を確認済み"
+    },
+    "loading": "プロフィールを開いています…",
+    "photosReviewed": "写真確認済み",
+    "away": "{distance} km先"
+  },
+  "discovery": {
+    "errors": {
+      "load": "Discoveryを読み込めませんでした。",
+      "openConversation": "会話を開けませんでした。Matchesから確認できます。",
+      "saveDecision": "選択を保存できませんでした。",
+      "safetyReport": "安全に関する報告を送信できませんでした。"
+    },
+    "states": {
+      "loadErrorTitle": "Discoveryを読み込めませんでした",
+      "offlineTitle": "オフラインです",
+      "offlineMessage": "接続できません。インターネット接続を確認して再試行してください。",
+      "saving": "保存中…"
+    },
+    "location": {
+      "title": "位置情報で候補を見つけやすくなります",
+      "message": "Binderは、近くの人を見つけるためにアプリ使用中の位置情報を利用します。正確な位置が他の人に表示されることはありません。"
+    },
+    "header": {
+      "title": "見つける",
+      "copy": "お互いの条件に合う人。"
+    },
+    "filters": {
+      "summary": "{minAge}–{maxAge} · {distance} km",
+      "label": "フィルター"
+    },
+    "empty": {
+      "filteredEyebrow": "フィルターで候補が絞られています",
+      "filteredTitle": "今はこの条件に合う人がいません。",
+      "filteredMessage": "Binderの標準フィルターなら候補があります。条件を変更して確認してください。",
+      "genuineEyebrow": "今はここまでです",
+      "genuineTitle": "現在、新しい候補はありません。",
+      "genuineMessage": "現時点では、お互いの条件に合う新しい承認済みプロフィールはありません。新しい候補は自動的にここへ表示されます。"
+    },
+    "actions": {
+      "tryAgain": "再試行",
+      "allowLocation": "位置情報を許可",
+      "changeFilters": "フィルターを変更",
+      "bindStamp": "BIND",
+      "passStamp": "パス",
+      "reportAndBlock": "報告してブロック",
+      "cancel": "キャンセル"
+    },
+    "accessibility": {
+      "openFilters": "Discoveryフィルターを開く",
+      "matchCreated": "{name}とマッチしました。",
+      "safetyOptions": "{name}の安全オプション",
+      "closeSafetyOptions": "安全オプションを閉じる",
+      "bindProfile": "プロフィールをBind",
+      "passProfile": "プロフィールをパス",
+      "profileSummary": "{name}、{age}歳、{distance}キロ先"
+    },
+    "safety": {
+      "eyebrow": "安全 · {name}",
+      "title": "Binderに何を確認してほしいですか？",
+      "message": "報告すると、このプロフィールはすぐにブロックされます。誰が報告またはブロックしたか相手には通知されません。",
+      "reasons": {
+        "underage": {
+          "label": "18歳未満の可能性",
+          "detail": "最優先の安全確認です。"
+        },
+        "harassment": {
+          "label": "嫌がらせまたは脅迫",
+          "detail": "攻撃的、強制的、または脅す行為。"
+        },
+        "fake": {
+          "label": "偽プロフィールまたはなりすまし",
+          "detail": "身元やプロフィールに偽りがあるように見えます。"
+        },
+        "spam": {
+          "label": "スパムまたは詐欺",
+          "detail": "商業スパム、詐欺、または不審な勧誘。"
+        },
+        "sexualContent": {
+          "label": "性的コンテンツ",
+          "detail": "露骨または望まない性的なプロフィール内容。"
+        },
+        "violence": {
+          "label": "暴力",
+          "detail": "脅迫または生々しい暴力表現。"
+        },
+        "other": {
+          "label": "その他の安全上の懸念",
+          "detail": "上記に含まれない懸念。"
+        }
+      }
+    },
+    "profile": {
+      "away": "{distance} km先",
+      "photosReviewed": "· 写真確認済み"
+    }
+  },
+  "chat": {
+    "day": {
+      "today": "今日",
+      "yesterday": "昨日"
+    },
+    "header": {
+      "title": "{name}、{age}",
+      "eyebrow": "プロフィールを見る"
+    },
+    "alerts": {
+      "messageActions": "メッセージ操作",
+      "unmatchTitle": "{name}とのBindを解除しますか？",
+      "unmatchMessage": "会話は二人ともすぐに閉じられます。",
+      "blockTitle": "{name}をブロックしますか？",
+      "blockMessage": "お互いに表示されなくなり、会話もすぐに閉じられます。"
+    },
+    "actions": {
+      "copy": "コピー",
+      "report": "報告",
+      "cancel": "キャンセル",
+      "unmatch": "Bindを解除",
+      "block": "ブロック",
+      "reportAndBlock": "報告してブロック",
+      "backToSafetyControls": "安全管理に戻る",
+      "refresh": "更新",
+      "tryAgain": "再試行",
+      "loadEarlierMessages": "以前のメッセージを読み込む",
+      "retry": "再試行",
+      "discard": "破棄",
+      "backToMatches": "Bindsに戻る"
+    },
+    "ended": {
+      "title": "この会話は終了しました",
+      "message": "このBindは現在無効です。会話は閉じられました。"
+    },
+    "safety": {
+      "title": "安全管理",
+      "reportMessage": "このメッセージを報告",
+      "reportPerson": "{name}を報告",
+      "detailsPlaceholder": "安全チーム向けの任意の詳細",
+      "reasons": {
+        "harassment": "嫌がらせ",
+        "spam": "スパム",
+        "fake": "偽プロフィール",
+        "underage": "18歳未満",
+        "sexualContent": "性的コンテンツ",
+        "violence": "暴力",
+        "other": "その他"
+      }
+    },
+    "states": {
+      "opening": "会話を開いています…",
+      "offlineTitle": "オフラインです",
+      "loadErrorTitle": "会話を読み込めませんでした"
+    },
+    "empty": {
+      "title": "マッチしました。",
+      "message": "通常のチャットは、お互いに興味を持った後にだけ開きます。あなたらしい言葉を送ってみましょう。"
+    },
+    "message": {
+      "sentAt": "{time} · 送信済み",
+      "new": "新しいメッセージ",
+      "sending": "送信中…",
+      "placeholder": "{name}にメッセージ"
+    },
+    "errors": {
+      "messageNotSent": "メッセージを送信できませんでした。"
+    },
+    "accessibility": {
+      "backToMatches": "Bindsに戻る",
+      "openProfile": "{name}のプロフィールを開く",
+      "safetyControls": "会話の安全管理",
+      "closeSafetyControls": "安全管理を閉じる",
+      "reportDetails": "報告の詳細",
+      "holdToCopy": "長押ししてこのメッセージをコピー",
+      "holdToCopyOrReport": "長押ししてこのメッセージをコピーまたは報告",
+      "messageSent": "メッセージを送信しました。",
+      "messageFailed": "メッセージを送信できませんでした。",
+      "scrollToNewMessage": "新しいメッセージまでスクロール",
+      "retrySending": "「{message}」を再送信",
+      "discardUnsent": "未送信メッセージ「{message}」を破棄",
+      "messagePerson": "{name}にメッセージ",
+      "sendingMessage": "メッセージを送信中",
+      "sendMessageTo": "{name}にメッセージを送信"
+    }
+  },
+  "profile": {
+    "errors": {
+      "load": "プロフィールを読み込めませんでした。",
+      "openInformation": "Binderの情報を開けませんでした。",
+      "deleteAccount": "アカウントを削除できませんでした。"
+    },
+    "alerts": {
+      "deleteTitle": "Binderアカウントを削除しますか？",
+      "deleteMessage": "Binderアカウントと通常の製品データを完全に削除します。この操作は取り消せません。",
+      "signOutTitle": "Binderからログアウトしますか？",
+      "signOutMessage": "再度ログインするまで、この端末ではアプリ内更新を受け取らなくなります。プロフィール、Binds、メッセージはBinderに残ります。"
+    },
+    "actions": {
+      "cancel": "キャンセル",
+      "deleteAccount": "アカウントを削除",
+      "staySignedIn": "ログインを維持",
+      "signOut": "ログアウト",
+      "completeProfile": "プロフィールを完成",
+      "tryAgain": "再試行"
+    },
+    "states": {
+      "loading": "プロフィールを読み込み中…",
+      "offlineTitle": "オフラインです",
+      "offlineMessage": "接続を確認して、プロフィールをもう一度読み込んでください。",
+      "errorTitle": "プロフィールを読み込めませんでした"
+    },
+    "header": {
+      "title": "あなたのプロフィール",
+      "eyebrow": "BINDER"
+    },
+    "accessibility": {
+      "primaryPhoto": "あなたのメインプロフィール写真"
+    },
+    "notice": {
+      "warningEyebrow": "アカウントのお知らせ",
+      "warningTitle": "アカウントに関するお知らせ",
+      "suspendedEyebrow": "アカウント状態",
+      "suspendedTitle": "アカウントは停止されています",
+      "reasonUnavailable": "追加の詳細はありません。",
+      "warnedOn": "{date}に発行",
+      "suspendedEffect": "停止期間中はDiscoveryとメッセージが一時停止します。"
+    },
+    "empty": {
+      "addFirstPhoto": "最初の写真を追加",
+      "addBio": "あなたについての具体的なことを数行書いて、話のきっかけを作りましょう。"
+    },
+    "completeness": {
+      "eyebrow": "プロフィール完成度",
+      "percent": "{percent}% 完成",
+      "done": "{item} · 完了",
+      "items": {
+        "photos": "写真を3枚追加",
+        "bio": "自己紹介を書く",
+        "interests": "興味を3つ選ぶ"
+      }
+    },
+    "hub": {
+      "profileTitle": "プロフィールと写真",
+      "profileCopy": "プロフィール、Discoveryの設定、最大6枚の審査済み写真を編集します。",
+      "settingsTitle": "アプリ設定",
+      "settingsCopy": "外観、触覚フィードバック、モーション、通知設定、通知を控える時間。",
+      "betaTitle": "ベータプログラム",
+      "betaCopy": "任意の診断と非公開フィードバック。",
+      "aboutTitle": "Binderについて・法的情報",
+      "aboutCopy": "法的表示、ポリシー、現在のバージョン。"
+    },
+    "safety": {
+      "eyebrow": "安全とプライバシー",
+      "terms": "利用規約とコミュニティルール",
+      "privacy": "プライバシーポリシー",
+      "deletionDetails": "削除と保存期間の詳細"
+    },
+    "account": {
+      "eyebrow": "アカウント操作",
+      "irreversible": "取り消し不可",
+      "deleteTitle": "Binderアカウントを削除",
+      "deleteCopy": "Discoveryと会話を停止し、プロフィールメディアと認証IDを削除します。"
+    }
+  },
+  "profileSettings": {
+    "errors": {
+      "load": "プロフィール設定を読み込めませんでした。",
+      "addPhoto": "写真を追加できませんでした。",
+      "reorderPhotos": "写真を並べ替えられませんでした。",
+      "makePrimary": "この写真をメインにできませんでした。",
+      "removePhoto": "写真を削除できませんでした。",
+      "replacePhoto": "写真を置き換えられませんでした。",
+      "save": "プロフィール設定を保存できませんでした。"
+    },
+    "messages": {
+      "photoAdded": "写真を最適化してアップロードし、安全確認へ送信しました。",
+      "saved": "プロフィール設定を保存しました。"
+    },
+    "alerts": {
+      "removeTitle": "プロフィール写真を削除しますか？",
+      "removePrimaryMessage": "別の承認済み写真に置き換えられる場合にのみ、Binderはメイン写真を削除します。",
+      "removeMessage": "この写真はプロフィールとストレージから削除されます。"
+    },
+    "actions": {
+      "cancel": "キャンセル",
+      "remove": "削除",
+      "saveProfile": "プロフィールを保存",
+      "addPhoto": "写真を追加",
+      "makePrimary": "メインにする",
+      "retryUpload": "再アップロード",
+      "replacePhoto": "写真を置き換える"
+    },
+    "states": {
+      "loading": "プロフィール設定を読み込み中…"
+    },
+    "gallery": {
+      "photoOf": "{total}枚中{current}枚目",
+      "photo": "写真",
+      "name": "あなたのギャラリー"
+    },
+    "header": {
+      "title": "プロフィール設定",
+      "sectionTitle": "相手に見えるプロフィールを整えよう。",
+      "sectionCopy": "生年月日は変更できません。各写真は個別に審査され、承認後にDiscoveryへ表示されます。"
+    },
+    "accessibility": {
+      "closeFullPhoto": "写真全体を閉じる",
+      "backToProfile": "プロフィールに戻る",
+      "photoUploaded": "写真をアップロードしました。",
+      "photoRemoved": "写真を削除しました。",
+      "addPhoto": "プロフィール写真を追加",
+      "viewPhoto": "写真{number}を全画面で表示",
+      "moveLeft": "写真{number}を左へ移動",
+      "removePhoto": "写真{number}を削除",
+      "moveRight": "写真{number}を右へ移動"
+    },
+    "photos": {
+      "eyebrow": "写真 · {count}/6",
+      "orderCopy": "ドラッグは不要です。矢印操作で正確な順番を設定できます。写真1が相手に最初に表示されます。",
+      "optimized": "アップロード前に最適化",
+      "preparing": "写真を準備中…",
+      "uploading": "写真をアップロード中…",
+      "uploadFailed": "写真のアップロードに失敗しました",
+      "primary": "写真1 · メイン",
+      "dimensions": "{size} KB · {width} × {height}",
+      "rejectionReason": "理由：{reason}",
+      "rejectionReasonUnavailable": "理由は提供されていません。",
+      "status": {
+        "approved": "承認済み",
+        "pending": "審査中",
+        "rejected": "未承認",
+        "removed": "削除済み"
+      }
+    },
+    "details": {
+      "eyebrow": "プロフィール詳細",
+      "copy": "相手に表示されるあなたの情報です。"
+    },
+    "fields": {
+      "firstName": "名前",
+      "bio": "自己紹介",
+      "bioCount": "{count}/500",
+      "gender": "私は",
+      "interests": "興味"
+    },
+    "discovery": {
+      "eyebrow": "DISCOVERY設定",
+      "title": "Discoveryの範囲",
+      "copy": "Discoveryの候補に誰が表示されるかを設定します。"
+    }
+  },
+  "discoveryFilterSheet": {
+    "errors": {
+      "authentication": "認証が必要です。",
+      "load": "Discovery設定を読み込めませんでした。",
+      "audience": "会いたい相手を少なくとも1つ選んでください。",
+      "age": "1歳以上の幅がある年齢範囲を選んでください。",
+      "distance": "1〜500 kmの距離を選んでください。",
+      "save": "Binderはこのフィルターを保存できませんでした。接続を確認して再試行してください。"
+    },
+    "header": {
+      "title": "あなたの検索",
+      "eyebrow": "DISCOVERY"
+    },
+    "states": {
+      "loadErrorTitle": "フィルターを読み込めませんでした",
+      "loading": "フィルターを読み込み中…"
+    },
+    "actions": {
+      "tryAgain": "再試行",
+      "close": "閉じる",
+      "apply": "フィルターを適用",
+      "reset": "初期設定に戻す"
+    },
+    "accessibility": {
+      "close": "Discoveryフィルターを閉じる",
+      "filtersApplied": "フィルターを適用しました。"
+    },
+    "count": {
+      "unavailable": "人数を確認できません",
+      "checking": "条件に合う人を確認中…",
+      "none": "現在条件に合う人はいません",
+      "personOne": "現在{count}人が条件に合います",
+      "personOther": "現在{count}人が条件に合います",
+      "failed": "Binderは今確認できません。フィルターを変更して再試行してください。設定自体は引き続き有効です。",
+      "likelyCause": "{cause}が主な原因の可能性があります。適用前に条件を広げてください。",
+      "updates": "検索条件を調整すると、この人数も更新されます。",
+      "causes": {
+        "audience": "会いたい相手",
+        "age": "年齢範囲",
+        "distance": "距離"
+      }
+    }
+  },
+  "onboarding": {
+    "progress": "ステップ {number} / {total}",
+    "steps": {
+      "eligibility": {
+        "eyebrow": "利用条件 · 18+",
+        "title": "まず、年齢を確認してください。",
+        "copy": "Binderは成人専用です。生年月日は一度だけ確認され、オンボーディング後は変更できず、他の人には表示されません。",
+        "next": "次へ：名前と性別"
+      },
+      "identity": {
+        "eyebrow": "基本情報",
+        "title": "どんな名前で知ってもらいたいですか？",
+        "copy": "普段使っている名前を入力してください。この情報はプロフィールに表示されます。",
+        "next": "次へ：自己紹介と興味"
+      },
+      "profile": {
+        "eyebrow": "あなたについて",
+        "title": "話しかけたくなる理由を作ろう。",
+        "copy": "短く具体的な自己紹介といくつかの興味があると、本当の会話を始めやすくなります。",
+        "next": "次へ：会いたい相手"
+      },
+      "discovery": {
+        "eyebrow": "DISCOVERY",
+        "title": "自分に合う相手を選ぼう。",
+        "copy": "この設定はDiscoveryに反映され、あとから変更できます。",
+        "next": "次へ：最初の写真を追加"
+      },
+      "photo": {
+        "eyebrow": "あなたの写真",
+        "title": "プロフィールに顔を加えよう。",
+        "copy": "最初の写真は相手が最初に見る写真です。最適化後、安全確認を通ってから表示されます。",
+        "next": "完了してBinderへ"
+      }
+    },
+    "errors": {
+      "preparePhoto": "写真を準備できませんでした。",
+      "photoRequired": "続行するにはプロフィール写真を追加してください。",
+      "complete": "オンボーディングを完了できませんでした。"
+    },
+    "identity": {
+      "firstName": "名前",
+      "gender": "私は"
+    },
+    "profile": {
+      "bioLabel": "自己紹介 · 任意",
+      "bioHelper": "{count}/500 · あとで変更できます",
+      "bioPlaceholder": "例：日曜のハイキング、ライブ音楽、おいしいコーヒー。",
+      "interests": "興味 · 最大12個（{count}）"
+    },
+    "photo": {
+      "replaceAccessibility": "メインプロフィール写真を置き換える",
+      "chooseAccessibility": "メインプロフィール写真を選ぶ",
+      "preparing": "写真を準備中…",
+      "choose": "写真を選ぶ",
+      "resizing": "アップロード前にサイズ変更と圧縮をしています",
+      "openLibrary": "タップして写真ライブラリを開く"
+    },
+    "actions": {
+      "back": "戻る",
+      "finish": "プロフィールを完成",
+      "continue": "続ける"
+    },
+    "birthDate": {
+      "title": "18歳以上である必要があります",
+      "copy": "実際の生年月日を入力してください。18歳未満の場合、Binderプロフィールは作成できません。",
+      "day": "日",
+      "month": "月",
+      "year": "年",
+      "dayPlaceholder": "23",
+      "monthPlaceholder": "04",
+      "yearPlaceholder": "1995",
+      "eligible": "利用可能 · {age}歳",
+      "underage": "Binderを利用するには18歳以上である必要があります。",
+      "invalid": "存在しない日付です。日と月を確認してください。",
+      "implausible": "入力した年を確認してください。",
+      "private": "正確な生年月日は非公開です。"
+    }
+  },
+  "beta": {
+    "errors": {
+      "load": "ベータ設定を読み込めませんでした。",
+      "updateDiagnostics": "ベータ診断設定を更新できませんでした。",
+      "submitFeedback": "ベータフィードバックを送信できませんでした。"
+    },
+    "messages": {
+      "diagnosticsEnabled": "任意の診断を有効にしました。Binderは固定された技術イベント項目のみ記録します。",
+      "diagnosticsDisabled": "任意の診断を無効にしました。既存の任意クライアント診断は削除されました。",
+      "feedbackReceived": "フィードバックを受け取りました。Binderのテストにご協力いただきありがとうございます。"
+    },
+    "loading": "ベータプログラムを読み込み中…",
+    "header": {
+      "title": "ベータプログラム",
+      "backAccessibility": "プロフィールに戻る"
+    },
+    "intro": {
+      "title": "Binderを測定可能に、侵襲的にはしない。",
+      "copy": "ランキング品質はBinder自身のサーバーイベントから得られます。任意のクライアント診断は別の選択肢で、初期設定ではオフです。"
+    },
+    "diagnostics": {
+      "title": "任意の診断",
+      "copy": "ベータ中の読み込み時間や表示失敗の調査に役立ちます。",
+      "accessibilityLabel": "任意のBinderベータ診断",
+      "canRecord": "記録できるもの",
+      "recorded": "固定された画面/イベント名、所要時間、小さな数値、成功/エラー結果、プラットフォーム、アプリバージョン。",
+      "never": "任意の診断に含まれないもの",
+      "excluded": "メッセージ本文、自己紹介/プロフィール本文、写真、正確な位置、連絡先、自由形式のメタデータ、生の例外メッセージ、スタックトレース。",
+      "retention": "クライアント診断：{clientDays}日 · ランキング観測：{rankingDays}日"
+    },
+    "ranking": {
+      "eyebrow": "ランキングの観測",
+      "title": "Binderが候補から学ぶこと。",
+      "copy": "サーバーは順位、共通の興味数、10 km単位の距離区分、その後のBind/パス結果を記録します。正確な座標やプロフィール内容はランキングのテレメトリへコピーされません。"
+    },
+    "feedback": {
+      "eyebrow": "非公開ベータフィードバック",
+      "title": "失敗したことや違和感があったことを教えてください。",
+      "copy": "悪質または危険な相手には、プロフィールかチャットの「報告してブロック」を使ってください。このフォームは製品フィードバック用で、モデレーションの報告窓口ではありません。",
+      "overallExperience": "全体的な体験",
+      "details": "詳細",
+      "characterCount": "{count}/1500",
+      "placeholder": "何が起きましたか？本来どうなると思いましたか？",
+      "send": "ベータフィードバックを送信"
+    },
+    "categories": {
+      "bug": "不具合",
+      "ux": "UX",
+      "safety": "安全",
+      "performance": "パフォーマンス",
+      "other": "その他"
+    }
+  },
+  "legalGate": {
+    "errors": {
+      "open": "このページを開けませんでした。",
+      "accept": "同意を保存できませんでした。"
+    },
+    "header": {
+      "eyebrow": "作成・共有する前に",
+      "title": "会話の前に、明確なルールを。",
+      "copy": "Binderは18歳以上を対象とし、お互いの選択を大切にしています。プロフィール作成、写真アップロード、メッセージ送信の前に、現在の利用規約とコミュニティルール、プライバシーポリシーに同意してください。"
+    },
+    "policies": {
+      "terms": {
+        "title": "利用規約とコミュニティルール",
+        "copy": "18歳以上のみ · 同意 · 嫌がらせ禁止 · 性的搾取禁止 · なりすまし、詐欺、ブロック回避禁止。"
+      },
+      "privacy": {
+        "title": "プライバシーポリシー",
+        "copy": "Binderが保存する情報、位置情報が非公開である理由、安全記録の仕組み、アカウント削除方法。"
+      },
+      "version": "バージョン {version}"
+    },
+    "confirmation": "現在の利用規約とコミュニティルール、およびプライバシーポリシーを読み、同意します。",
+    "actions": {
+      "agree": "同意して続ける"
+    },
+    "noSkip": "この手順はスキップできません。重要なポリシー変更後は、ユーザーコンテンツをさらに作成する前に再同意が必要になる場合があります。"
+  },
+  "discoveryPreferences": {
+    "groups": {
+      "preset": "プリセットから始める",
+      "audience": "会いたい相手",
+      "age": "年齢",
+      "distance": "距離"
+    },
+    "accessibility": {
+      "minimumAge": "最低年齢",
+      "maximumAge": "最高年齢",
+      "searchRadius": "検索範囲"
+    },
+    "units": {
+      "years": "歳",
+      "km": "km"
+    }
+  },
+  "about": {
+    "errors": {
+      "openPage": "このページを開けませんでした。あとでもう一度お試しください。"
+    },
+    "header": {
+      "title": "Binderについて"
+    },
+    "accessibility": {
+      "backToProfile": "プロフィールに戻る"
+    },
+    "intro": {
+      "title": "ひとつの無料サービス。",
+      "copy": "Binderは独立した非営利プロジェクトとして開発・運営されています。広告なし、有料プランなし、データブローカーなし。"
+    },
+    "policies": {
+      "eyebrow": "ポリシー",
+      "terms": "利用規約とコミュニティルール",
+      "privacy": "プライバシーポリシー",
+      "deletion": "アカウント削除と保存期間"
+    },
+    "version": "Binder {version}"
+  },
+  "appSettings": {
+    "common": {
+      "system": "システム"
+    },
+    "errors": {
+      "loadDiagnostics": "診断設定を読み込めませんでした。",
+      "updateDiagnostics": "診断設定を更新できませんでした。",
+      "updatePush": "プッシュ通知を更新できませんでした。"
+    },
+    "messages": {
+      "pushOff": "このインストールではプッシュ通知がオフです。",
+      "pushActive": "このインストールではプッシュ通知が有効です。",
+      "pushDenied": "Androidの通知権限が拒否されています。システム設定でBinderを許可できます。",
+      "missingProject": "このビルドはまだEASプロジェクトに接続されていません。",
+      "pushOffline": "プッシュサービスに接続できません。オンラインになってから再試行してください。",
+      "pushUnavailable": "リモートプッシュはAndroidまたはiOSの開発/リリースビルドでのみ利用できます。"
+    },
+    "states": {
+      "loading": "アプリ設定を読み込み中…"
+    },
+    "header": {
+      "title": "アプリ設定",
+      "sectionTitle": "Binderを自分好みに。",
+      "sectionCopy": "見た目の設定で安全に関する色が変わることはありません。プッシュ配信ルールはBinderのサーバーで適用されます。"
+    },
+    "accessibility": {
+      "backToProfile": "プロフィールに戻る"
+    },
+    "appearance": {
+      "title": "外観",
+      "copy": "端末に合わせるか、Binderをダークのまま使います。",
+      "dark": "ダーク",
+      "light": "常にライト"
+    },
+    "accent": {
+      "title": "アクセント",
+      "copy": "メイン/信頼のアクセントだけが変わります。警告と危険の色は固定です。",
+      "options": {
+        "lime": "Binderライム",
+        "blue": "エレクトリックブルー",
+        "violet": "バイオレット",
+        "coral": "コーラル",
+        "ice": "アイス"
+      }
+    },
+    "hapticsMotion": {
+      "title": "触覚フィードバックとモーション",
+      "haptics": "触覚フィードバック",
+      "copy": "重要な操作にさりげないフィードバック。",
+      "motion": "モーション",
+      "reduce": "減らす",
+      "full": "フル"
+    },
+    "notifications": {
+      "title": "通知",
+      "copy": "権限はこのインストールに適用されます。カテゴリ、音、振動はBinderアカウントの設定に従い、送信前に毎回サーバー側で確認されます。",
+      "remotePush": "リモートプッシュ",
+      "newMatches": "新しいBinds",
+      "messages": "メッセージ",
+      "moderation": "モデレーション",
+      "safety": "安全",
+      "product": "製品アップデート",
+      "productCopy": "初期設定ではオフ。",
+      "sound": "音",
+      "vibration": "振動"
+    },
+    "quietHours": {
+      "title": "通知を控える時間",
+      "copy": "Bind、メッセージ、モデレーション、製品通知は、現地の終了時刻まで保留されます。緊急の安全通知はすぐに届きます。",
+      "use": "通知を控える時間を使う",
+      "start": "開始",
+      "end": "終了",
+      "invalid": "HH:MM形式で入力",
+      "startPlaceholder": "22:00",
+      "endPlaceholder": "08:00"
+    },
+    "diagnostics": {
+      "title": "診断",
+      "copy": "任意の技術イベントのみ。自己紹介、メッセージ、生のスタックトレース、正確な位置情報は含みません。",
+      "checking": "診断設定を確認中…",
+      "share": "任意の診断情報を共有"
+    },
+    "reset": {
+      "action": "アプリ設定をリセット",
+      "confirmTitle": "アプリ設定をリセットしますか？",
+      "confirmCopy": "外観、モーション、触覚フィードバック、アクセント、通知カテゴリ、通知を控える時間が初期設定に戻ります。プロフィールと会話は変更されません。",
+      "cancel": "設定を維持",
+      "confirm": "リセット",
+      "done": "アプリ設定を初期設定に戻しました。",
+      "failed": "設定をリセットできませんでした。"
+    }
+  },
+  "binderErrorBoundary": {
+    "recovery": {
+      "eyebrow": "BINDERが画面を復旧しました",
+      "title": "表示中に問題が発生しました。",
+      "message": "診断イベントにアカウントデータは含まれていません。この画面をもう一度試してください。繰り返す場合は、Binderが開いた後にベータプログラムのフィードバックを利用してください。"
+    },
+    "actions": {
+      "retry": "Binderを再試行"
+    }
+  },
+  "photoPager": {
+    "errors": {
+      "load": "この写真を読み込めませんでした。"
+    },
+    "accessibility": {
+      "position": "{name}、{count}枚中{current}枚目",
+      "previous": "{name}の前の写真",
+      "openProfile": "{name}のプロフィール全体を開く",
+      "next": "{name}の次の写真"
+    }
+  },
+  "discoveryLoading": {
+    "states": {
+      "finding": "お互いの条件に合う人を探しています…"
+    },
+    "accessibility": {
+      "finding": "お互いの条件に合う人を探しています"
+    }
+  },
+  "binderDial": {
+    "labels": {
+      "minimum": "最小",
+      "maximum": "最大",
+      "adjust": "調整"
+    },
+    "accessibility": {
+      "decreaseMinimum": "最小値を下げる",
+      "decreaseMaximum": "最大値を下げる",
+      "decrease": "{caption}を下げる",
+      "increaseMinimum": "最小値を上げる",
+      "increaseMaximum": "最大値を上げる",
+      "increase": "{caption}を上げる"
+    }
+  },
+  "binderInput": {
+    "accessibility": {
+      "hidePassword": "パスワードを隠す",
+      "showPassword": "パスワードを表示"
+    }
+  },
+  "binderScreenHeader": {},
+  "binderBrand": {
+    "accessibility": {
+      "name": "Binder"
+    },
+    "copy": {
+      "name": "BINDER"
+    }
+  },
+  "screenState": {},
+  "matchCelebration": {
+    "fallback": {
+      "you": "あなた"
+    },
+    "copy": {
+      "eyebrow": "IT'S A BIND",
+      "title": "あなたと{name}がお互いを選びました。",
+      "message": "駆け引きなし。二人の会話が開きました。"
+    },
+    "actions": {
+      "saySomething": "あなたらしい言葉を送る",
+      "keepDiscovering": "Discoveryを続ける"
+    }
+  },
+  "root": {
+    "offline": {
+      "title": "オフラインです",
+      "message": "Binderは現在の安全ルールを確認するために接続が必要です。オンラインに戻るとすぐに利用できます。"
+    },
+    "legalGate": {
+      "failedTitle": "安全確認に失敗しました",
+      "failedMessage": "Binderのポリシー状態を確認できませんでした。"
+    }
+  }
+}

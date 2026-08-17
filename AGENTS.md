@@ -125,7 +125,16 @@ hand-edit a version.
 English is the source of truth. Adding one: copy `src/i18n/locales/en.json`,
 translate the values, set `$meta` (`name`, `endonym`, `flag`), save as
 `<code>.json`, run `npm run i18n:sync`. The picker appears in App settings by
-itself. German and French are complete (574 keys each).
+itself. Fifteen languages are bundled: English, German, French, Italian,
+Portuguese (Brazil), Spanish, Dutch, Polish, Turkish, Indonesian, Arabic,
+Hindi, Japanese, Korean and Simplified Chinese — 580 keys each.
+
+A language ships inside the build. Adding one today means a new APK/AAB, which
+is fine for a store release and wrong for a quick fix; if that becomes a
+nuisance, the locale files can be fetched from Supabase at start-up and cached,
+with the bundled copy as the fallback. Arabic renders correctly but the layout
+is still left-to-right: real RTL support (`I18nManager`, mirrored paddings and
+icons) is its own piece of work and is not done.
 
 - Missing or empty strings fall back to English: a half-finished translation
   degrades, it does not break a screen.

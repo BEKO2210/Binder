@@ -1,0 +1,939 @@
+{
+  "$meta": {
+    "name": "Chinese (Simplified)",
+    "endonym": "简体中文",
+    "flag": "🇨🇳",
+    "translatedBy": "Binder",
+    "sourceOfTruth": false
+  },
+  "sessionExpired": {
+    "title": "你的会话已结束",
+    "message": "请重新登录以继续使用 Binder。",
+    "action": "重新登录"
+  },
+  "settings": {
+    "title": "应用设置",
+    "eyebrow": "偏好设置",
+    "language": {
+      "title": "语言",
+      "copy": "如果 Binder 支持你设备的语言，就会自动使用它。你也可以选择一种语言进行覆盖。",
+      "systemLabel": "跟随设备",
+      "systemCopy": "跟随你的设备",
+      "back": "返回设置"
+    },
+    "appearance": {
+      "title": "外观",
+      "copy": "跟随设备，或将 Binder 固定为浅色或深色模式。",
+      "system": "跟随设备",
+      "dark": "始终深色",
+      "light": "始终浅色"
+    },
+    "motion": {
+      "title": "动画",
+      "copy": "减少动画会保留所有状态变化，只是不再播放动画。",
+      "system": "跟随设备",
+      "full": "完整动画",
+      "reduce": "减少动画"
+    },
+    "haptics": {
+      "title": "触感反馈",
+      "copy": "短暂振动用于提示阈值和确认操作。",
+      "label": "交互时振动"
+    },
+    "quietHours": {
+      "title": "免打扰时段",
+      "copy": "Bind、消息、审核和产品通知会延迟到本地结束时间后发送。紧急安全提醒仍会立即发送。",
+      "label": "启用免打扰时段",
+      "start": "开始",
+      "end": "结束",
+      "invalid": "请使用 HH:MM"
+    },
+    "diagnostics": {
+      "title": "诊断",
+      "copy": "仅包含可选技术事件。不包含简介、消息、原始堆栈跟踪或精确位置。",
+      "label": "分享可选诊断数据",
+      "checking": "正在检查诊断设置…"
+    },
+    "reset": {
+      "action": "重置应用设置",
+      "confirmTitle": "重置应用设置？",
+      "confirmCopy": "外观、动画、触感反馈、强调色、通知类别和免打扰时段将恢复默认值。你的个人资料和聊天不会受到影响。",
+      "cancel": "保留我的设置",
+      "confirm": "重置",
+      "done": "应用设置已恢复默认值。",
+      "failed": "无法重置设置。"
+    }
+  },
+  "common": {
+    "retry": "重试",
+    "close": "关闭",
+    "cancel": "取消",
+    "save": "保存",
+    "loading": "正在加载…"
+  },
+  "auth": {
+    "errors": {
+      "connection": "无网络连接。请检查网络后重试。",
+      "credentials": "邮箱或密码不正确。",
+      "registered": "该邮箱已注册。请直接登录。",
+      "passwordLength": "密码至少需要 8 个字符。",
+      "email": "请输入有效的邮箱地址。",
+      "generic": "出现错误。请重试。"
+    },
+    "messages": {
+      "passwordChanged": "密码已更改。你已登录。",
+      "resetSent": "如果该地址对应一个账户，重置链接正在发送。请在这台手机上打开。",
+      "accountCreated": "账户已创建。请确认邮箱，然后登录。"
+    },
+    "headers": {
+      "recoveryTitle": "设置新密码。",
+      "signInTitle": "欢迎回来。",
+      "signUpTitle": "从真实的你开始。",
+      "resetTitle": "无法登录？",
+      "recoveryCopy": "请选择一个你以前没有在这里使用过的密码。你会继续在此设备上保持登录。",
+      "resetCopy": "输入你注册时使用的邮箱地址，我们会发送设置新密码的链接。",
+      "defaultCopy": "面向成年人的约会。只有双方都有兴趣后才能聊天。"
+    },
+    "fields": {
+      "emailLabel": "邮箱",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "密码",
+      "passwordPlaceholder": "至少 {length} 个字符",
+      "repeatPasswordLabel": "再次输入密码",
+      "repeatPasswordPlaceholder": "再输入一次",
+      "repeatPasswordHelper": "创建账户前，两次输入必须一致。"
+    },
+    "actions": {
+      "savePassword": "保存新密码",
+      "signIn": "登录",
+      "createAccount": "创建账户",
+      "sendResetLink": "发送重置链接",
+      "forgotPassword": "忘记密码？",
+      "createAccountPrompt": "第一次来？创建账户",
+      "signInPrompt": "已有账户？登录",
+      "backToSignIn": "返回登录"
+    },
+    "ageRequirement": "你必须年满 18 岁才能使用 Binder。"
+  },
+  "matches": {
+    "header": {
+      "title": "你的 Binds",
+      "eyebrow": "聊天"
+    },
+    "notifications": {
+      "enabledTitle": "消息提醒已启用",
+      "enablingTitle": "正在启用提醒…",
+      "blockedTitle": "提醒已被阻止",
+      "title": "消息提醒",
+      "unavailableCopy": "此设备不支持推送通知。聊天仍可正常使用。",
+      "offlineCopy": "无法连接推送服务。请检查网络后重试。",
+      "blockedCopy": "Android 正在阻止 Binder 通知。请在系统设置中允许。",
+      "enabledCopy": "可在应用设置中调整通知类别。",
+      "copy": "选择接收新 Bind 和新消息提醒。"
+    },
+    "actions": {
+      "refresh": "刷新",
+      "retry": "重试",
+      "enable": "启用",
+      "openSettings": "打开设置",
+      "tryAgain": "重试",
+      "goToDiscovery": "前往发现"
+    },
+    "states": {
+      "loading": "正在加载你的 Binds…",
+      "offlineTitle": "你已离线",
+      "offlineMessage": "请检查网络连接，然后重新加载 Binds。",
+      "errorTitle": "无法加载 Binds"
+    },
+    "empty": {
+      "title": "Bind 需要双方共同开始",
+      "message": "当你和发现中的某个人都选择 Bind 后，对方会出现在这里，你们任意一方都可以发起聊天。",
+      "conversations": "发送第一条消息后，你的聊天会显示在这里。"
+    },
+    "newMatches": {
+      "heading": "新 BINDS · 开始聊吧",
+      "sayHello": "打个招呼"
+    },
+    "accessibility": {
+      "startConversation": "与 {name} 开始聊天",
+      "openConversation": "打开与 {name} 的聊天",
+      "unreadOne": "{count} 条未读消息",
+      "unreadOther": "{count} 条未读消息"
+    }
+  },
+  "partnerProfile": {
+    "errors": {
+      "load": "无法加载此个人资料。",
+      "title": "个人资料不可用"
+    },
+    "actions": {
+      "back": "返回"
+    },
+    "accessibility": {
+      "close": "关闭完整个人资料",
+      "photosReviewed": "照片通过审核后才会出现在发现中"
+    },
+    "loading": "正在打开个人资料…",
+    "photosReviewed": "照片已审核",
+    "away": "距离 {distance} 公里"
+  },
+  "discovery": {
+    "errors": {
+      "load": "无法加载发现。",
+      "openConversation": "无法打开聊天。你可以在 Binds 中找到它。",
+      "saveDecision": "无法保存你的选择。",
+      "safetyReport": "无法提交安全举报。"
+    },
+    "states": {
+      "loadErrorTitle": "无法加载发现",
+      "offlineTitle": "你已离线",
+      "offlineMessage": "无网络连接。请检查网络后重试。",
+      "saving": "正在保存…"
+    },
+    "location": {
+      "title": "位置可帮助生成你的推荐卡组",
+      "message": "Binder 会在应用使用期间使用你的位置来寻找附近的人。你的精确位置绝不会展示给任何人。"
+    },
+    "header": {
+      "title": "发现",
+      "copy": "双方条件都合适的人。"
+    },
+    "filters": {
+      "summary": "{minAge}–{maxAge} · {distance} 公里",
+      "label": "筛选"
+    },
+    "empty": {
+      "filteredEyebrow": "筛选条件正在缩小推荐范围",
+      "filteredTitle": "目前没有人符合这些筛选条件。",
+      "filteredMessage": "使用 Binder 的默认筛选条件时还有可推荐的人。调整筛选条件即可查看。",
+      "genuineEyebrow": "你已经看完了",
+      "genuineTitle": "目前没有新的推荐。",
+      "genuineMessage": "当前没有新的已审核资料同时符合双方条件。新的匹配资料出现后会自动显示在这里。"
+    },
+    "actions": {
+      "tryAgain": "重试",
+      "allowLocation": "允许位置访问",
+      "changeFilters": "更改筛选条件",
+      "bindStamp": "BIND",
+      "passStamp": "跳过",
+      "reportAndBlock": "举报并屏蔽",
+      "cancel": "取消"
+    },
+    "accessibility": {
+      "openFilters": "打开发现筛选条件",
+      "matchCreated": "你与 {name} 成功匹配。",
+      "safetyOptions": "{name} 的安全选项",
+      "closeSafetyOptions": "关闭安全选项",
+      "bindProfile": "对该资料选择 Bind",
+      "passProfile": "跳过该资料",
+      "profileSummary": "{name}，{age} 岁，距离 {distance} 公里"
+    },
+    "safety": {
+      "eyebrow": "安全 · {name}",
+      "title": "需要 Binder 审核什么？",
+      "message": "举报后也会立即屏蔽此个人资料。对方不会知道是谁举报或屏蔽了他们。",
+      "reasons": {
+        "underage": {
+          "label": "可能未满 18 岁",
+          "detail": "最高优先级的安全审核。"
+        },
+        "harassment": {
+          "label": "骚扰或威胁",
+          "detail": "侮辱、胁迫或威胁行为。"
+        },
+        "fake": {
+          "label": "虚假或冒充身份",
+          "detail": "身份或个人资料可能具有欺骗性。"
+        },
+        "spam": {
+          "label": "垃圾信息或诈骗",
+          "detail": "商业垃圾信息、欺诈或可疑招揽。"
+        },
+        "sexualContent": {
+          "label": "色情内容",
+          "detail": "露骨或不受欢迎的性内容。"
+        },
+        "violence": {
+          "label": "暴力",
+          "detail": "威胁或血腥暴力内容。"
+        },
+        "other": {
+          "label": "其他安全问题",
+          "detail": "以上类别未涵盖的问题。"
+        }
+      }
+    },
+    "profile": {
+      "away": "距离 {distance} 公里",
+      "photosReviewed": "· 照片已审核"
+    }
+  },
+  "chat": {
+    "day": {
+      "today": "今天",
+      "yesterday": "昨天"
+    },
+    "header": {
+      "title": "{name}，{age}",
+      "eyebrow": "查看个人资料"
+    },
+    "alerts": {
+      "messageActions": "消息操作",
+      "unmatchTitle": "解除与 {name} 的 Bind？",
+      "unmatchMessage": "聊天会立即对你们双方关闭。",
+      "blockTitle": "屏蔽 {name}？",
+      "blockMessage": "你们将无法再看到彼此，聊天也会立即关闭。"
+    },
+    "actions": {
+      "copy": "复制",
+      "report": "举报",
+      "cancel": "取消",
+      "unmatch": "解除 Bind",
+      "block": "屏蔽",
+      "reportAndBlock": "举报并屏蔽",
+      "backToSafetyControls": "返回安全控制",
+      "refresh": "刷新",
+      "tryAgain": "重试",
+      "loadEarlierMessages": "加载更早的消息",
+      "retry": "重试",
+      "discard": "丢弃",
+      "backToMatches": "返回 Binds"
+    },
+    "ended": {
+      "title": "此聊天已结束",
+      "message": "此 Bind 已不再有效。聊天现已关闭。"
+    },
+    "safety": {
+      "title": "安全控制",
+      "reportMessage": "举报此消息",
+      "reportPerson": "举报 {name}",
+      "detailsPlaceholder": "给安全团队的可选说明",
+      "reasons": {
+        "harassment": "骚扰",
+        "spam": "垃圾信息",
+        "fake": "虚假资料",
+        "underage": "未满 18 岁",
+        "sexualContent": "色情内容",
+        "violence": "暴力",
+        "other": "其他"
+      }
+    },
+    "states": {
+      "opening": "正在打开聊天…",
+      "offlineTitle": "你已离线",
+      "loadErrorTitle": "无法加载聊天"
+    },
+    "empty": {
+      "title": "你们匹配了。",
+      "message": "只有双方都有兴趣后，普通聊天才会开启。说点真诚的话吧。"
+    },
+    "message": {
+      "sentAt": "{time} · 已发送",
+      "new": "新消息",
+      "sending": "正在发送…",
+      "placeholder": "给 {name} 发消息"
+    },
+    "errors": {
+      "messageNotSent": "消息未发送。"
+    },
+    "accessibility": {
+      "backToMatches": "返回 Binds",
+      "openProfile": "打开 {name} 的个人资料",
+      "safetyControls": "聊天安全控制",
+      "closeSafetyControls": "关闭安全控制",
+      "reportDetails": "举报详情",
+      "holdToCopy": "长按复制此消息",
+      "holdToCopyOrReport": "长按复制或举报此消息",
+      "messageSent": "消息已发送。",
+      "messageFailed": "消息未发送。",
+      "scrollToNewMessage": "滚动到新消息",
+      "retrySending": "重新发送“{message}”",
+      "discardUnsent": "丢弃未发送的消息“{message}”",
+      "messagePerson": "给 {name} 发消息",
+      "sendingMessage": "正在发送消息",
+      "sendMessageTo": "向 {name} 发送消息"
+    }
+  },
+  "profile": {
+    "errors": {
+      "load": "无法加载个人资料。",
+      "openInformation": "无法打开 Binder 信息。",
+      "deleteAccount": "无法删除你的账户。"
+    },
+    "alerts": {
+      "deleteTitle": "删除 Binder 账户？",
+      "deleteMessage": "这会永久删除你的 Binder 账户和常规产品数据，且无法撤销。",
+      "signOutTitle": "退出 Binder？",
+      "signOutMessage": "在你重新登录前，此设备将停止接收应用内更新。你的个人资料、Binds 和消息仍会保留在 Binder 中。"
+    },
+    "actions": {
+      "cancel": "取消",
+      "deleteAccount": "删除账户",
+      "staySignedIn": "保持登录",
+      "signOut": "退出登录",
+      "completeProfile": "完善个人资料",
+      "tryAgain": "重试"
+    },
+    "states": {
+      "loading": "正在加载你的个人资料…",
+      "offlineTitle": "你已离线",
+      "offlineMessage": "请检查网络连接后重新加载个人资料。",
+      "errorTitle": "无法加载你的个人资料"
+    },
+    "header": {
+      "title": "你的个人资料",
+      "eyebrow": "BINDER"
+    },
+    "accessibility": {
+      "primaryPhoto": "你的主个人资料照片"
+    },
+    "notice": {
+      "warningEyebrow": "账户通知",
+      "warningTitle": "关于你账户的提醒",
+      "suspendedEyebrow": "账户状态",
+      "suspendedTitle": "你的账户已被暂停",
+      "reasonUnavailable": "没有更多详细信息。",
+      "warnedOn": "发布于 {date}",
+      "suspendedEffect": "暂停期间，发现和消息功能将被停用。"
+    },
+    "empty": {
+      "addFirstPhoto": "添加你的第一张照片",
+      "addBio": "写几句真实的自我介绍，让别人知道可以从什么话题开始。"
+    },
+    "completeness": {
+      "eyebrow": "个人资料完整度",
+      "percent": "已完成 {percent}%",
+      "done": "{item} · 已完成",
+      "items": {
+        "photos": "添加三张照片",
+        "bio": "写个人简介",
+        "interests": "选择三个兴趣"
+      }
+    },
+    "hub": {
+      "profileTitle": "个人资料与照片",
+      "profileCopy": "编辑个人资料、发现偏好以及最多六张经过审核的照片。",
+      "settingsTitle": "应用设置",
+      "settingsCopy": "外观、触感反馈、动画、通知偏好和免打扰时段。",
+      "betaTitle": "Beta 计划",
+      "betaCopy": "可选诊断和私密反馈。",
+      "aboutTitle": "关于与法律信息",
+      "aboutCopy": "法律声明、政策以及当前运行版本。"
+    },
+    "safety": {
+      "eyebrow": "安全与隐私",
+      "terms": "条款与社区规则",
+      "privacy": "隐私政策",
+      "deletionDetails": "删除与保留详情"
+    },
+    "account": {
+      "eyebrow": "账户操作",
+      "irreversible": "不可撤销",
+      "deleteTitle": "删除 Binder 账户",
+      "deleteCopy": "停止发现和聊天、移除个人资料媒体并删除你的身份验证账户。"
+    }
+  },
+  "profileSettings": {
+    "errors": {
+      "load": "无法加载个人资料设置。",
+      "addPhoto": "无法添加照片。",
+      "reorderPhotos": "无法重新排序照片。",
+      "makePrimary": "无法将此照片设为主照片。",
+      "removePhoto": "无法移除照片。",
+      "replacePhoto": "无法替换照片。",
+      "save": "无法保存个人资料设置。"
+    },
+    "messages": {
+      "photoAdded": "照片已优化、上传并送交安全审核。",
+      "saved": "个人资料设置已保存。"
+    },
+    "alerts": {
+      "removeTitle": "移除个人资料照片？",
+      "removePrimaryMessage": "只有存在另一张已审核照片可替代时，Binder 才会移除主照片。",
+      "removeMessage": "此照片将从你的个人资料和存储中删除。"
+    },
+    "actions": {
+      "cancel": "取消",
+      "remove": "移除",
+      "saveProfile": "保存个人资料",
+      "addPhoto": "添加照片",
+      "makePrimary": "设为主照片",
+      "retryUpload": "重新上传",
+      "replacePhoto": "替换照片"
+    },
+    "states": {
+      "loading": "正在加载个人资料设置…"
+    },
+    "gallery": {
+      "photoOf": "第 {current} 张，共 {total} 张",
+      "photo": "照片",
+      "name": "你的相册"
+    },
+    "header": {
+      "title": "个人资料设置",
+      "sectionTitle": "打造别人看到的个人资料。",
+      "sectionCopy": "你的出生日期保持锁定。每张照片都会单独审核，通过后才能出现在发现中。"
+    },
+    "accessibility": {
+      "closeFullPhoto": "关闭完整照片",
+      "backToProfile": "返回个人资料",
+      "photoUploaded": "照片已上传。",
+      "photoRemoved": "照片已移除。",
+      "addPhoto": "添加个人资料照片",
+      "viewPhoto": "查看第 {number} 张照片的完整尺寸",
+      "moveLeft": "将第 {number} 张照片左移",
+      "removePhoto": "移除第 {number} 张照片",
+      "moveRight": "将第 {number} 张照片右移"
+    },
+    "photos": {
+      "eyebrow": "照片 · {count}/6",
+      "orderCopy": "无需拖动：使用箭头控件精确设置顺序。照片 1 是别人最先看到的照片。",
+      "optimized": "上传前已优化",
+      "preparing": "正在准备照片…",
+      "uploading": "正在上传照片…",
+      "uploadFailed": "照片上传失败",
+      "primary": "照片 1 · 主照片",
+      "dimensions": "{size} KB · {width} × {height}",
+      "rejectionReason": "原因：{reason}",
+      "rejectionReasonUnavailable": "未提供原因。",
+      "status": {
+        "approved": "已通过",
+        "pending": "审核中",
+        "rejected": "未通过",
+        "removed": "已移除"
+      }
+    },
+    "details": {
+      "eyebrow": "个人资料详情",
+      "copy": "这是别人会看到的身份和背景信息。"
+    },
+    "fields": {
+      "firstName": "名字",
+      "bio": "简介",
+      "bioCount": "{count}/500",
+      "gender": "我是",
+      "interests": "兴趣"
+    },
+    "discovery": {
+      "eyebrow": "发现偏好",
+      "title": "发现范围",
+      "copy": "控制哪些人可以出现在你的发现卡组中。"
+    }
+  },
+  "discoveryFilterSheet": {
+    "errors": {
+      "authentication": "需要身份验证。",
+      "load": "无法加载你的发现设置。",
+      "audience": "请至少选择一类你想认识的人。",
+      "age": "请选择至少相差一岁的年龄范围。",
+      "distance": "请选择 1 到 500 公里之间的距离。",
+      "save": "Binder 无法保存这些筛选条件。请检查网络后重试。"
+    },
+    "header": {
+      "title": "你的搜索",
+      "eyebrow": "发现"
+    },
+    "states": {
+      "loadErrorTitle": "无法加载筛选条件",
+      "loading": "正在加载你的筛选条件…"
+    },
+    "actions": {
+      "tryAgain": "重试",
+      "close": "关闭",
+      "apply": "应用筛选条件",
+      "reset": "恢复默认"
+    },
+    "accessibility": {
+      "close": "关闭发现筛选条件",
+      "filtersApplied": "筛选条件已应用。"
+    },
+    "count": {
+      "unavailable": "人数不可用",
+      "checking": "正在检查符合条件的人…",
+      "none": "当前没有符合条件的人",
+      "personOne": "当前有 {count} 人符合条件",
+      "personOther": "当前有 {count} 人符合条件",
+      "failed": "Binder 目前无法检查。更改一个筛选条件后可重试——你的设置仍会生效。",
+      "likelyCause": "你的“{cause}”可能是主要原因。应用前请放宽该条件。",
+      "updates": "人数会随着你调整搜索条件而更新。",
+      "causes": {
+        "audience": "想认识的人",
+        "age": "年龄范围",
+        "distance": "距离"
+      }
+    }
+  },
+  "onboarding": {
+    "progress": "第 {number} 步，共 {total} 步",
+    "steps": {
+      "eligibility": {
+        "eyebrow": "资格 · 18+",
+        "title": "首先，请确认你的年龄。",
+        "copy": "Binder 仅面向成年人。出生日期只会验证一次，完成初始设置后会被锁定，并且绝不会显示给其他人。",
+        "next": "下一步：你的名字和性别"
+      },
+      "identity": {
+        "eyebrow": "基本信息",
+        "title": "别人应该怎样认识你？",
+        "copy": "使用你平时使用的名字。这些信息会显示在你的个人资料中。",
+        "next": "下一步：简介和兴趣"
+      },
+      "profile": {
+        "eyebrow": "关于你",
+        "title": "给别人一个主动打招呼的理由。",
+        "copy": "简短具体的简介和几个兴趣爱好，会让真正的聊天更容易开始。",
+        "next": "下一步：你想认识谁"
+      },
+      "discovery": {
+        "eyebrow": "发现",
+        "title": "选择与你相关的人群。",
+        "copy": "这些偏好会影响发现，并且以后可以修改。",
+        "next": "下一步：添加第一张照片"
+      },
+      "photo": {
+        "eyebrow": "你的照片",
+        "title": "让个人资料有一张真实的面孔。",
+        "copy": "第一张照片是别人最先看到的照片。照片会先优化，再通过安全审核后显示。",
+        "next": "完成并进入 Binder"
+      }
+    },
+    "errors": {
+      "preparePhoto": "无法准备照片。",
+      "photoRequired": "请添加一张个人资料照片以继续。",
+      "complete": "无法完成初始设置。"
+    },
+    "identity": {
+      "firstName": "名字",
+      "gender": "我是"
+    },
+    "profile": {
+      "bioLabel": "简介 · 可选",
+      "bioHelper": "{count}/500 · 以后可以修改",
+      "bioPlaceholder": "例如：周日徒步、现场音乐和好喝的咖啡。",
+      "interests": "兴趣 · 最多选择 12 个（{count}）"
+    },
+    "photo": {
+      "replaceAccessibility": "替换主个人资料照片",
+      "chooseAccessibility": "选择主个人资料照片",
+      "preparing": "正在准备照片…",
+      "choose": "选择照片",
+      "resizing": "上传前正在调整大小并压缩",
+      "openLibrary": "点击打开照片库"
+    },
+    "actions": {
+      "back": "返回",
+      "finish": "完成个人资料",
+      "continue": "继续"
+    },
+    "birthDate": {
+      "title": "你必须年满 18 岁",
+      "copy": "请输入真实出生日期。如果你未满 18 岁，则无法创建 Binder 个人资料。",
+      "day": "日",
+      "month": "月",
+      "year": "年",
+      "dayPlaceholder": "23",
+      "monthPlaceholder": "04",
+      "yearPlaceholder": "1995",
+      "eligible": "符合资格 · {age} 岁",
+      "underage": "你必须年满 18 岁才能使用 Binder。",
+      "invalid": "该日期不存在。请检查日期和月份。",
+      "implausible": "请检查输入的年份。",
+      "private": "你的确切出生日期会保持私密。"
+    }
+  },
+  "beta": {
+    "errors": {
+      "load": "无法加载 Beta 设置。",
+      "updateDiagnostics": "无法更新 Beta 诊断设置。",
+      "submitFeedback": "无法提交 Beta 反馈。"
+    },
+    "messages": {
+      "diagnosticsEnabled": "可选诊断已启用。Binder 只记录固定的技术事件字段。",
+      "diagnosticsDisabled": "可选诊断已关闭。现有的可选客户端诊断数据已删除。",
+      "feedbackReceived": "已收到反馈。感谢你测试 Binder。"
+    },
+    "loading": "正在加载 Beta 计划…",
+    "header": {
+      "title": "Beta 计划",
+      "backAccessibility": "返回个人资料"
+    },
+    "intro": {
+      "title": "让 Binder 可衡量，而不是侵入隐私。",
+      "copy": "排序质量来自 Binder 自己的服务器事件。可选客户端诊断是单独的选择，并且默认关闭。"
+    },
+    "diagnostics": {
+      "title": "可选诊断",
+      "copy": "用于 Beta 期间排查加载时间和渲染失败问题。",
+      "accessibilityLabel": "可选 Binder Beta 诊断",
+      "canRecord": "可记录",
+      "recorded": "固定的屏幕/事件名称、时长、小型计数、成功/错误结果、平台和应用版本。",
+      "never": "可选诊断绝不会记录",
+      "excluded": "消息文本、简介/个人资料文本、照片、精确位置、联系人、自由格式元数据、原始异常消息或堆栈跟踪。",
+      "retention": "客户端诊断：{clientDays} 天 · 排序观察：{rankingDays} 天"
+    },
+    "ranking": {
+      "eyebrow": "排序可观测性",
+      "title": "Binder 从推荐卡组中学习什么。",
+      "copy": "服务器会记录排序位置、共同兴趣数量、10 公里距离区间以及之后的 Bind/跳过结果。精确坐标和个人资料内容不会复制到排序遥测数据中。"
+    },
+    "feedback": {
+      "eyebrow": "私密 BETA 反馈",
+      "title": "告诉我们哪里出错或体验不对。",
+      "copy": "如果遇到侮辱或不安全的人，请在其个人资料或聊天中使用“举报并屏蔽”。此表单用于产品反馈，不进入审核队列。",
+      "overallExperience": "整体体验",
+      "details": "详细信息",
+      "characterCount": "{count}/1500",
+      "placeholder": "发生了什么？你原本期待什么？",
+      "send": "发送 Beta 反馈"
+    },
+    "categories": {
+      "bug": "错误",
+      "ux": "用户体验",
+      "safety": "安全",
+      "performance": "性能",
+      "other": "其他"
+    }
+  },
+  "legalGate": {
+    "errors": {
+      "open": "无法打开此页面。",
+      "accept": "无法保存你的同意。"
+    },
+    "header": {
+      "eyebrow": "创建或分享之前",
+      "title": "聊天之前先明确规则。",
+      "copy": "Binder 仅限 18 岁以上用户，并建立在双方自主选择的基础上。创建个人资料、上传照片或发送消息前，请接受当前的条款与社区规则以及隐私政策。"
+    },
+    "policies": {
+      "terms": {
+        "title": "条款与社区规则",
+        "copy": "仅限 18+ · 同意 · 禁止骚扰 · 禁止性剥削 · 禁止冒充、诈骗或规避屏蔽。"
+      },
+      "privacy": {
+        "title": "隐私政策",
+        "copy": "Binder 存储哪些数据、为何位置保持私密、安全记录如何运作，以及如何删除账户。"
+      },
+      "version": "版本 {version}"
+    },
+    "confirmation": "我已阅读并同意当前的条款与社区规则以及隐私政策。",
+    "actions": {
+      "agree": "同意并继续"
+    },
+    "noSkip": "此步骤不可跳过。重大政策变更可能要求再次同意，之后才能继续创建用户内容。"
+  },
+  "discoveryPreferences": {
+    "groups": {
+      "preset": "从预设开始",
+      "audience": "我想认识谁",
+      "age": "年龄",
+      "distance": "距离"
+    },
+    "accessibility": {
+      "minimumAge": "最低年龄",
+      "maximumAge": "最高年龄",
+      "searchRadius": "搜索半径"
+    },
+    "units": {
+      "years": "岁",
+      "km": "公里"
+    }
+  },
+  "about": {
+    "errors": {
+      "openPage": "无法打开此页面。请稍后重试。"
+    },
+    "header": {
+      "title": "关于 Binder"
+    },
+    "accessibility": {
+      "backToProfile": "返回个人资料"
+    },
+    "intro": {
+      "title": "一个完全免费的产品。",
+      "copy": "Binder 作为独立、非商业项目开发和运营。无广告、无付费等级、无数据经纪商。"
+    },
+    "policies": {
+      "eyebrow": "政策",
+      "terms": "条款与社区规则",
+      "privacy": "隐私政策",
+      "deletion": "账户删除与保留"
+    },
+    "version": "Binder {version}"
+  },
+  "appSettings": {
+    "common": {
+      "system": "系统"
+    },
+    "errors": {
+      "loadDiagnostics": "无法加载诊断偏好。",
+      "updateDiagnostics": "无法更新诊断设置。",
+      "updatePush": "无法更新推送通知。"
+    },
+    "messages": {
+      "pushOff": "此安装中的推送通知已关闭。",
+      "pushActive": "此安装中的推送通知已启用。",
+      "pushDenied": "Android 通知权限已被拒绝。你可以在系统设置中允许 Binder。",
+      "missingProject": "此构建尚未连接到其 EAS 项目。",
+      "pushOffline": "无法连接推送服务。请在联网后重试。",
+      "pushUnavailable": "远程推送仅适用于 Android 或 iOS 的开发/发布构建。"
+    },
+    "states": {
+      "loading": "正在加载应用设置…"
+    },
+    "header": {
+      "title": "应用设置",
+      "sectionTitle": "让 Binder 更符合你的习惯。",
+      "sectionCopy": "视觉偏好绝不会改变安全颜色。推送规则由 Binder 服务器执行。"
+    },
+    "accessibility": {
+      "backToProfile": "返回个人资料"
+    },
+    "appearance": {
+      "title": "外观",
+      "copy": "跟随设备设置，或让 Binder 始终保持深色。",
+      "dark": "深色",
+      "light": "始终浅色"
+    },
+    "accent": {
+      "title": "强调色",
+      "copy": "只有主要/信任强调色会变化。警告和危险颜色始终固定。",
+      "options": {
+        "lime": "Binder 青柠绿",
+        "blue": "电光蓝",
+        "violet": "紫罗兰",
+        "coral": "珊瑚色",
+        "ice": "冰色"
+      }
+    },
+    "hapticsMotion": {
+      "title": "触感反馈与动画",
+      "haptics": "触感反馈",
+      "copy": "重要操作会提供细微反馈。",
+      "motion": "动画",
+      "reduce": "减少",
+      "full": "完整"
+    },
+    "notifications": {
+      "title": "通知",
+      "copy": "权限仅适用于当前安装。类别、声音和振动跟随你的 Binder 账户，并会在每次发送前由服务器重新检查。",
+      "remotePush": "远程推送",
+      "newMatches": "新 Binds",
+      "messages": "消息",
+      "moderation": "审核",
+      "safety": "安全",
+      "product": "产品更新",
+      "productCopy": "默认关闭。",
+      "sound": "声音",
+      "vibration": "振动"
+    },
+    "quietHours": {
+      "title": "免打扰时段",
+      "copy": "Bind、消息、审核和产品通知会延迟到本地结束时间后发送。紧急安全提醒仍会立即发送。",
+      "use": "启用免打扰时段",
+      "start": "开始",
+      "end": "结束",
+      "invalid": "请使用 HH:MM",
+      "startPlaceholder": "22:00",
+      "endPlaceholder": "08:00"
+    },
+    "diagnostics": {
+      "title": "诊断",
+      "copy": "仅包含可选技术事件。不包含简介、消息、原始堆栈跟踪或精确位置。",
+      "checking": "正在检查诊断设置…",
+      "share": "分享可选诊断数据"
+    },
+    "reset": {
+      "action": "重置应用设置",
+      "confirmTitle": "重置应用设置？",
+      "confirmCopy": "外观、动画、触感反馈、强调色、通知类别和免打扰时段将恢复默认值。你的个人资料和聊天不会受到影响。",
+      "cancel": "保留我的设置",
+      "confirm": "重置",
+      "done": "应用设置已恢复默认值。",
+      "failed": "无法重置设置。"
+    }
+  },
+  "binderErrorBoundary": {
+    "recovery": {
+      "eyebrow": "BINDER 已恢复此页面",
+      "title": "页面渲染失败。",
+      "message": "诊断事件中不包含你的账户数据。请重试此页面；如果问题再次出现，请在 Binder 打开后通过 Beta 计划反馈。"
+    },
+    "actions": {
+      "retry": "重新尝试 Binder"
+    }
+  },
+  "photoPager": {
+    "errors": {
+      "load": "无法加载此照片。"
+    },
+    "accessibility": {
+      "position": "{name}，第 {current} 张照片，共 {count} 张",
+      "previous": "{name} 的上一张照片",
+      "openProfile": "打开 {name} 的完整个人资料",
+      "next": "{name} 的下一张照片"
+    }
+  },
+  "discoveryLoading": {
+    "states": {
+      "finding": "正在寻找双方条件都合适的人…"
+    },
+    "accessibility": {
+      "finding": "正在寻找双方条件都合适的人"
+    }
+  },
+  "binderDial": {
+    "labels": {
+      "minimum": "最小",
+      "maximum": "最大",
+      "adjust": "调整"
+    },
+    "accessibility": {
+      "decreaseMinimum": "降低最小值",
+      "decreaseMaximum": "降低最大值",
+      "decrease": "降低 {caption}",
+      "increaseMinimum": "提高最小值",
+      "increaseMaximum": "提高最大值",
+      "increase": "提高 {caption}"
+    }
+  },
+  "binderInput": {
+    "accessibility": {
+      "hidePassword": "隐藏密码",
+      "showPassword": "显示密码"
+    }
+  },
+  "binderScreenHeader": {},
+  "binderBrand": {
+    "accessibility": {
+      "name": "Binder"
+    },
+    "copy": {
+      "name": "BINDER"
+    }
+  },
+  "screenState": {},
+  "matchCelebration": {
+    "fallback": {
+      "you": "你"
+    },
+    "copy": {
+      "eyebrow": "IT'S A BIND",
+      "title": "你和 {name} 选择了彼此。",
+      "message": "不玩套路。聊天已为你们双方开放。"
+    },
+    "actions": {
+      "saySomething": "说点真诚的话",
+      "keepDiscovering": "继续发现"
+    }
+  },
+  "root": {
+    "offline": {
+      "title": "你已离线",
+      "message": "Binder 需要联网才能检查当前安全规则。恢复网络后即可继续使用。"
+    },
+    "legalGate": {
+      "failedTitle": "安全检查失败",
+      "failedMessage": "无法验证 Binder 的政策状态。"
+    }
+  }
+}

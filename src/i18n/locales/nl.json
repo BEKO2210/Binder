@@ -1,0 +1,939 @@
+{
+  "$meta": {
+    "name": "Dutch",
+    "endonym": "Nederlands",
+    "flag": "🇳🇱",
+    "translatedBy": "Binder",
+    "sourceOfTruth": false
+  },
+  "sessionExpired": {
+    "title": "Je sessie is beëindigd",
+    "message": "Log opnieuw in om Binder te blijven gebruiken.",
+    "action": "Opnieuw inloggen"
+  },
+  "settings": {
+    "title": "App-instellingen",
+    "eyebrow": "VOORKEUREN",
+    "language": {
+      "title": "Taal",
+      "copy": "Binder gebruikt de taal van je apparaat wanneer die beschikbaar is. Kies een taal om dit te overschrijven.",
+      "systemLabel": "Volg mijn apparaat",
+      "systemCopy": "Volgt de taal van je apparaat",
+      "back": "Terug naar instellingen"
+    },
+    "appearance": {
+      "title": "Weergave",
+      "copy": "Volg je apparaat of zet Binder vast op licht of donker.",
+      "system": "Volg mijn apparaat",
+      "dark": "Altijd donker",
+      "light": "Altijd licht"
+    },
+    "motion": {
+      "title": "Animaties",
+      "copy": "Minder beweging behoudt elke statuswijziging, maar stopt de animaties.",
+      "system": "Volg mijn apparaat",
+      "full": "Volledige animaties",
+      "reduce": "Minder beweging"
+    },
+    "haptics": {
+      "title": "Haptiek",
+      "copy": "Korte trillingen markeren drempels en bevestigingen.",
+      "label": "Trillen bij interacties"
+    },
+    "quietHours": {
+      "title": "Stille uren",
+      "copy": "Meldingen voor Binds, berichten, moderatie en productupdates wachten tot de lokale eindtijd. Dringende veiligheidswaarschuwingen blijven direct.",
+      "label": "Stille uren gebruiken",
+      "start": "Start",
+      "end": "Einde",
+      "invalid": "Gebruik HH:MM"
+    },
+    "diagnostics": {
+      "title": "Diagnostiek",
+      "copy": "Alleen optionele technische gebeurtenissen. Geen bio, berichten, ruwe stacktraces of exacte locatie.",
+      "label": "Optionele diagnostiek delen",
+      "checking": "Diagnostiek controleren…"
+    },
+    "reset": {
+      "action": "App-instellingen resetten",
+      "confirmTitle": "App-instellingen resetten?",
+      "confirmCopy": "Weergave, animaties, haptiek, accentkleur, meldingscategorieën en stille uren gaan terug naar de standaardwaarden. Je profiel en gesprekken blijven ongewijzigd.",
+      "cancel": "Mijn instellingen behouden",
+      "confirm": "Resetten",
+      "done": "De app-instellingen zijn teruggezet naar de standaardwaarden.",
+      "failed": "De instellingen konden niet worden gereset."
+    }
+  },
+  "common": {
+    "retry": "Opnieuw proberen",
+    "close": "Sluiten",
+    "cancel": "Annuleren",
+    "save": "Opslaan",
+    "loading": "Laden…"
+  },
+  "auth": {
+    "errors": {
+      "connection": "Geen verbinding. Controleer je internet en probeer het opnieuw.",
+      "credentials": "E-mailadres of wachtwoord is onjuist.",
+      "registered": "Dit e-mailadres is al geregistreerd. Log in plaats daarvan in.",
+      "passwordLength": "Het wachtwoord moet minimaal 8 tekens bevatten.",
+      "email": "Voer een geldig e-mailadres in.",
+      "generic": "Er is iets misgegaan. Probeer het opnieuw."
+    },
+    "messages": {
+      "passwordChanged": "Wachtwoord gewijzigd. Je bent ingelogd.",
+      "resetSent": "Als er een account bij dat adres hoort, is er een resetlink onderweg. Open die op deze telefoon.",
+      "accountCreated": "Account aangemaakt. Bevestig het e-mailadres en log daarna in."
+    },
+    "headers": {
+      "recoveryTitle": "Stel een nieuw wachtwoord in.",
+      "signInTitle": "Welkom terug.",
+      "signUpTitle": "Begin met de echte jij.",
+      "resetTitle": "Kun je niet inloggen?",
+      "recoveryCopy": "Kies iets dat je hier niet eerder hebt gebruikt. Je blijft op dit apparaat ingelogd.",
+      "resetCopy": "Voer het adres in waarmee je je hebt geregistreerd en we sturen een link om een nieuw wachtwoord in te stellen.",
+      "defaultCopy": "Daten voor volwassenen. Wederzijdse interesse vóór een gesprek."
+    },
+    "fields": {
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "jij@example.com",
+      "passwordLabel": "Wachtwoord",
+      "passwordPlaceholder": "Minimaal {length} tekens",
+      "repeatPasswordLabel": "Wachtwoord herhalen",
+      "repeatPasswordPlaceholder": "Typ het nog een keer",
+      "repeatPasswordHelper": "Beide invoeren moeten overeenkomen voordat het account wordt aangemaakt."
+    },
+    "actions": {
+      "savePassword": "Nieuw wachtwoord opslaan",
+      "signIn": "Inloggen",
+      "createAccount": "Account aanmaken",
+      "sendResetLink": "Resetlink versturen",
+      "forgotPassword": "Wachtwoord vergeten?",
+      "createAccountPrompt": "Nieuw hier? Maak een account",
+      "signInPrompt": "Heb je al een account? Log in",
+      "backToSignIn": "Terug naar inloggen"
+    },
+    "ageRequirement": "Je moet minimaal 18 jaar zijn om Binder te gebruiken."
+  },
+  "matches": {
+    "header": {
+      "title": "Je Binds",
+      "eyebrow": "GESPREKKEN"
+    },
+    "notifications": {
+      "enabledTitle": "Berichtmeldingen ingeschakeld",
+      "enablingTitle": "Meldingen inschakelen…",
+      "blockedTitle": "Meldingen zijn geblokkeerd",
+      "title": "Berichtmeldingen",
+      "unavailableCopy": "Pushmeldingen worden niet ondersteund op dit apparaat. Chat blijft normaal werken.",
+      "offlineCopy": "De pushservice kon niet worden bereikt. Controleer je verbinding en probeer het opnieuw.",
+      "blockedCopy": "Android blokkeert Binder-meldingen. Sta ze toe in de systeeminstellingen.",
+      "enabledCopy": "Meldingscategorieën kun je aanpassen in App-instellingen.",
+      "copy": "Schakel meldingen in voor nieuwe Binds en berichten."
+    },
+    "actions": {
+      "refresh": "Vernieuwen",
+      "retry": "Opnieuw",
+      "enable": "Inschakelen",
+      "openSettings": "Instellingen openen",
+      "tryAgain": "Opnieuw proberen",
+      "goToDiscovery": "Naar Ontdekken"
+    },
+    "states": {
+      "loading": "Je Binds laden…",
+      "offlineTitle": "Je bent offline",
+      "offlineMessage": "Controleer je verbinding en probeer je Binds opnieuw te laden.",
+      "errorTitle": "Binds konden niet worden geladen"
+    },
+    "empty": {
+      "title": "Een Bind begint samen",
+      "message": "Wanneer jij en iemand in Ontdekken allebei voor Bind kiezen, verschijnt die persoon hier en kan ieder van jullie het gesprek starten.",
+      "conversations": "Je gesprekken verschijnen hier na het eerste bericht."
+    },
+    "newMatches": {
+      "heading": "NIEUWE BINDS · BEGIN IETS",
+      "sayHello": "Zeg hallo"
+    },
+    "accessibility": {
+      "startConversation": "Start een gesprek met {name}",
+      "openConversation": "Open gesprek met {name}",
+      "unreadOne": "{count} ongelezen bericht",
+      "unreadOther": "{count} ongelezen berichten"
+    }
+  },
+  "partnerProfile": {
+    "errors": {
+      "load": "Dit profiel kon niet worden geladen.",
+      "title": "Profiel niet beschikbaar"
+    },
+    "actions": {
+      "back": "Terug"
+    },
+    "accessibility": {
+      "close": "Volledig profiel sluiten",
+      "photosReviewed": "Foto's worden beoordeeld voordat ze in Ontdekken verschijnen"
+    },
+    "loading": "Profiel openen…",
+    "photosReviewed": "Foto's beoordeeld",
+    "away": "{distance} km verderop"
+  },
+  "discovery": {
+    "errors": {
+      "load": "Ontdekken kon niet worden geladen.",
+      "openConversation": "Het gesprek kon niet worden geopend. Je vindt het onder Binds.",
+      "saveDecision": "Je keuze kon niet worden opgeslagen.",
+      "safetyReport": "De veiligheidsmelding kon niet worden verstuurd."
+    },
+    "states": {
+      "loadErrorTitle": "Ontdekken kon niet worden geladen",
+      "offlineTitle": "Je bent offline",
+      "offlineMessage": "Geen verbinding. Controleer je internet en probeer het opnieuw.",
+      "saving": "Opslaan…"
+    },
+    "location": {
+      "title": "Locatie helpt je selectie op te bouwen",
+      "message": "Binder gebruikt je locatie op de voorgrond om mensen in de buurt te vinden. Je exacte locatie wordt nooit aan iemand getoond."
+    },
+    "header": {
+      "title": "Ontdekken",
+      "copy": "Mensen die aan beide kanten passen."
+    },
+    "filters": {
+      "summary": "{minAge}–{maxAge} · {distance} km",
+      "label": "Filters"
+    },
+    "empty": {
+      "filteredEyebrow": "FILTERS VERKLEINEN JE SELECTIE",
+      "filteredTitle": "Niemand past nu bij deze filters.",
+      "filteredMessage": "Met de standaardfilters van Binder zijn er mensen beschikbaar. Pas je filters aan om te zien wie past.",
+      "genuineEyebrow": "JE BENT BIJ",
+      "genuineTitle": "Je selectie is voorlopig leeg.",
+      "genuineMessage": "Er zijn nu geen nieuwe goedgekeurde profielen die aan beide kanten passen. Nieuwe matches verschijnen hier automatisch."
+    },
+    "actions": {
+      "tryAgain": "Opnieuw proberen",
+      "allowLocation": "Locatie toestaan",
+      "changeFilters": "Filters wijzigen",
+      "bindStamp": "BIND",
+      "passStamp": "PASS",
+      "reportAndBlock": "Melden en blokkeren",
+      "cancel": "Annuleren"
+    },
+    "accessibility": {
+      "openFilters": "Ontdekkingsfilters openen",
+      "matchCreated": "Je hebt een Bind met {name}.",
+      "safetyOptions": "Veiligheidsopties voor {name}",
+      "closeSafetyOptions": "Veiligheidsopties sluiten",
+      "bindProfile": "Profiel Binden",
+      "passProfile": "Profiel overslaan",
+      "profileSummary": "{name}, {age}, {distance} kilometer verderop"
+    },
+    "safety": {
+      "eyebrow": "VEILIGHEID · {name}",
+      "title": "Wat moet Binder beoordelen?",
+      "message": "Een melding blokkeert dit profiel ook direct. De persoon krijgt niet te horen wie hem of haar heeft gemeld of geblokkeerd.",
+      "reasons": {
+        "underage": {
+          "label": "Mogelijk jonger dan 18",
+          "detail": "Veiligheidscontrole met hoogste prioriteit."
+        },
+        "harassment": {
+          "label": "Intimidatie of bedreigingen",
+          "detail": "Beledigend, dwingend of bedreigend gedrag."
+        },
+        "fake": {
+          "label": "Nep of identiteitsmisbruik",
+          "detail": "Identiteit of profiel lijkt misleidend."
+        },
+        "spam": {
+          "label": "Spam of oplichting",
+          "detail": "Commerciële spam, fraude of verdachte benadering."
+        },
+        "sexualContent": {
+          "label": "Seksuele inhoud",
+          "detail": "Expliciete of ongewenste seksuele profielinhoud."
+        },
+        "violence": {
+          "label": "Geweld",
+          "detail": "Bedreigingen of grafische gewelddadige inhoud."
+        },
+        "other": {
+          "label": "Ander veiligheidsprobleem",
+          "detail": "Een probleem dat hierboven niet wordt genoemd."
+        }
+      }
+    },
+    "profile": {
+      "away": "{distance} km verderop",
+      "photosReviewed": "· Foto's beoordeeld"
+    }
+  },
+  "chat": {
+    "day": {
+      "today": "Vandaag",
+      "yesterday": "Gisteren"
+    },
+    "header": {
+      "title": "{name}, {age}",
+      "eyebrow": "PROFIEL BEKIJKEN"
+    },
+    "alerts": {
+      "messageActions": "Berichtacties",
+      "unmatchTitle": "Bind met {name} opheffen?",
+      "unmatchMessage": "Het gesprek sluit onmiddellijk voor jullie allebei.",
+      "blockTitle": "{name} blokkeren?",
+      "blockMessage": "Jullie verdwijnen voor elkaar en het gesprek sluit onmiddellijk."
+    },
+    "actions": {
+      "copy": "Kopiëren",
+      "report": "Melden",
+      "cancel": "Annuleren",
+      "unmatch": "Bind opheffen",
+      "block": "Blokkeren",
+      "reportAndBlock": "Melden en blokkeren",
+      "backToSafetyControls": "Terug naar veiligheidsopties",
+      "refresh": "Vernieuwen",
+      "tryAgain": "Opnieuw proberen",
+      "loadEarlierMessages": "Eerdere berichten laden",
+      "retry": "Opnieuw",
+      "discard": "Verwijderen",
+      "backToMatches": "Terug naar Binds"
+    },
+    "ended": {
+      "title": "Dit gesprek is beëindigd",
+      "message": "Deze Bind is niet meer actief. Het gesprek is nu gesloten."
+    },
+    "safety": {
+      "title": "Veiligheidsopties",
+      "reportMessage": "Dit bericht melden",
+      "reportPerson": "{name} melden",
+      "detailsPlaceholder": "Optionele details voor het veiligheidsteam",
+      "reasons": {
+        "harassment": "Intimidatie",
+        "spam": "Spam",
+        "fake": "Nepprofiel",
+        "underage": "Jonger dan 18",
+        "sexualContent": "Seksuele inhoud",
+        "violence": "Geweld",
+        "other": "Anders"
+      }
+    },
+    "states": {
+      "opening": "Gesprek openen…",
+      "offlineTitle": "Je bent offline",
+      "loadErrorTitle": "Gesprek kon niet worden geladen"
+    },
+    "empty": {
+      "title": "Jullie hebben een Bind.",
+      "message": "Normale chat opent pas na wederzijdse interesse. Zeg iets echts."
+    },
+    "message": {
+      "sentAt": "{time} · Verzonden",
+      "new": "Nieuw bericht",
+      "sending": "Verzenden…",
+      "placeholder": "Bericht aan {name}"
+    },
+    "errors": {
+      "messageNotSent": "Bericht niet verzonden."
+    },
+    "accessibility": {
+      "backToMatches": "Terug naar Binds",
+      "openProfile": "Profiel van {name} openen",
+      "safetyControls": "Veiligheidsopties voor gesprek",
+      "closeSafetyControls": "Veiligheidsopties sluiten",
+      "reportDetails": "Details van melding",
+      "holdToCopy": "Houd ingedrukt om dit bericht te kopiëren",
+      "holdToCopyOrReport": "Houd ingedrukt om dit bericht te kopiëren of te melden",
+      "messageSent": "Bericht verzonden.",
+      "messageFailed": "Bericht niet verzonden.",
+      "scrollToNewMessage": "Naar nieuw bericht scrollen",
+      "retrySending": "Opnieuw proberen \"{message}\" te verzenden",
+      "discardUnsent": "Niet-verzonden bericht \"{message}\" verwijderen",
+      "messagePerson": "Bericht sturen naar {name}",
+      "sendingMessage": "Bericht verzenden",
+      "sendMessageTo": "Bericht sturen naar {name}"
+    }
+  },
+  "profile": {
+    "errors": {
+      "load": "Profiel kon niet worden geladen.",
+      "openInformation": "Binder-informatie kon niet worden geopend.",
+      "deleteAccount": "Je account kon niet worden verwijderd."
+    },
+    "alerts": {
+      "deleteTitle": "Binder-account verwijderen?",
+      "deleteMessage": "Hiermee verwijder je je Binder-account en normale productgegevens permanent. Dit kan niet ongedaan worden gemaakt.",
+      "signOutTitle": "Uitloggen bij Binder?",
+      "signOutMessage": "Je ontvangt op dit apparaat geen updates in de app totdat je opnieuw inlogt. Je profiel, Binds en berichten blijven in Binder."
+    },
+    "actions": {
+      "cancel": "Annuleren",
+      "deleteAccount": "Account verwijderen",
+      "staySignedIn": "Ingelogd blijven",
+      "signOut": "Uitloggen",
+      "completeProfile": "Profiel voltooien",
+      "tryAgain": "Opnieuw proberen"
+    },
+    "states": {
+      "loading": "Je profiel laden…",
+      "offlineTitle": "Je bent offline",
+      "offlineMessage": "Controleer je verbinding en probeer je profiel opnieuw te laden.",
+      "errorTitle": "Je profiel kon niet worden geladen"
+    },
+    "header": {
+      "title": "Je profiel",
+      "eyebrow": "BINDER"
+    },
+    "accessibility": {
+      "primaryPhoto": "Je primaire profielfoto"
+    },
+    "notice": {
+      "warningEyebrow": "ACCOUNTMELDING",
+      "warningTitle": "Een opmerking over je account",
+      "suspendedEyebrow": "ACCOUNTSTATUS",
+      "suspendedTitle": "Je account is geschorst",
+      "reasonUnavailable": "Er zijn geen aanvullende details beschikbaar.",
+      "warnedOn": "Uitgegeven op {date}",
+      "suspendedEffect": "Ontdekken en berichten zijn gepauzeerd zolang de schorsing geldt."
+    },
+    "empty": {
+      "addFirstPhoto": "Voeg je eerste foto toe",
+      "addBio": "Voeg een paar echte regels over jezelf toe zodat mensen weten wat ze je kunnen vragen."
+    },
+    "completeness": {
+      "eyebrow": "PROFIELSTERKTE",
+      "percent": "{percent}% voltooid",
+      "done": "{item} · klaar",
+      "items": {
+        "photos": "Voeg drie foto’s toe",
+        "bio": "Schrijf een bio",
+        "interests": "Kies drie interesses"
+      }
+    },
+    "hub": {
+      "profileTitle": "Profiel en foto's",
+      "profileCopy": "Bewerk je profiel, ontdekkingsvoorkeuren en maximaal zes gemodereerde foto's.",
+      "settingsTitle": "App-instellingen",
+      "settingsCopy": "Weergave, haptiek, animaties, meldingsvoorkeuren en stille uren.",
+      "betaTitle": "Bètaprogramma",
+      "betaCopy": "Optionele diagnostiek en privéfeedback.",
+      "aboutTitle": "Over en juridische informatie",
+      "aboutCopy": "Juridische informatie, beleid en de versie die je gebruikt."
+    },
+    "safety": {
+      "eyebrow": "VEILIGHEID EN PRIVACY",
+      "terms": "Voorwaarden en communityregels",
+      "privacy": "Privacybeleid",
+      "deletionDetails": "Details over verwijderen en bewaren"
+    },
+    "account": {
+      "eyebrow": "ACCOUNTOPTIES",
+      "irreversible": "ONOMKEERBAAR",
+      "deleteTitle": "Binder-account verwijderen",
+      "deleteCopy": "Stopt Ontdekken en gesprekken, verwijdert profielmedia en wist je authenticatie-identiteit."
+    }
+  },
+  "profileSettings": {
+    "errors": {
+      "load": "Profielinstellingen konden niet worden geladen.",
+      "addPhoto": "Foto kon niet worden toegevoegd.",
+      "reorderPhotos": "Foto's konden niet worden herschikt.",
+      "makePrimary": "Deze foto kon niet als primair worden ingesteld.",
+      "removePhoto": "Foto kon niet worden verwijderd.",
+      "replacePhoto": "Foto kon niet worden vervangen.",
+      "save": "Profielinstellingen konden niet worden opgeslagen."
+    },
+    "messages": {
+      "photoAdded": "Foto geoptimaliseerd, geüpload en verzonden voor veiligheidsbeoordeling.",
+      "saved": "Profielinstellingen opgeslagen."
+    },
+    "alerts": {
+      "removeTitle": "Profielfoto verwijderen?",
+      "removePrimaryMessage": "Binder verwijdert de primaire foto alleen als een andere goedgekeurde foto deze kan vervangen.",
+      "removeMessage": "Deze foto wordt uit je profiel en opslag verwijderd."
+    },
+    "actions": {
+      "cancel": "Annuleren",
+      "remove": "Verwijderen",
+      "saveProfile": "Profiel opslaan",
+      "addPhoto": "Foto toevoegen",
+      "makePrimary": "Primair maken",
+      "retryUpload": "Upload opnieuw proberen",
+      "replacePhoto": "Foto vervangen"
+    },
+    "states": {
+      "loading": "Profielinstellingen laden…"
+    },
+    "gallery": {
+      "photoOf": "Foto {current} van {total}",
+      "photo": "Foto",
+      "name": "je galerij"
+    },
+    "header": {
+      "title": "Profielinstellingen",
+      "sectionTitle": "Vorm het profiel dat mensen zien.",
+      "sectionCopy": "Je geboortedatum blijft vergrendeld. Elke foto wordt afzonderlijk beoordeeld voordat deze in Ontdekken kan verschijnen."
+    },
+    "accessibility": {
+      "closeFullPhoto": "Volledige foto sluiten",
+      "backToProfile": "Terug naar profiel",
+      "photoUploaded": "Foto geüpload.",
+      "photoRemoved": "Foto verwijderd.",
+      "addPhoto": "Profielfoto toevoegen",
+      "viewPhoto": "Foto {number} volledig bekijken",
+      "moveLeft": "Foto {number} naar links verplaatsen",
+      "removePhoto": "Foto {number} verwijderen",
+      "moveRight": "Foto {number} naar rechts verplaatsen"
+    },
+    "photos": {
+      "eyebrow": "FOTO'S · {count}/6",
+      "orderCopy": "Slepen is niet nodig: gebruik de pijlen om de exacte volgorde in te stellen. Foto 1 is de foto die mensen als eerste zien.",
+      "optimized": "Geoptimaliseerd vóór upload",
+      "preparing": "Foto voorbereiden…",
+      "uploading": "Foto uploaden…",
+      "uploadFailed": "Upload van foto mislukt",
+      "primary": "FOTO 1 · PRIMAIR",
+      "dimensions": "{size} KB · {width} bij {height}",
+      "rejectionReason": "Reden: {reason}",
+      "rejectionReasonUnavailable": "Er is geen reden opgegeven.",
+      "status": {
+        "approved": "Goedgekeurd",
+        "pending": "In beoordeling",
+        "rejected": "Niet goedgekeurd",
+        "removed": "Verwijderd"
+      }
+    },
+    "details": {
+      "eyebrow": "PROFIELGEGEVENS",
+      "copy": "Dit is de identiteit en context die mensen zien."
+    },
+    "fields": {
+      "firstName": "Voornaam",
+      "bio": "Bio",
+      "bioCount": "{count}/500",
+      "gender": "Ik ben",
+      "interests": "Interesses"
+    },
+    "discovery": {
+      "eyebrow": "ONTDEKKINGSVOORKEUREN",
+      "title": "Ontdekkingsbereik",
+      "copy": "Bepaalt wie in je Ontdekken-selectie kan verschijnen."
+    }
+  },
+  "discoveryFilterSheet": {
+    "errors": {
+      "authentication": "Authenticatie vereist.",
+      "load": "Je ontdekkingsinstellingen konden niet worden geladen.",
+      "audience": "Kies minimaal één type persoon dat je wilt ontmoeten.",
+      "age": "Kies een leeftijdsbereik van minimaal één jaar.",
+      "distance": "Kies een afstand van 1 tot 500 km.",
+      "save": "Binder kon deze filters niet opslaan. Controleer je verbinding en probeer het opnieuw."
+    },
+    "header": {
+      "title": "Je zoekopdracht",
+      "eyebrow": "ONTDEKKEN"
+    },
+    "states": {
+      "loadErrorTitle": "Filters konden niet worden geladen",
+      "loading": "Je filters laden…"
+    },
+    "actions": {
+      "tryAgain": "Opnieuw proberen",
+      "close": "Sluiten",
+      "apply": "Filters toepassen",
+      "reset": "Standaardwaarden herstellen"
+    },
+    "accessibility": {
+      "close": "Ontdekkingsfilters sluiten",
+      "filtersApplied": "Filters toegepast."
+    },
+    "count": {
+      "unavailable": "Aantal niet beschikbaar",
+      "checking": "Controleren wie past…",
+      "none": "Niemand past momenteel",
+      "personOne": "Momenteel past {count} persoon",
+      "personOther": "Momenteel passen {count} mensen",
+      "failed": "Binder kan dit nu niet controleren. Wijzig een filter om opnieuw te proberen — je instellingen blijven actief.",
+      "likelyCause": "Je {cause} is waarschijnlijk de oorzaak. Maak die ruimer voordat je toepast.",
+      "updates": "Dit wordt bijgewerkt terwijl je je zoekopdracht aanpast.",
+      "causes": {
+        "audience": "wie je wilt ontmoeten",
+        "age": "leeftijdsbereik",
+        "distance": "afstand"
+      }
+    }
+  },
+  "onboarding": {
+    "progress": "STAP {number} VAN {total}",
+    "steps": {
+      "eligibility": {
+        "eyebrow": "TOELATING · 18+",
+        "title": "Bevestig eerst je leeftijd.",
+        "copy": "Binder is alleen voor volwassenen. Je geboortedatum wordt één keer gecontroleerd, na onboarding vergrendeld en nooit aan anderen getoond.",
+        "next": "Volgende: je naam en gender"
+      },
+      "identity": {
+        "eyebrow": "DE BASIS",
+        "title": "Hoe moeten mensen je kennen?",
+        "copy": "Gebruik de voornaam die je normaal gebruikt. Deze gegevens verschijnen op je profiel.",
+        "next": "Volgende: je bio en interesses"
+      },
+      "profile": {
+        "eyebrow": "OVER JOU",
+        "title": "Geef mensen een reden om hallo te zeggen.",
+        "copy": "Een korte, specifieke bio en een paar interesses maken het makkelijker om een echt gesprek te beginnen.",
+        "next": "Volgende: wie je wilt ontmoeten"
+      },
+      "discovery": {
+        "eyebrow": "ONTDEKKEN",
+        "title": "Kies wie relevant voor je voelt.",
+        "copy": "Deze voorkeuren bepalen Ontdekken en kunnen later worden gewijzigd.",
+        "next": "Volgende: voeg je eerste foto toe"
+      },
+      "photo": {
+        "eyebrow": "JE FOTO",
+        "title": "Geef het profiel een gezicht.",
+        "copy": "Je eerste foto is wat mensen als eerste zien. Deze wordt geoptimaliseerd en daarna op veiligheid beoordeeld voordat hij verschijnt.",
+        "next": "Afronden en Binder openen"
+      }
+    },
+    "errors": {
+      "preparePhoto": "Foto kon niet worden voorbereid.",
+      "photoRequired": "Voeg een profielfoto toe om door te gaan.",
+      "complete": "Onboarding kon niet worden voltooid."
+    },
+    "identity": {
+      "firstName": "Voornaam",
+      "gender": "Ik ben"
+    },
+    "profile": {
+      "bioLabel": "Bio · optioneel",
+      "bioHelper": "{count}/500 · Je kunt dit later wijzigen",
+      "bioPlaceholder": "Bijvoorbeeld: zondagse wandelingen, livemuziek en uitstekende koffie.",
+      "interests": "Interesses · kies er maximaal 12 ({count})"
+    },
+    "photo": {
+      "replaceAccessibility": "Primaire profielfoto vervangen",
+      "chooseAccessibility": "Primaire profielfoto kiezen",
+      "preparing": "Foto voorbereiden…",
+      "choose": "Foto kiezen",
+      "resizing": "Formaat aanpassen en comprimeren vóór upload",
+      "openLibrary": "Tik om je fotobibliotheek te openen"
+    },
+    "actions": {
+      "back": "Terug",
+      "finish": "Profiel afronden",
+      "continue": "Doorgaan"
+    },
+    "birthDate": {
+      "title": "Je moet 18 jaar of ouder zijn",
+      "copy": "Voer je echte geboortedatum in. Als je jonger bent dan 18, kun je geen Binder-profiel aanmaken.",
+      "day": "Dag",
+      "month": "Maand",
+      "year": "Jaar",
+      "dayPlaceholder": "23",
+      "monthPlaceholder": "04",
+      "yearPlaceholder": "1995",
+      "eligible": "Toegelaten · leeftijd {age}",
+      "underage": "Je moet minimaal 18 jaar zijn om Binder te gebruiken.",
+      "invalid": "Die datum bestaat niet. Controleer de dag en maand.",
+      "implausible": "Controleer het ingevoerde jaar.",
+      "private": "Je exacte geboortedatum blijft privé."
+    }
+  },
+  "beta": {
+    "errors": {
+      "load": "Bèta-instellingen konden niet worden geladen.",
+      "updateDiagnostics": "Bètadiagnostiek kon niet worden bijgewerkt.",
+      "submitFeedback": "Bètafeedback kon niet worden verzonden."
+    },
+    "messages": {
+      "diagnosticsEnabled": "Optionele diagnostiek ingeschakeld. Binder registreert alleen vaste technische gebeurtenisvelden.",
+      "diagnosticsDisabled": "Optionele diagnostiek uitgeschakeld. Bestaande optionele clientdiagnostiek is verwijderd.",
+      "feedbackReceived": "Feedback ontvangen. Bedankt voor het testen van Binder."
+    },
+    "loading": "Bètaprogramma laden…",
+    "header": {
+      "title": "Bètaprogramma",
+      "backAccessibility": "Terug naar profiel"
+    },
+    "intro": {
+      "title": "Maak Binder meetbaar, niet opdringerig.",
+      "copy": "De kwaliteit van de ranking komt uit Binders eigen servergebeurtenissen. Optionele clientdiagnostiek is een aparte keuze en staat standaard uit."
+    },
+    "diagnostics": {
+      "title": "Optionele diagnostiek",
+      "copy": "Nuttig voor het opsporen van laadtijden en renderfouten tijdens de bèta.",
+      "accessibilityLabel": "Optionele Binder-bètadiagnostiek",
+      "canRecord": "KAN REGISTREREN",
+      "recorded": "Vaste scherm-/gebeurtenisnaam, duur, klein aantal, succes-/foutresultaat, platform en appversie.",
+      "never": "NOOIT IN OPTIONELE DIAGNOSTIEK",
+      "excluded": "Berichttekst, bio-/profieltekst, foto's, exacte locatie, contacten, vrije metadata, ruwe foutmeldingen of stacktraces.",
+      "retention": "Clientdiagnostiek: {clientDays} dagen · rankingobservaties: {rankingDays} dagen"
+    },
+    "ranking": {
+      "eyebrow": "OBSERVEERBAARHEID VAN RANKING",
+      "title": "Wat Binder leert van de selectie.",
+      "copy": "De server registreert rankingpositie, aantal gedeelde interesses, een afstandscategorie van 10 km en later de uitkomst Bind/Pass. Exacte coördinaten en profielinhoud worden niet naar rankingtelemetrie gekopieerd."
+    },
+    "feedback": {
+      "eyebrow": "PRIVÉ-BÈTAFEEDBACK",
+      "title": "Vertel ons wat niet werkte of verkeerd voelde.",
+      "copy": "Gebruik bij een beledigende of onveilige persoon Melden en blokkeren op diens profiel of in de chat. Dit formulier is voor productfeedback, niet voor de moderatiewachtrij.",
+      "overallExperience": "Algemene ervaring",
+      "details": "Details",
+      "characterCount": "{count}/1500",
+      "placeholder": "Wat gebeurde er? Wat verwachtte je in plaats daarvan?",
+      "send": "Bètafeedback verzenden"
+    },
+    "categories": {
+      "bug": "Bug",
+      "ux": "UX",
+      "safety": "Veiligheid",
+      "performance": "Prestaties",
+      "other": "Anders"
+    }
+  },
+  "legalGate": {
+    "errors": {
+      "open": "Deze pagina kon niet worden geopend.",
+      "accept": "Je akkoord kon niet worden opgeslagen."
+    },
+    "header": {
+      "eyebrow": "VOORDAT JE MAAKT OF DEELT",
+      "title": "Duidelijke regels vóór een gesprek.",
+      "copy": "Binder is 18+ en gebouwd rond wederzijdse keuze. Accepteer de huidige Voorwaarden en communityregels en het Privacybeleid voordat je een profiel maakt, foto uploadt of bericht verstuurt."
+    },
+    "policies": {
+      "terms": {
+        "title": "Voorwaarden en communityregels",
+        "copy": "Alleen 18+ · toestemming · geen intimidatie · geen seksuele uitbuiting · geen imitatie, oplichting of omzeilen van blokkades."
+      },
+      "privacy": {
+        "title": "Privacybeleid",
+        "copy": "Wat Binder opslaat, waarom je locatie privé blijft, hoe veiligheidsgegevens werken en hoe je je account verwijdert."
+      },
+      "version": "Versie {version}"
+    },
+    "confirmation": "Ik heb de huidige Voorwaarden en communityregels en het Privacybeleid gelezen en ga ermee akkoord.",
+    "actions": {
+      "agree": "Akkoord en doorgaan"
+    },
+    "noSkip": "Overslaan is niet mogelijk. Belangrijke beleidswijzigingen kunnen een nieuwe acceptatie vereisen voordat meer gebruikersinhoud wordt gemaakt."
+  },
+  "discoveryPreferences": {
+    "groups": {
+      "preset": "Begin met een voorinstelling",
+      "audience": "Wie ik wil ontmoeten",
+      "age": "Leeftijd",
+      "distance": "Afstand"
+    },
+    "accessibility": {
+      "minimumAge": "Minimumleeftijd",
+      "maximumAge": "Maximumleeftijd",
+      "searchRadius": "Zoekradius"
+    },
+    "units": {
+      "years": "jaar",
+      "km": "km"
+    }
+  },
+  "about": {
+    "errors": {
+      "openPage": "Deze pagina kon niet worden geopend. Probeer het later opnieuw."
+    },
+    "header": {
+      "title": "Over Binder"
+    },
+    "accessibility": {
+      "backToProfile": "Terug naar profiel"
+    },
+    "intro": {
+      "title": "Eén gratis product.",
+      "copy": "Binder wordt gebouwd en beheerd als een onafhankelijk, niet-commercieel project. Geen advertenties, geen betaalde niveaus, geen datahandelaren."
+    },
+    "policies": {
+      "eyebrow": "BELEID",
+      "terms": "Voorwaarden en communityregels",
+      "privacy": "Privacybeleid",
+      "deletion": "Account verwijderen en bewaren"
+    },
+    "version": "Binder {version}"
+  },
+  "appSettings": {
+    "common": {
+      "system": "Systeem"
+    },
+    "errors": {
+      "loadDiagnostics": "Diagnostiekvoorkeur kon niet worden geladen.",
+      "updateDiagnostics": "Diagnostiek kon niet worden bijgewerkt.",
+      "updatePush": "Pushmeldingen konden niet worden bijgewerkt."
+    },
+    "messages": {
+      "pushOff": "Pushmeldingen staan uit op deze installatie.",
+      "pushActive": "Pushmeldingen zijn actief op deze installatie.",
+      "pushDenied": "Android-meldingstoestemming is geweigerd. Je kunt Binder toestaan in de systeeminstellingen.",
+      "missingProject": "Deze build is nog niet gekoppeld aan het EAS-project.",
+      "pushOffline": "De pushservice kon niet worden bereikt. Probeer opnieuw wanneer je online bent.",
+      "pushUnavailable": "Externe push is alleen beschikbaar in een Android- of iOS-ontwikkel-/releasebuild."
+    },
+    "states": {
+      "loading": "App-instellingen laden…"
+    },
+    "header": {
+      "title": "App-instellingen",
+      "sectionTitle": "Laat Binder goed aanvoelen.",
+      "sectionCopy": "Visuele voorkeuren veranderen veiligheidskleuren nooit. Regels voor pushbezorging worden door de Binder-server afgedwongen."
+    },
+    "accessibility": {
+      "backToProfile": "Terug naar profiel"
+    },
+    "appearance": {
+      "title": "Weergave",
+      "copy": "Volg je apparaat of houd Binder donker.",
+      "dark": "Donker",
+      "light": "Altijd licht"
+    },
+    "accent": {
+      "title": "Accent",
+      "copy": "Alleen primaire/vertrouwensaccenten veranderen. Waarschuwings- en destructieve kleuren blijven vast.",
+      "options": {
+        "lime": "Binder Lime",
+        "blue": "Elektrisch blauw",
+        "violet": "Violet",
+        "coral": "Koraal",
+        "ice": "IJs"
+      }
+    },
+    "hapticsMotion": {
+      "title": "Haptiek en animaties",
+      "haptics": "Haptiek",
+      "copy": "Subtiele feedback voor betekenisvolle acties.",
+      "motion": "Animaties",
+      "reduce": "Verminderen",
+      "full": "Volledig"
+    },
+    "notifications": {
+      "title": "Meldingen",
+      "copy": "Toestemming geldt voor deze installatie. Categorieën, geluid en trillingen volgen je Binder-account en worden vóór elke verzending opnieuw op de server gecontroleerd.",
+      "remotePush": "Externe push",
+      "newMatches": "Nieuwe Binds",
+      "messages": "Berichten",
+      "moderation": "Moderatie",
+      "safety": "Veiligheid",
+      "product": "Productupdates",
+      "productCopy": "Standaard uit.",
+      "sound": "Geluid",
+      "vibration": "Trilling"
+    },
+    "quietHours": {
+      "title": "Stille uren",
+      "copy": "Meldingen voor Binds, berichten, moderatie en productupdates wachten tot de lokale eindtijd. Dringende veiligheidswaarschuwingen blijven direct.",
+      "use": "Stille uren gebruiken",
+      "start": "Start",
+      "end": "Einde",
+      "invalid": "Gebruik HH:MM",
+      "startPlaceholder": "22:00",
+      "endPlaceholder": "08:00"
+    },
+    "diagnostics": {
+      "title": "Diagnostiek",
+      "copy": "Alleen optionele technische gebeurtenissen. Geen bio, berichten, ruwe stacktraces of exacte locatie.",
+      "checking": "Diagnostiek controleren…",
+      "share": "Optionele diagnostiek delen"
+    },
+    "reset": {
+      "action": "App-instellingen resetten",
+      "confirmTitle": "App-instellingen resetten?",
+      "confirmCopy": "Weergave, animaties, haptiek, accentkleur, meldingscategorieën en stille uren gaan terug naar de standaardwaarden. Je profiel en gesprekken blijven ongewijzigd.",
+      "cancel": "Mijn instellingen behouden",
+      "confirm": "Resetten",
+      "done": "De app-instellingen zijn teruggezet naar de standaardwaarden.",
+      "failed": "De instellingen konden niet worden gereset."
+    }
+  },
+  "binderErrorBoundary": {
+    "recovery": {
+      "eyebrow": "BINDER HEEFT HET SCHERM HERSTELD",
+      "title": "Er ging iets mis bij het weergeven.",
+      "message": "Je accountgegevens zijn niet opgenomen in de diagnostische gebeurtenis. Probeer het scherm opnieuw; als het blijft gebeuren, gebruik dan feedback van het Bètaprogramma nadat Binder is geopend."
+    },
+    "actions": {
+      "retry": "Binder opnieuw proberen"
+    }
+  },
+  "photoPager": {
+    "errors": {
+      "load": "Deze foto kon niet worden geladen."
+    },
+    "accessibility": {
+      "position": "{name}, foto {current} van {count}",
+      "previous": "Vorige foto van {name}",
+      "openProfile": "Volledig profiel van {name} openen",
+      "next": "Volgende foto van {name}"
+    }
+  },
+  "discoveryLoading": {
+    "states": {
+      "finding": "Mensen zoeken die aan beide kanten passen…"
+    },
+    "accessibility": {
+      "finding": "Mensen zoeken die aan beide kanten passen"
+    }
+  },
+  "binderDial": {
+    "labels": {
+      "minimum": "MIN",
+      "maximum": "MAX",
+      "adjust": "AANPASSEN"
+    },
+    "accessibility": {
+      "decreaseMinimum": "Minimum verlagen",
+      "decreaseMaximum": "Maximum verlagen",
+      "decrease": "{caption} verlagen",
+      "increaseMinimum": "Minimum verhogen",
+      "increaseMaximum": "Maximum verhogen",
+      "increase": "{caption} verhogen"
+    }
+  },
+  "binderInput": {
+    "accessibility": {
+      "hidePassword": "Wachtwoord verbergen",
+      "showPassword": "Wachtwoord tonen"
+    }
+  },
+  "binderScreenHeader": {},
+  "binderBrand": {
+    "accessibility": {
+      "name": "Binder"
+    },
+    "copy": {
+      "name": "BINDER"
+    }
+  },
+  "screenState": {},
+  "matchCelebration": {
+    "fallback": {
+      "you": "Jij"
+    },
+    "copy": {
+      "eyebrow": "HET IS EEN BIND",
+      "title": "Jij en {name} hebben elkaar gekozen.",
+      "message": "Geen spelletjes. Het gesprek is open voor jullie allebei."
+    },
+    "actions": {
+      "saySomething": "Zeg iets echts",
+      "keepDiscovering": "Verder ontdekken"
+    }
+  },
+  "root": {
+    "offline": {
+      "title": "Je bent offline",
+      "message": "Binder heeft verbinding nodig om de huidige veiligheidsregels te controleren. Zodra je weer online bent, werkt het weer."
+    },
+    "legalGate": {
+      "failedTitle": "Veiligheidscontrole mislukt",
+      "failedMessage": "De beleidsstatus van Binder kon niet worden gecontroleerd."
+    }
+  }
+}

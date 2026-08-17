@@ -3,16 +3,36 @@
 // Metro cannot read a directory at runtime, so the locale files that exist on
 // disk are listed here. Adding a translation is: copy `locales/en.json`,
 // translate the values, save it as `locales/<code>.json`, run `npm run i18n:sync`.
+import locale_ar from './locales/ar.json' with { type: 'json' };
 import locale_de from './locales/de.json' with { type: 'json' };
+import locale_es from './locales/es.json' with { type: 'json' };
 import locale_fr from './locales/fr.json' with { type: 'json' };
+import locale_hi from './locales/hi.json' with { type: 'json' };
+import locale_id from './locales/id.json' with { type: 'json' };
 import locale_it from './locales/it.json' with { type: 'json' };
+import locale_ja from './locales/ja.json' with { type: 'json' };
+import locale_ko from './locales/ko.json' with { type: 'json' };
+import locale_nl from './locales/nl.json' with { type: 'json' };
+import locale_pl from './locales/pl.json' with { type: 'json' };
 import locale_pt_BR from './locales/pt-BR.json' with { type: 'json' };
+import locale_tr from './locales/tr.json' with { type: 'json' };
+import locale_zh_CN from './locales/zh-CN.json' with { type: 'json' };
 
-export type LocaleCode = 'de' | 'en' | 'fr' | 'it' | 'pt-BR';
+export type LocaleCode = 'ar' | 'de' | 'en' | 'es' | 'fr' | 'hi' | 'id' | 'it' | 'ja' | 'ko' | 'nl' | 'pl' | 'pt-BR' | 'tr' | 'zh-CN';
 
 export const registeredLocales: Record<string, Record<string, unknown>> = {
+  'ar': locale_ar as Record<string, unknown>,
   'de': locale_de as Record<string, unknown>,
+  'es': locale_es as Record<string, unknown>,
   'fr': locale_fr as Record<string, unknown>,
+  'hi': locale_hi as Record<string, unknown>,
+  'id': locale_id as Record<string, unknown>,
   'it': locale_it as Record<string, unknown>,
+  'ja': locale_ja as Record<string, unknown>,
+  'ko': locale_ko as Record<string, unknown>,
+  'nl': locale_nl as Record<string, unknown>,
+  'pl': locale_pl as Record<string, unknown>,
   'pt-BR': locale_pt_BR as Record<string, unknown>,
+  'tr': locale_tr as Record<string, unknown>,
+  'zh-CN': locale_zh_CN as Record<string, unknown>,
 };
