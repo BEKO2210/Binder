@@ -4,7 +4,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { FadeIn, runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 import { PhotoPager } from '../components/PhotoPager';
-import { BinderIcon, BinderIconButton, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
+import { BinderIcon, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import type { DiscoveryProfile } from '../lib/discovery';
 import { discoveryDeckPhysics } from '../lib/discoveryDeck';
 import { fetchPartnerProfile, type PartnerProfile } from '../lib/partnerProfile';
@@ -61,7 +61,7 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose, in
         {error ? <ScreenState kind="error" icon="retry" title="Profile not available" message={error} actionLabel="Back" onAction={onClose} /> : !profile ? <ScreenState kind="loading" message="Opening profile…" /> : (
           <Animated.View entering={reduceMotion ? undefined : FadeIn.duration(theme.motion.standard)} style={{ flex: 1 }}>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: theme.spacing.x12 }}>
-              {profile.photoUrls.length > 0 ? <PhotoPager photos={profile.photoUrls} name={profile.name} height={heroHeight} /> : (
+              {profile.photoUrls.length > 0 ? <PhotoPager photos={profile.photoUrls} name={profile.name} height={heroHeight} swipeable /> : (
                 <View style={{ height: heroHeight, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.surfaceElevated }}><BinderText variant="heading" tone="accent">{(profile.name || fallbackName).slice(0, 1)}</BinderText></View>
               )}
               <View style={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x5 }}>
@@ -76,7 +76,6 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose, in
             </ScrollView>
           </Animated.View>
         )}
-        <View pointerEvents="box-none" style={{ position: 'absolute', top: theme.spacing.x3, right: theme.spacing.x3 }}><BinderIconButton name="close" accessibilityLabel="Close full profile" onPress={onClose} /></View>
       </Animated.View>
     </GestureDetector>
   );

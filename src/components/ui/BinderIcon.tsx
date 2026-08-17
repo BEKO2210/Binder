@@ -63,28 +63,36 @@ type IconButtonProps = IconProps & {
   disabled?: boolean;
   selected?: boolean;
   destructive?: boolean;
+  /** Rendered on top of a photo: no pressed surface, no scale. */
+  overMedia?: boolean;
   style?: ViewStyle;
 };
 
-export function BinderIconButton({ accessibilityLabel, onPress, disabled, selected, destructive, style, ...icon }: IconButtonProps) {
+export function BinderIconButton({ accessibilityLabel, onPress, disabled, selected, destructive, overMedia = false, style, ...icon }: IconButtonProps) {
   const { theme } = useBinderTheme();
   const color = destructive ? theme.semantic.destructive : selected ? theme.accent.onSurface : theme.colors.textSecondary;
+  // Over a photo the control has no surface to tint: a pressed rectangle there
+  // reads as a rendering glitch. The icon dims instead, which is feedback the
+  // photo survives.
+  const pressedOpacity = 0.55;
   return (
     <MotionPressable
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       accessibilityState={{ disabled, selected }}
       disabled={disabled}
+      pressedSurface={false}
+      pressScale={!overMedia}
       onPress={onPress}
       style={({ pressed }) => [{
         // The Phase 6 verifier intentionally pins this stricter 48dp contract.
         minWidth: 48,
         minHeight: 48,
-        borderRadius: theme.radii.control,
+        borderRadius: theme.radii.pill,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: pressed ? theme.colors.surfacePressed : 'transparent',
-        opacity: disabled ? theme.feedback.disabledOpacity : 1,
+        backgroundColor: !overMedia && pressed ? theme.colors.surfacePressed : theme.colors.transparent,
+        opacity: disabled ? theme.feedback.disabledOpacity : overMedia && pressed ? pressedOpacity : 1,
       }, style]}
     >
       <BinderIcon {...icon} color={color} />

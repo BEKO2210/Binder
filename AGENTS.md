@@ -101,6 +101,7 @@ every agent session must follow. Human owner: Belkis (GitHub `BEKO2210`).
 ```
 npm run typecheck && npm run typecheck:tests && npm test
 node scripts/verify-design-contract.mjs      # no literal colours/sizes/radii/durations
+node scripts/verify-worklet-contract.mjs     # a worklet may only call worklets
 node scripts/verify-brand-assets.mjs         # plus the other verify-*.mjs
 ```
 
@@ -127,6 +128,14 @@ node scripts/verify-brand-assets.mjs         # plus the other verify-*.mjs
    bar that stopped at the content width looked like a floating bar.
 5. **Verify on the device, not in the diff.** Every claim in the roadmaps is
    backed by a measurement or a screenshot from the S23 or the Tab S9.
+6. **A worklet may only call worklets.** `nextPhotoPage` was a worklet and the
+   `clampPhotoIndex` it called was not; the first photo swipe killed the process
+   with "Tried to synchronously call a Remote Function". `verify-worklet-contract.mjs`
+   is the gate now.
+7. **Press feedback belongs on controls, not on media.** An invisible hot zone
+   over a photo must pass `pressedSurface={false} pressScale={false}`, and an
+   icon button over a photo takes `overMedia`. A grey rectangle flashing over a
+   third of someone's photo is the single most visible defect the app had.
 
 ## State (2026-08-17)
 

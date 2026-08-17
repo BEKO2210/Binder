@@ -10,6 +10,12 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 type Props = Omit<PressableProps, 'style'> & {
   style?: PressableProps['style'];
   pressedSurface?: boolean;
+  /**
+   * Scaling is thumb feedback for a control that looks like a control. An
+   * invisible hot zone over a photo has nothing to scale, and scaling it drags
+   * the photo underneath it with a visible jump.
+   */
+  pressScale?: boolean;
 };
 
 /**
@@ -21,7 +27,7 @@ type Props = Omit<PressableProps, 'style'> & {
  * which collapsed the tab bar into the left edge and pushed the header's
  * trailing control against its title.
  */
-export function MotionPressable({ style, pressedSurface = true, disabled, onPressIn, onPressOut, ...props }: Props) {
+export function MotionPressable({ style, pressedSurface = true, pressScale = true, disabled, onPressIn, onPressOut, ...props }: Props) {
   const { theme, reduceMotion } = useBinderTheme();
   const scale = useSharedValue(1);
   const [pressed, setPressed] = useState(false);
@@ -36,6 +42,7 @@ export function MotionPressable({ style, pressedSurface = true, disabled, onPres
   };
 
   const resolved = typeof style === 'function' ? style({ pressed }) : style;
+  const pressTarget = pressScale ? resolvePressScale(reduceMotion) : 1;
   // A control's semantic pressed token (accent/destructive) wins when it
   // provides one; the shared surface is the fallback for inert rows.
   const feedback: StyleProp<ViewStyle> = pressed && pressedSurface ? { backgroundColor: theme.colors.surfacePressed } : undefined;
@@ -44,7 +51,7 @@ export function MotionPressable({ style, pressedSurface = true, disabled, onPres
     <AnimatedPressable
       {...props}
       disabled={disabled}
-      onPressIn={(event) => { setPressed(true); settle(resolvePressScale(reduceMotion)); onPressIn?.(event); }}
+      onPressIn={(event) => { setPressed(true); settle(pressTarget); onPressIn?.(event); }}
       onPressOut={(event) => { setPressed(false); settle(1); onPressOut?.(event); }}
       style={[motionStyle, feedback, resolved] as StyleProp<ViewStyle>}
     />

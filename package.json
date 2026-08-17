@@ -1,6 +1,6 @@
 {
   "name": "binder",
-  "version": "0.5.6",
+  "version": "0.5.9",
   "private": true,
   "main": "index.ts",
   "scripts": {
@@ -28,7 +28,8 @@
     "verify:design-contract": "node scripts/verify-design-contract.mjs",
     "test": "node --experimental-strip-types --test 'tests/*.test.ts'",
     "typecheck:tests": "tsc --project tsconfig.tests.json",
-    "test:design-contract": "npm run verify:design-contract"
+    "test:design-contract": "npm run verify:design-contract",
+    "verify:worklets": "node scripts/verify-worklet-contract.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/manrope": "0.4.2",

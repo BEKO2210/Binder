@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Alert, Image, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
+import { PhotoPager } from '../components/PhotoPager';
 import { DiscoveryPreferences } from '../components/DiscoveryPreferences';
 import { MotionPressable as Pressable } from '../components/ui';
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderInput, BinderScreenHeader, BinderText, ScreenState, SectionHeader } from '../components/ui';
@@ -136,15 +137,30 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
     finally { setBusy(false); }
   }
 
-  const [viewerUrl, setViewerUrl] = useState<string | null>(null);
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
 
   if (loading) return <ScreenState kind="loading" message="Loading profile settings…" />;
 
-  if (viewerUrl) {
+  // The viewer is the gallery, not one photo: it opens on the photo that was
+  // tapped and swipes through the rest, which is what every photo surface in
+  // every app this one competes with does.
+  if (viewerIndex !== null && media.length > 0) {
+    const safeIndex = Math.min(Math.max(viewerIndex, 0), media.length - 1);
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
-        <BinderScreenHeader title="Photo" leading={{ icon: 'close', accessibilityLabel: 'Close full photo', onPress: () => setViewerUrl(null) }} />
-        <Image source={{ uri: viewerUrl }} style={{ flex: 1 }} resizeMode="contain" />
+        <BinderScreenHeader
+          title={media.length > 1 ? `Photo ${safeIndex + 1} of ${media.length}` : 'Photo'}
+          leading={{ icon: 'close', accessibilityLabel: 'Close full photo', onPress: () => setViewerIndex(null) }}
+        />
+        <PhotoPager
+          photos={media.map((item) => item.signedUrl)}
+          name="your gallery"
+          height="100%"
+          fit="contain"
+          swipeable
+          initialIndex={safeIndex}
+          onPageChange={setViewerIndex}
+        />
       </View>
     );
   }
@@ -159,7 +175,7 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
         <BinderText variant="micro" tone="muted">PHOTOS · {media.length}/6</BinderText>
         <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>Drag is not required: use the arrow controls to set the exact order. Photo 1 is the photo people see first.</BinderText>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x3, marginTop: theme.spacing.x3 }}>
-          {media.map((item, index) => <PhotoTile key={item.id} item={item} index={index} total={media.length} busy={busy} onLeft={() => void movePhoto(index, -1)} onRight={() => void movePhoto(index, 1)} onPrimary={() => void makePrimary(item)} onRemove={() => confirmRemove(item)} onView={() => setViewerUrl(item.signedUrl)} />)}
+          {media.map((item, index) => <PhotoTile key={item.id} item={item} index={index} total={media.length} busy={busy} onLeft={() => void movePhoto(index, -1)} onRight={() => void movePhoto(index, 1)} onPrimary={() => void makePrimary(item)} onRemove={() => confirmRemove(item)} onView={() => setViewerIndex(index)} />)}
           {media.length < 6 ? <AddPhotoTile disabled={busy} onPress={() => void addPhoto()} /> : null}
         </View>
         {message ? <BinderText variant="caption" tone={messageKind === 'success' ? 'accent' : 'destructive'} style={{ marginTop: theme.spacing.x3 }}>{message}</BinderText> : null}
@@ -188,7 +204,9 @@ function Choice({ label, error, children }: { label: string; error?: string; chi
 
 function AddPhotoTile({ disabled, onPress }: { disabled: boolean; onPress: () => void }) {
   const { theme } = useBinderTheme();
-  return <Pressable accessibilityRole="button" accessibilityLabel="Add profile photo" disabled={disabled} onPress={onPress} style={({ pressed }) => ({ width: '47%', minHeight: theme.layout.photoAddTileHeight, borderRadius: theme.radii.card, borderWidth: 1, borderStyle: 'dashed', borderColor: theme.colors.borderStrong, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface, alignItems: 'center', justifyContent: 'center', gap: theme.spacing.x2, opacity: disabled ? theme.feedback.disabledOpacity : 1 })}><BinderIcon name="addPhoto" size={30} color={theme.accent.onSurface} /><BinderText variant="label" tone="accent">Add photo</BinderText><BinderText variant="caption" tone="muted" align="center">Optimized before upload</BinderText></Pressable>;
+  // The tile paints its own pressed surface; the shared one would stack a
+  // second tint on top of it.
+  return <Pressable pressedSurface={false} accessibilityRole="button" accessibilityLabel="Add profile photo" disabled={disabled} onPress={onPress} style={({ pressed }) => ({ width: '47%', minHeight: theme.layout.photoAddTileHeight, borderRadius: theme.radii.card, borderWidth: 1, borderStyle: 'dashed', borderColor: theme.colors.borderStrong, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface, alignItems: 'center', justifyContent: 'center', gap: theme.spacing.x2, opacity: disabled ? theme.feedback.disabledOpacity : 1 })}><BinderIcon name="addPhoto" size={30} color={theme.accent.onSurface} /><BinderText variant="label" tone="accent">Add photo</BinderText><BinderText variant="caption" tone="muted" align="center">Optimized before upload</BinderText></Pressable>;
 }
 
 function PhotoTile({ item, index, total, busy, onLeft, onRight, onPrimary, onRemove, onView }: { item: GalleryMedia; index: number; total: number; busy: boolean; onLeft: () => void; onRight: () => void; onPrimary: () => void; onRemove: () => void; onView: () => void }) {
@@ -197,7 +215,7 @@ function PhotoTile({ item, index, total, busy, onLeft, onRight, onPrimary, onRem
   const statusCopy = item.moderationStatus === 'approved' ? 'Approved' : item.moderationStatus === 'pending' ? 'In review' : item.moderationStatus === 'rejected' ? 'Not approved' : 'Removed';
   return (
     <BinderCard style={{ width: '47%', padding: 0, overflow: 'hidden' }}>
-      <Pressable accessibilityRole="imagebutton" accessibilityLabel={`View photo ${index + 1} in full`} onPress={onView}>
+      <Pressable pressedSurface={false} pressScale={false} accessibilityRole="imagebutton" accessibilityLabel={`View photo ${index + 1} in full`} onPress={onView}>
         <Image source={{ uri: item.signedUrl }} style={{ width: '100%', height: theme.layout.photoTileHeight }} resizeMode="cover" />
       </Pressable>
       <View style={{ padding: theme.spacing.x3, gap: theme.spacing.x2 }}>
