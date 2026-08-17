@@ -6,13 +6,17 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { Extrapolation, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
 import DiscoveryFilterSheet from '../components/DiscoveryFilterSheet';
+import { DiscoveryLoading } from '../components/DiscoveryLoading';
+import type { DiscoveryPreferenceValues } from '../components/DiscoveryPreferences';
 import { MatchCelebration } from '../components/MatchCelebration';
-import { BinderBrand, BinderButton, BinderCard, BinderIcon, BinderIconButton, BinderText, ScreenState } from '../components/ui';
+import { BinderBrand, BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderText, ScreenState } from '../components/ui';
 import { fetchMatches, type MatchSummary } from '../lib/conversation';
 import { fetchDiscoveryBatch, recordDecision, refreshDiscoveryLocation, type DiscoveryProfile } from '../lib/discovery';
 import { listMyProfileMedia } from '../lib/media';
 import { resolveSpring } from '../lib/motionPolicy';
 import { reportAndBlockDiscoveryProfile, type DiscoveryReportReason } from '../lib/safety';
+import { supabase } from '../lib/supabase';
+import type { Gender } from '../lib/validation';
 import PartnerProfileScreen from './PartnerProfileScreen';
 import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
@@ -45,6 +49,7 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
   const [openingConversation, setOpeningConversation] = useState(false);
   const [viewingProfile, setViewingProfile] = useState<DiscoveryProfile | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filterValues, setFilterValues] = useState<DiscoveryPreferenceValues | null>(null);
   const [safetyOpen, setSafetyOpen] = useState(false);
   const [safetyReason, setSafetyReason] = useState<DiscoveryReportReason | null>(null);
   const [safetyBusy, setSafetyBusy] = useState(false);
@@ -66,6 +71,18 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
   }
 
   useEffect(() => { void loadDiscovery(true); }, []);
+
+  useEffect(() => {
+    let active = true;
+    async function loadFilterSummary() {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) return;
+      const { data } = await supabase.from('user_preferences').select('interested_in,min_age,max_age,max_distance_km').eq('user_id', userData.user.id).single();
+      if (active && data) setFilterValues({ interestedIn: data.interested_in as Gender[], minAge: data.min_age, maxAge: data.max_age, distance: data.max_distance_km });
+    }
+    void loadFilterSummary();
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -218,7 +235,7 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
     void submitDecision(direction);
   }
 
-  if (loading && profiles.length === 0) return <ScreenState kind="loading" message="Finding people who fit both sides…" />;
+  if (loading && profiles.length === 0) return <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}><DiscoveryLoading /></View>;
   if (error && profiles.length === 0) {
     const locationRelated = /location|permission|denied|gps/i.test(error);
     if (locationRelated) return <ScreenState kind="permission" icon="discover" title="Discovery paused" message={`${error}\n\nBinder uses foreground location only to calculate nearby candidates. Exact coordinates are never sent to another user.`} actionLabel="Try again" onAction={() => void loadDiscovery(true)} />;
@@ -232,11 +249,12 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
         <View><BinderBrand compact /><BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>People who fit both sides.</BinderText></View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
           {decisionPending ? <BinderText variant="caption" tone="accent">Saving…</BinderText> : null}
-          <BinderIconButton name="settings" accessibilityLabel="Discovery filters" onPress={() => setFiltersOpen(true)} />
+          <BinderChip label={filterValues ? `${filterValues.minAge}–${filterValues.maxAge} · ${filterValues.distance} km` : 'Filters'} selected={filtersOpen} accessibilityLabel="Open discovery filters" onPress={() => setFiltersOpen(true)} />
         </View>
       </View>
 
       <View style={{ flex: 1, marginHorizontal: theme.spacing.x4, marginTop: theme.spacing.x1, marginBottom: theme.spacing.x3, justifyContent: 'center' }}>
+        {loading ? <View style={{ position: 'absolute', inset: 0, zIndex: 2, backgroundColor: theme.colors.canvas }}><DiscoveryLoading compact /></View> : null}
         {!profile ? (
           <BinderCard>
             <BinderText variant="micro" tone="accent">YOU'RE CAUGHT UP</BinderText>
@@ -289,8 +307,9 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
 
       {filtersOpen ? (
         <DiscoveryFilterSheet
+          initialValues={filterValues}
           onClose={() => setFiltersOpen(false)}
-          onApplied={() => { setFiltersOpen(false); void loadDiscovery(false); }}
+          onApplied={(values) => { setFilterValues(values); setFiltersOpen(false); void loadDiscovery(false); }}
         />
       ) : null}
 

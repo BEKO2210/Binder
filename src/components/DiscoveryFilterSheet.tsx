@@ -1,130 +1,80 @@
 import { useEffect, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 
-import { GENDERS, type Gender } from '../lib/validation';
 import { supabase } from '../lib/supabase';
+import type { Gender } from '../lib/validation';
 import { useBinderTheme } from '../theme/ThemeProvider';
-import { RangeSlider, SingleSlider } from './RangeSlider';
-import { BinderButton, BinderCard, BinderChip, BinderIconButton, BinderText, ScreenState } from './ui';
+import { DiscoveryPreferences, discoveryDefaults, type DiscoveryPreferenceValues } from './DiscoveryPreferences';
+import { BinderButton, BinderCard, BinderIconButton, BinderText, ScreenState } from './ui';
 
-type Props = { onClose: () => void; onApplied: () => void };
+type Props = { initialValues: DiscoveryPreferenceValues | null; onClose: () => void; onApplied: (values: DiscoveryPreferenceValues) => void };
+type LoadedProfile = { first_name: string; gender: Gender; bio: string; interests: string[] };
+type GroupErrors = { audience?: string; age?: string; distance?: string };
 
-type LoadedProfile = {
-  first_name: string;
-  gender: Gender;
-  bio: string;
-  interests: string[];
-};
-
-// Quick discovery preferences straight from the deck: sliders instead of
-// number inputs, saved through the same server RPC the profile settings use.
-export default function DiscoveryFilterSheet({ onClose, onApplied }: Props) {
+export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied }: Props) {
   const { theme } = useBinderTheme();
   const [profile, setProfile] = useState<LoadedProfile | null>(null);
-  const [error, setError] = useState('');
+  const [values, setValues] = useState(initialValues ?? discoveryDefaults);
+  const [loadError, setLoadError] = useState('');
+  const [errors, setErrors] = useState<GroupErrors>({});
   const [busy, setBusy] = useState(false);
-  const [interestedIn, setInterestedIn] = useState<Gender[]>([]);
-  const [minAge, setMinAge] = useState(18);
-  const [maxAge, setMaxAge] = useState(45);
-  const [distance, setDistance] = useState(50);
 
   useEffect(() => {
     let active = true;
     async function load() {
       const { data: userData } = await supabase.auth.getUser();
       const uid = userData.user?.id;
-      if (!uid) { if (active) setError('Authentication required.'); return; }
+      if (!uid) throw new Error('Authentication required.');
       const [profileResult, preferencesResult] = await Promise.all([
         supabase.from('profiles').select('first_name,gender,bio,interests').eq('user_id', uid).single(),
-        supabase.from('user_preferences').select('interested_in,min_age,max_age,max_distance_km').eq('user_id', uid).single(),
+        initialValues ? Promise.resolve(null) : supabase.from('user_preferences').select('interested_in,min_age,max_age,max_distance_km').eq('user_id', uid).single(),
       ]);
+      if (profileResult.error || preferencesResult?.error) throw new Error('Could not load your discovery settings.');
       if (!active) return;
-      if (profileResult.error || preferencesResult.error) {
-        setError('Could not load your discovery settings.');
-        return;
-      }
       setProfile(profileResult.data as LoadedProfile);
-      setInterestedIn(preferencesResult.data.interested_in as Gender[]);
-      setMinAge(preferencesResult.data.min_age);
-      setMaxAge(preferencesResult.data.max_age);
-      setDistance(preferencesResult.data.max_distance_km);
+      if (preferencesResult?.data) setValues({ interestedIn: preferencesResult.data.interested_in as Gender[], minAge: preferencesResult.data.min_age, maxAge: preferencesResult.data.max_age, distance: preferencesResult.data.max_distance_km });
     }
-    void load().catch(() => { if (active) setError('Could not load your discovery settings.'); });
+    void load().catch((cause: unknown) => { if (active) setLoadError(cause instanceof Error ? cause.message : 'Could not load your discovery settings.'); });
     return () => { active = false; };
-  }, []);
+  }, [initialValues]);
 
   async function apply() {
     if (!profile || busy) return;
-    if (interestedIn.length === 0) { setError('Choose at least one option under “I want to meet”.'); return; }
+    const nextErrors: GroupErrors = {};
+    if (values.interestedIn.length === 0) nextErrors.audience = 'Choose at least one person you want to meet.';
+    if (values.minAge < 18 || values.maxAge > 100 || values.minAge >= values.maxAge) nextErrors.age = 'Choose an age range of at least one year.';
+    if (values.distance < 1 || values.distance > 500) nextErrors.distance = 'Choose a distance from 1 to 500 km.';
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
     setBusy(true);
-    setError('');
     try {
-      const { error: saveError } = await supabase.rpc('update_my_profile', {
-        p_first_name: profile.first_name,
-        p_gender: profile.gender,
-        p_bio: profile.bio,
-        p_interests: profile.interests,
-        p_interested_in: interestedIn,
-        p_min_age: minAge,
-        p_max_age: maxAge,
-        p_max_distance_km: distance,
-      });
-      if (saveError) throw saveError;
-      onApplied();
+      const { error } = await supabase.rpc('update_my_profile', { p_first_name: profile.first_name, p_gender: profile.gender, p_bio: profile.bio, p_interests: profile.interests, p_interested_in: values.interestedIn, p_min_age: values.minAge, p_max_age: values.maxAge, p_max_distance_km: values.distance });
+      if (error) throw error;
+      onApplied(values);
     } catch {
-      setError('Could not save your filters. Try again.');
+      setErrors({ distance: 'Binder could not save these filters. Check your connection and try again.' });
       setBusy(false);
     }
   }
 
   return (
     <View style={{ position: 'absolute', inset: 0, backgroundColor: theme.colors.overlay, justifyContent: 'flex-end' }}>
-      <BinderCard style={{ maxHeight: '88%', borderBottomLeftRadius: 0, borderBottomRightRadius: 0, borderColor: theme.colors.borderStrong }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3 }}>
-          <View style={{ flex: 1 }}>
-            <BinderText variant="micro" tone="accent">DISCOVERY FILTERS</BinderText>
-            <BinderText variant="heading" style={{ marginTop: theme.spacing.x1 }}>Who fits both sides?</BinderText>
-          </View>
+      <BinderCard style={{ height: '94%', padding: 0, borderBottomLeftRadius: 0, borderBottomRightRadius: 0, borderColor: theme.colors.borderStrong, overflow: 'hidden' }}>
+        <View style={{ alignItems: 'center', paddingTop: theme.spacing.x2 }}><View style={{ width: theme.spacing.x10, height: theme.spacing.x1, borderRadius: theme.radii.pill, backgroundColor: theme.colors.borderStrong }} /></View>
+        <View style={{ paddingHorizontal: theme.spacing.x5, paddingVertical: theme.spacing.x3, flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ flex: 1 }}><BinderText variant="micro" tone="accent">DISCOVERY</BinderText><BinderText variant="heading" style={{ marginTop: theme.spacing.x1 }}>Your search</BinderText></View>
           <BinderIconButton name="close" accessibilityLabel="Close discovery filters" onPress={onClose} />
         </View>
-
-        {error && !profile ? (
-          <ScreenState kind="error" icon="retry" title="Filters did not load" message={error} actionLabel="Close" onAction={onClose} />
-        ) : !profile ? (
-          <ScreenState kind="loading" message="Loading your filters…" />
-        ) : (
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: theme.spacing.x5, gap: theme.spacing.x6 }}>
-            <View>
-              <BinderText variant="micro" tone="muted" style={{ marginBottom: theme.spacing.x3 }}>I WANT TO MEET</BinderText>
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>
-                {GENDERS.map((item) => (
-                  <BinderChip
-                    key={item.value}
-                    label={item.label}
-                    selected={interestedIn.includes(item.value)}
-                    onPress={() => setInterestedIn((current) => current.includes(item.value) ? current.filter((value) => value !== item.value) : [...current, item.value])}
-                  />
-                ))}
-              </View>
+        {loadError ? <ScreenState kind="error" icon="retry" title="Filters did not load" message={loadError} actionLabel="Close" onAction={onClose} /> : !profile ? <ScreenState kind="loading" message="Loading your filters…" /> : (
+          <>
+            <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: theme.spacing.x5, paddingTop: theme.spacing.x4, paddingBottom: theme.spacing.x8 }}>
+              <DiscoveryPreferences {...values} onChange={(next) => { setValues(next); setErrors({}); }} errors={errors} />
+            </ScrollView>
+            <View style={{ paddingHorizontal: theme.spacing.x5, paddingTop: theme.spacing.x3, paddingBottom: theme.spacing.x5, borderTopWidth: 1, borderTopColor: theme.colors.borderSubtle, backgroundColor: theme.colors.surface }}>
+              <BinderButton label="Apply filters" loading={busy} onPress={() => void apply()} />
+              <BinderButton label="Reset to defaults" variant="ghost" disabled={busy} onPress={() => { setValues(discoveryDefaults); setErrors({}); }} style={{ marginTop: theme.spacing.x2 }} />
             </View>
-            <RangeSlider
-              min={18}
-              max={100}
-              lowValue={minAge}
-              highValue={maxAge}
-              label={(lowest, highest) => `Age ${lowest} – ${highest}`}
-              onChange={(lowest, highest) => { setMinAge(lowest); setMaxAge(highest); }}
-            />
-            <SingleSlider
-              min={1}
-              max={500}
-              value={distance}
-              label={(value) => `Distance up to ${value} km`}
-              onChange={setDistance}
-            />
-            {error ? <BinderText variant="caption" tone="destructive">{error}</BinderText> : null}
-            <BinderButton label="Apply filters" loading={busy} onPress={() => void apply()} />
-          </ScrollView>
+          </>
         )}
       </BinderCard>
     </View>

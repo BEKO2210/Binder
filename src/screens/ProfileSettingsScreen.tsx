@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Alert, Image, Pressable, ScrollView, View } from 'react-native';
 
-import { RangeSlider, SingleSlider } from '../components/RangeSlider';
+import { DiscoveryPreferences } from '../components/DiscoveryPreferences';
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderInput, BinderText, ScreenState, SectionHeader } from '../components/ui';
 import { pickAndPrepareProfileImage } from '../lib/images';
 import { addProfileImage, listMyProfileMedia, removeProfileMedia, reorderProfileMedia, setPrimaryProfileMedia, type GalleryMedia } from '../lib/media';
@@ -22,9 +22,9 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
   const [gender, setGender] = useState<Gender>('nonbinary');
   const [interests, setInterests] = useState<string[]>([]);
   const [interestedIn, setInterestedIn] = useState<Gender[]>([]);
-  const [minAge, setMinAge] = useState('18');
-  const [maxAge, setMaxAge] = useState('45');
-  const [distance, setDistance] = useState('50');
+  const [minAge, setMinAge] = useState(18);
+  const [maxAge, setMaxAge] = useState(45);
+  const [distance, setDistance] = useState(50);
   const [media, setMedia] = useState<GalleryMedia[]>([]);
 
   useEffect(() => { void load(); }, [userId]);
@@ -45,9 +45,9 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
       setGender(profile.data.gender as Gender);
       setInterests(profile.data.interests);
       setInterestedIn(preferences.data.interested_in as Gender[]);
-      setMinAge(String(preferences.data.min_age));
-      setMaxAge(String(preferences.data.max_age));
-      setDistance(String(preferences.data.max_distance_km));
+      setMinAge(preferences.data.min_age);
+      setMaxAge(preferences.data.max_age);
+      setDistance(preferences.data.max_distance_km);
       setMedia(gallery);
     } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : 'Could not load profile settings.'); }
     finally { setLoading(false); }
@@ -118,7 +118,7 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
   }
 
   async function save() {
-    const min = Number(minAge); const max = Number(maxAge); const maxDistance = Number(distance);
+    const min = minAge; const max = maxAge; const maxDistance = distance;
     if (!firstName.trim() || interestedIn.length === 0 || !Number.isInteger(min) || !Number.isInteger(max) || min < 18 || max > 100 || min > max || !Number.isInteger(maxDistance) || maxDistance < 1 || maxDistance > 500) {
       setMessage('Check your profile and discovery settings.'); return;
     }
@@ -166,12 +166,8 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
         <BinderInput label="Bio" helper={`${bio.length}/500`} value={bio} onChangeText={setBio} maxLength={500} multiline style={{ minHeight: 110, textAlignVertical: 'top' }} />
         <Choice label="I am"><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{GENDERS.map((item) => <BinderChip key={item.value} label={item.label} selected={gender === item.value} onPress={() => setGender(item.value)} />)}</View></Choice>
         <Choice label="Interests"><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{INTERESTS.map((item) => <BinderChip key={item} label={item} selected={interests.includes(item)} onPress={() => setInterests((current) => current.includes(item) ? current.filter((value) => value !== item) : current.length < 12 ? [...current, item] : current)} />)}</View></Choice>
-        <Choice label="I want to meet"><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{GENDERS.map((item) => <BinderChip key={item.value} label={item.label} selected={interestedIn.includes(item.value)} onPress={() => setInterestedIn((current) => current.includes(item.value) ? current.filter((value) => value !== item.value) : [...current, item.value])} />)}</View></Choice>
         <Choice label="Discovery range">
-          <View style={{ gap: theme.spacing.x5 }}>
-            <RangeSlider min={18} max={100} lowValue={Number(minAge) || 18} highValue={Number(maxAge) || 45} label={(lowest, highest) => `Age ${lowest} – ${highest}`} onChange={(lowest, highest) => { setMinAge(String(lowest)); setMaxAge(String(highest)); }} />
-            <SingleSlider min={1} max={500} value={Number(distance) || 50} label={(value) => `Distance up to ${value} km`} onChange={(value) => setDistance(String(value))} />
-          </View>
+          <DiscoveryPreferences interestedIn={interestedIn} minAge={minAge} maxAge={maxAge} distance={distance} onChange={(next) => { setInterestedIn(next.interestedIn); setMinAge(next.minAge); setMaxAge(next.maxAge); setDistance(next.distance); }} />
         </Choice>
       </View>
       <BinderButton label="Save profile" loading={busy} onPress={() => void save()} style={{ marginTop: theme.spacing.x6 }} />
@@ -182,10 +178,6 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
 function Choice({ label, children }: { label: string; children: React.ReactNode }) {
   const { theme } = useBinderTheme();
   return <View><BinderText variant="label" tone="secondary" style={{ marginBottom: theme.spacing.x2 }}>{label}</BinderText>{children}</View>;
-}
-
-function CompactNumber({ label, value, setValue }: { label: string; value: string; setValue: (value: string) => void }) {
-  return <View style={{ flex: 1 }}><BinderInput label={label} value={value} onChangeText={setValue} keyboardType="number-pad" style={{ textAlign: 'center' }} /></View>;
 }
 
 function AddPhotoTile({ disabled, onPress }: { disabled: boolean; onPress: () => void }) {

@@ -1,5 +1,6 @@
 export { BinderBrand } from './BinderBrand';
 export { BinderButton } from './BinderButton';
+export { BinderDial } from './BinderDial';
 export { BinderCard } from './BinderCard';
 export { BinderChip } from './BinderChip';
 export { BinderIcon, BinderIconButton } from './BinderIcon';
