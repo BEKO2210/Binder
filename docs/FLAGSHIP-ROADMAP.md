@@ -175,15 +175,19 @@ Diagnostics are collected today — `private.beta_client_events`,
 `service_role`, so nothing reaches the admin dashboard. Opt-in telemetry that
 nobody can see is a promise the app does not keep.
 
-- [ ] Read-only RPCs in `public`, gated by the existing admin permission model,
-      for the daily summary, the client error stream and the beta feedback list.
-      No new grant to `anon`, no service-role key in a browser.
-- [ ] A "Diagnose" tab in `site/admin`: the daily funnel, discovery p95, client
-      errors with surface and app version, and feedback with category and rating.
-- [ ] The tab says plainly what is *not* collected and how long each table is
-      kept, so the privacy copy in the app and the dashboard cannot drift apart.
-- [ ] A verifier that fails the build if the dashboard queries a table directly
-      instead of going through the gated RPCs.
+- [x] Read-only RPCs in `public`, gated by the existing admin permission model,
+      for the daily summary, health, the client error stream and the beta
+      feedback list. Applied to production 2026-08-17; verified there that anon
+      cannot execute them and that a signed-in non-admin is refused with
+      `42501 Admin permission required.`
+- [x] A "Diagnose" tab in `site/admin`: health cards, the daily funnel with
+      discovery p95, client errors with surface and app version, and feedback
+      with category and rating.
+- [x] The tab says plainly what is *not* collected and how long each table is
+      kept.
+- [x] A verifier that fails the build if the dashboard queries a diagnostics
+      table directly instead of going through the gated RPCs, plus a pgTAP file
+      that proves the gate.
 
 ## O · Tested with real accounts, not with hope
 
@@ -191,11 +195,13 @@ The deck has never been exercised with a real candidate: the two production
 accounts are already matched with each other. The owner asked for test accounts
 on 2026-08-17.
 
-- [ ] Test accounts created through the same paths a real user takes, clearly
-      labelled as test data, with a documented single command that removes them
-      and everything they produced.
-- [ ] The full loop walked on the S23 with those accounts: discovery with a real
-      candidate, bind and pass, a match, the first message, a report, photo
-      moderation, and the reset back to a clean state.
-- [ ] Every step backed by a screenshot or a row from the database, recorded in
-      `docs/PHASE7-DEVICE-MATRIX.md`.
+- [x] Two labelled test accounts, their passwords in the vault, acting through
+      the same public API the app uses. `docs/TEST-ACCOUNTS.md` holds the
+      identities, the helper and the single delete statement that removes them.
+- [x] Walked on the S23: a real candidate in the deck, bind, a reciprocal bind
+      that produced a match, the celebration, the push banner for the other
+      side, the first message, and a realtime reply arriving in the open chat.
+- [x] Diagnostics proven end to end: switching the opt-in on produced five
+      client events within seconds, and a feedback row reached the daily summary.
+- [ ] Still open: a report walked through moderation, photo review from the
+      dashboard, and the reset back to a clean state.
