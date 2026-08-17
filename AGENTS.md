@@ -212,13 +212,21 @@ presentable profiles for a shoot and removes them afterwards — it can only
 remove accounts tagged `binder_demo_profile` in auth metadata.
 `scripts/generate-demo-portraits.mjs` produces the portraits: **Binder generates
 faces rather than presenting a real person's likeness as a fictional profile.**
-`scripts/store-frames.sh <in> <out>` turns captures into 1080×1920 listing
-artwork with the system status bar and gesture pill cropped away.
+`python3 scripts/store-assets.py <captures> <out>` turns captures into the whole
+listing kit: 1080×1920 phone frames with the system status bar and gesture pill
+cropped away, the 512×512 icon and the 1024×500 feature graphic. Captions live
+in a sibling `NN-name.txt` (line 1 eyebrow, line 2 headline), and the device
+sits on the same axis in every frame — a listing where the phone jumps between
+screenshots reads as separate posters. It replaced a bash/ImageMagick version
+that could not run here, and needs only Pillow.
 
-The promo film is a Remotion project in `/home/belkis/binder-promo`; both
-renders (with music, and sound effects only) are staged in
-`/home/belkis/Binder-Release/promo/`, and a 1280×720 version is embedded on the
-public site.
+The promo film is a Remotion project in `/home/belkis/binder-promo` with two
+compositions off one timeline: `BinderPromo` (1920×1080) for the site and
+YouTube, `BinderPromoVertical` (1080×1920) for phones. The scenes read their own
+stage size, so the vertical cut is a composition and not a crop. Renders are
+staged in `/home/belkis/Binder-Release/promo/`, and a 1280×720 version is
+embedded on the public site. Play accepts no video upload — only a YouTube link
+in the listing.
 
 ## What the app collects
 
