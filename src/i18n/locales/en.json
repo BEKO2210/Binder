@@ -63,5 +63,110 @@
     "cancel": "Cancel",
     "save": "Save",
     "loading": "Loading…"
+  },
+  "auth": {
+    "errors": {
+      "connection": "No connection. Check your internet and try again.",
+      "credentials": "Email or password is incorrect.",
+      "registered": "This email is already registered. Sign in instead.",
+      "passwordLength": "The password must be at least 8 characters.",
+      "email": "Enter a valid email address.",
+      "generic": "Something went wrong. Try again."
+    },
+    "messages": {
+      "passwordChanged": "Password changed. You are signed in.",
+      "resetSent": "If that address has an account, a reset link is on its way. Open it on this phone.",
+      "accountCreated": "Account created. Confirm the email, then sign in."
+    },
+    "headers": {
+      "recoveryTitle": "Set a new password.",
+      "signInTitle": "Welcome back.",
+      "signUpTitle": "Start with the real you.",
+      "resetTitle": "Locked out?",
+      "recoveryCopy": "Choose something you have not used here before. You stay signed in on this device.",
+      "resetCopy": "Enter the address you signed up with and we will send a link to set a new password.",
+      "defaultCopy": "Dating for adults. Mutual interest before conversation."
+    },
+    "fields": {
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "At least {length} characters",
+      "repeatPasswordLabel": "Repeat password",
+      "repeatPasswordPlaceholder": "Type it once more",
+      "repeatPasswordHelper": "Both entries have to match before the account is created."
+    },
+    "actions": {
+      "savePassword": "Save new password",
+      "signIn": "Sign in",
+      "createAccount": "Create account",
+      "sendResetLink": "Send reset link",
+      "forgotPassword": "Forgot your password?",
+      "createAccountPrompt": "New here? Create an account",
+      "signInPrompt": "Already have an account? Sign in",
+      "backToSignIn": "Back to sign in"
+    },
+    "ageRequirement": "You must be at least 18 years old to use Binder."
+  },
+  "matches": {
+    "header": {
+      "title": "Your Binds",
+      "eyebrow": "CONVERSATIONS"
+    },
+    "notifications": {
+      "enabledTitle": "Message alerts enabled",
+      "enablingTitle": "Enabling alerts…",
+      "blockedTitle": "Alerts are blocked",
+      "title": "Message alerts",
+      "unavailableCopy": "Push notifications are not supported on this device. Chat still works normally.",
+      "offlineCopy": "Could not reach the push service. Check your connection and try again.",
+      "blockedCopy": "Android is blocking Binder notifications. Allow them in system settings.",
+      "enabledCopy": "Notification categories can be adjusted in App Settings.",
+      "copy": "Opt in to alerts for new matches and messages."
+    },
+    "actions": {
+      "refresh": "Refresh",
+      "retry": "Retry",
+      "enable": "Enable",
+      "openSettings": "Open settings",
+      "tryAgain": "Try again",
+      "goToDiscovery": "Go to Discovery"
+    },
+    "states": {
+      "loading": "Loading your matches…",
+      "offlineTitle": "You are offline",
+      "errorTitle": "Matches did not load"
+    },
+    "empty": {
+      "title": "A Bind starts together",
+      "message": "When you and someone in Discovery both choose Bind, they appear here and either of you can start the conversation.",
+      "conversations": "Your conversations will appear here after the first message."
+    },
+    "newMatches": {
+      "heading": "NEW BINDS · START SOMETHING",
+      "sayHello": "Say hello"
+    },
+    "accessibility": {
+      "startConversation": "Start a conversation with {name}",
+      "openConversation": "Open conversation with {name}",
+      "unreadOne": "{count} unread message",
+      "unreadOther": "{count} unread messages"
+    }
+  },
+  "partnerProfile": {
+    "errors": {
+      "load": "Could not load this profile.",
+      "title": "Profile not available"
+    },
+    "actions": {
+      "back": "Back"
+    },
+    "accessibility": {
+      "close": "Close full profile",
+      "photosReviewed": "Photos reviewed before appearing in Discovery"
+    },
+    "loading": "Opening profile…",
+    "photosReviewed": "Photos reviewed",
+    "away": "{distance} km away"
   }
 }

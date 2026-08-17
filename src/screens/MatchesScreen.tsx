@@ -14,7 +14,7 @@ import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
 export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery }: { refreshKey: number; onOpenMatch: (match: MatchSummary) => void; onOpenDiscovery: () => void }) {
-  const { theme, settings, updateNotifications, reduceMotion } = useBinderTheme();
+  const { theme, settings, updateNotifications, reduceMotion, t } = useBinderTheme();
   const haptic = useBinderHaptics();
   const [matches, setMatches] = useState<MatchSummary[]>([]);
   const [loading, setLoading] = useState(true);
@@ -86,7 +86,7 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas, paddingHorizontal: theme.spacing.screen }}>
-      <BinderScreenHeader title="Your Binds" eyebrow="CONVERSATIONS" style={{ marginHorizontal: -theme.spacing.screen, marginBottom: theme.spacing.x4 }} trailing={<BinderButton label="Refresh" icon="retry" variant="ghost" fullWidth={false} loading={loading} onPress={() => void load()} />} />
+      <BinderScreenHeader title={t('matches.header.title')} eyebrow={t('matches.header.eyebrow')} style={{ marginHorizontal: -theme.spacing.screen, marginBottom: theme.spacing.x4 }} trailing={<BinderButton label={t('matches.actions.refresh')} icon="retry" variant="ghost" fullWidth={false} loading={loading} onPress={() => void load()} />} />
 
       <BinderCard style={{ marginBottom: theme.spacing.x3, padding: theme.spacing.x4 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3 }}>
@@ -94,33 +94,33 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
             <BinderIcon name="notifications" size={21} color={pushState === 'enabled' ? theme.accent.onSurface : theme.colors.textSecondary} />
           </View>
           <View style={{ flex: 1 }}>
-            <BinderText variant="label">{pushState === 'enabled' ? 'Message alerts enabled' : pushState === 'busy' ? 'Enabling alerts…' : pushState === 'denied' ? 'Alerts are blocked' : 'Message alerts'}</BinderText>
+            <BinderText variant="label">{pushState === 'enabled' ? t('matches.notifications.enabledTitle') : pushState === 'busy' ? t('matches.notifications.enablingTitle') : pushState === 'denied' ? t('matches.notifications.blockedTitle') : t('matches.notifications.title')}</BinderText>
             <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1 }}>
-              {pushState === 'unavailable' ? 'Push notifications are not supported on this device. Chat still works normally.'
-                : pushState === 'offline' ? 'Could not reach the push service. Check your connection and try again.'
-                : pushState === 'denied' ? 'Android is blocking Binder notifications. Allow them in system settings.'
-                : pushState === 'enabled' ? 'Notification categories can be adjusted in App Settings.'
-                : 'Opt in to alerts for new matches and messages.'}
+              {pushState === 'unavailable' ? t('matches.notifications.unavailableCopy')
+                : pushState === 'offline' ? t('matches.notifications.offlineCopy')
+                : pushState === 'denied' ? t('matches.notifications.blockedCopy')
+                : pushState === 'enabled' ? t('matches.notifications.enabledCopy')
+                : t('matches.notifications.copy')}
             </BinderText>
             {pushError ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x2 }}>{pushError.message}</BinderText> : null}
           </View>
-          {bannerOffersEnable(pushState) ? <BinderButton label={pushState === 'offline' ? 'Retry' : 'Enable'} variant="secondary" fullWidth={false} loading={pushState === 'busy'} onPress={() => void enablePush()} /> : null}
-          {pushState === 'denied' ? <BinderButton label="Open settings" variant="secondary" fullWidth={false} onPress={() => void openSystemNotificationSettings().catch(() => undefined)} /> : null}
+          {bannerOffersEnable(pushState) ? <BinderButton label={pushState === 'offline' ? t('matches.actions.retry') : t('matches.actions.enable')} variant="secondary" fullWidth={false} loading={pushState === 'busy'} onPress={() => void enablePush()} /> : null}
+          {pushState === 'denied' ? <BinderButton label={t('matches.actions.openSettings')} variant="secondary" fullWidth={false} onPress={() => void openSystemNotificationSettings().catch(() => undefined)} /> : null}
         </View>
       </BinderCard>
 
-      {loading && matches.length === 0 ? <ScreenState kind="loading" loadingShape="matches" message="Loading your matches…" /> : error && matches.length === 0 ? <ScreenState kind={error.kind === 'offline' ? 'offline' : error.kind === 'permission-denied' ? 'permission' : 'error'} icon="retry" title={error.kind === 'offline' ? 'You are offline' : 'Matches did not load'} message={error.message} actionLabel={error.recovery === 'refresh' ? 'Refresh' : 'Try again'} onAction={() => void load()} /> : matches.length === 0 ? <ScreenState kind="empty" icon="matches" title="A Bind starts together" message="When you and someone in Discovery both choose Bind, they appear here and either of you can start the conversation." actionLabel="Go to Discovery" onAction={onOpenDiscovery} /> : (
+      {loading && matches.length === 0 ? <ScreenState kind="loading" loadingShape="matches" message={t('matches.states.loading')} /> : error && matches.length === 0 ? <ScreenState kind={error.kind === 'offline' ? 'offline' : error.kind === 'permission-denied' ? 'permission' : 'error'} icon="retry" title={error.kind === 'offline' ? t('matches.states.offlineTitle') : t('matches.states.errorTitle')} message={error.message} actionLabel={error.recovery === 'refresh' ? t('matches.actions.refresh') : t('matches.actions.tryAgain')} onAction={() => void load()} /> : matches.length === 0 ? <ScreenState kind="empty" icon="matches" title={t('matches.empty.title')} message={t('matches.empty.message')} actionLabel={t('matches.actions.goToDiscovery')} onAction={onOpenDiscovery} /> : (
         <FlatList
           data={conversations}
           keyExtractor={(item) => item.matchId}
           refreshControl={<RefreshControl refreshing={loading} onRefresh={() => void load()} tintColor={theme.accent.onSurface} colors={[theme.accent.onSurface]} progressBackgroundColor={theme.colors.surfaceElevated} />}
-          ListHeaderComponent={newMatches.length > 0 ? <View style={{ marginBottom: theme.spacing.x5 }}><BinderText variant="micro" tone="muted" style={{ marginBottom: theme.spacing.x3 }}>NEW BINDS · START SOMETHING</BinderText><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: theme.spacing.x3 }}>{newMatches.map((item, index) => <Animated.View key={item.matchId} entering={reduceMotion ? undefined : FadeInUp.delay(resolveStaggerDelay(index, false)).duration(theme.motion.deliberate)}><MotionPressable accessibilityRole="button" accessibilityLabel={`Start a conversation with ${item.firstName}`} onPress={() => { void haptic('selection'); onOpenMatch(item); }} style={({ pressed }) => ({ width: theme.spacing.x16 + theme.spacing.x4, minHeight: theme.spacing.x16 + theme.spacing.x10, alignItems: 'center', justifyContent: 'center', padding: theme.spacing.x2, borderRadius: theme.radii.card, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface })}>{item.photoUrl ? <Image source={{ uri: item.photoUrl }} style={{ width: theme.spacing.x16, height: theme.spacing.x16, borderRadius: theme.radii.pill, backgroundColor: theme.colors.surfaceElevated }} /> : <View style={{ width: theme.spacing.x16, height: theme.spacing.x16, borderRadius: theme.radii.pill, backgroundColor: theme.colors.surfaceElevated, alignItems: 'center', justifyContent: 'center' }}><BinderText variant="title" tone="accent">{item.firstName.slice(0, 1).toUpperCase()}</BinderText></View>}<BinderText variant="label" numberOfLines={1} style={{ marginTop: theme.spacing.x2 }}>{item.firstName}</BinderText><BinderText variant="caption" tone="accent">Say hello</BinderText></MotionPressable></Animated.View>)}</ScrollView></View> : null}
-          ListEmptyComponent={<BinderText variant="body" tone="muted" style={{ paddingVertical: theme.spacing.x5 }}>Your conversations will appear here after the first message.</BinderText>}
+          ListHeaderComponent={newMatches.length > 0 ? <View style={{ marginBottom: theme.spacing.x5 }}><BinderText variant="micro" tone="muted" style={{ marginBottom: theme.spacing.x3 }}>{t('matches.newMatches.heading')}</BinderText><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: theme.spacing.x3 }}>{newMatches.map((item, index) => <Animated.View key={item.matchId} entering={reduceMotion ? undefined : FadeInUp.delay(resolveStaggerDelay(index, false)).duration(theme.motion.deliberate)}><MotionPressable accessibilityRole="button" accessibilityLabel={t('matches.accessibility.startConversation', { name: item.firstName })} onPress={() => { void haptic('selection'); onOpenMatch(item); }} style={({ pressed }) => ({ width: theme.spacing.x16 + theme.spacing.x4, minHeight: theme.spacing.x16 + theme.spacing.x10, alignItems: 'center', justifyContent: 'center', padding: theme.spacing.x2, borderRadius: theme.radii.card, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface })}>{item.photoUrl ? <Image source={{ uri: item.photoUrl }} style={{ width: theme.spacing.x16, height: theme.spacing.x16, borderRadius: theme.radii.pill, backgroundColor: theme.colors.surfaceElevated }} /> : <View style={{ width: theme.spacing.x16, height: theme.spacing.x16, borderRadius: theme.radii.pill, backgroundColor: theme.colors.surfaceElevated, alignItems: 'center', justifyContent: 'center' }}><BinderText variant="title" tone="accent">{item.firstName.slice(0, 1).toUpperCase()}</BinderText></View>}<BinderText variant="label" numberOfLines={1} style={{ marginTop: theme.spacing.x2 }}>{item.firstName}</BinderText><BinderText variant="caption" tone="accent">{t('matches.newMatches.sayHello')}</BinderText></MotionPressable></Animated.View>)}</ScrollView></View> : null}
+          ListEmptyComponent={<BinderText variant="body" tone="muted" style={{ paddingVertical: theme.spacing.x5 }}>{t('matches.empty.conversations')}</BinderText>}
           contentContainerStyle={{ paddingBottom: theme.spacing.x8, gap: theme.spacing.x2 }}
           showsVerticalScrollIndicator={false}
           renderItem={({ item, index }) => (
             <Animated.View entering={reduceMotion ? undefined : FadeInUp.delay(resolveStaggerDelay(index, false)).duration(theme.motion.deliberate)}>
-            <MotionPressable pressedSurface={false} accessibilityRole="button" accessibilityLabel={`Open conversation with ${item.firstName}`} onPress={() => { void haptic('selection'); onOpenMatch(item); }}>
+            <MotionPressable pressedSurface={false} accessibilityRole="button" accessibilityLabel={t('matches.accessibility.openConversation', { name: item.firstName })} onPress={() => { void haptic('selection'); onOpenMatch(item); }}>
               {({ pressed }) => (
                 <BinderCard style={{ minHeight: theme.spacing.x16 + theme.spacing.x5, padding: theme.spacing.x3, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface }}>
                   {item.photoUrl ? <Image source={{ uri: item.photoUrl }} style={{ width: theme.spacing.x16, height: theme.spacing.x16, borderRadius: theme.radii.pill, backgroundColor: theme.colors.surfaceElevated }} /> : <View style={{ width: theme.spacing.x16, height: theme.spacing.x16, borderRadius: theme.radii.pill, backgroundColor: theme.colors.surfaceElevated, alignItems: 'center', justifyContent: 'center' }}><BinderText variant="title" tone="accent">{item.firstName.slice(0,1).toUpperCase()}</BinderText></View>}
@@ -129,7 +129,7 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
                       <BinderText variant="label" tone={item.unreadCount > 0 ? 'primary' : 'secondary'} numberOfLines={1} style={{ flex: 1 }}>{item.firstName}, {item.age}</BinderText>
                       {item.lastMessageAt ? <BinderText variant="caption" tone={item.unreadCount > 0 ? 'secondary' : 'muted'}>{previewTimeLabel(item.lastMessageAt)}</BinderText> : null}
                     </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, marginTop: theme.spacing.x2 }}>{item.unreadCount > 0 ? <View accessibilityLabel={`${item.unreadCount} unread messages`} style={{ minWidth: theme.spacing.x5, height: theme.spacing.x5, paddingHorizontal: theme.spacing.x1, borderRadius: theme.radii.pill, backgroundColor: theme.accent.accent, alignItems: 'center', justifyContent: 'center' }}><ChangingNumber value={item.unreadCount} variant="caption" /></View> : null}<BinderText variant={item.unreadCount > 0 ? 'label' : 'caption'} tone={item.unreadCount > 0 ? 'primary' : 'muted'} numberOfLines={1} style={{ flex: 1 }}>{item.lastMessageBody}</BinderText></View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, marginTop: theme.spacing.x2 }}>{item.unreadCount > 0 ? <View accessibilityLabel={t(item.unreadCount === 1 ? 'matches.accessibility.unreadOne' : 'matches.accessibility.unreadOther', { count: item.unreadCount })} style={{ minWidth: theme.spacing.x5, height: theme.spacing.x5, paddingHorizontal: theme.spacing.x1, borderRadius: theme.radii.pill, backgroundColor: theme.accent.accent, alignItems: 'center', justifyContent: 'center' }}><ChangingNumber value={item.unreadCount} variant="caption" /></View> : null}<BinderText variant={item.unreadCount > 0 ? 'label' : 'caption'} tone={item.unreadCount > 0 ? 'primary' : 'muted'} numberOfLines={1} style={{ flex: 1 }}>{item.lastMessageBody}</BinderText></View>
                   </View>
                 </BinderCard>
               )}
@@ -138,7 +138,7 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
           )}
         />
       )}
-      {error && matches.length > 0 ? <View style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, paddingBottom: theme.spacing.x3 }}><BinderText variant="caption" tone="destructive" style={{ flex: 1 }}>{error.message}</BinderText><BinderButton label={error.recovery === 'refresh' ? 'Refresh' : 'Retry'} variant="ghost" fullWidth={false} onPress={() => void load()} /></View> : null}
+      {error && matches.length > 0 ? <View style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, paddingBottom: theme.spacing.x3 }}><BinderText variant="caption" tone="destructive" style={{ flex: 1 }}>{error.message}</BinderText><BinderButton label={error.recovery === 'refresh' ? t('matches.actions.refresh') : t('matches.actions.retry')} variant="ghost" fullWidth={false} onPress={() => void load()} /></View> : null}
     </View>
   );
 }

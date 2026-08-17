@@ -11,23 +11,23 @@ import { useBinderTheme } from '../theme/ThemeProvider';
 // finish the job. The scheme is declared in app.json.
 const PASSWORD_RESET_REDIRECT = 'binder://reset-password';
 
-function mapAuthError(error: unknown): string {
+function mapAuthError(error: unknown, t: (key: string, values?: Record<string, string | number>) => string): string {
   const raw = error instanceof Error ? error.message : '';
   if (/network|failed to fetch|fetch failed|timeout/i.test(raw) || error instanceof TypeError) {
-    return 'No connection. Check your internet and try again.';
+    return t('auth.errors.connection');
   }
-  if (/invalid login credentials/i.test(raw)) return 'Email or password is incorrect.';
-  if (/already registered|already exists/i.test(raw)) return 'This email is already registered. Sign in instead.';
-  if (/at least 6|password should be|at least 8/i.test(raw)) return 'The password must be at least 8 characters.';
-  if (/invalid email|valid email/i.test(raw)) return 'Enter a valid email address.';
-  return raw || 'Something went wrong. Try again.';
+  if (/invalid login credentials/i.test(raw)) return t('auth.errors.credentials');
+  if (/already registered|already exists/i.test(raw)) return t('auth.errors.registered');
+  if (/at least 6|password should be|at least 8/i.test(raw)) return t('auth.errors.passwordLength');
+  if (/invalid email|valid email/i.test(raw)) return t('auth.errors.email');
+  return raw || t('auth.errors.generic');
 }
 
 // `recovery` is set when the app was opened through a password-reset link and
 // Supabase has handed us a recovery session: the only thing that screen may do
 // is set a new password.
 export default function AuthScreen({ recovery = false, onRecoveryHandled }: { recovery?: boolean; onRecoveryHandled?: () => void } = {}) {
-  const { theme } = useBinderTheme();
+  const { theme, t } = useBinderTheme();
   const [mode, setMode] = useState<AuthMode>(recovery ? 'signup' : 'signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -67,7 +67,7 @@ export default function AuthScreen({ recovery = false, onRecoveryHandled }: { re
         const { error } = await supabase.auth.updateUser({ password });
         if (error) throw error;
         setMessageTone('secondary');
-        setMessage('Password changed. You are signed in.');
+        setMessage(t('auth.messages.passwordChanged'));
         onRecoveryHandled?.();
       } else if (mode === 'reset') {
         // Supabase always answers the same way here, whether or not the address
@@ -76,7 +76,7 @@ export default function AuthScreen({ recovery = false, onRecoveryHandled }: { re
         const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: PASSWORD_RESET_REDIRECT });
         if (error) throw error;
         setMessageTone('secondary');
-        setMessage('If that address has an account, a reset link is on its way. Open it on this phone.');
+        setMessage(t('auth.messages.resetSent'));
       } else if (mode === 'signin') {
         const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
         if (error) throw error;
@@ -85,12 +85,12 @@ export default function AuthScreen({ recovery = false, onRecoveryHandled }: { re
         if (error) throw error;
         if (!data.session) {
           setMessageTone('secondary');
-          setMessage('Account created. Confirm the email, then sign in.');
+          setMessage(t('auth.messages.accountCreated'));
         }
       }
     } catch (error) {
       setMessageTone('destructive');
-      setMessage(mapAuthError(error));
+      setMessage(mapAuthError(error, t));
     } finally {
       inFlight.current = false;
       setBusy(false);
@@ -113,56 +113,56 @@ export default function AuthScreen({ recovery = false, onRecoveryHandled }: { re
         <BinderBrand />
         <View style={{ marginTop: theme.spacing.x8 }}>
           <SectionHeader
-            title={recovery ? 'Set a new password.' : mode === 'signin' ? 'Welcome back.' : mode === 'signup' ? 'Start with the real you.' : 'Locked out?'}
-            copy={recovery ? 'Choose something you have not used here before. You stay signed in on this device.' : mode === 'reset' ? 'Enter the address you signed up with and we will send a link to set a new password.' : 'Dating for adults. Mutual interest before conversation.'}
+            title={recovery ? t('auth.headers.recoveryTitle') : mode === 'signin' ? t('auth.headers.signInTitle') : mode === 'signup' ? t('auth.headers.signUpTitle') : t('auth.headers.resetTitle')}
+            copy={recovery ? t('auth.headers.recoveryCopy') : mode === 'reset' ? t('auth.headers.resetCopy') : t('auth.headers.defaultCopy')}
           />
         </View>
         <View style={{ gap: theme.spacing.x4, marginTop: theme.spacing.x8 }}>
           {recovery ? null : <BinderInput
-            label="Email"
+            label={t('auth.fields.emailLabel')}
             autoCapitalize="none"
             autoComplete="email"
             keyboardType="email-address"
-            placeholder="you@example.com"
+            placeholder={t('auth.fields.emailPlaceholder')}
             value={email}
             error={visibleErrors.email}
             onChangeText={setEmail}
           />}
           {mode === 'reset' ? null : <BinderInput
-            label="Password"
+            label={t('auth.fields.passwordLabel')}
             autoCapitalize="none"
             autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
             revealToggle
-            placeholder={`At least ${MIN_PASSWORD_LENGTH} characters`}
+            placeholder={t('auth.fields.passwordPlaceholder', { length: MIN_PASSWORD_LENGTH })}
             value={password}
             error={visibleErrors.password}
             onChangeText={setPassword}
           />}
           {mode === 'signup' ? (
             <BinderInput
-              label="Repeat password"
+              label={t('auth.fields.repeatPasswordLabel')}
               autoCapitalize="none"
               autoComplete="new-password"
               revealToggle
-              placeholder="Type it once more"
+              placeholder={t('auth.fields.repeatPasswordPlaceholder')}
               value={confirmPassword}
               error={visibleErrors.confirmPassword}
-              helper="Both entries have to match before the account is created."
+              helper={t('auth.fields.repeatPasswordHelper')}
               onChangeText={setConfirmPassword}
             />
           ) : null}
         </View>
         {message ? <BinderText variant="caption" tone={messageTone} style={{ marginTop: theme.spacing.x4 }}>{message}</BinderText> : null}
-        <BinderButton label={recovery ? 'Save new password' : mode === 'signin' ? 'Sign in' : mode === 'signup' ? 'Create account' : 'Send reset link'} loading={busy} onPress={() => void submit()} style={{ marginTop: theme.spacing.x5 }} />
-        {mode === 'signin' && !recovery ? <BinderButton label="Forgot your password?" variant="ghost" disabled={busy} onPress={() => switchMode('reset')} style={{ marginTop: theme.spacing.x2 }} /> : null}
+        <BinderButton label={recovery ? t('auth.actions.savePassword') : mode === 'signin' ? t('auth.actions.signIn') : mode === 'signup' ? t('auth.actions.createAccount') : t('auth.actions.sendResetLink')} loading={busy} onPress={() => void submit()} style={{ marginTop: theme.spacing.x5 }} />
+        {mode === 'signin' && !recovery ? <BinderButton label={t('auth.actions.forgotPassword')} variant="ghost" disabled={busy} onPress={() => switchMode('reset')} style={{ marginTop: theme.spacing.x2 }} /> : null}
         {recovery ? null : <BinderButton
-          label={mode === 'signin' ? 'New here? Create an account' : mode === 'signup' ? 'Already have an account? Sign in' : 'Back to sign in'}
+          label={mode === 'signin' ? t('auth.actions.createAccountPrompt') : mode === 'signup' ? t('auth.actions.signInPrompt') : t('auth.actions.backToSignIn')}
           variant="ghost"
           disabled={busy}
           onPress={() => switchMode(mode === 'signin' ? 'signup' : 'signin')}
           style={{ marginTop: theme.spacing.x3 }}
         />}
-        <BinderText variant="caption" tone="muted" align="center" style={{ marginTop: theme.spacing.x3 }}>You must be at least 18 years old to use Binder.</BinderText>
+        <BinderText variant="caption" tone="muted" align="center" style={{ marginTop: theme.spacing.x3 }}>{t('auth.ageRequirement')}</BinderText>
       </View>
     </KeyboardAwareScrollView>
   );
