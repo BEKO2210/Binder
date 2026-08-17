@@ -5,12 +5,14 @@
 // translate the values, save it as `locales/<code>.json`, run `npm run i18n:sync`.
 import locale_de from './locales/de.json' with { type: 'json' };
 import locale_fr from './locales/fr.json' with { type: 'json' };
+import locale_it from './locales/it.json' with { type: 'json' };
 import locale_pt_BR from './locales/pt-BR.json' with { type: 'json' };
 
-export type LocaleCode = 'de' | 'en' | 'fr' | 'pt-BR';
+export type LocaleCode = 'de' | 'en' | 'fr' | 'it' | 'pt-BR';
 
 export const registeredLocales: Record<string, Record<string, unknown>> = {
   'de': locale_de as Record<string, unknown>,
   'fr': locale_fr as Record<string, unknown>,
+  'it': locale_it as Record<string, unknown>,
   'pt-BR': locale_pt_BR as Record<string, unknown>,
 };
