@@ -6,14 +6,15 @@ import Animated, { Extrapolation, FadeIn, FadeOut, interpolate, runOnJS, useAnim
 
 import DiscoveryFilterSheet from '../components/DiscoveryFilterSheet';
 import { DiscoveryLoading } from '../components/DiscoveryLoading';
-import type { DiscoveryPreferenceValues } from '../components/DiscoveryPreferences';
+import { discoveryDefaults, type DiscoveryPreferenceValues } from '../components/DiscoveryPreferences';
 import { MatchCelebration } from '../components/MatchCelebration';
 import { PhotoPager } from '../components/PhotoPager';
 import { MotionPressable as Pressable } from '../components/ui';
 import { BinderBrand, BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import { fetchMatches, type MatchSummary } from '../lib/conversation';
 import { announce } from '../lib/announce';
-import { fetchDiscoveryBatch, loadDiscoveryPreferences, recordDecision, refreshDiscoveryLocation, type DiscoveryProfile } from '../lib/discovery';
+import { countDiscoveryCandidates, fetchDiscoveryBatch, loadDiscoveryPreferences, recordDecision, refreshDiscoveryLocation, type DiscoveryProfile } from '../lib/discovery';
+import { classifyEmptyDiscovery, type EmptyDiscoveryKind } from '../lib/discoveryAvailability';
 import { advanceDeck, decideSwipe, discoveryDeckPhysics, resistedTranslation, type SwipeDirection } from '../lib/discoveryDeck';
 import { formatCount, formatDistanceKm } from '../lib/format';
 import { listMyProfileMedia } from '../lib/media';
@@ -56,6 +57,8 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
   const [viewingProfile, setViewingProfile] = useState<DiscoveryProfile | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filterValues, setFilterValues] = useState<DiscoveryPreferenceValues | null>(null);
+  const [emptyKind, setEmptyKind] = useState<EmptyDiscoveryKind | null>(null);
+  const [locationPermissionDenied, setLocationPermissionDenied] = useState(false);
   const [safetyOpen, setSafetyOpen] = useState(false);
   const [safetyReason, setSafetyReason] = useState<DiscoveryReportReason | null>(null);
   const [safetyBusy, setSafetyBusy] = useState(false);
@@ -80,11 +83,25 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
     const current = () => mounted.current && loadToken.current === token;
     setLoading(true);
     setError(null);
+    setLocationPermissionDenied(false);
     try {
-      if (refreshLocation) await refreshDiscoveryLocation();
+      if (refreshLocation && !await refreshDiscoveryLocation()) {
+        if (current()) setLocationPermissionDenied(true);
+        return;
+      }
       const batch = await fetchDiscoveryBatch(20);
       if (!current()) return;
       setProfiles(batch);
+      if (batch.length === 0) {
+        const values = filterValues ?? await loadDiscoveryPreferences();
+        const [currentCount, standardCount] = await Promise.all([
+          countDiscoveryCandidates(values),
+          countDiscoveryCandidates(discoveryDefaults),
+        ]);
+        if (!current()) return;
+        setFilterValues(values);
+        setEmptyKind(classifyEmptyDiscovery(currentCount, standardCount));
+      } else setEmptyKind(null);
     } catch (cause) {
       if (!current()) return;
       const failure = classifyError(cause);
@@ -238,6 +255,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
       const result = await recordDecision(current.id, direction === 'right' ? 'bind' : 'pass');
       if (result.matched) await haptic('match');
       finishDismiss(current, result.matched);
+      if (profiles.length === 1) void loadDiscovery(false);
     } catch (cause) {
       setDecisionPending(false);
       const failure = classifyError(cause);
@@ -315,9 +333,9 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
     buttonStamp.value = reduceMotion ? target : withTiming(target, { duration: theme.motion.standard });
   }
 
+  if (locationPermissionDenied) return <ScreenState kind="permission" icon="discover" title={t('discovery.location.title')} message={t('discovery.location.message')} actionLabel={t('discovery.actions.allowLocation')} onAction={() => void loadDiscovery(true)} />;
+
   if (error && profiles.length === 0) {
-    const locationRelated = /location|gps/i.test(error.message);
-    if (locationRelated) return <ScreenState kind="permission" icon="discover" title={t('discovery.states.pausedTitle')} message={t('discovery.states.locationMessage', { error: error.message })} actionLabel={t('discovery.actions.tryAgain')} onAction={() => void loadDiscovery(true)} />;
     return <ScreenState kind={error.kind === 'offline' ? 'offline' : 'error'} icon="retry" title={error.kind === 'offline' ? t('discovery.states.offlineTitle') : t('discovery.states.loadErrorTitle')} message={error.kind === 'offline' ? t('discovery.states.offlineMessage') : error.message} actionLabel={t('discovery.actions.tryAgain')} onAction={() => void loadDiscovery(true)} />;
   }
 
@@ -332,10 +350,10 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
         {loading ? <View style={{ position: 'absolute', inset: 0, zIndex: 2, backgroundColor: theme.colors.canvas }}><DiscoveryLoading /></View> : null}
         {!profile ? (
           <BinderCard>
-            <BinderText variant="micro" tone="accent">{t('discovery.empty.eyebrow')}</BinderText>
-            <BinderText variant="heading" style={{ marginTop: theme.spacing.x2 }}>{t('discovery.empty.title')}</BinderText>
-            <BinderText variant="body" tone="secondary" style={{ marginTop: theme.spacing.x3 }}>{t('discovery.empty.message')}</BinderText>
-            <BinderButton label={t('discovery.actions.changeFilters')} icon="discover" onPress={() => setFiltersOpen(true)} style={{ marginTop: theme.spacing.x5 }} />
+            <BinderText variant="micro" tone="accent">{t(emptyKind === 'filtered' ? 'discovery.empty.filteredEyebrow' : 'discovery.empty.genuineEyebrow')}</BinderText>
+            <BinderText variant="heading" style={{ marginTop: theme.spacing.x2 }}>{t(emptyKind === 'filtered' ? 'discovery.empty.filteredTitle' : 'discovery.empty.genuineTitle')}</BinderText>
+            <BinderText variant="body" tone="secondary" style={{ marginTop: theme.spacing.x3 }}>{t(emptyKind === 'filtered' ? 'discovery.empty.filteredMessage' : 'discovery.empty.genuineMessage')}</BinderText>
+            {emptyKind === 'filtered' ? <BinderButton label={t('discovery.actions.changeFilters')} icon="discover" onPress={() => setFiltersOpen(true)} style={{ marginTop: theme.spacing.x5 }} /> : null}
           </BinderCard>
         ) : (
           <>

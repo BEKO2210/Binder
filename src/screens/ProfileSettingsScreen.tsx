@@ -117,6 +117,26 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
     uploadLockedRef.current = false;
   }
 
+  async function replacePhoto(item: GalleryMedia) {
+    if (busy || uploadLockedRef.current) return;
+    uploadLockedRef.current = true;
+    setMessage('');
+    try {
+      const image = await pickAndPrepareProfileImage();
+      if (!image) return;
+      setBusy(true);
+      await removeProfileMedia(item.id);
+      setBusy(false);
+      await uploadPhoto(image);
+    } catch (error) {
+      setMessageKind('error');
+      setMessage(errorMessage(error, t('profileSettings.errors.replacePhoto')));
+    } finally {
+      setBusy(false);
+      uploadLockedRef.current = false;
+    }
+  }
+
   async function movePhoto(index: number, delta: -1 | 1) {
     const target = index + delta;
     if (target < 0 || target >= media.length || busy) return;
@@ -216,7 +236,7 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
         <BinderText variant="micro" tone="muted">{t('profileSettings.photos.eyebrow', { count: media.length })}</BinderText>
         <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>{t('profileSettings.photos.orderCopy')}</BinderText>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x3, marginTop: theme.spacing.x3 }}>
-          {media.map((item, index) => <PhotoTile key={item.id} item={item} index={index} total={media.length} busy={busy} onLeft={() => void movePhoto(index, -1)} onRight={() => void movePhoto(index, 1)} onPrimary={() => void makePrimary(item)} onRemove={() => confirmRemove(item)} onView={() => setViewerIndex(index)} />)}
+          {media.map((item, index) => <PhotoTile key={item.id} item={item} index={index} total={media.length} busy={busy} onLeft={() => void movePhoto(index, -1)} onRight={() => void movePhoto(index, 1)} onPrimary={() => void makePrimary(item)} onReplace={() => void replacePhoto(item)} onRemove={() => confirmRemove(item)} onView={() => setViewerIndex(index)} />)}
           {upload ? <UploadPhotoTile upload={upload} onRetry={() => void retryUpload()} /> : media.length < 6 ? <AddPhotoTile disabled={busy} onPress={() => void addPhoto()} /> : null}
         </View>
         {message ? <BinderText accessibilityLiveRegion={messageKind === 'success' ? 'polite' : 'assertive'} variant="caption" tone={messageKind === 'success' ? 'accent' : 'destructive'} style={{ marginTop: theme.spacing.x3 }}>{message}</BinderText> : null}
@@ -255,7 +275,7 @@ function AddPhotoTile({ disabled, onPress }: { disabled: boolean; onPress: () =>
   return <Pressable pressedSurface={false} accessibilityRole="button" accessibilityLabel={t('profileSettings.accessibility.addPhoto')} disabled={disabled} onPress={onPress} style={({ pressed }) => ({ width: '47%', minHeight: theme.layout.photoAddTileHeight, borderRadius: theme.radii.card, borderWidth: 1, borderStyle: 'dashed', borderColor: theme.colors.borderStrong, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface, alignItems: 'center', justifyContent: 'center', gap: theme.spacing.x2, opacity: disabled ? theme.feedback.disabledOpacity : 1 })}><BinderIcon name="addPhoto" size={30} color={theme.accent.onSurface} /><BinderText variant="label" tone="accent">{t('profileSettings.actions.addPhoto')}</BinderText><BinderText variant="caption" tone="muted" align="center">{t('profileSettings.photos.optimized')}</BinderText></Pressable>;
 }
 
-function PhotoTile({ item, index, total, busy, onLeft, onRight, onPrimary, onRemove, onView }: { item: GalleryMedia; index: number; total: number; busy: boolean; onLeft: () => void; onRight: () => void; onPrimary: () => void; onRemove: () => void; onView: () => void }) {
+function PhotoTile({ item, index, total, busy, onLeft, onRight, onPrimary, onReplace, onRemove, onView }: { item: GalleryMedia; index: number; total: number; busy: boolean; onLeft: () => void; onRight: () => void; onPrimary: () => void; onReplace: () => void; onRemove: () => void; onView: () => void }) {
   const { theme, t } = useBinderTheme();
   const statusTone = item.moderationStatus === 'approved' ? theme.semantic.success : item.moderationStatus === 'pending' ? theme.semantic.warning : theme.semantic.destructive;
   const statusCopy = item.moderationStatus === 'approved' ? t('profileSettings.photos.status.approved') : item.moderationStatus === 'pending' ? t('profileSettings.photos.status.pending') : item.moderationStatus === 'rejected' ? t('profileSettings.photos.status.rejected') : t('profileSettings.photos.status.removed');
@@ -268,7 +288,10 @@ function PhotoTile({ item, index, total, busy, onLeft, onRight, onPrimary, onRem
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}><View style={{ width: theme.layout.statusDot, height: theme.layout.statusDot, borderRadius: theme.radii.pill, backgroundColor: statusTone }} /><BinderText variant="caption" style={{ color: statusTone }}>{statusCopy}</BinderText></View>
         {item.position === 0 ? <BinderText variant="micro" tone="accent">{t('profileSettings.photos.primary')}</BinderText> : item.moderationStatus === 'approved' ? <BinderButton label={t('profileSettings.actions.makePrimary')} variant="ghost" disabled={busy} onPress={onPrimary} /> : null}
         <BinderText variant="caption" tone="muted">{t('profileSettings.photos.dimensions', { size: Math.max(1, Math.round(item.byteSize / 1024)), width: item.width, height: item.height })}</BinderText>
-        {item.moderationReason ? <BinderText variant="caption" tone="destructive">{item.moderationReason}</BinderText> : null}
+        {item.moderationStatus === 'rejected' ? <>
+          <BinderText variant="caption" tone="secondary">{t('profileSettings.photos.rejectionReason', { reason: item.moderationReason ?? t('profileSettings.photos.rejectionReasonUnavailable') })}</BinderText>
+          <BinderButton label={t('profileSettings.actions.replacePhoto')} variant="secondary" disabled={busy} onPress={onReplace} />
+        </> : item.moderationReason ? <BinderText variant="caption" tone="destructive">{item.moderationReason}</BinderText> : null}
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <BinderIconButton name="back" size={19} accessibilityLabel={t('profileSettings.accessibility.moveLeft', { number: index + 1 })} disabled={busy || index === 0} onPress={onLeft} />
           <BinderIconButton name="delete" size={19} accessibilityLabel={t('profileSettings.accessibility.removePhoto', { number: index + 1 })} destructive disabled={busy} onPress={onRemove} />

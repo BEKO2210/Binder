@@ -105,7 +105,7 @@ Ordered by what a user notices first. Each line becomes one run.
 ### Performance
 - [ ] Frame timing for the match celebration and the profile expansion (wave C leaves them open).
 - [x] Image decode sizes: fixed-size thumbnails decode downsampled (resizeMethod="resize").
-- [ ] Cold start after the Skia addition, tracked per build rather than once.
+- [x] Cold start tracked per build (`docs/PHASE7-DEVICE-MATRIX.md`, run 050).
 - [x] Memory while paging a gallery: `scripts/measure-gallery-memory.sh`.
 
 ### Correctness left from the review

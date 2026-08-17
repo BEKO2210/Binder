@@ -38,10 +38,10 @@ export type DecisionResult = {
   matchCreated: boolean;
 };
 
-export async function refreshDiscoveryLocation(): Promise<void> {
+export async function refreshDiscoveryLocation(): Promise<boolean> {
   const permission = await Location.requestForegroundPermissionsAsync();
   if (permission.status !== 'granted') {
-    throw new Error('Location permission is required to discover nearby people.');
+    return false;
   }
 
   const position = await Location.getCurrentPositionAsync({
@@ -54,6 +54,18 @@ export async function refreshDiscoveryLocation(): Promise<void> {
   });
 
   if (error) throw error;
+  return true;
+}
+
+export async function countDiscoveryCandidates(values: DiscoveryPreferenceValues): Promise<number> {
+  const { data, error } = await supabase.rpc('count_discovery_candidates', {
+    p_interested_in: values.interestedIn,
+    p_min_age: values.minAge,
+    p_max_age: values.maxAge,
+    p_distance_km: values.distance,
+  });
+  if (error) throw error;
+  return typeof data === 'number' ? data : 0;
 }
 
 export async function fetchDiscoveryBatch(limit = 20): Promise<DiscoveryProfile[]> {

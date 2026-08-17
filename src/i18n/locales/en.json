@@ -183,12 +183,14 @@
       "safetyReport": "Could not submit the safety report."
     },
     "states": {
-      "pausedTitle": "Discovery paused",
-      "locationMessage": "{error}\n\nBinder uses foreground location only to calculate nearby candidates. Exact coordinates are never sent to another user.",
       "loadErrorTitle": "Discovery did not load",
       "offlineTitle": "You are offline",
       "offlineMessage": "No connection. Check your internet and try again.",
       "saving": "Saving…"
+    },
+    "location": {
+      "title": "Location helps build your deck",
+      "message": "Binder uses your foreground location to find nearby people. Your exact location is never shown to anyone."
     },
     "header": {
       "title": "Discover",
@@ -199,12 +201,16 @@
       "label": "Filters"
     },
     "empty": {
-      "eyebrow": "YOU'RE CAUGHT UP",
-      "title": "Your deck is clear for now.",
-      "message": "Widen your age range or distance to meet more people. New approved profiles will appear here automatically."
+      "filteredEyebrow": "FILTERS ARE NARROWING YOUR DECK",
+      "filteredTitle": "No one fits these filters right now.",
+      "filteredMessage": "People are available with Binder's standard filters. Change yours to see who fits.",
+      "genuineEyebrow": "YOU'RE CAUGHT UP",
+      "genuineTitle": "Your deck is clear for now.",
+      "genuineMessage": "No new approved profiles fit both sides right now. New matches will appear here automatically."
     },
     "actions": {
       "tryAgain": "Try again",
+      "allowLocation": "Allow location",
       "changeFilters": "Change filters",
       "bindStamp": "BIND",
       "passStamp": "PASS",
@@ -418,6 +424,7 @@
       "reorderPhotos": "Could not reorder photos.",
       "makePrimary": "Could not make this photo primary.",
       "removePhoto": "Could not remove photo.",
+      "replacePhoto": "Could not replace photo.",
       "save": "Could not save profile settings."
     },
     "messages": {
@@ -435,7 +442,8 @@
       "saveProfile": "Save profile",
       "addPhoto": "Add photo",
       "makePrimary": "Make primary",
-      "retryUpload": "Retry upload"
+      "retryUpload": "Retry upload",
+      "replacePhoto": "Replace photo"
     },
     "states": {
       "loading": "Loading profile settings…"
@@ -470,6 +478,8 @@
       "uploadFailed": "Photo upload failed",
       "primary": "PHOTO 1 · PRIMARY",
       "dimensions": "{size} KB · {width} by {height}",
+      "rejectionReason": "Reason: {reason}",
+      "rejectionReasonUnavailable": "No reason was provided.",
       "status": {
         "approved": "Approved",
         "pending": "In review",
