@@ -53,6 +53,9 @@ export const layout = {
   pagerDot: 6,
   pagerDotActive: 18,
   contentMaxWidth: 560,
+  // Tablets get the same interface, not a stretched one: the column stops here
+  // and centres, so a 1240 dp screen does not produce metre-wide rows.
+  tabletContentMaxWidth: 720,
   stateContentMaxWidth: 360,
   modalContentMaxWidth: 440,
   dialSize: 260,

@@ -273,12 +273,15 @@ function BinderApp() {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
-      <View style={{ flex: 1 }}>
+      {/* On a tablet the same layout used to stretch a phone-shaped interface
+          across 1240 dp: rows a metre wide, a header hugging the left edge. The
+          content column is capped and centred instead, on every surface. */}
+      <View style={{ flex: 1, width: '100%', maxWidth: theme.layout.tabletContentMaxWidth, alignSelf: 'center' }}>
         {tab === 'discover' ? <DiscoveryScreen onOpenMatch={(target) => { setActiveMatch(target); setMatchesRefreshKey((value) => value + 1); }} /> : null}
         {tab === 'matches' ? <MatchesScreen refreshKey={matchesRefreshKey} onOpenMatch={setActiveMatch} onOpenDiscovery={() => setTab('discover')} /> : null}
         {tab === 'profile' ? <ProfileScreen userId={session.user.id} onEditProfile={() => setProfileRoute('edit')} onOpenSettings={() => setProfileRoute('settings')} onOpenBeta={() => setProfileRoute('beta')} onOpenAbout={() => setProfileRoute('about')} /> : null}
       </View>
-      <View style={{ minHeight: theme.layout.screenHeaderHeight + theme.spacing.x1, flexDirection: 'row', paddingHorizontal: theme.spacing.x3, paddingTop: theme.spacing.x2, paddingBottom: theme.spacing.x2, backgroundColor: theme.colors.surface, borderTopColor: theme.colors.borderSubtle, borderTopWidth: 1 }}>
+      <View style={{ minHeight: theme.layout.screenHeaderHeight + theme.spacing.x1, width: '100%', maxWidth: theme.layout.tabletContentMaxWidth, alignSelf: 'center', flexDirection: 'row', paddingHorizontal: theme.spacing.x3, paddingTop: theme.spacing.x2, paddingBottom: theme.spacing.x2, backgroundColor: theme.colors.surface, borderTopColor: theme.colors.borderSubtle, borderTopWidth: 1 }}>
         <NavItem icon="discover" label="Discover" active={tab === 'discover'} onPress={() => setTab('discover')} />
         <NavItem icon="matches" label="Matches" active={tab === 'matches'} onPress={() => { setTab('matches'); setMatchesRefreshKey((value) => value + 1); }} />
         <NavItem icon="profile" label="Profile" active={tab === 'profile'} onPress={() => { setTab('profile'); setProfileRoute('home'); }} />
