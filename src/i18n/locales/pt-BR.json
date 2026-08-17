@@ -18,13 +18,15 @@
       "title": "Idioma",
       "copy": "O Binder é escrito em inglês. Um idioma aparece aqui assim que o arquivo dele é adicionado.",
       "systemLabel": "Usar o idioma do dispositivo",
-      "systemCopy": "Usar o idioma do dispositivo quando ele estiver disponível no Binder; caso contrário, usar inglês."
+      "systemCopy": "Usar o idioma do dispositivo quando ele estiver disponível no Binder; caso contrário, usar inglês.",
+      "back": "Voltar às configurações"
     },
     "appearance": {
       "title": "Aparência",
-      "copy": "O modo escuro é o padrão pensado para o Binder. A opção Sistema acompanha seu dispositivo e pode deixar o Binder claro.",
+      "copy": "Siga o seu aparelho, ou mantenha o Binder claro ou escuro.",
       "system": "Usar o tema do dispositivo",
-      "dark": "Sempre escuro"
+      "dark": "Sempre escuro",
+      "light": "Sempre claro"
     },
     "motion": {
       "title": "Animações",
@@ -401,7 +403,12 @@
     "completeness": {
       "eyebrow": "FORÇA DO PERFIL",
       "percent": "{percent}% concluído",
-      "done": "{item} · concluído"
+      "done": "{item} · concluído",
+      "items": {
+        "photos": "Adicionar três fotos",
+        "bio": "Escrever uma bio",
+        "interests": "Escolher três interesses"
+      }
     },
     "hub": {
       "profileTitle": "Perfil e fotos",
@@ -783,8 +790,9 @@
     },
     "appearance": {
       "title": "Aparência",
-      "copy": "Siga o tema do seu dispositivo ou mantenha o Binder no modo escuro.",
-      "dark": "Escuro"
+      "copy": "Siga o seu aparelho, ou mantenha o Binder claro ou escuro.",
+      "dark": "Escuro",
+      "light": "Sempre claro"
     },
     "accent": {
       "title": "Cor de destaque",

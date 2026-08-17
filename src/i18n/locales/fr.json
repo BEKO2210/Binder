@@ -18,13 +18,15 @@
       "title": "Langue",
       "copy": "Binder parle la langue de ton appareil quand elle est disponible. Choisis-en une pour la remplacer.",
       "systemLabel": "Suivre mon appareil",
-      "systemCopy": "Suit ton appareil"
+      "systemCopy": "Suit ton appareil",
+      "back": "Retour aux réglages"
     },
     "appearance": {
       "title": "Apparence",
-      "copy": "Le mode sombre est le choix par défaut de Binder. Le mode système suit votre appareil et peut afficher Binder en clair.",
+      "copy": "Suis ton appareil, ou garde Binder clair ou sombre.",
       "system": "Suivre mon appareil",
-      "dark": "Toujours sombre"
+      "dark": "Toujours sombre",
+      "light": "Toujours clair"
     },
     "motion": {
       "title": "Animations",
@@ -401,7 +403,12 @@
     "completeness": {
       "eyebrow": "QUALITÉ DU PROFIL",
       "percent": "{percent}% terminé",
-      "done": "{item} · terminé"
+      "done": "{item} · terminé",
+      "items": {
+        "photos": "Ajouter trois photos",
+        "bio": "Écrire une bio",
+        "interests": "Choisir trois centres d’intérêt"
+      }
     },
     "hub": {
       "profileTitle": "Profil et photos",
@@ -783,8 +790,9 @@
     },
     "appearance": {
       "title": "Apparence",
-      "copy": "Suivez les réglages de votre appareil ou gardez Binder en mode sombre.",
-      "dark": "Sombre"
+      "copy": "Suis ton appareil, ou garde Binder clair ou sombre.",
+      "dark": "Sombre",
+      "light": "Toujours clair"
     },
     "accent": {
       "title": "Couleur d’accent",

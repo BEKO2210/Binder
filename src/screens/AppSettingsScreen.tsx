@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useState } from 'react';
-import { Switch, View } from 'react-native';
+import { BackHandler, Switch, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderInput, BinderScreenHeader, BinderText, MotionPressable as Pressable, ScreenState, SectionHeader } from '../components/ui';
@@ -28,6 +28,18 @@ function isQuietTime(value: string): boolean {
 export default function AppSettingsScreen({ onClose }: { onClose: () => void }) {
   const { theme, settings, hydrated, locale, t, updateSettings, updateNotifications, updateQuietHours, resetSettings } = useBinderTheme();
   const languages = availableLocales();
+  const [languagePickerOpen, setLanguagePickerOpen] = useState(false);
+  // The sub-screen owns the back gesture while it is open; without this the
+  // hardware back closed the whole settings screen from inside the list.
+  useEffect(() => {
+    if (!languagePickerOpen) return;
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => { setLanguagePickerOpen(false); return true; });
+    return () => subscription.remove();
+  }, [languagePickerOpen]);
+  const activeLocale = languages.find((entry) => entry.code === locale);
+  const activeLanguage = settings.language === 'system'
+    ? { label: t('settings.language.systemLabel'), detail: `${t('settings.language.systemCopy')} · ${activeLocale?.endonym ?? ''}`.trim(), flag: '🌐' }
+    : { label: activeLocale?.endonym ?? '', detail: activeLocale?.name ?? '', flag: activeLocale?.flag ?? '🌐' };
   const haptic = useBinderHaptics();
   const [diagnostics, setDiagnostics] = useState(false);
   const [diagnosticsLoading, setDiagnosticsLoading] = useState(true);
@@ -109,27 +121,25 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
 
   if (!hydrated) return <ScreenState kind="loading" message={t('appSettings.states.loading')} />;
 
-  return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
-      <BinderScreenHeader title={t('appSettings.header.title')} leading={{ icon: 'back', accessibilityLabel: t('appSettings.accessibility.backToProfile'), onPress: onClose }} />
-      <KeyboardAwareScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x5, paddingBottom: theme.spacing.x16 }} keyboardShouldPersistTaps="handled">
-      <SectionHeader title={t('appSettings.header.sectionTitle')} copy={t('appSettings.header.sectionCopy')} />
-
-      {/* The language section is not a placeholder: it appears the moment a
-          second locale file is registered, and stays out of the way until then. */}
-      {/* Three languages fit in a chip row; ten do not. A list of equal rows
-          stays legible at any count, shows which one is active without relying
-          on colour alone, and keeps every row a full 48 dp target. */}
-      {languages.length > 1 ? (
-        <SettingsSection title={t('settings.language.title')} copy={t('settings.language.copy')}>
+  // The full list is a screen of its own: the settings screen keeps one row,
+  // and languages can keep arriving without pushing everything else down.
+  if (languagePickerOpen) {
+    return (
+      <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
+        <BinderScreenHeader
+          title={t('settings.language.title')}
+          leading={{ icon: 'back', accessibilityLabel: t('settings.language.back'), onPress: () => setLanguagePickerOpen(false) }}
+        />
+        <KeyboardAwareScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: theme.spacing.screen, paddingBottom: theme.spacing.x16 }}>
+          <BinderText variant="body" tone="secondary" style={{ marginBottom: theme.spacing.x5 }}>{t('settings.language.copy')}</BinderText>
           <View style={{ borderRadius: theme.radii.card, borderWidth: 1, borderColor: theme.colors.borderSubtle, overflow: 'hidden' }}>
             <LanguageRow
               label={t('settings.language.systemLabel')}
-              detail={`${t('settings.language.systemCopy')} · ${languages.find((entry) => entry.code === locale)?.endonym ?? ''}`.trim()}
+              detail={`${t('settings.language.systemCopy')} · ${activeLocale?.endonym ?? ''}`.trim()}
               flag="🌐"
               selected={settings.language === 'system'}
               first
-              onPress={() => void updateSettings({ language: 'system' })}
+              onPress={() => { void updateSettings({ language: 'system' }); setLanguagePickerOpen(false); }}
             />
             {languages.map((language) => (
               <LanguageRow
@@ -138,9 +148,39 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
                 detail={language.name}
                 flag={language.flag}
                 selected={settings.language === language.code}
-                onPress={() => void updateSettings({ language: language.code })}
+                onPress={() => { void updateSettings({ language: language.code }); setLanguagePickerOpen(false); }}
               />
             ))}
+          </View>
+        </KeyboardAwareScrollView>
+      </View>
+    );
+  }
+
+
+  return (
+    <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
+      <BinderScreenHeader title={t('appSettings.header.title')} leading={{ icon: 'back', accessibilityLabel: t('appSettings.accessibility.backToProfile'), onPress: onClose }} />
+      <KeyboardAwareScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x5, paddingBottom: theme.spacing.x16 }} keyboardShouldPersistTaps="handled">
+      <SectionHeader title={t('appSettings.header.sectionTitle')} copy={t('appSettings.header.sectionCopy')} />
+
+      {/* The language section is not a placeholder: it appears the moment a
+          second locale file is registered, and stays out of the way until then. */}
+      {/* One row, not a list: languages keep arriving, and a settings screen
+          that grows by one line per language stops being a settings screen.
+          The full list lives one tap away. */}
+      {languages.length > 1 ? (
+        <SettingsSection title={t('settings.language.title')} copy={t('settings.language.copy')}>
+          <View style={{ borderRadius: theme.radii.card, borderWidth: 1, borderColor: theme.colors.borderSubtle, overflow: 'hidden' }}>
+            <LanguageRow
+              label={activeLanguage.label}
+              detail={activeLanguage.detail}
+              flag={activeLanguage.flag}
+              selected={false}
+              first
+              chevron
+              onPress={() => setLanguagePickerOpen(true)}
+            />
           </View>
         </SettingsSection>
       ) : null}
@@ -148,6 +188,7 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
       <SettingsSection title={t('appSettings.appearance.title')} copy={t('appSettings.appearance.copy')}>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>
           <BinderChip label={t('appSettings.common.system')} selected={settings.appearance === 'system'} onPress={() => void updateSettings({ appearance: 'system' })} />
+          <BinderChip label={t('appSettings.appearance.light')} selected={settings.appearance === 'light'} onPress={() => void updateSettings({ appearance: 'light' })} />
           <BinderChip label={t('appSettings.appearance.dark')} selected={settings.appearance === 'dark'} onPress={() => void updateSettings({ appearance: 'dark' })} />
         </View>
       </SettingsSection>
@@ -214,19 +255,20 @@ const NotificationSwitchRow = memo(function NotificationSwitchRow({ field, updat
 });
 
 
-const LanguageRow = memo(function LanguageRow({ label, detail, flag, selected, first = false, onPress }: {
+const LanguageRow = memo(function LanguageRow({ label, detail, flag, selected, first = false, chevron = false, onPress }: {
   label: string;
   detail: string;
   flag: string;
   selected: boolean;
   first?: boolean;
+  chevron?: boolean;
   onPress: () => void;
 }) {
   const { theme } = useBinderTheme();
   return (
     <Pressable
-      accessibilityRole="radio"
-      accessibilityState={{ selected }}
+      accessibilityRole={chevron ? 'button' : 'radio'}
+      accessibilityState={chevron ? undefined : { selected }}
       accessibilityLabel={`${label} — ${detail}`}
       pressedSurface={false}
       onPress={onPress}
@@ -247,7 +289,8 @@ const LanguageRow = memo(function LanguageRow({ label, detail, flag, selected, f
         <BinderText variant="label" tone={selected ? 'accent' : 'primary'} numberOfLines={1}>{label}</BinderText>
         <BinderText variant="caption" tone="muted" numberOfLines={1} style={{ marginTop: theme.spacing.x1 }}>{detail}</BinderText>
       </View>
-      {selected ? <BinderIcon name="check" size={20} color={theme.accent.onSurface} /> : null}
+      {chevron ? <BinderIcon name="chevronRight" size={20} color={theme.colors.textMuted} />
+        : selected ? <BinderIcon name="check" size={20} color={theme.accent.onSurface} /> : null}
     </Pressable>
   );
 });

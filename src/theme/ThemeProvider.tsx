@@ -97,7 +97,7 @@ function sanitizeSettings(candidate: unknown): AppSettings {
   if (!candidate || typeof candidate !== 'object') return defaultSettings;
   const raw = candidate as Partial<AppSettings>;
   const accentTheme = raw.accentTheme && raw.accentTheme in accentThemes ? raw.accentTheme : defaultSettings.accentTheme;
-  const appearance = raw.appearance === 'dark' || raw.appearance === 'system' ? raw.appearance : defaultSettings.appearance;
+  const appearance = raw.appearance === 'dark' || raw.appearance === 'light' || raw.appearance === 'system' ? raw.appearance : defaultSettings.appearance;
   const motionPreference = raw.motion === 'reduce' || raw.motion === 'full' || raw.motion === 'system' ? raw.motion : defaultSettings.motion;
   // A language that is no longer bundled must not strand the interface: an
   // unknown code falls back to following the device.
@@ -179,7 +179,11 @@ export function BinderThemeProvider({ children }: PropsWithChildren) {
   }, [persist]);
 
   const reduceMotion = settings.motion === 'reduce' || (settings.motion === 'system' && systemReduceMotion);
-  const resolvedMode = settings.appearance === 'dark' ? 'dark' : systemScheme === 'light' ? 'light' : 'dark';
+  // Dark is the designed default, so an unknown system value resolves to dark;
+  // an explicit choice always wins over the device.
+  const resolvedMode = settings.appearance === 'dark' ? 'dark'
+    : settings.appearance === 'light' ? 'light'
+    : systemScheme === 'light' ? 'light' : 'dark';
 
   const theme = useMemo<BinderTheme>(() => ({
     mode: resolvedMode,

@@ -18,13 +18,15 @@
       "title": "Language",
       "copy": "Binder speaks the language of your device when it has it. Pick one to override that.",
       "systemLabel": "Match my device",
-      "systemCopy": "Follows your device"
+      "systemCopy": "Follows your device",
+      "back": "Back to settings"
     },
     "appearance": {
       "title": "Appearance",
-      "copy": "Dark is the designed default. System follows your device and can turn Binder light.",
+      "copy": "Follow your device, or pin Binder to light or dark.",
       "system": "Match my device",
-      "dark": "Always dark"
+      "dark": "Always dark",
+      "light": "Always light"
     },
     "motion": {
       "title": "Motion",
@@ -401,7 +403,12 @@
     "completeness": {
       "eyebrow": "PROFILE STRENGTH",
       "percent": "{percent}% complete",
-      "done": "{item} · done"
+      "done": "{item} · done",
+      "items": {
+        "photos": "Add 3 photos",
+        "bio": "Write a bio",
+        "interests": "Choose 3 interests"
+      }
     },
     "hub": {
       "profileTitle": "Profile & photos",
@@ -783,8 +790,9 @@
     },
     "appearance": {
       "title": "Appearance",
-      "copy": "Follow your device or keep Binder dark.",
-      "dark": "Dark"
+      "copy": "Follow your device, or pin Binder to light or dark.",
+      "dark": "Dark",
+      "light": "Always light"
     },
     "accent": {
       "title": "Accent",

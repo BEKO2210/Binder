@@ -18,13 +18,15 @@
       "title": "Sprache",
       "copy": "Binder spricht die Sprache deines Geräts, wenn es sie gibt. Wähle eine, um das zu übersteuern.",
       "systemLabel": "Geräteeinstellung",
-      "systemCopy": "Folgt deinem Gerät"
+      "systemCopy": "Folgt deinem Gerät",
+      "back": "Zurück zu den Einstellungen"
     },
     "appearance": {
       "title": "Darstellung",
-      "copy": "Dunkel ist die vorgesehene Standardeinstellung. Über das System kann Binder auch hell dargestellt werden.",
+      "copy": "Folge deinem Gerät, oder halte Binder hell oder dunkel.",
       "system": "Geräteeinstellung",
-      "dark": "Immer dunkel"
+      "dark": "Immer dunkel",
+      "light": "Immer hell"
     },
     "motion": {
       "title": "Bewegung",
@@ -401,7 +403,12 @@
     "completeness": {
       "eyebrow": "PROFILSTÄRKE",
       "percent": "Zu {percent}% vollständig",
-      "done": "{item} · erledigt"
+      "done": "{item} · erledigt",
+      "items": {
+        "photos": "Drei Fotos hinzufügen",
+        "bio": "Eine Bio schreiben",
+        "interests": "Drei Interessen wählen"
+      }
     },
     "hub": {
       "profileTitle": "Profil und Fotos",
@@ -783,8 +790,9 @@
     },
     "appearance": {
       "title": "Darstellung",
-      "copy": "Folge deinem Gerät oder behalte Binder dunkel.",
-      "dark": "Dunkel"
+      "copy": "Folge deinem Gerät, oder halte Binder hell oder dunkel.",
+      "dark": "Dunkel",
+      "light": "Immer hell"
     },
     "accent": {
       "title": "Akzentfarbe",

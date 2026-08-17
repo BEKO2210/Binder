@@ -7,7 +7,7 @@ export type { AccentThemeId } from './colorTokens';
 export { feedback } from './feedbackTokens';
 
 import type { AccentThemeId } from './colorTokens';
-export type AppearanceMode = 'system' | 'dark';
+export type AppearanceMode = 'system' | 'dark' | 'light';
 export type MotionPreference = 'system' | 'reduce' | 'full';
 
 /* Legacy source-contract markers retained for tests/accentContrast.test.ts.
