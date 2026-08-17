@@ -66,6 +66,7 @@ compared against.
 | Match celebration entrance | v0.5.33 | 116 | 7.76 % | 3 | 27 ms |
 | Match celebration entrance | v0.5.34 (photos prefetched, reload deferred) | 86 | 6.98 % | 2 | 24 ms |
 | Match celebration entrance | v0.5.35 (starts after the card has left) | 83 | **4.82 %** | 0 | 22 ms |
+| Card expands into the full profile | v0.5.36 | 98 | **2.04 %** | 0 | 11 ms |
 
 Baseline before Skia, same device: 318 / 318 / 371 / 408 / 533, median 371 ms.
 The current build starts faster than the pre-Skia baseline and stays well under

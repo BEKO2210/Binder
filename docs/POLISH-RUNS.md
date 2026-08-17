@@ -76,6 +76,7 @@ leaves the running system intact.
 | 057 | Celebration entrance brought under budget: 7.76 % → 4.82 % janky, 3 → 0 missed vsync | Three measured builds in the device matrix | done |
 | 058 | Cold-start push route: the listener is registered before the launch snapshot is read, routes wait for session, legal gate and onboarding, and a chat route is checked against the server's match list before it navigates | Verifier now pins the listener order; on device: delivery receipts `delivered`, notifications present | done |
 | 059 | Quiet hours proven server-side | Four decisions read straight from the production rule: inside quiet hours `defer`, safety alert `allow`, after the local end `allow`, 21:30 UTC in a Europe/Berlin recipient `defer` | done |
+| 060 | Frame timing for the card-to-profile expansion | 98 frames, 2.04 % janky, 0 missed vsync, p95 11 ms | done |
 | 017 | Language section in App settings — appears only when a translation exists, endonym plus flag, same chip rhythm as Appearance | Screenshot: Sprache / Wie mein Gerät / 🇬🇧 English / 🇩🇪 Deutsch | done |
 
 ## Backlog
@@ -112,7 +113,7 @@ Ordered by what a user notices first. Each line becomes one run.
 
 ### Performance
 - [x] Frame timing for the match celebration (4.82 %, run 057).
-- [ ] Frame timing for the profile expansion.
+- [x] Frame timing for the profile expansion: 2.04 % janky (run 060).
 - [x] Image decode sizes: fixed-size thumbnails decode downsampled (resizeMethod="resize").
 - [x] Cold start tracked per build (`docs/PHASE7-DEVICE-MATRIX.md`, run 050).
 - [x] Memory while paging a gallery: `scripts/measure-gallery-memory.sh`.
