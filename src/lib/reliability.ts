@@ -33,7 +33,10 @@ export function classifyError(value: unknown): ReliabilityError {
   else if (/timeout|timed out|57014/.test(text)) kind = 'timeout';
   else if (/network request failed|failed to fetch|network|offline|connection|econn|enotfound/.test(text)) kind = 'offline';
   else if (/permission|not authorized|unauthorized|forbidden|authentication required|\b401\b|\b403\b|42501/.test(text)) kind = 'permission-denied';
-  else if (/conflict|duplicate|already exists|unique|\b409\b|23505|23503/.test(text)) kind = 'conflict';
+  // 23505 (unique violation) really is a concurrent edit. 23503 (foreign key)
+  // means the thing being referenced is gone, which refreshing cannot fix.
+  else if (/23503/.test(text)) kind = 'server-refusal';
+  else if (/conflict|duplicate|already exists|unique|\b409\b|23505/.test(text)) kind = 'conflict';
   else if (/server|refused|rejected|invalid|bad request|\b400\b|\b422\b|pgrst/.test(text)) kind = 'server-refusal';
   return { kind, ...DEFINITIONS[kind] };
 }

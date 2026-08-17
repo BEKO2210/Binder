@@ -1,9 +1,12 @@
+import Constants from 'expo-constants';
 import * as Crypto from 'expo-crypto';
 import { Platform } from 'react-native';
 
 import { supabase } from './supabase';
 
-export const BINDER_APP_VERSION = '0.5.0';
+// Read from the build instead of a constant someone has to remember to raise:
+// diagnostics that report a stale version cannot be traced back to a build.
+export const BINDER_APP_VERSION = String(Constants.expoConfig?.version ?? '0.0.0').slice(0, 32);
 
 export type BetaEventName =
   | 'app_session'

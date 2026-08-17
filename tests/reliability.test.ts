@@ -48,3 +48,9 @@ test('abortable rejects immediately when its signal aborts', async () => {
   controller.abort();
   await assert.rejects(pending, { name: 'AbortError' });
 });
+
+test('a foreign-key violation is refused, not reported as a concurrent edit', () => {
+  assert.equal(classifyError({ code: '23503', message: 'insert or update violates foreign key constraint' }).kind, 'server-refusal');
+  assert.equal(classifyError({ code: '23505', message: 'duplicate key value violates unique constraint' }).kind, 'conflict');
+  assert.equal(classifyError({ code: '23503' }).retryable, false);
+});

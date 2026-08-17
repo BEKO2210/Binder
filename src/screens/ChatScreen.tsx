@@ -147,24 +147,26 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
           retryAttempt += 1;
           retryTimer = setTimeout(() => {
             retryTimer = null;
-            // Backfill whatever arrived during the outage before resubscribing.
-            void load(false);
+            // Subscribe first, backfill second. The other order leaves a gap:
+            // a message inserted after the backfill query and before the new
+            // channel is live belongs to neither and stays missing.
             connect();
+            void load(false);
           },delay);
         },
       );
     }
 
-    void load(true);
     connect();
+    void load(true);
     const appState = AppState.addEventListener('change',(state) => {
       if (!active) return;
       appIsActive = state === 'active';
       if (state === 'active') {
         retryAttempt = 0;
         if (retryTimer) clearTimeout(retryTimer);
-        void load(false);
         connect();
+        void load(false);
       } else {
         if (retryTimer) {
           clearTimeout(retryTimer);

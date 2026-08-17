@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { useEffect, useState } from 'react';
-import { BackHandler, Dimensions, Image, ScrollView, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { BackHandler, Image, ScrollView, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { Extrapolation, FadeIn, FadeOut, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
@@ -23,11 +23,6 @@ import PartnerProfileScreen from './PartnerProfileScreen';
 import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const SWIPE_THRESHOLD = SCREEN_WIDTH * discoveryDeckPhysics.distanceRatio;
-const SWIPE_OUT = SCREEN_WIDTH * discoveryDeckPhysics.dismissDistanceRatio;
-const HINGE_OFFSET = SCREEN_WIDTH * discoveryDeckPhysics.hingeOffsetRatio;
-const BACK_CARD_OFFSET = SCREEN_WIDTH * discoveryDeckPhysics.backCardOffsetRatio;
 
 const REPORT_REASONS: { value: DiscoveryReportReason; label: string; detail: string }[] = [
   { value: 'underage', label: 'May be under 18', detail: 'Highest-priority safety review.' },
@@ -41,6 +36,13 @@ const REPORT_REASONS: { value: DiscoveryReportReason; label: string; detail: str
 
 export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match: MatchSummary) => void }) {
   const { theme, reduceMotion } = useBinderTheme();
+  // Read from the live window: rotation and split-screen change the width, and
+  // a threshold measured at import time would decide swipes by the old one.
+  const { width: SCREEN_WIDTH } = useWindowDimensions();
+  const SWIPE_THRESHOLD = SCREEN_WIDTH * discoveryDeckPhysics.distanceRatio;
+  const SWIPE_OUT = SCREEN_WIDTH * discoveryDeckPhysics.dismissDistanceRatio;
+  const HINGE_OFFSET = SCREEN_WIDTH * discoveryDeckPhysics.hingeOffsetRatio;
+  const BACK_CARD_OFFSET = SCREEN_WIDTH * discoveryDeckPhysics.backCardOffsetRatio;
   const haptic = useBinderHaptics();
   const [profiles, setProfiles] = useState<DiscoveryProfile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,15 +66,26 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
   const nextProfile = profiles[1];
   const spring = resolveSpring(reduceMotion, 'professional');
 
+  // Only the newest load may write the deck. An older response finishing last
+  // used to overwrite a freshly filtered deck with the previous one.
+  const loadToken = useRef(0);
+  const mounted = useRef(true);
+  useEffect(() => () => { mounted.current = false; }, []);
+
   async function loadDiscovery(refreshLocation = true) {
+    const token = ++loadToken.current;
+    const current = () => mounted.current && loadToken.current === token;
     setLoading(true);
     setError('');
     try {
       if (refreshLocation) await refreshDiscoveryLocation();
-      setProfiles(await fetchDiscoveryBatch(20));
+      const batch = await fetchDiscoveryBatch(20);
+      if (!current()) return;
+      setProfiles(batch);
     } catch (cause) {
+      if (!current()) return;
       setError(cause instanceof Error ? cause.message : 'Could not load discovery.');
-    } finally { setLoading(false); }
+    } finally { if (current()) setLoading(false); }
   }
 
   useEffect(() => { void loadDiscovery(true); }, []);
@@ -187,7 +200,7 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
   }
 
   function finishDismiss(current: DiscoveryProfile, matched: boolean) {
-    setProfiles((value) => advanceDeck(value));
+    setProfiles((value) => advanceDeck(value, current.id));
     if (matched) setMatch(current);
     // Reset only after React committed the new top card — resetting in the
     // same frame flashed the dismissed card back to center.
@@ -297,7 +310,7 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
       <BinderScreenHeader title="Discover" titleVisual={<View><BinderBrand compact /><BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>People who fit both sides.</BinderText></View>} trailing={<View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
           {decisionPending ? <BinderText variant="caption" tone="accent">Saving…</BinderText> : null}
-          <Animated.View key={filterValues ? `${filterValues.minAge}-${filterValues.maxAge}-${filterValues.distance}` : 'filters'} entering={reduceMotion ? undefined : FadeIn.duration(theme.motion.standard)} exiting={reduceMotion ? undefined : FadeOut.duration(theme.motion.fast)}><BinderChip label={filterValues ? `${filterValues.minAge}–${filterValues.maxAge} · ${filterValues.distance} km` : 'Filters'} selected={filtersOpen} accessibilityLabel="Open discovery filters" onPress={() => setFiltersOpen(true)} /></Animated.View>
+          <Animated.View key={filterValues ? `${filterValues.minAge}-${filterValues.maxAge}-${filterValues.distance}` : 'filters'} entering={reduceMotion ? undefined : FadeIn.duration(theme.motion.standard)} exiting={reduceMotion ? undefined : FadeOut.duration(theme.motion.fast)}><BinderChip label={filterValues ? `${filterValues.minAge}–${filterValues.maxAge} · ${filterValues.distance} km` : 'Filters'} selected={filtersOpen} disabled={decisionPending} accessibilityLabel="Open discovery filters" onPress={() => setFiltersOpen(true)} /></Animated.View>
         </View>} />
 
       <View style={{ flex: 1, marginHorizontal: theme.spacing.x4, marginTop: theme.spacing.x1, marginBottom: theme.spacing.x3, justifyContent: 'center' }}>
@@ -393,10 +406,12 @@ function DiscoveryAction({ kind, disabled, onPress }: { kind: 'pass' | 'bind'; d
 
 function ProfileCard({ profile, back = false, onOpenProfile }: { profile: DiscoveryProfile; back?: boolean; onOpenProfile?: () => void }) {
   const { theme } = useBinderTheme();
+  const { width } = useWindowDimensions();
+  const backCardOffset = width * discoveryDeckPhysics.backCardOffsetRatio;
   const photos = profile.photoUrls.length > 0 ? profile.photoUrls : [profile.photoUrl];
 
   return (
-    <View style={{ position: 'absolute', inset: 0, borderRadius: theme.radii.hero, overflow: 'hidden', backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.borderSubtle, transform: back ? [{ scale: discoveryDeckPhysics.backCardScale }, { translateY: BACK_CARD_OFFSET }] : undefined, opacity: back ? discoveryDeckPhysics.backCardOpacity : 1 }}>
+    <View style={{ position: 'absolute', inset: 0, borderRadius: theme.radii.hero, overflow: 'hidden', backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.borderSubtle, transform: back ? [{ scale: discoveryDeckPhysics.backCardScale }, { translateY: backCardOffset }] : undefined, opacity: back ? discoveryDeckPhysics.backCardOpacity : 1 }}>
       <PhotoPager photos={photos} name={`${profile.name}, ${profile.age}, ${profile.distanceKm} kilometers away`} interactive={!back} onOpen={onOpenProfile ? () => onOpenProfile() : undefined} />
       <LinearGradient pointerEvents="none" colors={[theme.colors.transparent, theme.colors.scrim, theme.colors.overlay]} locations={[0, 0.52, 1]} style={{ position: 'absolute', inset: 0 }} />
 

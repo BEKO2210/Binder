@@ -109,12 +109,25 @@ export async function setPrimaryProfileMedia(mediaId: string): Promise<void> {
 }
 
 export async function removeProfileMedia(mediaId: string): Promise<void> {
-  const { data, error } = await phase6Rpc<RemovedMediaRow[]>('remove_my_profile_media', { p_media_id: mediaId });
-  if (error) throw error;
-  const path = data?.[0]?.storage_path;
-  if (!path) throw new Error('Binder removed the gallery entry but did not return its storage path.');
+  // The storage object goes first and the row second, because that order is
+  // the only one a retry can finish: removing an object that is already gone
+  // succeeds, while the row still carries the path the retry needs. The other
+  // way round, a failed cleanup left an orphan in the bucket that nothing
+  // could ever address again.
+  const { data: rows, error: lookupError } = await supabase
+    .from('profile_media')
+    .select('storage_path')
+    .eq('id', mediaId)
+    .limit(1);
+  if (lookupError) throw lookupError;
+  const path = rows?.[0]?.storage_path;
+  if (!path) throw new Error('That photo is no longer in your gallery.');
+
   const { error: cleanupError } = await supabase.storage.from('profile-media').remove([path]);
-  if (cleanupError) throw new Error('Photo was removed from your profile, but storage cleanup did not finish. Retry later.');
+  if (cleanupError) throw new Error('Binder could not remove the photo file. Try again.');
+
+  const { error } = await phase6Rpc<RemovedMediaRow[]>('remove_my_profile_media', { p_media_id: mediaId });
+  if (error) throw error;
 }
 
 export async function signedProfileImageUrl(path: string): Promise<string> {

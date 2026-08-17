@@ -39,14 +39,26 @@ export function decideSwipe(
   'worklet';
   const threshold = viewportWidth * discoveryDeckPhysics.distanceRatio;
   const projected = projectedTranslation(distanceX, velocityX);
-  if (Math.abs(velocityX) >= discoveryDeckPhysics.velocityThreshold || Math.abs(projected) >= threshold) {
+  // A flick decides by the direction of the flick. Dragging far one way and
+  // then flicking hard the other way used to commit the drag's direction,
+  // because the projection had not caught up with the reversal yet.
+  if (Math.abs(velocityX) >= discoveryDeckPhysics.velocityThreshold) {
+    return velocityX > 0 ? 'right' : 'left';
+  }
+  if (Math.abs(projected) >= threshold) {
     return projected > 0 ? 'right' : 'left';
   }
   return null;
 }
 
-export function advanceDeck<T>(deck: readonly T[]): T[] {
-  return deck.slice(1);
+// The deck advances past the card that was decided, not past whatever happens
+// to sit on top: a decision confirmed while the deck reloaded used to drop the
+// wrong card and could hand the decided one back to the user.
+export function advanceDeck<T extends { id: string }>(deck: readonly T[], decidedId?: string): T[] {
+  if (decidedId === undefined) return deck.slice(1);
+  const index = deck.findIndex((item) => item.id === decidedId);
+  if (index < 0) return [...deck];
+  return [...deck.slice(0, index), ...deck.slice(index + 1)];
 }
 
 export function isUndoWindowOpen(

@@ -135,25 +135,33 @@ export function BinderThemeProvider({ children }: PropsWithChildren) {
     };
   }, []);
 
-  const persist = useCallback(async (next: AppSettings) => {
-    setSettings(next);
-    await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(next));
+  // Every write derives from the state at the moment it runs, not from the
+  // state captured when the callback was created: flipping two switches in
+  // quick succession used to let the second write undo the first.
+  const persist = useCallback(async (reduce: (current: AppSettings) => AppSettings) => {
+    let next: AppSettings | null = null;
+    setSettings((current) => {
+      next = sanitizeSettings(reduce(current));
+      return next;
+    });
+    // React has resolved the updater synchronously by the time it returns.
+    if (next) await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(next));
   }, []);
 
   const updateSettings = useCallback(async (patch: Partial<AppSettings>) => {
-    await persist(sanitizeSettings({ ...settings, ...patch }));
-  }, [persist, settings]);
+    await persist((current) => ({ ...current, ...patch }));
+  }, [persist]);
 
   const updateNotifications = useCallback(async (patch: Partial<NotificationPreferences>) => {
-    await persist({ ...settings, notifications: { ...settings.notifications, ...patch } });
-  }, [persist, settings]);
+    await persist((current) => ({ ...current, notifications: { ...current.notifications, ...patch } }));
+  }, [persist]);
 
   const updateQuietHours = useCallback(async (patch: Partial<QuietHours>) => {
-    await persist({ ...settings, quietHours: { ...settings.quietHours, ...patch } });
-  }, [persist, settings]);
+    await persist((current) => ({ ...current, quietHours: { ...current.quietHours, ...patch } }));
+  }, [persist]);
 
   const resetSettings = useCallback(async () => {
-    await persist(defaultSettings);
+    await persist(() => defaultSettings);
   }, [persist]);
 
   const reduceMotion = settings.motion === 'reduce' || (settings.motion === 'system' && systemReduceMotion);

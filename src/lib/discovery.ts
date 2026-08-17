@@ -48,14 +48,17 @@ export async function fetchDiscoveryBatch(limit = 20): Promise<DiscoveryProfile[
 
     const candidates = data ?? [];
     const candidateIds = candidates.map((candidate) => candidate.target_user_id);
-    const { data: galleryRows } = candidateIds.length > 0
+    const { data: galleryRows, error: galleryError } = candidateIds.length > 0
       ? await supabase
         .from('profile_media')
         .select('user_id,storage_path,position')
         .in('user_id', candidateIds)
         .eq('moderation_status', 'approved')
         .order('position', { ascending: true })
-      : { data: [] };
+      : { data: [], error: null };
+    // A failed gallery query is an error, not a candidate with one photo:
+    // swallowing it made a broken read look like a thin profile.
+    if (galleryError) throw galleryError;
 
     const galleryPaths = new Map<string, string[]>();
     for (const row of galleryRows ?? []) {

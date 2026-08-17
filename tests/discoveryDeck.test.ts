@@ -30,9 +30,30 @@ test('drag is linear until the edge then applies bounded resistance', () => {
 });
 
 test('advancing a deck is immutable and reveals the next profile', () => {
-  const deck = ['first', 'second', 'third'] as const;
-  assert.deepEqual(advanceDeck(deck), ['second', 'third']);
-  assert.deepEqual(deck, ['first', 'second', 'third']);
+  const deck = [{ id: 'first' }, { id: 'second' }, { id: 'third' }] as const;
+  assert.deepEqual(advanceDeck(deck), [{ id: 'second' }, { id: 'third' }]);
+  assert.deepEqual(deck, [{ id: 'first' }, { id: 'second' }, { id: 'third' }]);
+});
+
+test('the deck drops the card that was decided, wherever it sits now', () => {
+  const reloaded = [{ id: 'fresh' }, { id: 'decided' }, { id: 'later' }];
+  assert.deepEqual(advanceDeck(reloaded, 'decided'), [{ id: 'fresh' }, { id: 'later' }]);
+  // The decided card is gone from the reloaded deck: nothing may be dropped.
+  assert.deepEqual(advanceDeck([{ id: 'fresh' }], 'decided'), [{ id: 'fresh' }]);
+  assert.deepEqual(advanceDeck([{ id: 'decided' }, { id: 'next' }], 'decided'), [{ id: 'next' }]);
+});
+
+test('a flick commits the direction of the flick, not the drag it reverses', () => {
+  const width = 400;
+  const fast = discoveryDeckPhysics.velocityThreshold + 100;
+  // Dragged far right, then flicked hard left: the projection is still
+  // positive, the user's intent is not.
+  assert.equal(decideSwipe(180, -fast, width), 'left');
+  assert.equal(decideSwipe(-180, fast, width), 'right');
+  // Slow drags still decide by distance.
+  assert.equal(decideSwipe(width, 0, width), 'right');
+  assert.equal(decideSwipe(-width, 0, width), 'left');
+  assert.equal(decideSwipe(4, 0, width), null);
 });
 
 test('undo window includes its boundaries and rejects invalid timestamps', () => {
