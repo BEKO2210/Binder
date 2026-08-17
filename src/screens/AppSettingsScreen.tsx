@@ -3,6 +3,7 @@ import { Alert, Switch, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BinderButton, BinderCard, BinderChip, BinderInput, BinderScreenHeader, BinderText, ScreenState, SectionHeader } from '../components/ui';
+import { availableLocales } from '../i18n';
 import { getBetaSettings, setBetaDiagnostics } from '../lib/beta';
 import { disablePushNotifications, enablePushNotifications } from '../lib/notifications';
 import { useBinderHaptics } from '../theme/haptics';
@@ -24,7 +25,8 @@ function isQuietTime(value: string): boolean {
 }
 
 export default function AppSettingsScreen({ onClose }: { onClose: () => void }) {
-  const { theme, settings, hydrated, updateSettings, updateNotifications, updateQuietHours, resetSettings } = useBinderTheme();
+  const { theme, settings, hydrated, t, updateSettings, updateNotifications, updateQuietHours, resetSettings } = useBinderTheme();
+  const languages = availableLocales();
   const haptic = useBinderHaptics();
   const [diagnostics, setDiagnostics] = useState(false);
   const [diagnosticsLoading, setDiagnosticsLoading] = useState(true);
@@ -114,6 +116,30 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
       <BinderScreenHeader title="App settings" leading={{ icon: 'back', accessibilityLabel: 'Back to profile', onPress: onClose }} />
       <KeyboardAwareScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x5, paddingBottom: theme.spacing.x16 }} keyboardShouldPersistTaps="handled">
       <SectionHeader title="Make Binder feel right." copy="Visual preferences never change safety colors. Push delivery rules are enforced by Binder's server." />
+
+      {/* The language section is not a placeholder: it appears the moment a
+          second locale file is registered, and stays out of the way until then. */}
+      {languages.length > 1 ? (
+        <SettingsSection title={t('settings.language.title')} copy={t('settings.language.copy')}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>
+            <BinderChip
+              label={t('settings.language.systemLabel')}
+              selected={settings.language === 'system'}
+              accessibilityLabel={`${t('settings.language.systemLabel')} — ${t('settings.language.systemCopy')}`}
+              onPress={() => void updateSettings({ language: 'system' })}
+            />
+            {languages.map((language) => (
+              <BinderChip
+                key={language.code}
+                label={language.flag ? `${language.flag}  ${language.endonym}` : language.endonym}
+                selected={settings.language === language.code}
+                accessibilityLabel={language.name}
+                onPress={() => void updateSettings({ language: language.code })}
+              />
+            ))}
+          </View>
+        </SettingsSection>
+      ) : null}
 
       <SettingsSection title="Appearance" copy="Follow your device or keep Binder dark.">
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>

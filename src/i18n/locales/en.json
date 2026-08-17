@@ -1,0 +1,67 @@
+{
+  "$meta": {
+    "name": "English",
+    "endonym": "English",
+    "flag": "🇬🇧",
+    "translatedBy": "Binder",
+    "sourceOfTruth": true
+  },
+  "settings": {
+    "title": "App settings",
+    "eyebrow": "PREFERENCES",
+    "language": {
+      "title": "Language",
+      "copy": "Binder is written in English. A language appears here as soon as its file is added.",
+      "systemLabel": "Match my device",
+      "systemCopy": "Use the device language when Binder has it, English otherwise."
+    },
+    "appearance": {
+      "title": "Appearance",
+      "copy": "Dark is the designed default. System follows your device and can turn Binder light.",
+      "system": "Match my device",
+      "dark": "Always dark"
+    },
+    "motion": {
+      "title": "Motion",
+      "copy": "Reduced motion keeps every state change, it just stops animating them.",
+      "system": "Match my device",
+      "full": "Full motion",
+      "reduce": "Reduced motion"
+    },
+    "haptics": {
+      "title": "Haptics",
+      "copy": "Short vibrations mark thresholds and confirmations.",
+      "label": "Vibrate on interactions"
+    },
+    "quietHours": {
+      "title": "Quiet hours",
+      "copy": "Match, message, moderation and product pushes wait until the local end time. Urgent safety alerts remain immediate.",
+      "label": "Use quiet hours",
+      "start": "Start",
+      "end": "End",
+      "invalid": "Use HH:MM"
+    },
+    "diagnostics": {
+      "title": "Diagnostics",
+      "copy": "Optional technical events only. No bio, messages, raw stack traces or precise location.",
+      "label": "Share optional diagnostics",
+      "checking": "Checking diagnostics…"
+    },
+    "reset": {
+      "action": "Reset app settings",
+      "confirmTitle": "Reset app settings?",
+      "confirmCopy": "Appearance, motion, haptics, accent, notification categories and quiet hours return to their defaults. Your profile and conversations are untouched.",
+      "cancel": "Keep my settings",
+      "confirm": "Reset",
+      "done": "App settings are back to their defaults.",
+      "failed": "Could not reset the settings."
+    }
+  },
+  "common": {
+    "retry": "Try again",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "loading": "Loading…"
+  }
+}

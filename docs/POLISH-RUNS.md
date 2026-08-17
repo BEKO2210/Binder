@@ -38,6 +38,8 @@ leaves the running system intact.
 | 013 | Quiet hours persist a complete time, not every keystroke | typecheck + tests green | done |
 | 014 | Reset app settings asks first and reports the outcome | typecheck + tests green | done |
 | 015 | A loading button keeps its label and its width | typecheck + tests green | done |
+| 016 | Localization foundation: one English file, fallback to English, `npm run i18n:sync`, locale contract gate, 5 tests | German probe file registered itself and rendered on the S23 | done |
+| 017 | Language section in App settings — appears only when a translation exists, endonym plus flag, same chip rhythm as Appearance | Screenshot: Sprache / Wie mein Gerät / 🇬🇧 English / 🇩🇪 Deutsch | done |
 
 ## Backlog
 
@@ -83,7 +85,8 @@ Ordered by what a user notices first. Each line becomes one run.
 - [ ] Quiet hours are honoured server-side, verified end to end.
 
 ### German locale (wave J)
-- [ ] Every user-facing string in one place, no concatenated sentences.
+- [x] The mechanism: one English file, automatic registration, fallback, picker (`docs/LOCALIZATION.md`).
+- [ ] Move the remaining screens into the locale file, one screen per run: auth, onboarding, discovery, chat, matches, profile, legal.
 - [ ] Dates, times and distances formatted by locale.
 - [ ] German copy for the store listing and the in-app legal surfaces.
 

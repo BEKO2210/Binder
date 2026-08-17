@@ -2,6 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
 import { AccessibilityInfo, useColorScheme } from 'react-native';
 
+import { availableLocales, resolveLocale, translate, type LocaleCode } from '../i18n';
+
 import {
   accentThemes,
   darkPalette,
@@ -41,6 +43,8 @@ export type QuietHours = {
 };
 
 export type AppSettings = {
+  /** 'system' follows the device; a code pins Binder to that language. */
+  language: 'system' | LocaleCode;
   appearance: AppearanceMode;
   accentTheme: AccentThemeId;
   hapticsEnabled: boolean;
@@ -50,6 +54,7 @@ export type AppSettings = {
 };
 
 const defaultSettings: AppSettings = {
+  language: 'system',
   appearance: 'system',
   accentTheme: 'lime',
   hapticsEnabled: true,
@@ -75,6 +80,10 @@ type ThemeContextValue = {
   theme: BinderTheme;
   settings: AppSettings;
   hydrated: boolean;
+  /** The language actually in use after the device and the preference agree. */
+  locale: LocaleCode;
+  /** Translate one key; missing strings fall back to English. */
+  t: (key: string, values?: Record<string, string | number>) => string;
   reduceMotion: boolean;
   updateSettings: (patch: Partial<AppSettings>) => Promise<void>;
   updateNotifications: (patch: Partial<NotificationPreferences>) => Promise<void>;
@@ -90,9 +99,14 @@ function sanitizeSettings(candidate: unknown): AppSettings {
   const accentTheme = raw.accentTheme && raw.accentTheme in accentThemes ? raw.accentTheme : defaultSettings.accentTheme;
   const appearance = raw.appearance === 'dark' || raw.appearance === 'system' ? raw.appearance : defaultSettings.appearance;
   const motionPreference = raw.motion === 'reduce' || raw.motion === 'full' || raw.motion === 'system' ? raw.motion : defaultSettings.motion;
+  // A language that is no longer bundled must not strand the interface: an
+  // unknown code falls back to following the device.
+  const known = new Set(availableLocales().map((locale) => locale.code));
+  const language = raw.language === 'system' || (raw.language && known.has(raw.language)) ? raw.language : defaultSettings.language;
   return {
     ...defaultSettings,
     ...raw,
+    language,
     accentTheme,
     appearance,
     motion: motionPreference,
@@ -181,16 +195,26 @@ export function BinderThemeProvider({ children }: PropsWithChildren) {
     elevation,
   }), [resolvedMode, settings.accentTheme]);
 
+  // The device language is read once from Intl, which Hermes ships with; no
+  // extra dependency for something this small.
+  const deviceLanguage = useMemo(() => {
+    try { return new Intl.DateTimeFormat().resolvedOptions().locale; } catch { return undefined; }
+  }, []);
+  const locale = resolveLocale(settings.language, deviceLanguage);
+  const t = useCallback((key: string, values?: Record<string, string | number>) => translate(locale, key, values), [locale]);
+
   const value = useMemo<ThemeContextValue>(() => ({
     theme,
     settings,
     hydrated,
+    locale,
+    t,
     reduceMotion,
     updateSettings,
     updateNotifications,
     updateQuietHours,
     resetSettings,
-  }), [theme, settings, hydrated, reduceMotion, updateSettings, updateNotifications, updateQuietHours, resetSettings]);
+  }), [theme, settings, hydrated, locale, t, reduceMotion, updateSettings, updateNotifications, updateQuietHours, resetSettings]);
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
