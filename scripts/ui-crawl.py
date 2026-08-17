@@ -117,6 +117,23 @@ def dump(serial: str) -> str:
     return ''
 
 
+def dump_settled(serial: str, attempts: int = 4) -> str:
+    """A dump taken while a list is still gliding reports controls mid-layout.
+
+    Two identical trees in a row mean the scroll has come to rest, which is the
+    only state worth auditing — otherwise a fully laid out 86 dp row is
+    reported as 17 dp because the dump caught it in flight.
+    """
+    previous = ''
+    for _ in range(attempts):
+        current = dump(serial)
+        if current and current == previous:
+            return current
+        previous = current
+        time.sleep(0.7)
+    return previous
+
+
 def signature_of(nodes: list[Node]) -> str:
     # Text and structure identify a screen; exact pixel positions do not, so a
     # scrolled list is still the same screen.
@@ -147,15 +164,30 @@ def restart(serial: str) -> None:
     time.sleep(3.5)
 
 
-def audit(nodes: list[Node], density: float) -> list[str]:
-    """Cheap, deterministic checks on the tree Android exposes."""
+def audit(nodes: list[Node], density: float, viewport: tuple[int, int]) -> list[str]:
+    """Cheap, deterministic checks on the tree Android exposes.
+
+    A control that is half scrolled past the edge of the screen reports the
+    clipped box, not its own size. Auditing those produced findings like an
+    8 dp sign-out button that is 52 dp the moment it is fully visible, so a
+    control is only measured while it is completely inside the viewport.
+    """
     findings = []
-    minimum = 44 * density
+    minimum = 48 * density
+    screen_width, screen_height = viewport
+    # Android reports a row clipped by its scroll container with the clipped
+    # box. Those edges are not the control's size, so anything touching the
+    # display edge or the edge of a scrollable ancestor is left unmeasured.
+    clips = [(0, 0, screen_width, screen_height)]
+    clips += [node.bounds for node in nodes if node.scrollable]
     for node in nodes:
         if not (node.clickable and node.enabled):
             continue
         width, height = node.size
         if width <= 0 or height <= 0:
+            continue
+        left, top, right, bottom = node.bounds
+        if any(abs(top - clip[1]) <= 2 or abs(bottom - clip[3]) <= 2 or abs(left - clip[0]) <= 2 or abs(right - clip[2]) <= 2 for clip in clips):
             continue
         if not node.label:
             findings.append(f'unlabelled control at {node.bounds}')
@@ -166,9 +198,33 @@ def audit(nodes: list[Node], density: float) -> list[str]:
     return findings
 
 
+def read_density(serial: str) -> float:
+    """The density the layout actually uses.
+
+    `wm density` prints the physical density and, when the user has changed the
+    display size, an override below it. Reading the first number reports dp
+    values from the wrong scale — on the S23 that is 600 instead of 560, which
+    makes every control look 7 % larger than it is and hides real findings.
+    """
+    output = adb(serial, 'shell', 'wm', 'density')
+    override = re.search(r'Override density:\s*(\d+)', output)
+    physical = re.search(r'Physical density:\s*(\d+)', output)
+    match = override or physical or re.search(r'(\d+)', output)
+    return float(match.group(1)) / 160
+
+
+def read_viewport(serial: str) -> tuple[int, int]:
+    output = adb(serial, 'shell', 'wm', 'size')
+    override = re.search(r'Override size:\s*(\d+)x(\d+)', output)
+    physical = re.search(r'Physical size:\s*(\d+)x(\d+)', output)
+    match = override or physical
+    return (int(match.group(1)), int(match.group(2))) if match else (0, 0)
+
+
 def crawl(serial: str, out: Path, max_actions: int, max_depth: int) -> dict:
     out.mkdir(parents=True, exist_ok=True)
-    density = float(re.search(r'\d+', adb(serial, 'shell', 'wm', 'density')).group()) / 160
+    density = read_density(serial)
+    viewport = read_viewport(serial)
     screens: dict[str, Screen] = {}
     visited_actions: set[tuple[str, str]] = set()
     queue: list[list[tuple[int, int]]] = [[]]
@@ -198,7 +254,7 @@ def crawl(serial: str, out: Path, max_actions: int, max_depth: int) -> dict:
             shot = out / f'{screen.index:02d}-{signature}-0.png'
             screenshot(serial, shot)
             screen.shots.append(shot.name)
-            screen.findings = audit(nodes, density)
+            screen.findings = audit(nodes, density, viewport)
             (out / f'{screen.index:02d}-{signature}.xml').write_text(xml)
 
             # Scroll every scrollable container to its end so nothing below the
@@ -209,13 +265,13 @@ def crawl(serial: str, out: Path, max_actions: int, max_depth: int) -> dict:
                 for step in range(1, 6):
                     adb(serial, 'shell', 'input', 'swipe', str(x), str(int(bottom * 0.8)), str(x), str(int(top + (bottom - top) * 0.2)), '350')
                     time.sleep(1.0)
-                    scrolled = dump(serial)
+                    scrolled = dump_settled(serial)
                     if not scrolled:
                         break
                     shot = out / f'{screen.index:02d}-{signature}-scroll{step}.png'
                     screenshot(serial, shot)
                     screen.shots.append(shot.name)
-                    screen.findings += audit(parse_nodes(scrolled), density)
+                    screen.findings += audit(parse_nodes(scrolled), density, viewport)
                     if signature_of(parse_nodes(scrolled)) == signature and step > 1 and scrolled == xml:
                         break
                 break  # one scrollable per screen is enough; nested ones repeat

@@ -39,7 +39,9 @@ export const spacing = {
 // Stable component geometry is not spacing: naming it keeps interaction and
 // media dimensions consistent without pretending they belong to the 4dp grid.
 export const layout = {
-  minimumTouchTarget: 44,
+  // 48 dp is the contract in AGENTS.md and what the crawler audits against;
+  // 44 left chips and preset rows a few dp short on a 3.5x screen.
+  minimumTouchTarget: 48,
   controlHeight: 52,
   screenHeaderHeight: 72,
   compactAvatar: 44,
