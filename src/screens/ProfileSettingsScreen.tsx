@@ -15,7 +15,7 @@ import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
 export default function ProfileSettingsScreen({ userId, onClose }: { userId: string; onClose: () => void }) {
-  const { theme } = useBinderTheme();
+  const { theme, t } = useBinderTheme();
   const haptic = useBinderHaptics();
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -55,7 +55,7 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
       setMaxAge(preferences.data.max_age);
       setDistance(preferences.data.max_distance_km);
       setMedia(gallery);
-    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : 'Could not load profile settings.'); }
+    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : t('profileSettings.errors.load')); }
     finally { setLoading(false); }
   }
 
@@ -69,8 +69,8 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
       await addProfileImage(userId, image);
       await haptic('selection');
       setMedia(await listMyProfileMedia());
-      setMessage('Photo optimized, uploaded and sent for safety review.'); setMessageKind('success');
-    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : 'Could not add photo.'); }
+      setMessage(t('profileSettings.messages.photoAdded')); setMessageKind('success');
+    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : t('profileSettings.errors.addPhoto')); }
     finally { setBusy(false); }
   }
 
@@ -89,7 +89,7 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
       await reorderProfileMedia(next.map((item) => item.id));
       await haptic('selection');
       setMedia(await listMyProfileMedia());
-    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : 'Could not reorder photos.'); }
+    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : t('profileSettings.errors.reorderPhotos')); }
     finally { setBusy(false); }
   }
 
@@ -101,14 +101,14 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
       await setPrimaryProfileMedia(item.id);
       await haptic('selection');
       setMedia(await listMyProfileMedia());
-    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : 'Could not make this photo primary.'); }
+    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : t('profileSettings.errors.makePrimary')); }
     finally { setBusy(false); }
   }
 
   function confirmRemove(item: GalleryMedia) {
-    Alert.alert('Remove profile photo?', item.position === 0 ? 'Binder will only remove the primary photo if another approved photo can replace it.' : 'This photo will be removed from your profile and storage.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Remove', style: 'destructive', onPress: () => void remove(item) },
+    Alert.alert(t('profileSettings.alerts.removeTitle'), item.position === 0 ? t('profileSettings.alerts.removePrimaryMessage') : t('profileSettings.alerts.removeMessage'), [
+      { text: t('profileSettings.actions.cancel'), style: 'cancel' },
+      { text: t('profileSettings.actions.remove'), style: 'destructive', onPress: () => void remove(item) },
     ]);
   }
 
@@ -119,7 +119,7 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
       await removeProfileMedia(item.id);
       await haptic('destructive');
       setMedia(await listMyProfileMedia());
-    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : 'Could not remove photo.'); }
+    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : t('profileSettings.errors.removePhoto')); }
     finally { setBusy(false); }
   }
 
@@ -132,14 +132,14 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
       const { error } = await supabase.rpc('update_my_profile', { p_first_name: firstName.trim(), p_gender: gender, p_bio: bio.trim(), p_interests: interests, p_interested_in: interestedIn, p_min_age: min, p_max_age: max, p_max_distance_km: maxDistance });
       if (error) throw error;
       await haptic('selection');
-      setMessageKind('success'); setMessage('Profile settings saved.');
-    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : 'Could not save profile settings.'); }
+      setMessageKind('success'); setMessage(t('profileSettings.messages.saved'));
+    } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : t('profileSettings.errors.save')); }
     finally { setBusy(false); }
   }
 
   const [viewerIndex, setViewerIndex] = useState<number | null>(null);
 
-  if (loading) return <ScreenState kind="loading" message="Loading profile settings…" />;
+  if (loading) return <ScreenState kind="loading" message={t('profileSettings.states.loading')} />;
 
   // The viewer is the gallery, not one photo: it opens on the photo that was
   // tapped and swipes through the rest, which is what every photo surface in
@@ -149,12 +149,12 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
         <BinderScreenHeader
-          title={media.length > 1 ? `Photo ${safeIndex + 1} of ${media.length}` : 'Photo'}
-          leading={{ icon: 'close', accessibilityLabel: 'Close full photo', onPress: () => setViewerIndex(null) }}
+          title={media.length > 1 ? t('profileSettings.gallery.photoOf', { current: safeIndex + 1, total: media.length }) : t('profileSettings.gallery.photo')}
+          leading={{ icon: 'close', accessibilityLabel: t('profileSettings.accessibility.closeFullPhoto'), onPress: () => setViewerIndex(null) }}
         />
         <PhotoPager
           photos={media.map((item) => item.signedUrl)}
-          name="your gallery"
+          name={t('profileSettings.gallery.name')}
           height="100%"
           fit="contain"
           swipeable
@@ -167,13 +167,13 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
-      <BinderScreenHeader title="Profile settings" leading={{ icon: 'back', accessibilityLabel: 'Back to profile', onPress: onClose }} />
+      <BinderScreenHeader title={t('profileSettings.header.title')} leading={{ icon: 'back', accessibilityLabel: t('profileSettings.accessibility.backToProfile'), onPress: onClose }} />
       <KeyboardAwareScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x5, paddingBottom: theme.spacing.x16 }} keyboardShouldPersistTaps="handled">
-      <SectionHeader title="Shape the profile people see." copy="Your birth date stays locked. Every photo is reviewed independently before it can appear in Discovery." />
+      <SectionHeader title={t('profileSettings.header.sectionTitle')} copy={t('profileSettings.header.sectionCopy')} />
 
       <View style={{ marginTop: theme.spacing.x8 }}>
-        <BinderText variant="micro" tone="muted">PHOTOS · {media.length}/6</BinderText>
-        <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>Drag is not required: use the arrow controls to set the exact order. Photo 1 is the photo people see first.</BinderText>
+        <BinderText variant="micro" tone="muted">{t('profileSettings.photos.eyebrow', { count: media.length })}</BinderText>
+        <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>{t('profileSettings.photos.orderCopy')}</BinderText>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x3, marginTop: theme.spacing.x3 }}>
           {media.map((item, index) => <PhotoTile key={item.id} item={item} index={index} total={media.length} busy={busy} onLeft={() => void movePhoto(index, -1)} onRight={() => void movePhoto(index, 1)} onPrimary={() => void makePrimary(item)} onRemove={() => confirmRemove(item)} onView={() => setViewerIndex(index)} />)}
           {media.length < 6 ? <AddPhotoTile disabled={busy} onPress={() => void addPhoto()} /> : null}
@@ -182,16 +182,16 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
       </View>
 
       <BinderCard style={{ gap: theme.spacing.x5, marginTop: theme.spacing.x8 }}>
-        <View><BinderText variant="micro" tone="muted">PROFILE DETAILS</BinderText><BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>This is the identity and context people see.</BinderText></View>
-        <BinderInput label="First name" error={profileErrors.firstName} value={firstName} onChangeText={(value) => { setFirstName(value); if (profileErrors.firstName) setProfileErrors(validateIdentity(value, gender)); }} maxLength={40} />
-        <BinderInput label="Bio" helper={`${bio.length}/500`} value={bio} onChangeText={setBio} maxLength={500} multiline style={{ minHeight: theme.layout.multilineInputHeight, textAlignVertical: 'top' }} />
-        <Choice label="I am" error={profileErrors.gender}><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{GENDERS.map((item) => <BinderChip key={item.value} label={item.label} selected={gender === item.value} onPress={() => { setGender(item.value); setProfileErrors(validateIdentity(firstName, item.value)); }} />)}</View></Choice>
-        <Choice label="Interests"><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{INTERESTS.map((item) => <BinderChip key={item} label={item} selected={interests.includes(item)} onPress={() => setInterests((current) => current.includes(item) ? current.filter((value) => value !== item) : current.length < 12 ? [...current, item] : current)} />)}</View></Choice>
+        <View><BinderText variant="micro" tone="muted">{t('profileSettings.details.eyebrow')}</BinderText><BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>{t('profileSettings.details.copy')}</BinderText></View>
+        <BinderInput label={t('profileSettings.fields.firstName')} error={profileErrors.firstName} value={firstName} onChangeText={(value) => { setFirstName(value); if (profileErrors.firstName) setProfileErrors(validateIdentity(value, gender)); }} maxLength={40} />
+        <BinderInput label={t('profileSettings.fields.bio')} helper={t('profileSettings.fields.bioCount', { count: bio.length })} value={bio} onChangeText={setBio} maxLength={500} multiline style={{ minHeight: theme.layout.multilineInputHeight, textAlignVertical: 'top' }} />
+        <Choice label={t('profileSettings.fields.gender')} error={profileErrors.gender}><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{GENDERS.map((item) => <BinderChip key={item.value} label={item.label} selected={gender === item.value} onPress={() => { setGender(item.value); setProfileErrors(validateIdentity(firstName, item.value)); }} />)}</View></Choice>
+        <Choice label={t('profileSettings.fields.interests')}><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{INTERESTS.map((item) => <BinderChip key={item} label={item} selected={interests.includes(item)} onPress={() => setInterests((current) => current.includes(item) ? current.filter((value) => value !== item) : current.length < 12 ? [...current, item] : current)} />)}</View></Choice>
       </BinderCard>
-      <BinderCard style={{ marginTop: theme.spacing.x5 }}><View><BinderText variant="micro" tone="muted">DISCOVERY PREFERENCES</BinderText><BinderText variant="title" style={{ marginTop: theme.spacing.x2 }}>Discovery range</BinderText><BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2, marginBottom: theme.spacing.x6 }}>Controls who can appear in your Discovery deck.</BinderText></View>
+      <BinderCard style={{ marginTop: theme.spacing.x5 }}><View><BinderText variant="micro" tone="muted">{t('profileSettings.discovery.eyebrow')}</BinderText><BinderText variant="title" style={{ marginTop: theme.spacing.x2 }}>{t('profileSettings.discovery.title')}</BinderText><BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2, marginBottom: theme.spacing.x6 }}>{t('profileSettings.discovery.copy')}</BinderText></View>
           <DiscoveryPreferences interestedIn={interestedIn} minAge={minAge} maxAge={maxAge} distance={distance} errors={discoveryErrors} onChange={(next) => { setInterestedIn(next.interestedIn); setMinAge(next.minAge); setMaxAge(next.maxAge); setDistance(next.distance); setDiscoveryErrors(validateDiscovery(next.interestedIn, next.minAge, next.maxAge, next.distance)); }} />
       </BinderCard>
-      <BinderButton label="Save profile" loading={busy} onPress={() => void save()} style={{ marginTop: theme.spacing.x6 }} />
+      <BinderButton label={t('profileSettings.actions.saveProfile')} loading={busy} onPress={() => void save()} style={{ marginTop: theme.spacing.x6 }} />
       </KeyboardAwareScrollView>
     </View>
   );
@@ -203,30 +203,30 @@ function Choice({ label, error, children }: { label: string; error?: string; chi
 }
 
 function AddPhotoTile({ disabled, onPress }: { disabled: boolean; onPress: () => void }) {
-  const { theme } = useBinderTheme();
+  const { theme, t } = useBinderTheme();
   // The tile paints its own pressed surface; the shared one would stack a
   // second tint on top of it.
-  return <Pressable pressedSurface={false} accessibilityRole="button" accessibilityLabel="Add profile photo" disabled={disabled} onPress={onPress} style={({ pressed }) => ({ width: '47%', minHeight: theme.layout.photoAddTileHeight, borderRadius: theme.radii.card, borderWidth: 1, borderStyle: 'dashed', borderColor: theme.colors.borderStrong, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface, alignItems: 'center', justifyContent: 'center', gap: theme.spacing.x2, opacity: disabled ? theme.feedback.disabledOpacity : 1 })}><BinderIcon name="addPhoto" size={30} color={theme.accent.onSurface} /><BinderText variant="label" tone="accent">Add photo</BinderText><BinderText variant="caption" tone="muted" align="center">Optimized before upload</BinderText></Pressable>;
+  return <Pressable pressedSurface={false} accessibilityRole="button" accessibilityLabel={t('profileSettings.accessibility.addPhoto')} disabled={disabled} onPress={onPress} style={({ pressed }) => ({ width: '47%', minHeight: theme.layout.photoAddTileHeight, borderRadius: theme.radii.card, borderWidth: 1, borderStyle: 'dashed', borderColor: theme.colors.borderStrong, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface, alignItems: 'center', justifyContent: 'center', gap: theme.spacing.x2, opacity: disabled ? theme.feedback.disabledOpacity : 1 })}><BinderIcon name="addPhoto" size={30} color={theme.accent.onSurface} /><BinderText variant="label" tone="accent">{t('profileSettings.actions.addPhoto')}</BinderText><BinderText variant="caption" tone="muted" align="center">{t('profileSettings.photos.optimized')}</BinderText></Pressable>;
 }
 
 function PhotoTile({ item, index, total, busy, onLeft, onRight, onPrimary, onRemove, onView }: { item: GalleryMedia; index: number; total: number; busy: boolean; onLeft: () => void; onRight: () => void; onPrimary: () => void; onRemove: () => void; onView: () => void }) {
-  const { theme } = useBinderTheme();
+  const { theme, t } = useBinderTheme();
   const statusTone = item.moderationStatus === 'approved' ? theme.semantic.success : item.moderationStatus === 'pending' ? theme.semantic.warning : theme.semantic.destructive;
-  const statusCopy = item.moderationStatus === 'approved' ? 'Approved' : item.moderationStatus === 'pending' ? 'In review' : item.moderationStatus === 'rejected' ? 'Not approved' : 'Removed';
+  const statusCopy = item.moderationStatus === 'approved' ? t('profileSettings.photos.status.approved') : item.moderationStatus === 'pending' ? t('profileSettings.photos.status.pending') : item.moderationStatus === 'rejected' ? t('profileSettings.photos.status.rejected') : t('profileSettings.photos.status.removed');
   return (
     <BinderCard style={{ width: '47%', padding: 0, overflow: 'hidden' }}>
-      <Pressable pressedSurface={false} pressScale={false} accessibilityRole="imagebutton" accessibilityLabel={`View photo ${index + 1} in full`} onPress={onView}>
+      <Pressable pressedSurface={false} pressScale={false} accessibilityRole="imagebutton" accessibilityLabel={t('profileSettings.accessibility.viewPhoto', { number: index + 1 })} onPress={onView}>
         <Image source={{ uri: item.signedUrl }} style={{ width: '100%', height: theme.layout.photoTileHeight }} resizeMode="cover" />
       </Pressable>
       <View style={{ padding: theme.spacing.x3, gap: theme.spacing.x2 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}><View style={{ width: theme.layout.statusDot, height: theme.layout.statusDot, borderRadius: theme.radii.pill, backgroundColor: statusTone }} /><BinderText variant="caption" style={{ color: statusTone }}>{statusCopy}</BinderText></View>
-        {item.position === 0 ? <BinderText variant="micro" tone="accent">PHOTO 1 · PRIMARY</BinderText> : item.moderationStatus === 'approved' ? <BinderButton label="Make primary" variant="ghost" disabled={busy} onPress={onPrimary} /> : null}
-        <BinderText variant="caption" tone="muted">{Math.max(1, Math.round(item.byteSize / 1024))} KB · {item.width} by {item.height}</BinderText>
+        {item.position === 0 ? <BinderText variant="micro" tone="accent">{t('profileSettings.photos.primary')}</BinderText> : item.moderationStatus === 'approved' ? <BinderButton label={t('profileSettings.actions.makePrimary')} variant="ghost" disabled={busy} onPress={onPrimary} /> : null}
+        <BinderText variant="caption" tone="muted">{t('profileSettings.photos.dimensions', { size: Math.max(1, Math.round(item.byteSize / 1024)), width: item.width, height: item.height })}</BinderText>
         {item.moderationReason ? <BinderText variant="caption" tone="destructive">{item.moderationReason}</BinderText> : null}
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <BinderIconButton name="back" size={19} accessibilityLabel={`Move photo ${index + 1} left`} disabled={busy || index === 0} onPress={onLeft} />
-          <BinderIconButton name="delete" size={19} accessibilityLabel={`Remove photo ${index + 1}`} destructive disabled={busy} onPress={onRemove} />
-          <BinderIconButton name="chevronRight" size={19} accessibilityLabel={`Move photo ${index + 1} right`} disabled={busy || index === total - 1} onPress={onRight} />
+          <BinderIconButton name="back" size={19} accessibilityLabel={t('profileSettings.accessibility.moveLeft', { number: index + 1 })} disabled={busy || index === 0} onPress={onLeft} />
+          <BinderIconButton name="delete" size={19} accessibilityLabel={t('profileSettings.accessibility.removePhoto', { number: index + 1 })} destructive disabled={busy} onPress={onRemove} />
+          <BinderIconButton name="chevronRight" size={19} accessibilityLabel={t('profileSettings.accessibility.moveRight', { number: index + 1 })} disabled={busy || index === total - 1} onPress={onRight} />
         </View>
       </View>
     </BinderCard>

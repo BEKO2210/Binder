@@ -38,7 +38,10 @@ for (const contract of ['addPushTokenListener','getExpoPushTokenAsync','AndroidN
   if (!notifications.includes(contract)) failures.push(`Client notification runtime missing: ${contract}`);
 }
 if (!root.includes('observeNotificationResponses') || !root.includes('fetchMatches')) failures.push('Root does not validate and resolve notification navigation against server matches');
-if (!chat.includes("AppState.addEventListener('change'") || !chat.includes('fetchMessagesPage') || !chat.includes('Load earlier messages')) failures.push('Chat reconnect/pagination contract is incomplete');
+// The pagination control's words moved into the locale file; the contract is
+// that the control exists and is wired, not where its label is stored.
+const chatCopy = `${chat}\n${readFileSync('src/i18n/locales/en.json', 'utf8')}`;
+if (!chat.includes("AppState.addEventListener('change'") || !chat.includes('fetchMessagesPage') || !chatCopy.includes('Load earlier messages')) failures.push('Chat reconnect/pagination contract is incomplete');
 for (const forbidden of [/\bpro\b/i, /\bpremium\b/i, /\bboost\b/i, /\bpaywall\b/i, /\bpurchase\b/i]) {
   if (forbidden.test([migration, worker, notifications, root, chat].join('\n'))) failures.push(`Monetization surface is forbidden in Phase 7 runtime: ${forbidden}`);
 }

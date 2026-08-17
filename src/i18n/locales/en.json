@@ -306,6 +306,144 @@
       "sendMessageTo": "Send message to {name}"
     }
   },
+  "profile": {
+    "errors": {
+      "load": "Could not load profile.",
+      "openInformation": "Could not open Binder information.",
+      "deleteAccount": "Could not delete your account."
+    },
+    "alerts": {
+      "deleteTitle": "Delete Binder account?",
+      "deleteMessage": "This permanently removes your Binder account and normal product data. This cannot be undone.",
+      "signOutTitle": "Sign out of Binder?",
+      "signOutMessage": "You will stop receiving in-app updates on this device until you sign in again. Your profile, matches, and messages stay in Binder."
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "deleteAccount": "Delete account",
+      "staySignedIn": "Stay signed in",
+      "signOut": "Sign out",
+      "completeProfile": "Complete profile"
+    },
+    "states": {
+      "loading": "Loading your profile…"
+    },
+    "header": {
+      "title": "Your profile",
+      "eyebrow": "BINDER"
+    },
+    "accessibility": {
+      "primaryPhoto": "Your primary profile photo"
+    },
+    "empty": {
+      "addFirstPhoto": "Add your first photo",
+      "addBio": "Add a few real lines about yourself so people know what to ask you."
+    },
+    "completeness": {
+      "eyebrow": "PROFILE STRENGTH",
+      "percent": "{percent}% complete",
+      "done": "{item} · done"
+    },
+    "hub": {
+      "profileTitle": "Profile & photos",
+      "profileCopy": "Edit your profile, discovery preferences and up to six moderated photos.",
+      "settingsTitle": "App settings",
+      "settingsCopy": "Appearance, haptics, motion, notification preferences and quiet hours.",
+      "betaTitle": "Beta program",
+      "betaCopy": "Optional diagnostics and private feedback.",
+      "aboutTitle": "About & legal notice",
+      "aboutCopy": "Impressum, policies and the version you are running."
+    },
+    "safety": {
+      "eyebrow": "SAFETY & PRIVACY",
+      "terms": "Terms & Community Rules",
+      "privacy": "Privacy Policy",
+      "deletionDetails": "Deletion & retention details"
+    },
+    "account": {
+      "eyebrow": "ACCOUNT ACTIONS",
+      "irreversible": "IRREVERSIBLE",
+      "deleteTitle": "Delete Binder account",
+      "deleteCopy": "Stops discovery and conversations, removes profile media and deletes your authentication identity."
+    }
+  },
+  "profileSettings": {
+    "errors": {
+      "load": "Could not load profile settings.",
+      "addPhoto": "Could not add photo.",
+      "reorderPhotos": "Could not reorder photos.",
+      "makePrimary": "Could not make this photo primary.",
+      "removePhoto": "Could not remove photo.",
+      "save": "Could not save profile settings."
+    },
+    "messages": {
+      "photoAdded": "Photo optimized, uploaded and sent for safety review.",
+      "saved": "Profile settings saved."
+    },
+    "alerts": {
+      "removeTitle": "Remove profile photo?",
+      "removePrimaryMessage": "Binder will only remove the primary photo if another approved photo can replace it.",
+      "removeMessage": "This photo will be removed from your profile and storage."
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "remove": "Remove",
+      "saveProfile": "Save profile",
+      "addPhoto": "Add photo",
+      "makePrimary": "Make primary"
+    },
+    "states": {
+      "loading": "Loading profile settings…"
+    },
+    "gallery": {
+      "photoOf": "Photo {current} of {total}",
+      "photo": "Photo",
+      "name": "your gallery"
+    },
+    "header": {
+      "title": "Profile settings",
+      "sectionTitle": "Shape the profile people see.",
+      "sectionCopy": "Your birth date stays locked. Every photo is reviewed independently before it can appear in Discovery."
+    },
+    "accessibility": {
+      "closeFullPhoto": "Close full photo",
+      "backToProfile": "Back to profile",
+      "addPhoto": "Add profile photo",
+      "viewPhoto": "View photo {number} in full",
+      "moveLeft": "Move photo {number} left",
+      "removePhoto": "Remove photo {number}",
+      "moveRight": "Move photo {number} right"
+    },
+    "photos": {
+      "eyebrow": "PHOTOS · {count}/6",
+      "orderCopy": "Drag is not required: use the arrow controls to set the exact order. Photo 1 is the photo people see first.",
+      "optimized": "Optimized before upload",
+      "primary": "PHOTO 1 · PRIMARY",
+      "dimensions": "{size} KB · {width} by {height}",
+      "status": {
+        "approved": "Approved",
+        "pending": "In review",
+        "rejected": "Not approved",
+        "removed": "Removed"
+      }
+    },
+    "details": {
+      "eyebrow": "PROFILE DETAILS",
+      "copy": "This is the identity and context people see."
+    },
+    "fields": {
+      "firstName": "First name",
+      "bio": "Bio",
+      "bioCount": "{count}/500",
+      "gender": "I am",
+      "interests": "Interests"
+    },
+    "discovery": {
+      "eyebrow": "DISCOVERY PREFERENCES",
+      "title": "Discovery range",
+      "copy": "Controls who can appear in your Discovery deck."
+    }
+  },
   "discoveryFilterSheet": {
     "errors": {
       "authentication": "Authentication required.",
