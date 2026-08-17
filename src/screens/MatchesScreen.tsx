@@ -120,7 +120,7 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
           showsVerticalScrollIndicator={false}
           renderItem={({ item, index }) => (
             <Animated.View entering={reduceMotion ? undefined : FadeInUp.delay(resolveStaggerDelay(index, false)).duration(theme.motion.deliberate)}>
-            <MotionPressable accessibilityRole="button" accessibilityLabel={`Open conversation with ${item.firstName}`} onPress={() => { void haptic('selection'); onOpenMatch(item); }}>
+            <MotionPressable pressedSurface={false} accessibilityRole="button" accessibilityLabel={`Open conversation with ${item.firstName}`} onPress={() => { void haptic('selection'); onOpenMatch(item); }}>
               {({ pressed }) => (
                 <BinderCard style={{ minHeight: theme.spacing.x16 + theme.spacing.x5, padding: theme.spacing.x3, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface }}>
                   {item.photoUrl ? <Image source={{ uri: item.photoUrl }} style={{ width: theme.spacing.x16, height: theme.spacing.x16, borderRadius: theme.radii.pill, backgroundColor: theme.colors.surfaceElevated }} /> : <View style={{ width: theme.spacing.x16, height: theme.spacing.x16, borderRadius: theme.radii.pill, backgroundColor: theme.colors.surfaceElevated, alignItems: 'center', justifyContent: 'center' }}><BinderText variant="title" tone="accent">{item.firstName.slice(0,1).toUpperCase()}</BinderText></View>}

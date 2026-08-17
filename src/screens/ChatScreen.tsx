@@ -352,7 +352,15 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
             const bubbleRadius = theme.radii.control;
             return (
               <Animated.View entering={reduceMotion ? undefined : FadeInDown.delay(resolveStaggerDelay(index, false)).duration(theme.motion.feedback)} style={{ marginTop: item.groupedWithPrevious ? theme.spacing.x1 : theme.spacing.x3 }}>
-                <Pressable onLongPress={() => openMessageActions(message)} accessibilityHint={mine ? 'Hold to copy this message' : 'Hold to copy or report this message'} style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: theme.layout.chatBubbleMaxWidth }}>
+                <Pressable
+                  onLongPress={() => openMessageActions(message)}
+                  accessibilityHint={mine ? 'Hold to copy this message' : 'Hold to copy or report this message'}
+                  // The wrapper has no radius, so the shared pressed surface painted a
+                  // square block behind the rounded bubble. The bubble carries its own
+                  // feedback instead.
+                  pressedSurface={false}
+                  style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: theme.layout.chatBubbleMaxWidth }}
+                >
                   <View style={{
                     paddingHorizontal: theme.spacing.x4,
                     paddingVertical: theme.spacing.x3,
@@ -363,7 +371,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
                     borderWidth: mine ? 0 : 1,
                     borderColor: theme.colors.borderSubtle,
                   }}>
-                    <BinderText selectable variant="body" style={{ color: mine ? theme.accent.foreground : theme.colors.textPrimary }}>{message.body}</BinderText>
+                    <BinderText variant="body" style={{ color: mine ? theme.accent.foreground : theme.colors.textPrimary }}>{message.body}</BinderText>
                   </View>
                   {item.showsTimestamp ? (
                     <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1, alignSelf: mine ? 'flex-end' : 'flex-start', marginHorizontal: theme.spacing.x2 }}>
