@@ -18,6 +18,7 @@ import { classifyEmptyDiscovery, type EmptyDiscoveryKind } from '../lib/discover
 import { advanceDeck, decideSwipe, discoveryDeckPhysics, resistedTranslation, type SwipeDirection } from '../lib/discoveryDeck';
 import { formatCount, formatDistanceKm } from '../lib/format';
 import { listMyProfileMedia } from '../lib/media';
+import { matchCelebrationPhotoUrls } from '../lib/matchCelebrationAssets';
 import { resolveSpring } from '../lib/motionPolicy';
 import { reportAndBlockDiscoveryProfile, type DiscoveryReportReason } from '../lib/safety';
 import { supabase } from '../lib/supabase';
@@ -75,8 +76,13 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
   // Only the newest load may write the deck. An older response finishing last
   // used to overwrite a freshly filtered deck with the previous one.
   const loadToken = useRef(0);
+  const celebrationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mounted = useRef(true);
-  useEffect(() => () => { mounted.current = false; }, []);
+  const discoveryReloadDeferred = useRef(false);
+  useEffect(() => () => {
+    mounted.current = false;
+    if (celebrationTimer.current) clearTimeout(celebrationTimer.current);
+  }, []);
 
   async function loadDiscovery(refreshLocation = true) {
     const token = ++loadToken.current;
@@ -223,7 +229,12 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
     setProfiles((value) => advanceDeck(value, current.id));
     if (matched) {
       announce(t('discovery.accessibility.matchCreated', { name: current.name }));
-      setMatch(current);
+      // The card is still flying out. Mounting the celebration on top of that
+      // animation put two entrances in the same frames and cost 7 % janky
+      // frames; it starts once the card has left instead. The match itself was
+      // confirmed by the server before any of this ran.
+      const celebrateAfter = reduceMotion ? 0 : theme.motion.deliberate;
+      celebrationTimer.current = setTimeout(() => setMatch(current), celebrateAfter);
     }
     // Reset only after React committed the new top card — resetting in the
     // same frame flashed the dismissed card back to center.
@@ -243,6 +254,11 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
     const current = profile;
     setDecisionPending(true);
     setError(null);
+    if (direction === 'right') {
+      for (const photoUrl of matchCelebrationPhotoUrls(myPhotoUrl, current.photoUrl)) {
+        void Image.prefetch(photoUrl).catch(() => undefined);
+      }
+    }
     void haptic('impact');
     if (reduceMotion) {
       x.value = direction === 'right' ? SWIPE_OUT : -SWIPE_OUT;
@@ -255,13 +271,24 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
       const result = await recordDecision(current.id, direction === 'right' ? 'bind' : 'pass');
       if (result.matched) await haptic('match');
       finishDismiss(current, result.matched);
-      if (profiles.length === 1) void loadDiscovery(false);
+      if (profiles.length === 1) {
+        if (result.matched) discoveryReloadDeferred.current = true;
+        else void loadDiscovery(false);
+      }
     } catch (cause) {
       setDecisionPending(false);
       const failure = classifyError(cause);
       if (failure.kind === 'permission-denied') onSessionExpired();
       else setError(failure);
       springBack();
+    }
+  }
+
+  function keepDiscoveringAfterMatch() {
+    setMatch(null);
+    if (discoveryReloadDeferred.current) {
+      discoveryReloadDeferred.current = false;
+      void loadDiscovery(false);
     }
   }
 
@@ -394,7 +421,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
           myPhotoUrl={myPhotoUrl}
           busy={openingConversation}
           onSaySomething={() => void openConversation(match)}
-          onKeepDiscovering={() => setMatch(null)}
+          onKeepDiscovering={keepDiscoveringAfterMatch}
         />
       ) : null}
 

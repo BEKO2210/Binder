@@ -73,7 +73,7 @@ leaves the running system intact.
 | 054 | A warned or suspended account can see it: `get_my_safety_notice()` plus a plain card in the profile | RPC applied to production and probed; 94 tests | done |
 | 055 | Match celebration: measured symmetry (34/34 dp outer, ±92 dp from the axis), one staggered entrance, photos shrink before text on short screens | Device screenshot; unit test pins the geometry | done |
 | 056 | `scripts/measure-interaction-frames.sh` turns any interaction into a matrix row | Used immediately for the celebration | done |
-| 057 | Celebration entrance measured at 7.76 % janky, above the 5 % budget — being brought under | 116 frames, 3 missed vsync, p95 27 ms | in progress |
+| 057 | Celebration entrance brought under budget: 7.76 % → 4.82 % janky, 3 → 0 missed vsync | Three measured builds in the device matrix | done |
 | 017 | Language section in App settings — appears only when a translation exists, endonym plus flag, same chip rhythm as Appearance | Screenshot: Sprache / Wie mein Gerät / 🇬🇧 English / 🇩🇪 Deutsch | done |
 
 ## Backlog
@@ -109,7 +109,8 @@ Ordered by what a user notices first. Each line becomes one run.
 - [x] Announcements for state changes that only show visually (sent, failed, applied).
 
 ### Performance
-- [ ] Frame timing for the match celebration and the profile expansion (wave C leaves them open).
+- [x] Frame timing for the match celebration (4.82 %, run 057).
+- [ ] Frame timing for the profile expansion.
 - [x] Image decode sizes: fixed-size thumbnails decode downsampled (resizeMethod="resize").
 - [x] Cold start tracked per build (`docs/PHASE7-DEVICE-MATRIX.md`, run 050).
 - [x] Memory while paging a gallery: `scripts/measure-gallery-memory.sh`.

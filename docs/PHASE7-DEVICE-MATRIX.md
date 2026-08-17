@@ -61,6 +61,12 @@ compared against.
 | v0.5.27 (vc30, thumbnails decode downsampled) | 330 / 363 / 402 / 409 / 600 | 402 | — | — |
 | v0.5.30 (vc33, current) | 291 / 322 / 336 / 341 / 367 | 336 | 427 (photo paging) | 1.87 % |
 
+| Interaction | Build | Frames | Janky | Missed vsync | p95 |
+| --- | --- | --- | --- | --- | --- |
+| Match celebration entrance | v0.5.33 | 116 | 7.76 % | 3 | 27 ms |
+| Match celebration entrance | v0.5.34 (photos prefetched, reload deferred) | 86 | 6.98 % | 2 | 24 ms |
+| Match celebration entrance | v0.5.35 (starts after the card has left) | 83 | **4.82 %** | 0 | 22 ms |
+
 Baseline before Skia, same device: 318 / 318 / 371 / 408 / 533, median 371 ms.
 The current build starts faster than the pre-Skia baseline and stays well under
 the 5 % janky-frame budget while paging photos.
