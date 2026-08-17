@@ -12,7 +12,10 @@ type Props = TextProps & {
   align?: TextStyle['textAlign'];
 };
 
-export function BinderText({ variant = 'body', tone = 'primary', align, style, ...props }: Props) {
+// Chrome has to survive the largest system font. Body copy scales all the way,
+// but a tab label at 200 % pushed the bar over the content it labels, so the
+// caller can cap the multiplier where the layout is fixed.
+export function BinderText({ variant = 'body', tone = 'primary', align, style, maxFontSizeMultiplier, ...props }: Props) {
   const { theme } = useBinderTheme();
   const color = tone === 'primary'
     ? theme.colors.textPrimary
@@ -26,5 +29,5 @@ export function BinderText({ variant = 'body', tone = 'primary', align, style, .
             ? theme.semantic.warning
             : theme.semantic.destructive;
 
-  return <Text {...props} style={[theme.typography[variant], { color, textAlign: align }, style]} />;
+  return <Text {...props} maxFontSizeMultiplier={maxFontSizeMultiplier} style={[theme.typography[variant], { color, textAlign: align }, style]} />;
 }

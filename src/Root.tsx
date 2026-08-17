@@ -338,7 +338,7 @@ function CenteredColumn({ wide, children }: { wide: boolean; children: React.Rea
 
 function NavItem({ icon, label, active, onPress }: { icon: BinderIconName; label: string; active: boolean; onPress: () => void }) {
   const { theme } = useBinderTheme();
-  return <MotionPressable accessibilityRole="tab" accessibilityLabel={label} accessibilityState={{ selected: active }} onPress={onPress} style={({ pressed }) => ({ flex: 1, minHeight: 52, borderRadius: theme.radii.control, alignItems: 'center', justifyContent: 'center', gap: 3, backgroundColor: pressed ? theme.colors.surfacePressed : 'transparent' })}><BinderIcon name={icon} size={22} color={active ? theme.accent.onSurface : theme.colors.textMuted} /><BinderText variant="caption" style={{ color: active ? theme.accent.onSurface : theme.colors.textMuted }}>{label}</BinderText></MotionPressable>;
+  return <MotionPressable accessibilityRole="tab" accessibilityLabel={label} accessibilityState={{ selected: active }} onPress={onPress} style={({ pressed }) => ({ flex: 1, minHeight: 52, borderRadius: theme.radii.control, alignItems: 'center', justifyContent: 'center', gap: 3, backgroundColor: pressed ? theme.colors.surfacePressed : 'transparent' })}><BinderIcon name={icon} size={22} color={active ? theme.accent.onSurface : theme.colors.textMuted} /><BinderText variant="caption" numberOfLines={1} maxFontSizeMultiplier={theme.layout.chromeFontScaleCap} style={{ color: active ? theme.accent.onSurface : theme.colors.textMuted }}>{label}</BinderText></MotionPressable>;
 }
 
 function RouteFrame({ route, children }: { route: 'expand' | 'lift' | 'trailing'; children: React.ReactNode }) {

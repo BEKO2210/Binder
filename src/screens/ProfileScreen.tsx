@@ -90,7 +90,7 @@ export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, o
   const completeness = profileCompleteness({ photoCount, bio, interestCount });
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: theme.colors.canvas }} contentContainerStyle={{ paddingBottom: theme.spacing.x16 }}>
+    <ScrollView style={{ flex: 1, backgroundColor: theme.colors.canvas }} contentContainerStyle={{ paddingBottom: theme.spacing.x16 + theme.spacing.x8 }}>
       <BinderScreenHeader title={t('profile.header.title')} eyebrow={t('profile.header.eyebrow')} />
       <View style={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x5 }}>
       {photoUrl ? <Image source={{ uri: photoUrl }} accessibilityLabel={t('profile.accessibility.primaryPhoto')} style={{ width: '100%', height: theme.layout.profileHeroHeight, borderRadius: theme.radii.hero }} resizeMode="cover" /> : <BinderCard style={{ minHeight: theme.layout.onboardingPhotoHeight, alignItems: 'center', justifyContent: 'center', gap: theme.spacing.x3 }}><BinderIcon name="addPhoto" size={34} color={theme.accent.onSurface} /><BinderText variant="label" tone="accent">{t('profile.empty.addFirstPhoto')}</BinderText></BinderCard>}

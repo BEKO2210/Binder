@@ -50,8 +50,20 @@ export function BinderIcon({ name, size = 24, color }: IconProps) {
   // labels like ", Complete profile". The wrapper takes the icon out of
   // the accessibility tree so only the control's own label survives; passing the
   // props to SymbolView alone was not enough.
+  // Known limitation, measured on the S23 at a 200 % system font: the Android
+  // symbol glyph is clipped inside expo-symbols' own view. Two attempts made it
+  // worse — requesting a smaller glyph shrank the icon (so the glyph itself does
+  // not scale), and transform-scaling the result kept the clipping, which means
+  // it happens inside SymbolView before anything of ours applies. The box stays
+  // fixed here so the row height cannot drift, and the clipping is written down
+  // in docs/POLISH-RUNS.md as its own run rather than papered over.
   return (
-    <View accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+    <View
+      accessible={false}
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+      style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}
+    >
       <SymbolView name={symbols[name]} size={size} tintColor={color ?? theme.colors.textPrimary} />
     </View>
   );

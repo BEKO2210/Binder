@@ -57,6 +57,8 @@ leaves the running system intact.
 | 036 | A long press on a message opens the same actions as a tap, with one haptic | Device: long press shows Copy / Report / Cancel | done |
 | 037 | One shape for every destructive confirmation, decided in one place | Policy test; safety contract now asserts it at that place | done |
 | 038 | State changes that were only visible are announced to a screen reader | Gates green | done |
+| 039 | Tab labels stop growing before they push the bar over the content; icon boxes are fixed | 200 % font on the S23: labels fit, row height stable | done |
+| 040 | Icon glyphs are clipped at a 200 % system font — two fixes tried, both worse, reverted | Screenshots at 100 % and 200 %; cause is inside expo-symbols | open, written down |
 | 017 | Language section in App settings — appears only when a translation exists, endonym plus flag, same chip rhythm as Appearance | Screenshot: Sprache / Wie mein Gerät / 🇬🇧 English / 🇩🇪 Deutsch | done |
 
 ## Backlog
@@ -86,7 +88,8 @@ Ordered by what a user notices first. Each line becomes one run.
 
 ### Accessibility
 - [ ] TalkBack pass over every screen: labels, focus order, decorative nodes hidden.
-- [ ] Large font settings (200 %) on every screen without clipped or overlapping text.
+- [x] Large font settings (200 %): text wraps, chrome keeps its height, labels are capped.
+- [ ] Icon glyphs are clipped at 200 % inside expo-symbols. Requesting a smaller glyph shrinks it (so the glyph does not scale) and transform-scaling keeps the clipping (so it happens inside SymbolView). Next attempt: give SymbolView an explicit style with width/height, or draw the tab icons from a vector set instead.
 - [ ] Contrast of every state that is not covered by the token test (pressed, disabled, over media).
 - [x] Announcements for state changes that only show visually (sent, failed, applied).
 

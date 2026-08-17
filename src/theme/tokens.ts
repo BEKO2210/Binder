@@ -64,6 +64,9 @@ export const layout = {
   dialCenterSize: 166,
   discoveryActionBarHeight: 82,
   chatBubbleMaxWidth: '82%',
+  // Chrome (tab bar, headers) stops growing here so a 200 % system font cannot
+  // push the navigation over the content it navigates.
+  chromeFontScaleCap: 1.4,
 } as const;
 
 export const feedback = {
