@@ -30,6 +30,14 @@
           }
         },
         {
+          "client_id": "1098973922981-oadqhu2nkvmpi94r5vccp0mbduurgcjb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "de.beko2210.binder",
+            "certificate_hash": "f2bedb75e05b834a733992c8bca19bd95f5df786"
+          }
+        },
+        {
           "client_id": "1098973922981-qbmvcdi5ser8n2lo4vl5b1cb08vnsi03.apps.googleusercontent.com",
           "client_type": 3
         }
