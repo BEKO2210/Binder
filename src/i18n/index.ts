@@ -64,6 +64,12 @@ export function translate(locale: LocaleCode, key: string, values?: Record<strin
 
 export function resolveLocale(preference: 'system' | LocaleCode, deviceLanguage: string | undefined): LocaleCode {
   if (preference !== 'system') return dictionaries[preference] ? preference : SOURCE_LOCALE;
-  const short = (deviceLanguage ?? '').slice(0, 2).toLowerCase();
-  return short && dictionaries[short] ? (short as LocaleCode) : SOURCE_LOCALE;
+  const tag = (deviceLanguage ?? '').replace('_', '-');
+  // A regional file wins over the base language — pt-BR before pt — and a
+  // device asking for pt-PT still lands on Portuguese if only pt-BR is bundled.
+  const exact = Object.keys(dictionaries).find((code) => code.toLowerCase() === tag.toLowerCase());
+  if (exact) return exact as LocaleCode;
+  const base = tag.split('-')[0]?.toLowerCase() ?? '';
+  const byBase = base ? Object.keys(dictionaries).find((code) => code.toLowerCase().split('-')[0] === base) : undefined;
+  return (byBase as LocaleCode) ?? SOURCE_LOCALE;
 }

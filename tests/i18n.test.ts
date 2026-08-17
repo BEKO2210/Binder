@@ -36,3 +36,14 @@ test('the device language only wins when Binder actually has it', () => {
   // A language nobody bundled must not strand the interface.
   assert.equal(resolveLocale('sv' as never, 'de-DE'), 'en');
 });
+
+test('a regional file serves the whole language', () => {
+  const bundled = new Set(availableLocales().map((locale) => locale.code));
+  if (!bundled.has('pt-BR')) return;
+  // Exact tag, a different region of the same language, and the bare language
+  // all have to land on the file that exists.
+  assert.equal(resolveLocale('system', 'pt-BR'), 'pt-BR');
+  assert.equal(resolveLocale('system', 'pt-PT'), 'pt-BR');
+  assert.equal(resolveLocale('system', 'pt'), 'pt-BR');
+  assert.equal(resolveLocale('system', 'de_DE'), 'de', 'an underscore tag still resolves');
+});
