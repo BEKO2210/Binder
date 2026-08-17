@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Image, RefreshControl, View } from 'react-native';
+import { Image, RefreshControl, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { PhotoPager } from '../components/PhotoPager';
+import { announce } from '../lib/announce';
+import { confirmDestructive } from '../lib/confirmDestructive';
 import { DiscoveryPreferences } from '../components/DiscoveryPreferences';
 import { MotionPressable as Pressable } from '../components/ui';
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderInput, BinderScreenHeader, BinderText, ScreenState, SectionHeader } from '../components/ui';
@@ -102,6 +104,7 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
       setMedia(await listMyProfileMedia());
       setUpload(null);
       setMessage(t('profileSettings.messages.photoAdded')); setMessageKind('success');
+      announce(t('profileSettings.accessibility.photoUploaded'));
     } catch (error) {
       setUpload({ phase: 'error', image, error: errorMessage(error, t('profileSettings.errors.addPhoto')) });
     }
@@ -146,10 +149,7 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
   }
 
   function confirmRemove(item: GalleryMedia) {
-    Alert.alert(t('profileSettings.alerts.removeTitle'), item.position === 0 ? t('profileSettings.alerts.removePrimaryMessage') : t('profileSettings.alerts.removeMessage'), [
-      { text: t('profileSettings.actions.cancel'), style: 'cancel' },
-      { text: t('profileSettings.actions.remove'), style: 'destructive', onPress: () => void remove(item) },
-    ]);
+    confirmDestructive({ title: t('profileSettings.alerts.removeTitle'), message: item.position === 0 ? t('profileSettings.alerts.removePrimaryMessage') : t('profileSettings.alerts.removeMessage'), cancelText: t('profileSettings.actions.cancel'), destructiveText: t('profileSettings.actions.remove'), onConfirm: () => void remove(item) });
   }
 
   async function remove(item: GalleryMedia) {
@@ -159,6 +159,7 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
       await removeProfileMedia(item.id);
       await haptic('destructive');
       setMedia(await listMyProfileMedia());
+      announce(t('profileSettings.accessibility.photoRemoved'));
     } catch (error) { setMessageKind('error'); setMessage(errorMessage(error, t('profileSettings.errors.removePhoto'))); }
     finally { setBusy(false); }
   }

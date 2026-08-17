@@ -12,6 +12,7 @@ import { PhotoPager } from '../components/PhotoPager';
 import { MotionPressable as Pressable } from '../components/ui';
 import { BinderBrand, BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import { fetchMatches, type MatchSummary } from '../lib/conversation';
+import { announce } from '../lib/announce';
 import { fetchDiscoveryBatch, recordDecision, refreshDiscoveryLocation, type DiscoveryProfile } from '../lib/discovery';
 import { advanceDeck, decideSwipe, discoveryDeckPhysics, resistedTranslation, type SwipeDirection } from '../lib/discoveryDeck';
 import { listMyProfileMedia } from '../lib/media';
@@ -204,7 +205,10 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
 
   function finishDismiss(current: DiscoveryProfile, matched: boolean) {
     setProfiles((value) => advanceDeck(value, current.id));
-    if (matched) setMatch(current);
+    if (matched) {
+      announce(t('discovery.accessibility.matchCreated', { name: current.name }));
+      setMatch(current);
+    }
     // Reset only after React committed the new top card — resetting in the
     // same frame flashed the dismissed card back to center.
     requestAnimationFrame(() => {

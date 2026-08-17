@@ -4,6 +4,7 @@ import { Alert, Image, ScrollView, View } from 'react-native';
 import { BinderButton, BinderCard, BinderIcon, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import { MotionPressable as Pressable } from '../components/ui';
 import { recordBetaEvent } from '../lib/beta';
+import { confirmDestructive } from '../lib/confirmDestructive';
 import { listMyProfileMedia } from '../lib/media';
 import { profileCompleteness } from '../lib/profileCompleteness';
 import { classifyError, type ReliabilityError } from '../lib/reliability';
@@ -66,10 +67,7 @@ export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, o
   }
 
   function confirmDeletion() {
-    Alert.alert(t('profile.alerts.deleteTitle'), t('profile.alerts.deleteMessage'), [
-      { text: t('profile.actions.cancel'), style: 'cancel' },
-      { text: t('profile.actions.deleteAccount'), style: 'destructive', onPress: () => void performDeletion() },
-    ]);
+    confirmDestructive({ title: t('profile.alerts.deleteTitle'), message: t('profile.alerts.deleteMessage'), cancelText: t('profile.actions.cancel'), destructiveText: t('profile.actions.deleteAccount'), onConfirm: () => void performDeletion() });
   }
 
   function confirmSignOut() {

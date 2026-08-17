@@ -20,7 +20,13 @@ if (!root.includes('LegalGateScreen')) failures.push('Root does not render Legal
 if (root.indexOf('if (!legalGate.accepted)') < 0 || root.indexOf('if (!legalGate.accepted)') > root.indexOf('if (!onboardingComplete)')) failures.push('Legal gate is not ahead of onboarding');
 if (!profile.includes('deleteCurrentAccount')) failures.push('Profile has no authenticated deletion action');
 if (!profile.includes('DELETE_ACCOUNT_URL')) failures.push('Profile has no external deletion resource');
-if (!profile.includes("style: 'destructive'")) failures.push('Deletion confirmation is not marked destructive');
+// The confirmation shape moved into src/lib/confirmDestructive.ts, which is
+// now the single place that decides button order and destructive styling. The
+// contract is still that deletion is confirmed destructively — it is just
+// asserted where that decision lives.
+const confirmHelper = `${readFileSync('src/lib/confirmDestructive.ts', 'utf8')}\n${readFileSync('src/lib/destructiveConfirmationPolicy.ts', 'utf8')}`;
+if (!profile.includes('confirmDestructive({')) failures.push('Deletion is not confirmed through the shared destructive confirmation');
+if (!confirmHelper.includes("style: 'destructive'") || !confirmHelper.includes("style: 'cancel'")) failures.push('Deletion confirmation is not marked destructive');
 if (!discovery.includes('reportAndBlockDiscoveryProfile')) failures.push('Discovery has no pre-match report/block action');
 if (!safety.includes('https://beko2210.github.io/Binder')) failures.push('App policy links do not target Binder public site');
 if (!safety.includes("functions.invoke<{ deleted?: boolean; error?: string }>('delete-account'")) failures.push('Client deletion does not use authenticated Edge Function');

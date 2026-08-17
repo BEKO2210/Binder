@@ -4,6 +4,8 @@ import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller
 import Animated, { FadeInDown, FadeInUp, FadeOutDown, useAnimatedStyle } from 'react-native-reanimated';
 
 import { buildChatTimeline, timeLabel, type TimelineItem } from '../lib/chatTimeline';
+import { announce } from '../lib/announce';
+import { confirmDestructive } from '../lib/confirmDestructive';
 import { composerBody } from '../lib/conversationPresentation';
 import { resolveStaggerDelay } from '../lib/motionPolicy';
 import { classifyError, isAbortError, isConversationEndedError, withRetry, type ReliabilityError } from '../lib/reliability';
@@ -51,11 +53,12 @@ type MessageRowProps = {
   endsGroup?: boolean;
   showsTimestamp?: boolean;
   index: number;
-  onLongPress: (messageId: string, body: string, mine: boolean) => void;
+  onOpenActions: (messageId: string, body: string, mine: boolean, longPress: boolean) => void;
 };
 
-const ChatMessageRow = memo(function ChatMessageRow({ type, label, messageId, body, createdAt, mine = false, groupedWithPrevious = false, endsGroup = false, showsTimestamp = false, index, onLongPress }: MessageRowProps) {
+const ChatMessageRow = memo(function ChatMessageRow({ type, label, messageId, body, createdAt, mine = false, groupedWithPrevious = false, endsGroup = false, showsTimestamp = false, index, onOpenActions }: MessageRowProps) {
   const { theme, reduceMotion, t } = useBinderTheme();
+  const longPressHandled = useRef(false);
   if (type === 'day') {
     return (
       <View style={{ alignItems: 'center', marginTop: theme.spacing.x5, marginBottom: theme.spacing.x2 }}>
@@ -70,7 +73,17 @@ const ChatMessageRow = memo(function ChatMessageRow({ type, label, messageId, bo
   return (
     <Animated.View entering={reduceMotion ? undefined : FadeInDown.delay(resolveStaggerDelay(index, false)).duration(theme.motion.feedback)} style={{ marginTop: groupedWithPrevious ? theme.spacing.x1 : theme.spacing.x3 }}>
       <Pressable
-        onLongPress={() => onLongPress(messageId, body, mine)}
+        onPress={() => {
+          if (longPressHandled.current) {
+            longPressHandled.current = false;
+            return;
+          }
+          onOpenActions(messageId, body, mine, false);
+        }}
+        onLongPress={() => {
+          longPressHandled.current = true;
+          onOpenActions(messageId, body, mine, true);
+        }}
         accessibilityHint={mine ? t('chat.accessibility.holdToCopy') : t('chat.accessibility.holdToCopyOrReport')}
         pressedSurface={false}
         style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: theme.layout.chatBubbleMaxWidth }}
@@ -336,9 +349,11 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
       mergeMessage(confirmed);
       discardAttempt(clientId);
       listRef.current?.scrollToOffset({ offset: 0, animated: !reduceMotion });
+      announce(t('chat.accessibility.messageSent'));
       await haptic('selection');
     } catch (nextError) {
       if (mountedRef.current && !isAbortError(nextError)) {
+        announce(t('chat.accessibility.messageFailed'));
         if (isConversationEndedError(nextError)) {
           setConversationEnded(true);
           discardAttempt(clientId);
@@ -355,19 +370,20 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     } finally { if (mountedRef.current) setSending(false); }
   }
 
-  const openMessageActions = useCallback((messageId: string, body: string, mine: boolean) => {
+  const openMessageActions = useCallback((messageId: string, body: string, mine: boolean, longPress: boolean) => {
+    if (longPress) void haptic('selection');
     const actions = [
       { text: t('chat.actions.copy'), onPress: () => Clipboard.setString(body) },
       ...(mine ? [] : [{ text: t('chat.actions.report'), style: 'destructive' as const, onPress: () => openReport(messageId) }]),
       { text: t('chat.actions.cancel'), style: 'cancel' as const },
     ];
     Alert.alert(t('chat.alerts.messageActions'), undefined, actions);
-  }, [t]);
+  }, [haptic, t]);
 
   const renderTimelineItem = useCallback(({ item, index }: { item: TimelineItem<Message>; index: number }) => {
-    if (item.type === 'day') return <ChatMessageRow type="day" label={item.label} index={index} onLongPress={openMessageActions} />;
+    if (item.type === 'day') return <ChatMessageRow type="day" label={item.label} index={index} onOpenActions={openMessageActions} />;
     const message = item.message;
-    return <ChatMessageRow type="message" messageId={message.id} body={message.body} createdAt={message.created_at} mine={message.sender_id === currentUserId} groupedWithPrevious={item.groupedWithPrevious} endsGroup={item.endsGroup} showsTimestamp={item.showsTimestamp} index={index} onLongPress={openMessageActions} />;
+    return <ChatMessageRow type="message" messageId={message.id} body={message.body} createdAt={message.created_at} mine={message.sender_id === currentUserId} groupedWithPrevious={item.groupedWithPrevious} endsGroup={item.endsGroup} showsTimestamp={item.showsTimestamp} index={index} onOpenActions={openMessageActions} />;
   }, [currentUserId, openMessageActions]);
 
   function trackScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
@@ -378,18 +394,12 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
 
   function confirmUnmatch() {
     if (safetyBusy) return;
-    Alert.alert(t('chat.alerts.unmatchTitle', { name: match.firstName }), t('chat.alerts.unmatchMessage'), [
-      { text: t('chat.actions.cancel'), style: 'cancel' },
-      { text: t('chat.actions.unmatch'), style: 'destructive', onPress: () => { if (safetyBusy) return; setSafetyError(null); setSafetyBusy('unmatch'); void unmatch(match.matchId, { signal: lifecycleControllerRef.current.signal }).then(async () => { if (!mountedRef.current) return; await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => { if (mountedRef.current && !isAbortError(error)) setSafetyError(classifyError(error)); }).finally(() => { if (mountedRef.current) setSafetyBusy(null); }); } },
-    ]);
+    confirmDestructive({ title: t('chat.alerts.unmatchTitle', { name: match.firstName }), message: t('chat.alerts.unmatchMessage'), cancelText: t('chat.actions.cancel'), destructiveText: t('chat.actions.unmatch'), onConfirm: () => { if (safetyBusy) return; setSafetyError(null); setSafetyBusy('unmatch'); void unmatch(match.matchId, { signal: lifecycleControllerRef.current.signal }).then(async () => { if (!mountedRef.current) return; await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => { if (mountedRef.current && !isAbortError(error)) setSafetyError(classifyError(error)); }).finally(() => { if (mountedRef.current) setSafetyBusy(null); }); } });
   }
 
   function confirmBlock() {
     if (safetyBusy) return;
-    Alert.alert(t('chat.alerts.blockTitle', { name: match.firstName }), t('chat.alerts.blockMessage'), [
-      { text: t('chat.actions.cancel'), style: 'cancel' },
-      { text: t('chat.actions.block'), style: 'destructive', onPress: () => { if (safetyBusy) return; setSafetyError(null); setSafetyBusy('block'); void blockUser(match.otherUserId, { signal: lifecycleControllerRef.current.signal }).then(async () => { if (!mountedRef.current) return; await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => { if (mountedRef.current && !isAbortError(error)) setSafetyError(classifyError(error)); }).finally(() => { if (mountedRef.current) setSafetyBusy(null); }); } },
-    ]);
+    confirmDestructive({ title: t('chat.alerts.blockTitle', { name: match.firstName }), message: t('chat.alerts.blockMessage'), cancelText: t('chat.actions.cancel'), destructiveText: t('chat.actions.block'), onConfirm: () => { if (safetyBusy) return; setSafetyError(null); setSafetyBusy('block'); void blockUser(match.otherUserId, { signal: lifecycleControllerRef.current.signal }).then(async () => { if (!mountedRef.current) return; await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => { if (mountedRef.current && !isAbortError(error)) setSafetyError(classifyError(error)); }).finally(() => { if (mountedRef.current) setSafetyBusy(null); }); } });
   }
 
   async function submitReport() {

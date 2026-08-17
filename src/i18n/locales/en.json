@@ -213,6 +213,7 @@
     },
     "accessibility": {
       "openFilters": "Open discovery filters",
+      "matchCreated": "You matched with {name}.",
       "safetyOptions": "Safety options for {name}",
       "closeSafetyOptions": "Close safety options",
       "bindProfile": "Bind profile",
@@ -331,6 +332,8 @@
       "reportDetails": "Report details",
       "holdToCopy": "Hold to copy this message",
       "holdToCopyOrReport": "Hold to copy or report this message",
+      "messageSent": "Message sent.",
+      "messageFailed": "Message not sent.",
       "scrollToNewMessage": "Scroll to new message",
       "retrySending": "Retry sending \"{message}\"",
       "discardUnsent": "Discard unsent message \"{message}\"",
@@ -446,6 +449,8 @@
     "accessibility": {
       "closeFullPhoto": "Close full photo",
       "backToProfile": "Back to profile",
+      "photoUploaded": "Photo uploaded.",
+      "photoRemoved": "Photo removed.",
       "addPhoto": "Add profile photo",
       "viewPhoto": "View photo {number} in full",
       "moveLeft": "Move photo {number} left",
@@ -509,7 +514,8 @@
       "reset": "Reset to defaults"
     },
     "accessibility": {
-      "close": "Close discovery filters"
+      "close": "Close discovery filters",
+      "filtersApplied": "Filters applied."
     },
     "count": {
       "unavailable": "Count unavailable",

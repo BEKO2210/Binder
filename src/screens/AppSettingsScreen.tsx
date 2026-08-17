@@ -1,10 +1,11 @@
 import { memo, useCallback, useEffect, useState } from 'react';
-import { Alert, Switch, View } from 'react-native';
+import { Switch, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BinderButton, BinderCard, BinderChip, BinderInput, BinderScreenHeader, BinderText, ScreenState, SectionHeader } from '../components/ui';
 import { availableLocales } from '../i18n';
 import { getBetaSettings, setBetaDiagnostics } from '../lib/beta';
+import { confirmDestructive } from '../lib/confirmDestructive';
 import { disablePushNotifications, enablePushNotifications } from '../lib/notifications';
 import { useBinderHaptics } from '../theme/haptics';
 import type { AccentThemeId, MotionPreference } from '../theme/tokens';
@@ -93,17 +94,14 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
 
   const confirmReset = useCallback(() => {
     if (resetBusy) return;
-    Alert.alert(t('appSettings.reset.confirmTitle'), t('appSettings.reset.confirmCopy'), [
-      { text: t('appSettings.reset.cancel'), style: 'cancel' },
-      { text: t('appSettings.reset.confirm'), style: 'destructive', onPress: () => {
+    confirmDestructive({ title: t('appSettings.reset.confirmTitle'), message: t('appSettings.reset.confirmCopy'), cancelText: t('appSettings.reset.cancel'), destructiveText: t('appSettings.reset.confirm'), onConfirm: () => {
         setResetBusy(true);
         setMessage('');
         void resetSettings()
           .then(() => setMessage(t('appSettings.reset.done')))
           .catch((error: unknown) => setMessage(error instanceof Error ? error.message : t('appSettings.reset.failed')))
           .finally(() => setResetBusy(false));
-      } },
-    ]);
+      } });
   }, [resetBusy, resetSettings, t]);
 
   const toggleHaptics = useCallback((value: boolean) => void updateSettings({ hapticsEnabled: value }), [updateSettings]);

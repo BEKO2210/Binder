@@ -3,6 +3,7 @@ import { ScrollView, View } from 'react-native';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 
 import { supabase } from '../lib/supabase';
+import { announce } from '../lib/announce';
 import { discoveryCountDebounceMs, likelyEmptyFilter } from '../lib/discoveryPreferencesPolicy';
 import type { Gender } from '../lib/validation';
 import { useBinderTheme } from '../theme/ThemeProvider';
@@ -96,6 +97,7 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
     try {
       const { error } = await supabase.rpc('update_my_profile', { p_first_name: profile.first_name, p_gender: profile.gender, p_bio: profile.bio, p_interests: profile.interests, p_interested_in: values.interestedIn, p_min_age: values.minAge, p_max_age: values.maxAge, p_max_distance_km: values.distance });
       if (error) throw error;
+      announce(t('discoveryFilterSheet.accessibility.filtersApplied'));
       onApplied(values);
     } catch {
       setErrors({ distance: t('discoveryFilterSheet.errors.save') });

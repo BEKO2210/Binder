@@ -54,6 +54,9 @@ leaves the running system intact.
 | 033 | Photo pager: the segment fills with the drag instead of jumping on commit | Gates green, device check | done |
 | 034 | Bind and pass buttons raise the same stamp the gesture raises; a failed decision returns in one movement | Gates green, device check | done |
 | 035 | Pull-to-refresh in the gallery and the conversation | Gallery screenshot after a pull, layout unchanged | done |
+| 036 | A long press on a message opens the same actions as a tap, with one haptic | Device: long press shows Copy / Report / Cancel | done |
+| 037 | One shape for every destructive confirmation, decided in one place | Policy test; safety contract now asserts it at that place | done |
+| 038 | State changes that were only visible are announced to a screen reader | Gates green | done |
 | 017 | Language section in App settings — appears only when a translation exists, endonym plus flag, same chip rhythm as Appearance | Screenshot: Sprache / Wie mein Gerät / 🇬🇧 English / 🇩🇪 Deutsch | done |
 
 ## Backlog
@@ -69,8 +72,8 @@ Ordered by what a user notices first. Each line becomes one run.
 - [x] Photo pager: the segment indicator follows the drag.
 - [ ] Match celebration: entrance timing and the two-photo composition on a 412 dp screen.
 - [x] Pull-to-refresh everywhere a list can be stale (matches, chat, gallery).
-- [ ] Long-press on a message shows the actions sheet, not only the overflow tap.
-- [ ] Every destructive action has one confirmation shape, not three different ones.
+- [x] Long-press on a message shows the actions sheet.
+- [x] Every destructive action has one confirmation shape.
 
 ### States nobody has seen yet
 - [x] Offline: every screen and the pre-app safety check.
@@ -85,7 +88,7 @@ Ordered by what a user notices first. Each line becomes one run.
 - [ ] TalkBack pass over every screen: labels, focus order, decorative nodes hidden.
 - [ ] Large font settings (200 %) on every screen without clipped or overlapping text.
 - [ ] Contrast of every state that is not covered by the token test (pressed, disabled, over media).
-- [ ] Announcements for state changes that only show visually (sent, failed, applied).
+- [x] Announcements for state changes that only show visually (sent, failed, applied).
 
 ### Performance
 - [ ] Frame timing for the match celebration and the profile expansion (wave C leaves them open).
