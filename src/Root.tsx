@@ -74,6 +74,7 @@ function BinderApp() {
   // On a tablet the centred column needs an edge, otherwise the interface looks
   // like a phone screenshot pasted onto a large canvas.
   const { width: windowWidth } = useWindowDimensions();
+  const wideScreen = windowWidth > 720;
   const [legalGate, setLegalGate] = useState<LegalGate | null | undefined>(undefined);
   const [legalRefreshKey, setLegalRefreshKey] = useState(0);
   const [onboardingComplete, setOnboardingComplete] = useState<boolean | undefined>(undefined);
@@ -268,13 +269,14 @@ function BinderApp() {
   if (!legalGate.accepted) return <LegalGateScreen gate={legalGate} onAccepted={() => { setLegalGate((current) => current ? { ...current, accepted: true } : current); setLoadError(''); }} />;
   if (onboardingComplete === undefined) return <ScreenState kind="loading" message={loadError || 'Loading your Binder profile…'} />;
   if (!onboardingComplete) return <OnboardingScreen userId={session.user.id} onComplete={() => { setOnboardingComplete(true); setTab('discover'); }} />;
-  if (activeMatch) return <RouteFrame route="expand"><ChatScreen match={activeMatch} currentUserId={session.user.id} onClose={() => { setActiveMatch(null); setMatchesRefreshKey((value) => value + 1); }} onConversationEnded={() => { setActiveMatch(null); setTab('matches'); setMatchesRefreshKey((value) => value + 1); }} /></RouteFrame>;
+  // Full-screen routes live outside the tab shell, so they need the same centred
+  // column — a conversation stretched across a tablet reads as a wall of text.
+  if (activeMatch) return <CenteredColumn wide={wideScreen}><RouteFrame route="expand"><ChatScreen match={activeMatch} currentUserId={session.user.id} onClose={() => { setActiveMatch(null); setMatchesRefreshKey((value) => value + 1); }} onConversationEnded={() => { setActiveMatch(null); setTab('matches'); setMatchesRefreshKey((value) => value + 1); }} /></RouteFrame></CenteredColumn>;
   if (profileRoute === 'edit') return <RouteFrame route="lift"><ProfileSettingsScreen userId={session.user.id} onClose={() => setProfileRoute('home')} /></RouteFrame>;
   if (profileRoute === 'settings') return <RouteFrame route="trailing"><AppSettingsScreen onClose={() => setProfileRoute('home')} /></RouteFrame>;
   if (profileRoute === 'beta') return <RouteFrame route="trailing"><BetaScreen onClose={() => setProfileRoute('home')} /></RouteFrame>;
   if (profileRoute === 'about') return <RouteFrame route="trailing"><AboutScreen onClose={() => setProfileRoute('home')} /></RouteFrame>;
 
-  const wideScreen = windowWidth > theme.layout.tabletContentMaxWidth;
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
       {/* On a tablet the same layout used to stretch a phone-shaped interface
@@ -294,6 +296,17 @@ function BinderApp() {
         <NavItem icon="matches" label="Matches" active={tab === 'matches'} onPress={() => { setTab('matches'); setMatchesRefreshKey((value) => value + 1); }} />
         <NavItem icon="profile" label="Profile" active={tab === 'profile'} onPress={() => { setTab('profile'); setProfileRoute('home'); }} />
       </View>
+      </View>
+    </View>
+  );
+}
+
+function CenteredColumn({ wide, children }: { wide: boolean; children: React.ReactNode }) {
+  const { theme } = useBinderTheme();
+  return (
+    <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
+      <View style={{ flex: 1, width: '100%', maxWidth: theme.layout.tabletContentMaxWidth, alignSelf: 'center', borderLeftWidth: wide ? 1 : 0, borderRightWidth: wide ? 1 : 0, borderColor: theme.colors.borderSubtle }}>
+        {children}
       </View>
     </View>
   );
