@@ -121,7 +121,8 @@
       "note": "Nessuna email di conferma: Google ha già verificato il tuo indirizzo.",
       "unavailable": "L'accesso con Google non è disponibile in questa versione.",
       "playServices": "I servizi Google Play mancano o sono obsoleti su questo telefono.",
-      "failed": "L'accesso con Google non ha funzionato. Riprova o usa il tuo indirizzo email."
+      "failed": "L'accesso con Google non ha funzionato. Riprova o usa il tuo indirizzo email.",
+      "signature": "Questa versione non è registrata presso Google. Per ora accedi con il tuo indirizzo email."
     }
   },
   "matches": {

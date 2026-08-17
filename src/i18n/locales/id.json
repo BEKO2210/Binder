@@ -121,7 +121,8 @@
       "note": "Tanpa email konfirmasi — Google sudah memverifikasi alamatmu.",
       "unavailable": "Masuk dengan Google tidak tersedia di versi ini.",
       "playServices": "Layanan Google Play tidak ada atau sudah usang di ponsel ini.",
-      "failed": "Masuk dengan Google gagal. Coba lagi atau pakai alamat emailmu."
+      "failed": "Masuk dengan Google gagal. Coba lagi atau pakai alamat emailmu.",
+      "signature": "Versi ini belum terdaftar di Google. Untuk sekarang masuk dengan alamat emailmu."
     }
   },
   "matches": {

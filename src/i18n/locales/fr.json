@@ -121,7 +121,8 @@
       "note": "Pas d'e-mail de confirmation — Google a déjà vérifié ton adresse.",
       "unavailable": "La connexion Google n'est pas disponible dans cette version.",
       "playServices": "Les services Google Play sont absents ou obsolètes sur ce téléphone.",
-      "failed": "La connexion Google n'a pas fonctionné. Réessaie ou utilise ton adresse e-mail."
+      "failed": "La connexion Google n'a pas fonctionné. Réessaie ou utilise ton adresse e-mail.",
+      "signature": "Cette version n'est pas enregistrée chez Google. Connecte-toi avec ton adresse e-mail pour l'instant."
     }
   },
   "matches": {

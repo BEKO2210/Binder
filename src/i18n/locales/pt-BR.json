@@ -121,7 +121,8 @@
       "note": "Sem e-mail de confirmação — o Google já verificou seu endereço.",
       "unavailable": "O login com Google não está disponível nesta versão.",
       "playServices": "Os serviços do Google Play estão ausentes ou desatualizados neste telefone.",
-      "failed": "O login com Google não funcionou. Tente de novo ou use seu e-mail."
+      "failed": "O login com Google não funcionou. Tente de novo ou use seu e-mail.",
+      "signature": "Esta versão não está registrada no Google. Por enquanto, entre com seu e-mail."
     }
   },
   "matches": {

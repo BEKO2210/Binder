@@ -121,7 +121,8 @@
       "note": "No confirmation mail — Google has already verified your address.",
       "unavailable": "Google sign-in is not available in this version.",
       "playServices": "Google Play services are missing or out of date on this phone.",
-      "failed": "Google sign-in did not work. Try again or use your email address."
+      "failed": "Google sign-in did not work. Try again or use your email address.",
+      "signature": "This build is not registered with Google. Sign in with your email address for now."
     }
   },
   "matches": {

@@ -121,7 +121,8 @@
       "note": "无需确认邮件 —— Google 已验证你的邮箱地址。",
       "unavailable": "此版本暂不支持 Google 登录。",
       "playServices": "此手机缺少 Google Play 服务或版本过旧。",
-      "failed": "Google 登录失败。请重试或改用邮箱地址。"
+      "failed": "Google 登录失败。请重试或改用邮箱地址。",
+      "signature": "此版本未在 Google 注册。请暂时使用邮箱地址登录。"
     }
   },
   "matches": {

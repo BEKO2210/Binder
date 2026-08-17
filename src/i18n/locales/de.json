@@ -121,7 +121,8 @@
       "note": "Keine Bestätigungsmail — Google hat deine Adresse bereits geprüft.",
       "unavailable": "Die Google-Anmeldung ist in dieser Version nicht verfügbar.",
       "playServices": "Die Google-Play-Dienste fehlen auf diesem Telefon oder sind veraltet.",
-      "failed": "Die Google-Anmeldung hat nicht geklappt. Versuche es erneut oder nimm deine E-Mail-Adresse."
+      "failed": "Die Google-Anmeldung hat nicht geklappt. Versuche es erneut oder nimm deine E-Mail-Adresse.",
+      "signature": "Diese Fassung ist bei Google nicht hinterlegt. Melde dich vorerst mit deiner E-Mail-Adresse an."
     }
   },
   "matches": {

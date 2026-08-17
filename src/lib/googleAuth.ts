@@ -1,5 +1,6 @@
 import { GoogleSignin, isErrorWithCode, statusCodes } from '@react-native-google-signin/google-signin';
 
+import { safeLog } from './safeLog';
 import { supabase } from './supabase';
 
 // Signing in with Google skips the confirmation mail entirely: Google has
@@ -19,7 +20,7 @@ export type GoogleSignInOutcome =
   | { status: 'signed-in' }
   | { status: 'cancelled' }
   | { status: 'unavailable' }
-  | { status: 'failed'; reason: 'play-services' | 'no-id-token' | 'server' };
+  | { status: 'failed'; reason: 'play-services' | 'no-id-token' | 'server' | 'signature' };
 
 export function isGoogleSignInConfigured(): boolean {
   return webClientId.trim().length > 0;
@@ -42,6 +43,15 @@ export function describeGoogleError(error: unknown): GoogleSignInOutcome {
     if (error.code === statusCodes.SIGN_IN_CANCELLED) return { status: 'cancelled' };
     if (error.code === statusCodes.IN_PROGRESS) return { status: 'cancelled' };
     if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) return { status: 'failed', reason: 'play-services' };
+    // DEVELOPER_ERROR means Google does not recognise this build's signing
+    // certificate. It cost an evening once: the Play-delivered APK is signed
+    // with the app-signing key, not the upload key, and only the upload key was
+    // registered. The code is logged so the next occurrence is a log line
+    // rather than pulling the APK off the phone to read its certificate.
+    safeLog('warn', 'google_sign_in_failed', { code: String(error.code) });
+    if (String(error.code) === '10' || String(error.code) === 'DEVELOPER_ERROR') {
+      return { status: 'failed', reason: 'signature' };
+    }
   }
   return { status: 'failed', reason: 'server' };
 }

@@ -121,7 +121,8 @@
       "note": "Bez maila potwierdzającego — Google już zweryfikował Twój adres.",
       "unavailable": "Logowanie przez Google nie jest dostępne w tej wersji.",
       "playServices": "Usługi Google Play są niedostępne lub nieaktualne na tym telefonie.",
-      "failed": "Logowanie przez Google nie zadziałało. Spróbuj ponownie lub użyj adresu e-mail."
+      "failed": "Logowanie przez Google nie zadziałało. Spróbuj ponownie lub użyj adresu e-mail.",
+      "signature": "Ta wersja nie jest zarejestrowana w Google. Na razie zaloguj się adresem e-mail."
     }
   },
   "matches": {

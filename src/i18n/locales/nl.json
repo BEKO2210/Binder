@@ -121,7 +121,8 @@
       "note": "Geen bevestigingsmail — Google heeft je adres al geverifieerd.",
       "unavailable": "Inloggen met Google is niet beschikbaar in deze versie.",
       "playServices": "Google Play-services ontbreken of zijn verouderd op deze telefoon.",
-      "failed": "Inloggen met Google lukte niet. Probeer het opnieuw of gebruik je e-mailadres."
+      "failed": "Inloggen met Google lukte niet. Probeer het opnieuw of gebruik je e-mailadres.",
+      "signature": "Deze versie is niet bij Google geregistreerd. Log voorlopig in met je e-mailadres."
     }
   },
   "matches": {

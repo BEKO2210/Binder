@@ -121,7 +121,8 @@
       "note": "Onay e-postası yok — Google adresini zaten doğruladı.",
       "unavailable": "Google ile giriş bu sürümde kullanılamıyor.",
       "playServices": "Bu telefonda Google Play hizmetleri yok ya da güncel değil.",
-      "failed": "Google ile giriş çalışmadı. Tekrar dene ya da e-posta adresini kullan."
+      "failed": "Google ile giriş çalışmadı. Tekrar dene ya da e-posta adresini kullan.",
+      "signature": "Bu sürüm Google'da kayıtlı değil. Şimdilik e-posta adresinle giriş yap."
     }
   },
   "matches": {

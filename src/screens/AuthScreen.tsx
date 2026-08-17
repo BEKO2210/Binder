@@ -62,7 +62,9 @@ export default function AuthScreen({ recovery = false, onRecoveryHandled }: { re
       ? 'auth.google.unavailable'
       : outcome.reason === 'play-services'
         ? 'auth.google.playServices'
-        : 'auth.google.failed'));
+        : outcome.reason === 'signature'
+          ? 'auth.google.signature'
+          : 'auth.google.failed'));
   }
 
   const errors: AuthFieldErrors = useMemo(

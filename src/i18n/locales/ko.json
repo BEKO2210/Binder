@@ -121,7 +121,8 @@
       "note": "확인 메일이 필요 없습니다. Google이 이미 주소를 확인했습니다.",
       "unavailable": "이 버전에서는 Google 로그인을 사용할 수 없습니다.",
       "playServices": "이 휴대폰에 Google Play 서비스가 없거나 오래되었습니다.",
-      "failed": "Google 로그인에 실패했습니다. 다시 시도하거나 이메일 주소를 사용하세요."
+      "failed": "Google 로그인에 실패했습니다. 다시 시도하거나 이메일 주소를 사용하세요.",
+      "signature": "이 빌드는 Google에 등록되어 있지 않습니다. 당분간 이메일 주소로 로그인해 주세요."
     }
   },
   "matches": {
