@@ -16,9 +16,9 @@
     "eyebrow": "PREFERENCES",
     "language": {
       "title": "Language",
-      "copy": "Binder is written in English. A language appears here as soon as its file is added.",
+      "copy": "Binder speaks the language of your device when it has it. Pick one to override that.",
       "systemLabel": "Match my device",
-      "systemCopy": "Use the device language when Binder has it, English otherwise."
+      "systemCopy": "Follows your device"
     },
     "appearance": {
       "title": "Appearance",

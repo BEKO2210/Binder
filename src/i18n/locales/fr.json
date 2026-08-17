@@ -16,9 +16,9 @@
     "eyebrow": "PRÉFÉRENCES",
     "language": {
       "title": "Langue",
-      "copy": "Binder est rédigé en anglais. Une langue apparaît ici dès que son fichier est ajouté.",
+      "copy": "Binder parle la langue de ton appareil quand elle est disponible. Choisis-en une pour la remplacer.",
       "systemLabel": "Suivre mon appareil",
-      "systemCopy": "Utiliser la langue de l’appareil lorsqu’elle est disponible dans Binder, sinon utiliser l’anglais."
+      "systemCopy": "Suit ton appareil"
     },
     "appearance": {
       "title": "Apparence",

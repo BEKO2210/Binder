@@ -7,749 +7,749 @@
     "sourceOfTruth": false
   },
   "sessionExpired": {
-    "title": "Your session has ended",
-    "message": "Sign in again to continue using Binder.",
-    "action": "Sign in again"
+    "title": "Deine Sitzung ist abgelaufen",
+    "message": "Melde dich erneut an, um Binder weiter zu nutzen.",
+    "action": "Erneut anmelden"
   },
   "settings": {
-    "title": "App settings",
-    "eyebrow": "PREFERENCES",
+    "title": "App-Einstellungen",
+    "eyebrow": "EINSTELLUNGEN",
     "language": {
-      "title": "Language",
-      "copy": "Binder is written in English. A language appears here as soon as its file is added.",
-      "systemLabel": "Match my device",
-      "systemCopy": "Use the device language when Binder has it, English otherwise."
+      "title": "Sprache",
+      "copy": "Binder spricht die Sprache deines Geräts, wenn es sie gibt. Wähle eine, um das zu übersteuern.",
+      "systemLabel": "Geräteeinstellung",
+      "systemCopy": "Folgt deinem Gerät"
     },
     "appearance": {
-      "title": "Appearance",
-      "copy": "Dark is the designed default. System follows your device and can turn Binder light.",
-      "system": "Match my device",
-      "dark": "Always dark"
+      "title": "Darstellung",
+      "copy": "Dunkel ist die vorgesehene Standardeinstellung. Über das System kann Binder auch hell dargestellt werden.",
+      "system": "Geräteeinstellung",
+      "dark": "Immer dunkel"
     },
     "motion": {
-      "title": "Motion",
-      "copy": "Reduced motion keeps every state change, it just stops animating them.",
-      "system": "Match my device",
-      "full": "Full motion",
-      "reduce": "Reduced motion"
+      "title": "Bewegung",
+      "copy": "Bei reduzierter Bewegung bleiben alle Zustandsänderungen erhalten, nur die Animationen entfallen.",
+      "system": "Geräteeinstellung",
+      "full": "Volle Bewegung",
+      "reduce": "Weniger Bewegung"
     },
     "haptics": {
-      "title": "Haptics",
-      "copy": "Short vibrations mark thresholds and confirmations.",
-      "label": "Vibrate on interactions"
+      "title": "Haptik",
+      "copy": "Kurze Vibrationen kennzeichnen Grenzwerte und Bestätigungen.",
+      "label": "Bei Bedienung vibrieren"
     },
     "quietHours": {
-      "title": "Quiet hours",
-      "copy": "Match, message, moderation and product pushes wait until the local end time. Urgent safety alerts remain immediate.",
-      "label": "Use quiet hours",
-      "start": "Start",
-      "end": "End",
-      "invalid": "Use HH:MM"
+      "title": "Ruhezeiten",
+      "copy": "Benachrichtigungen zu Matches, Nachrichten, Moderation und Produktneuigkeiten warten bis zum Ende der lokalen Ruhezeit. Dringende Sicherheitshinweise kommen sofort.",
+      "label": "Ruhezeiten verwenden",
+      "start": "Beginn",
+      "end": "Ende",
+      "invalid": "Format HH:MM verwenden"
     },
     "diagnostics": {
-      "title": "Diagnostics",
-      "copy": "Optional technical events only. No bio, messages, raw stack traces or precise location.",
-      "label": "Share optional diagnostics",
-      "checking": "Checking diagnostics…"
+      "title": "Diagnosedaten",
+      "copy": "Nur optionale technische Ereignisse. Keine Biografie, Nachrichten, unbearbeiteten Fehlerprotokolle oder genauen Standorte.",
+      "label": "Optionale Diagnosedaten teilen",
+      "checking": "Diagnosedaten werden geprüft…"
     },
     "reset": {
-      "action": "Reset app settings",
-      "confirmTitle": "Reset app settings?",
-      "confirmCopy": "Appearance, motion, haptics, accent, notification categories and quiet hours return to their defaults. Your profile and conversations are untouched.",
-      "cancel": "Keep my settings",
-      "confirm": "Reset",
-      "done": "App settings are back to their defaults.",
-      "failed": "Could not reset the settings."
+      "action": "App-Einstellungen zurücksetzen",
+      "confirmTitle": "App-Einstellungen zurücksetzen?",
+      "confirmCopy": "Darstellung, Bewegung, Haptik, Akzent, Benachrichtigungskategorien und Ruhezeiten werden auf die Standardwerte zurückgesetzt. Dein Profil und deine Unterhaltungen bleiben unverändert.",
+      "cancel": "Einstellungen behalten",
+      "confirm": "Zurücksetzen",
+      "done": "Die App-Einstellungen wurden zurückgesetzt.",
+      "failed": "Die Einstellungen konnten nicht zurückgesetzt werden."
     }
   },
   "common": {
-    "retry": "Try again",
-    "close": "Close",
-    "cancel": "Cancel",
-    "save": "Save",
-    "loading": "Loading…"
+    "retry": "Erneut versuchen",
+    "close": "Schließen",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "loading": "Wird geladen…"
   },
   "auth": {
     "errors": {
-      "connection": "No connection. Check your internet and try again.",
-      "credentials": "Email or password is incorrect.",
-      "registered": "This email is already registered. Sign in instead.",
-      "passwordLength": "The password must be at least 8 characters.",
-      "email": "Enter a valid email address.",
-      "generic": "Something went wrong. Try again."
+      "connection": "Keine Verbindung. Prüfe deine Internetverbindung und versuche es erneut.",
+      "credentials": "E-Mail-Adresse oder Passwort ist falsch.",
+      "registered": "Diese E-Mail-Adresse ist bereits registriert. Melde dich stattdessen an.",
+      "passwordLength": "Das Passwort muss mindestens 8 Zeichen lang sein.",
+      "email": "Gib eine gültige E-Mail-Adresse ein.",
+      "generic": "Etwas ist schiefgelaufen. Versuche es erneut."
     },
     "messages": {
-      "passwordChanged": "Password changed. You are signed in.",
-      "resetSent": "If that address has an account, a reset link is on its way. Open it on this phone.",
-      "accountCreated": "Account created. Confirm the email, then sign in."
+      "passwordChanged": "Passwort geändert. Du bist angemeldet.",
+      "resetSent": "Falls zu dieser Adresse ein Konto gehört, wurde ein Link zum Zurücksetzen gesendet. Öffne ihn auf diesem Smartphone.",
+      "accountCreated": "Konto erstellt. Bestätige deine E-Mail-Adresse und melde dich dann an."
     },
     "headers": {
-      "recoveryTitle": "Set a new password.",
-      "signInTitle": "Welcome back.",
-      "signUpTitle": "Start with the real you.",
-      "resetTitle": "Locked out?",
-      "recoveryCopy": "Choose something you have not used here before. You stay signed in on this device.",
-      "resetCopy": "Enter the address you signed up with and we will send a link to set a new password.",
-      "defaultCopy": "Dating for adults. Mutual interest before conversation."
+      "recoveryTitle": "Lege ein neues Passwort fest.",
+      "signInTitle": "Willkommen zurück.",
+      "signUpTitle": "Zeig dich, wie du bist.",
+      "resetTitle": "Kein Zugriff?",
+      "recoveryCopy": "Wähle ein Passwort, das du hier noch nicht verwendet hast. Du bleibst auf diesem Gerät angemeldet.",
+      "resetCopy": "Gib die Adresse ein, mit der du dich registriert hast. Wir senden dir einen Link für ein neues Passwort.",
+      "defaultCopy": "Dating für Erwachsene. Erst gegenseitiges Interesse, dann ein Gespräch."
     },
     "fields": {
-      "emailLabel": "Email",
-      "emailPlaceholder": "you@example.com",
-      "passwordLabel": "Password",
-      "passwordPlaceholder": "At least {length} characters",
-      "repeatPasswordLabel": "Repeat password",
-      "repeatPasswordPlaceholder": "Type it once more",
-      "repeatPasswordHelper": "Both entries have to match before the account is created."
+      "emailLabel": "E-Mail-Adresse",
+      "emailPlaceholder": "du@beispiel.de",
+      "passwordLabel": "Passwort",
+      "passwordPlaceholder": "Mindestens {length} Zeichen",
+      "repeatPasswordLabel": "Passwort wiederholen",
+      "repeatPasswordPlaceholder": "Noch einmal eingeben",
+      "repeatPasswordHelper": "Beide Eingaben müssen übereinstimmen, bevor das Konto erstellt wird."
     },
     "actions": {
-      "savePassword": "Save new password",
-      "signIn": "Sign in",
-      "createAccount": "Create account",
-      "sendResetLink": "Send reset link",
-      "forgotPassword": "Forgot your password?",
-      "createAccountPrompt": "New here? Create an account",
-      "signInPrompt": "Already have an account? Sign in",
-      "backToSignIn": "Back to sign in"
+      "savePassword": "Neues Passwort speichern",
+      "signIn": "Anmelden",
+      "createAccount": "Konto erstellen",
+      "sendResetLink": "Link senden",
+      "forgotPassword": "Passwort vergessen?",
+      "createAccountPrompt": "Neu hier? Konto erstellen",
+      "signInPrompt": "Schon registriert? Anmelden",
+      "backToSignIn": "Zurück zur Anmeldung"
     },
-    "ageRequirement": "You must be at least 18 years old to use Binder."
+    "ageRequirement": "Du musst mindestens 18 Jahre alt sein, um Binder zu nutzen."
   },
   "matches": {
     "header": {
-      "title": "Your Binds",
-      "eyebrow": "CONVERSATIONS"
+      "title": "Deine Binds",
+      "eyebrow": "UNTERHALTUNGEN"
     },
     "notifications": {
-      "enabledTitle": "Message alerts enabled",
-      "enablingTitle": "Enabling alerts…",
-      "blockedTitle": "Alerts are blocked",
-      "title": "Message alerts",
-      "unavailableCopy": "Push notifications are not supported on this device. Chat still works normally.",
-      "offlineCopy": "Could not reach the push service. Check your connection and try again.",
-      "blockedCopy": "Android is blocking Binder notifications. Allow them in system settings.",
-      "enabledCopy": "Notification categories can be adjusted in App Settings.",
-      "copy": "Opt in to alerts for new matches and messages."
+      "enabledTitle": "Nachrichtenhinweise aktiviert",
+      "enablingTitle": "Hinweise werden aktiviert…",
+      "blockedTitle": "Hinweise sind blockiert",
+      "title": "Nachrichtenhinweise",
+      "unavailableCopy": "Push-Benachrichtigungen werden auf diesem Gerät nicht unterstützt. Der Chat funktioniert weiterhin.",
+      "offlineCopy": "Der Benachrichtigungsdienst ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut.",
+      "blockedCopy": "Android blockiert Benachrichtigungen von Binder. Erlaube sie in den Systemeinstellungen.",
+      "enabledCopy": "Benachrichtigungskategorien kannst du in den App-Einstellungen anpassen.",
+      "copy": "Aktiviere Hinweise zu neuen Matches und Nachrichten."
     },
     "actions": {
-      "refresh": "Refresh",
-      "retry": "Retry",
-      "enable": "Enable",
-      "openSettings": "Open settings",
-      "tryAgain": "Try again",
-      "goToDiscovery": "Go to Discovery"
+      "refresh": "Aktualisieren",
+      "retry": "Wiederholen",
+      "enable": "Aktivieren",
+      "openSettings": "Einstellungen öffnen",
+      "tryAgain": "Erneut versuchen",
+      "goToDiscovery": "Zur Discovery"
     },
     "states": {
-      "loading": "Loading your matches…",
-      "offlineTitle": "You are offline",
-      "offlineMessage": "Check your connection and try loading your matches again.",
-      "errorTitle": "Matches did not load"
+      "loading": "Deine Matches werden geladen…",
+      "offlineTitle": "Du bist offline",
+      "offlineMessage": "Prüfe deine Verbindung und lade deine Matches erneut.",
+      "errorTitle": "Matches konnten nicht geladen werden"
     },
     "empty": {
-      "title": "A Bind starts together",
-      "message": "When you and someone in Discovery both choose Bind, they appear here and either of you can start the conversation.",
-      "conversations": "Your conversations will appear here after the first message."
+      "title": "Ein Bind entsteht gemeinsam",
+      "message": "Wenn ihr euch in der Discovery beide für Bind entscheidet, erscheint die Person hier und ihr könnt beide das Gespräch beginnen.",
+      "conversations": "Nach der ersten Nachricht erscheinen deine Unterhaltungen hier."
     },
     "newMatches": {
-      "heading": "NEW BINDS · START SOMETHING",
-      "sayHello": "Say hello"
+      "heading": "NEUE BINDS · SAG HALLO",
+      "sayHello": "Hallo sagen"
     },
     "accessibility": {
-      "startConversation": "Start a conversation with {name}",
-      "openConversation": "Open conversation with {name}",
-      "unreadOne": "{count} unread message",
-      "unreadOther": "{count} unread messages"
+      "startConversation": "Unterhaltung mit {name} beginnen",
+      "openConversation": "Unterhaltung mit {name} öffnen",
+      "unreadOne": "{count} ungelesene Nachricht",
+      "unreadOther": "{count} ungelesene Nachrichten"
     }
   },
   "partnerProfile": {
     "errors": {
-      "load": "Could not load this profile.",
-      "title": "Profile not available"
+      "load": "Dieses Profil konnte nicht geladen werden.",
+      "title": "Profil nicht verfügbar"
     },
     "actions": {
-      "back": "Back"
+      "back": "Zurück"
     },
     "accessibility": {
-      "close": "Close full profile",
-      "photosReviewed": "Photos reviewed before appearing in Discovery"
+      "close": "Vollständiges Profil schließen",
+      "photosReviewed": "Fotos werden vor der Anzeige in der Discovery geprüft"
     },
-    "loading": "Opening profile…",
-    "photosReviewed": "Photos reviewed",
-    "away": "{distance} km away"
+    "loading": "Profil wird geöffnet…",
+    "photosReviewed": "Fotos geprüft",
+    "away": "{distance} km entfernt"
   },
   "discovery": {
     "errors": {
-      "load": "Could not load discovery.",
-      "openConversation": "Could not open the conversation. You will find it under Matches.",
-      "saveDecision": "Could not save your decision.",
-      "safetyReport": "Could not submit the safety report."
+      "load": "Die Discovery konnte nicht geladen werden.",
+      "openConversation": "Die Unterhaltung konnte nicht geöffnet werden. Du findest sie unter Matches.",
+      "saveDecision": "Deine Entscheidung konnte nicht gespeichert werden.",
+      "safetyReport": "Die Sicherheitsmeldung konnte nicht gesendet werden."
     },
     "states": {
-      "loadErrorTitle": "Discovery did not load",
-      "offlineTitle": "You are offline",
-      "offlineMessage": "No connection. Check your internet and try again.",
-      "saving": "Saving…"
+      "loadErrorTitle": "Discovery konnte nicht geladen werden",
+      "offlineTitle": "Du bist offline",
+      "offlineMessage": "Keine Verbindung. Prüfe deine Internetverbindung und versuche es erneut.",
+      "saving": "Wird gespeichert…"
     },
     "location": {
-      "title": "Location helps build your deck",
-      "message": "Binder uses your foreground location to find nearby people. Your exact location is never shown to anyone."
+      "title": "Dein Standort füllt dein Deck",
+      "message": "Binder verwendet deinen Standort bei geöffneter App, um Menschen in deiner Nähe zu finden. Dein genauer Standort wird niemandem angezeigt."
     },
     "header": {
-      "title": "Discover",
-      "copy": "People who fit both sides."
+      "title": "Entdecken",
+      "copy": "Menschen, die zu beiden Seiten passen."
     },
     "filters": {
       "summary": "{minAge}–{maxAge} · {distance} km",
-      "label": "Filters"
+      "label": "Filter"
     },
     "empty": {
-      "filteredEyebrow": "FILTERS ARE NARROWING YOUR DECK",
-      "filteredTitle": "No one fits these filters right now.",
-      "filteredMessage": "People are available with Binder's standard filters. Change yours to see who fits.",
-      "genuineEyebrow": "YOU'RE CAUGHT UP",
-      "genuineTitle": "Your deck is clear for now.",
-      "genuineMessage": "No new approved profiles fit both sides right now. New matches will appear here automatically."
+      "filteredEyebrow": "FILTER SCHRÄNKEN DEIN DECK EIN",
+      "filteredTitle": "Derzeit passt niemand zu diesen Filtern.",
+      "filteredMessage": "Mit den Standardfiltern von Binder sind Personen verfügbar. Passe deine Filter an, um passende Menschen zu sehen.",
+      "genuineEyebrow": "DU BIST AUF DEM NEUESTEN STAND",
+      "genuineTitle": "Dein Deck ist vorerst leer.",
+      "genuineMessage": "Derzeit gibt es keine neuen freigegebenen Profile, die zu beiden Seiten passen. Neue Matches erscheinen hier automatisch."
     },
     "actions": {
-      "tryAgain": "Try again",
-      "allowLocation": "Allow location",
-      "changeFilters": "Change filters",
+      "tryAgain": "Erneut versuchen",
+      "allowLocation": "Standort erlauben",
+      "changeFilters": "Filter ändern",
       "bindStamp": "BIND",
-      "passStamp": "PASS",
-      "reportAndBlock": "Report & block",
-      "cancel": "Cancel"
+      "passStamp": "WEITER",
+      "reportAndBlock": "Melden & blockieren",
+      "cancel": "Abbrechen"
     },
     "accessibility": {
-      "openFilters": "Open discovery filters",
-      "matchCreated": "You matched with {name}.",
-      "safetyOptions": "Safety options for {name}",
-      "closeSafetyOptions": "Close safety options",
-      "bindProfile": "Bind profile",
-      "passProfile": "Pass profile",
-      "profileSummary": "{name}, {age}, {distance} kilometers away"
+      "openFilters": "Discovery-Filter öffnen",
+      "matchCreated": "Du hast ein Match mit {name}.",
+      "safetyOptions": "Sicherheitsoptionen für {name}",
+      "closeSafetyOptions": "Sicherheitsoptionen schließen",
+      "bindProfile": "Profil binden",
+      "passProfile": "Profil überspringen",
+      "profileSummary": "{name}, {age}, {distance} Kilometer entfernt"
     },
     "safety": {
-      "eyebrow": "SAFETY · {name}",
-      "title": "What should Binder review?",
-      "message": "Reporting also blocks this profile immediately. They are not told who reported or blocked them.",
+      "eyebrow": "SICHERHEIT · {name}",
+      "title": "Was soll Binder prüfen?",
+      "message": "Durch das Melden wird dieses Profil sofort blockiert. Die Person erfährt nicht, wer sie gemeldet oder blockiert hat.",
       "reasons": {
         "underage": {
-          "label": "May be under 18",
-          "detail": "Highest-priority safety review."
+          "label": "Möglicherweise unter 18",
+          "detail": "Sicherheitsprüfung mit höchster Priorität."
         },
         "harassment": {
-          "label": "Harassment or threats",
-          "detail": "Abusive, coercive or threatening behavior."
+          "label": "Belästigung oder Drohungen",
+          "detail": "Beleidigendes, nötigendes oder bedrohliches Verhalten."
         },
         "fake": {
-          "label": "Fake or impersonation",
-          "detail": "Identity or profile appears deceptive."
+          "label": "Fake oder Identitätstäuschung",
+          "detail": "Identität oder Profil wirken irreführend."
         },
         "spam": {
-          "label": "Spam or scam",
-          "detail": "Commercial spam, fraud or suspicious solicitation."
+          "label": "Spam oder Betrug",
+          "detail": "Kommerzieller Spam, Betrug oder verdächtige Kontaktaufnahme."
         },
         "sexualContent": {
-          "label": "Sexual content",
-          "detail": "Explicit or unwanted sexual profile content."
+          "label": "Sexuelle Inhalte",
+          "detail": "Explizite oder unerwünschte sexuelle Profilinhalte."
         },
         "violence": {
-          "label": "Violence",
-          "detail": "Threats or graphic violent content."
+          "label": "Gewalt",
+          "detail": "Drohungen oder drastische Gewaltdarstellungen."
         },
         "other": {
-          "label": "Other safety concern",
-          "detail": "A concern not covered above."
+          "label": "Anderes Sicherheitsproblem",
+          "detail": "Ein Problem, das oben nicht aufgeführt ist."
         }
       }
     },
     "profile": {
-      "away": "{distance} km away",
-      "photosReviewed": "· Photos reviewed"
+      "away": "{distance} km entfernt",
+      "photosReviewed": "· Fotos geprüft"
     }
   },
   "chat": {
     "day": {
-      "today": "Today",
-      "yesterday": "Yesterday"
+      "today": "Heute",
+      "yesterday": "Gestern"
     },
     "header": {
       "title": "{name}, {age}",
-      "eyebrow": "VIEW PROFILE"
+      "eyebrow": "PROFIL ANSEHEN"
     },
     "alerts": {
-      "messageActions": "Message actions",
-      "unmatchTitle": "Unmatch {name}?",
-      "unmatchMessage": "The conversation closes for both of you immediately.",
-      "blockTitle": "Block {name}?",
-      "blockMessage": "You will disappear from each other and the conversation closes immediately."
+      "messageActions": "Nachrichtenoptionen",
+      "unmatchTitle": "Match mit {name} auflösen?",
+      "unmatchMessage": "Die Unterhaltung wird für euch beide sofort geschlossen.",
+      "blockTitle": "{name} blockieren?",
+      "blockMessage": "Ihr seid füreinander nicht mehr sichtbar und die Unterhaltung wird sofort geschlossen."
     },
     "actions": {
-      "copy": "Copy",
-      "report": "Report",
-      "cancel": "Cancel",
-      "unmatch": "Unmatch",
-      "block": "Block",
-      "reportAndBlock": "Report & block",
-      "backToSafetyControls": "Back to safety controls",
-      "refresh": "Refresh",
-      "tryAgain": "Try again",
-      "loadEarlierMessages": "Load earlier messages",
-      "retry": "Retry",
-      "discard": "Discard",
-      "backToMatches": "Back to Matches"
+      "copy": "Kopieren",
+      "report": "Melden",
+      "cancel": "Abbrechen",
+      "unmatch": "Match auflösen",
+      "block": "Blockieren",
+      "reportAndBlock": "Melden & blockieren",
+      "backToSafetyControls": "Zurück zu den Sicherheitsoptionen",
+      "refresh": "Aktualisieren",
+      "tryAgain": "Erneut versuchen",
+      "loadEarlierMessages": "Frühere Nachrichten laden",
+      "retry": "Wiederholen",
+      "discard": "Verwerfen",
+      "backToMatches": "Zurück zu Matches"
     },
     "ended": {
-      "title": "This conversation has ended",
-      "message": "This Bind is no longer active. The conversation is now closed."
+      "title": "Diese Unterhaltung ist beendet",
+      "message": "Dieser Bind ist nicht mehr aktiv. Die Unterhaltung ist jetzt geschlossen."
     },
     "safety": {
-      "title": "Safety controls",
-      "reportMessage": "Report this message",
-      "reportPerson": "Report {name}",
-      "detailsPlaceholder": "Optional details for the safety team",
+      "title": "Sicherheitsoptionen",
+      "reportMessage": "Diese Nachricht melden",
+      "reportPerson": "{name} melden",
+      "detailsPlaceholder": "Optionale Angaben für das Sicherheitsteam",
       "reasons": {
-        "harassment": "Harassment",
+        "harassment": "Belästigung",
         "spam": "Spam",
-        "fake": "Fake profile",
-        "underage": "Under 18",
-        "sexualContent": "Sexual content",
-        "violence": "Violence",
-        "other": "Other"
+        "fake": "Gefälschtes Profil",
+        "underage": "Unter 18",
+        "sexualContent": "Sexuelle Inhalte",
+        "violence": "Gewalt",
+        "other": "Sonstiges"
       }
     },
     "states": {
-      "opening": "Opening conversation…",
-      "offlineTitle": "You are offline",
-      "loadErrorTitle": "Conversation did not load"
+      "opening": "Unterhaltung wird geöffnet…",
+      "offlineTitle": "Du bist offline",
+      "loadErrorTitle": "Unterhaltung konnte nicht geladen werden"
     },
     "empty": {
-      "title": "You matched.",
-      "message": "Normal chat opens only after mutual interest. Say something real."
+      "title": "Ihr habt ein Match.",
+      "message": "Der Chat wird erst bei gegenseitigem Interesse geöffnet. Schreib etwas Echtes."
     },
     "message": {
-      "sentAt": "{time} · Sent",
-      "new": "New message",
-      "sending": "Sending…",
-      "placeholder": "Message {name}"
+      "sentAt": "{time} · Gesendet",
+      "new": "Neue Nachricht",
+      "sending": "Wird gesendet…",
+      "placeholder": "Nachricht an {name}"
     },
     "errors": {
-      "messageNotSent": "Message not sent."
+      "messageNotSent": "Nachricht nicht gesendet."
     },
     "accessibility": {
-      "backToMatches": "Back to matches",
-      "openProfile": "Open {name}'s profile",
-      "safetyControls": "Conversation safety controls",
-      "closeSafetyControls": "Close safety controls",
-      "reportDetails": "Report details",
-      "holdToCopy": "Hold to copy this message",
-      "holdToCopyOrReport": "Hold to copy or report this message",
-      "messageSent": "Message sent.",
-      "messageFailed": "Message not sent.",
-      "scrollToNewMessage": "Scroll to new message",
-      "retrySending": "Retry sending \"{message}\"",
-      "discardUnsent": "Discard unsent message \"{message}\"",
-      "messagePerson": "Message {name}",
-      "sendingMessage": "Sending message",
-      "sendMessageTo": "Send message to {name}"
+      "backToMatches": "Zurück zu Matches",
+      "openProfile": "Profil von {name} öffnen",
+      "safetyControls": "Sicherheitsoptionen der Unterhaltung",
+      "closeSafetyControls": "Sicherheitsoptionen schließen",
+      "reportDetails": "Angaben zur Meldung",
+      "holdToCopy": "Gedrückt halten, um diese Nachricht zu kopieren",
+      "holdToCopyOrReport": "Gedrückt halten, um diese Nachricht zu kopieren oder zu melden",
+      "messageSent": "Nachricht gesendet.",
+      "messageFailed": "Nachricht nicht gesendet.",
+      "scrollToNewMessage": "Zur neuen Nachricht scrollen",
+      "retrySending": "Senden von \"{message}\" wiederholen",
+      "discardUnsent": "Nicht gesendete Nachricht \"{message}\" verwerfen",
+      "messagePerson": "Nachricht an {name}",
+      "sendingMessage": "Nachricht wird gesendet",
+      "sendMessageTo": "Nachricht an {name} senden"
     }
   },
   "profile": {
     "errors": {
-      "load": "Could not load profile.",
-      "openInformation": "Could not open Binder information.",
-      "deleteAccount": "Could not delete your account."
+      "load": "Das Profil konnte nicht geladen werden.",
+      "openInformation": "Die Binder-Informationen konnten nicht geöffnet werden.",
+      "deleteAccount": "Dein Konto konnte nicht gelöscht werden."
     },
     "alerts": {
-      "deleteTitle": "Delete Binder account?",
-      "deleteMessage": "This permanently removes your Binder account and normal product data. This cannot be undone.",
-      "signOutTitle": "Sign out of Binder?",
-      "signOutMessage": "You will stop receiving in-app updates on this device until you sign in again. Your profile, matches, and messages stay in Binder."
+      "deleteTitle": "Binder-Konto löschen?",
+      "deleteMessage": "Dadurch werden dein Binder-Konto und die regulären Produktdaten dauerhaft gelöscht. Dies kann nicht rückgängig gemacht werden.",
+      "signOutTitle": "Von Binder abmelden?",
+      "signOutMessage": "Bis zur nächsten Anmeldung erhältst du auf diesem Gerät keine Aktualisierungen in der App. Dein Profil, deine Matches und Nachrichten bleiben in Binder erhalten."
     },
     "actions": {
-      "cancel": "Cancel",
-      "deleteAccount": "Delete account",
-      "staySignedIn": "Stay signed in",
-      "signOut": "Sign out",
-      "completeProfile": "Complete profile",
-      "tryAgain": "Try again"
+      "cancel": "Abbrechen",
+      "deleteAccount": "Konto löschen",
+      "staySignedIn": "Angemeldet bleiben",
+      "signOut": "Abmelden",
+      "completeProfile": "Profil vervollständigen",
+      "tryAgain": "Erneut versuchen"
     },
     "states": {
-      "loading": "Loading your profile…",
-      "offlineTitle": "You are offline",
-      "offlineMessage": "Check your connection and try loading your profile again.",
-      "errorTitle": "Your profile did not load"
+      "loading": "Dein Profil wird geladen…",
+      "offlineTitle": "Du bist offline",
+      "offlineMessage": "Prüfe deine Verbindung und lade dein Profil erneut.",
+      "errorTitle": "Dein Profil wurde nicht geladen"
     },
     "header": {
-      "title": "Your profile",
+      "title": "Dein Profil",
       "eyebrow": "BINDER"
     },
     "accessibility": {
-      "primaryPhoto": "Your primary profile photo"
+      "primaryPhoto": "Dein primäres Profilfoto"
     },
     "notice": {
-      "warningEyebrow": "ACCOUNT NOTICE",
-      "warningTitle": "A note about your account",
-      "suspendedEyebrow": "ACCOUNT STATUS",
-      "suspendedTitle": "Your account is suspended",
-      "reasonUnavailable": "No additional details are available.",
-      "warnedOn": "Issued on {date}",
-      "suspendedEffect": "Discovery and messages are paused while the suspension is in place."
+      "warningEyebrow": "KONTOHINWEIS",
+      "warningTitle": "Hinweis zu deinem Konto",
+      "suspendedEyebrow": "KONTOSTATUS",
+      "suspendedTitle": "Dein Konto ist gesperrt",
+      "reasonUnavailable": "Es sind keine weiteren Einzelheiten verfügbar.",
+      "warnedOn": "Ausgestellt am {date}",
+      "suspendedEffect": "Während der Sperre sind Discovery und Nachrichten pausiert."
     },
     "empty": {
-      "addFirstPhoto": "Add your first photo",
-      "addBio": "Add a few real lines about yourself so people know what to ask you."
+      "addFirstPhoto": "Füge dein erstes Foto hinzu",
+      "addBio": "Schreib ein paar ehrliche Zeilen über dich, damit andere wissen, was sie dich fragen können."
     },
     "completeness": {
-      "eyebrow": "PROFILE STRENGTH",
-      "percent": "{percent}% complete",
-      "done": "{item} · done"
+      "eyebrow": "PROFILSTÄRKE",
+      "percent": "Zu {percent}% vollständig",
+      "done": "{item} · erledigt"
     },
     "hub": {
-      "profileTitle": "Profile & photos",
-      "profileCopy": "Edit your profile, discovery preferences and up to six moderated photos.",
-      "settingsTitle": "App settings",
-      "settingsCopy": "Appearance, haptics, motion, notification preferences and quiet hours.",
-      "betaTitle": "Beta program",
-      "betaCopy": "Optional diagnostics and private feedback.",
-      "aboutTitle": "About & legal notice",
-      "aboutCopy": "Impressum, policies and the version you are running."
+      "profileTitle": "Profil und Fotos",
+      "profileCopy": "Bearbeite dein Profil, deine Discovery-Einstellungen und bis zu sechs moderierte Fotos.",
+      "settingsTitle": "App-Einstellungen",
+      "settingsCopy": "Darstellung, Haptik, Animationen, Benachrichtigungen und Ruhezeiten.",
+      "betaTitle": "Betaprogramm",
+      "betaCopy": "Optionale Diagnose und privates Feedback.",
+      "aboutTitle": "Über Binder und Rechtliches",
+      "aboutCopy": "Impressum, Richtlinien und deine aktuelle Version."
     },
     "safety": {
-      "eyebrow": "SAFETY & PRIVACY",
-      "terms": "Terms & Community Rules",
-      "privacy": "Privacy Policy",
-      "deletionDetails": "Deletion & retention details"
+      "eyebrow": "SICHERHEIT UND DATENSCHUTZ",
+      "terms": "Nutzungsbedingungen und Community-Regeln",
+      "privacy": "Datenschutzerklärung",
+      "deletionDetails": "Löschung und Aufbewahrung"
     },
     "account": {
-      "eyebrow": "ACCOUNT ACTIONS",
-      "irreversible": "IRREVERSIBLE",
-      "deleteTitle": "Delete Binder account",
-      "deleteCopy": "Stops discovery and conversations, removes profile media and deletes your authentication identity."
+      "eyebrow": "KONTOAKTIONEN",
+      "irreversible": "UNWIDERRUFLICH",
+      "deleteTitle": "Binder-Konto löschen",
+      "deleteCopy": "Beendet Discovery und Unterhaltungen, entfernt Profilmedien und löscht deine Anmeldeidentität."
     }
   },
   "profileSettings": {
     "errors": {
-      "load": "Could not load profile settings.",
-      "addPhoto": "Could not add photo.",
-      "reorderPhotos": "Could not reorder photos.",
-      "makePrimary": "Could not make this photo primary.",
-      "removePhoto": "Could not remove photo.",
-      "replacePhoto": "Could not replace photo.",
-      "save": "Could not save profile settings."
+      "load": "Die Profileinstellungen konnten nicht geladen werden.",
+      "addPhoto": "Das Foto konnte nicht hinzugefügt werden.",
+      "reorderPhotos": "Die Fotos konnten nicht neu angeordnet werden.",
+      "makePrimary": "Dieses Foto konnte nicht zum Hauptfoto gemacht werden.",
+      "removePhoto": "Das Foto konnte nicht entfernt werden.",
+      "replacePhoto": "Das Foto konnte nicht ersetzt werden.",
+      "save": "Die Profileinstellungen konnten nicht gespeichert werden."
     },
     "messages": {
-      "photoAdded": "Photo optimized, uploaded and sent for safety review.",
-      "saved": "Profile settings saved."
+      "photoAdded": "Das Foto wurde optimiert, hochgeladen und zur Sicherheitsprüfung eingereicht.",
+      "saved": "Profileinstellungen gespeichert."
     },
     "alerts": {
-      "removeTitle": "Remove profile photo?",
-      "removePrimaryMessage": "Binder will only remove the primary photo if another approved photo can replace it.",
-      "removeMessage": "This photo will be removed from your profile and storage."
+      "removeTitle": "Profilfoto entfernen?",
+      "removePrimaryMessage": "Binder entfernt das Hauptfoto nur, wenn ein anderes freigegebenes Foto es ersetzen kann.",
+      "removeMessage": "Dieses Foto wird aus deinem Profil und dem Speicher entfernt."
     },
     "actions": {
-      "cancel": "Cancel",
-      "remove": "Remove",
-      "saveProfile": "Save profile",
-      "addPhoto": "Add photo",
-      "makePrimary": "Make primary",
-      "retryUpload": "Retry upload",
-      "replacePhoto": "Replace photo"
+      "cancel": "Abbrechen",
+      "remove": "Entfernen",
+      "saveProfile": "Profil speichern",
+      "addPhoto": "Foto hinzufügen",
+      "makePrimary": "Als Hauptfoto",
+      "retryUpload": "Neu hochladen",
+      "replacePhoto": "Foto ersetzen"
     },
     "states": {
-      "loading": "Loading profile settings…"
+      "loading": "Profileinstellungen werden geladen…"
     },
     "gallery": {
-      "photoOf": "Photo {current} of {total}",
-      "photo": "Photo",
-      "name": "your gallery"
+      "photoOf": "Foto {current} von {total}",
+      "photo": "Foto",
+      "name": "deine Galerie"
     },
     "header": {
-      "title": "Profile settings",
-      "sectionTitle": "Shape the profile people see.",
-      "sectionCopy": "Your birth date stays locked. Every photo is reviewed independently before it can appear in Discovery."
+      "title": "Profileinstellungen",
+      "sectionTitle": "Gestalte dein sichtbares Profil.",
+      "sectionCopy": "Dein Geburtsdatum bleibt gesperrt. Jedes Foto wird einzeln geprüft, bevor es in Discovery erscheinen kann."
     },
     "accessibility": {
-      "closeFullPhoto": "Close full photo",
-      "backToProfile": "Back to profile",
-      "photoUploaded": "Photo uploaded.",
-      "photoRemoved": "Photo removed.",
-      "addPhoto": "Add profile photo",
-      "viewPhoto": "View photo {number} in full",
-      "moveLeft": "Move photo {number} left",
-      "removePhoto": "Remove photo {number}",
-      "moveRight": "Move photo {number} right"
+      "closeFullPhoto": "Vollbildfoto schließen",
+      "backToProfile": "Zurück zum Profil",
+      "photoUploaded": "Foto hochgeladen.",
+      "photoRemoved": "Foto entfernt.",
+      "addPhoto": "Profilfoto hinzufügen",
+      "viewPhoto": "Foto {number} im Vollbild ansehen",
+      "moveLeft": "Foto {number} nach links verschieben",
+      "removePhoto": "Foto {number} entfernen",
+      "moveRight": "Foto {number} nach rechts verschieben"
     },
     "photos": {
-      "eyebrow": "PHOTOS · {count}/6",
-      "orderCopy": "Drag is not required: use the arrow controls to set the exact order. Photo 1 is the photo people see first.",
-      "optimized": "Optimized before upload",
-      "preparing": "Preparing photo…",
-      "uploading": "Uploading photo…",
-      "uploadFailed": "Photo upload failed",
-      "primary": "PHOTO 1 · PRIMARY",
-      "dimensions": "{size} KB · {width} by {height}",
-      "rejectionReason": "Reason: {reason}",
-      "rejectionReasonUnavailable": "No reason was provided.",
+      "eyebrow": "FOTOS · {count}/6",
+      "orderCopy": "Du musst die Fotos nicht ziehen: Lege ihre genaue Reihenfolge mit den Pfeilen fest. Foto 1 sehen andere zuerst.",
+      "optimized": "Vor dem Hochladen optimiert",
+      "preparing": "Foto wird vorbereitet…",
+      "uploading": "Foto wird hochgeladen…",
+      "uploadFailed": "Foto konnte nicht hochgeladen werden",
+      "primary": "FOTO 1 · HAUPTFOTO",
+      "dimensions": "{size} KB · {width} × {height}",
+      "rejectionReason": "Grund: {reason}",
+      "rejectionReasonUnavailable": "Es wurde kein Grund angegeben.",
       "status": {
-        "approved": "Approved",
-        "pending": "In review",
-        "rejected": "Not approved",
-        "removed": "Removed"
+        "approved": "Freigegeben",
+        "pending": "Wird geprüft",
+        "rejected": "Nicht freigegeben",
+        "removed": "Entfernt"
       }
     },
     "details": {
-      "eyebrow": "PROFILE DETAILS",
-      "copy": "This is the identity and context people see."
+      "eyebrow": "PROFILDETAILS",
+      "copy": "Diese Angaben sehen andere auf deinem Profil."
     },
     "fields": {
-      "firstName": "First name",
+      "firstName": "Vorname",
       "bio": "Bio",
       "bioCount": "{count}/500",
-      "gender": "I am",
-      "interests": "Interests"
+      "gender": "Ich bin",
+      "interests": "Interessen"
     },
     "discovery": {
-      "eyebrow": "DISCOVERY PREFERENCES",
-      "title": "Discovery range",
-      "copy": "Controls who can appear in your Discovery deck."
+      "eyebrow": "DISCOVERY-EINSTELLUNGEN",
+      "title": "Discovery-Bereich",
+      "copy": "Legt fest, wer in deinem Discovery-Stapel erscheinen kann."
     }
   },
   "discoveryFilterSheet": {
     "errors": {
-      "authentication": "Authentication required.",
-      "load": "Could not load your discovery settings.",
-      "audience": "Choose at least one person you want to meet.",
-      "age": "Choose an age range of at least one year.",
-      "distance": "Choose a distance from 1 to 500 km.",
-      "save": "Binder could not save these filters. Check your connection and try again."
+      "authentication": "Anmeldung erforderlich.",
+      "load": "Deine Discovery-Einstellungen konnten nicht geladen werden.",
+      "audience": "Wähle mindestens eine Personengruppe aus, die du kennenlernen möchtest.",
+      "age": "Wähle eine Altersspanne von mindestens einem Jahr.",
+      "distance": "Wähle eine Entfernung zwischen 1 und 500 km.",
+      "save": "Binder konnte diese Filter nicht speichern. Prüfe deine Verbindung und versuche es erneut."
     },
     "header": {
-      "title": "Your search",
+      "title": "Deine Suche",
       "eyebrow": "DISCOVERY"
     },
     "states": {
-      "loadErrorTitle": "Filters did not load",
-      "loading": "Loading your filters…"
+      "loadErrorTitle": "Filter konnten nicht geladen werden",
+      "loading": "Deine Filter werden geladen…"
     },
     "actions": {
-      "tryAgain": "Try again",
-      "close": "Close",
-      "apply": "Apply filters",
-      "reset": "Reset to defaults"
+      "tryAgain": "Erneut versuchen",
+      "close": "Schließen",
+      "apply": "Filter anwenden",
+      "reset": "Zurücksetzen"
     },
     "accessibility": {
-      "close": "Close discovery filters",
-      "filtersApplied": "Filters applied."
+      "close": "Discovery-Filter schließen",
+      "filtersApplied": "Filter angewendet."
     },
     "count": {
-      "unavailable": "Count unavailable",
-      "checking": "Checking who fits…",
-      "none": "No one currently fits",
-      "personOne": "{count} person currently fit",
-      "personOther": "{count} people currently fit",
-      "failed": "Binder could not check right now. Change a filter to try again — your settings still apply.",
-      "likelyCause": "Your {cause} is the likely cause. Widen it before applying.",
-      "updates": "This updates as you shape your search.",
+      "unavailable": "Anzahl nicht verfügbar",
+      "checking": "Passende Personen werden gesucht…",
+      "none": "Derzeit passt niemand",
+      "personOne": "Derzeit passt {count} Person",
+      "personOther": "Derzeit passen {count} Personen",
+      "failed": "Binder konnte die Anzahl gerade nicht prüfen. Ändere einen Filter und versuche es erneut – deine Einstellungen gelten trotzdem.",
+      "likelyCause": "Wahrscheinlich liegt es an: {cause}. Erweitere diesen Filter vor dem Anwenden.",
+      "updates": "Die Anzahl wird beim Anpassen deiner Suche aktualisiert.",
       "causes": {
-        "audience": "who you want to meet",
-        "age": "age range",
-        "distance": "distance"
+        "audience": "gewünschte Personen",
+        "age": "Altersspanne",
+        "distance": "Entfernung"
       }
     }
   },
   "onboarding": {
-    "progress": "STEP {number} OF {total}",
+    "progress": "SCHRITT {number} VON {total}",
     "steps": {
       "eligibility": {
-        "eyebrow": "ELIGIBILITY · 18+",
-        "title": "First, confirm your age.",
-        "copy": "Binder is only for adults. Your birth date is checked once, locked after onboarding, and never shown to other people.",
-        "next": "Next: your name and gender"
+        "eyebrow": "VORAUSSETZUNG · 18+",
+        "title": "Bestätige zuerst dein Alter.",
+        "copy": "Binder ist nur für Erwachsene. Dein Geburtsdatum wird einmal geprüft, nach der Einrichtung gesperrt und anderen nie angezeigt.",
+        "next": "Weiter: Name und Geschlecht"
       },
       "identity": {
-        "eyebrow": "THE BASICS",
-        "title": "How should people know you?",
-        "copy": "Use the first name you go by. These details appear on your profile.",
-        "next": "Next: your bio and interests"
+        "eyebrow": "DAS WICHTIGSTE",
+        "title": "Wie sollen dich andere kennenlernen?",
+        "copy": "Gib den Vornamen an, den du im Alltag verwendest. Diese Angaben erscheinen in deinem Profil.",
+        "next": "Weiter: Bio und Interessen"
       },
       "profile": {
-        "eyebrow": "ABOUT YOU",
-        "title": "Give people a reason to say hello.",
-        "copy": "A short, specific bio and a few interests make starting a real conversation easier.",
-        "next": "Next: who you want to meet"
+        "eyebrow": "ÜBER DICH",
+        "title": "Mach anderen Lust, Hallo zu sagen.",
+        "copy": "Eine kurze, aussagekräftige Bio und ein paar Interessen erleichtern den Einstieg in ein echtes Gespräch.",
+        "next": "Weiter: Wen du treffen möchtest"
       },
       "discovery": {
         "eyebrow": "DISCOVERY",
-        "title": "Choose who feels relevant.",
-        "copy": "These preferences shape Discovery and can be changed later.",
-        "next": "Next: add your first photo"
+        "title": "Wähle, wer zu dir passen könnte.",
+        "copy": "Diese Einstellungen bestimmen deine Discovery und lassen sich später ändern.",
+        "next": "Weiter: Dein erstes Foto"
       },
       "photo": {
-        "eyebrow": "YOUR PHOTO",
-        "title": "Put a face to the profile.",
-        "copy": "Your first photo is what people see first. It is optimized, then reviewed for safety before appearing.",
-        "next": "Finish and enter Binder"
+        "eyebrow": "DEIN FOTO",
+        "title": "Zeig, wer hinter dem Profil steckt.",
+        "copy": "Dein erstes Foto sehen andere zuerst. Es wird optimiert und vor der Veröffentlichung auf Sicherheit geprüft.",
+        "next": "Binder öffnen"
       }
     },
     "errors": {
-      "preparePhoto": "Could not prepare photo.",
-      "photoRequired": "Add a profile photo to continue.",
-      "complete": "Onboarding could not be completed."
+      "preparePhoto": "Das Foto konnte nicht vorbereitet werden.",
+      "photoRequired": "Füge ein Profilfoto hinzu, um fortzufahren.",
+      "complete": "Die Einrichtung konnte nicht abgeschlossen werden."
     },
     "identity": {
-      "firstName": "First name",
-      "gender": "I am"
+      "firstName": "Vorname",
+      "gender": "Ich bin"
     },
     "profile": {
       "bioLabel": "Bio · optional",
-      "bioHelper": "{count}/500 · You can change this later",
-      "bioPlaceholder": "For example: Sunday hikes, live music, and excellent coffee.",
-      "interests": "Interests · choose up to 12 ({count})"
+      "bioHelper": "{count}/500 · Später änderbar",
+      "bioPlaceholder": "Zum Beispiel: sonntags wandern, Livemusik und richtig guter Kaffee.",
+      "interests": "Interessen · bis zu 12 auswählen ({count})"
     },
     "photo": {
-      "replaceAccessibility": "Replace primary profile photo",
-      "chooseAccessibility": "Choose primary profile photo",
-      "preparing": "Preparing photo…",
-      "choose": "Choose photo",
-      "resizing": "Resizing and compressing before upload",
-      "openLibrary": "Tap to open your photo library"
+      "replaceAccessibility": "Hauptprofilfoto ersetzen",
+      "chooseAccessibility": "Hauptprofilfoto auswählen",
+      "preparing": "Foto wird vorbereitet…",
+      "choose": "Foto auswählen",
+      "resizing": "Wird vor dem Hochladen angepasst und komprimiert",
+      "openLibrary": "Tippe, um deine Fotomediathek zu öffnen"
     },
     "actions": {
-      "back": "Back",
-      "finish": "Finish profile",
-      "continue": "Continue"
+      "back": "Zurück",
+      "finish": "Fertigstellen",
+      "continue": "Weiter"
     },
     "birthDate": {
-      "title": "You must be 18 or older",
-      "copy": "Enter your real date of birth. If you are under 18, you cannot create a Binder profile.",
-      "day": "Day",
-      "month": "Month",
-      "year": "Year",
+      "title": "Du musst mindestens 18 sein",
+      "copy": "Gib dein echtes Geburtsdatum ein. Wenn du unter 18 bist, kannst du kein Binder-Profil erstellen.",
+      "day": "Tag",
+      "month": "Monat",
+      "year": "Jahr",
       "dayPlaceholder": "23",
       "monthPlaceholder": "04",
       "yearPlaceholder": "1995",
-      "eligible": "Eligible · age {age}",
-      "underage": "You must be 18 or older to use Binder.",
-      "invalid": "That date does not exist. Check the day and month.",
-      "implausible": "Check the year you entered.",
-      "private": "Your exact birth date stays private."
+      "eligible": "Berechtigt · Alter {age}",
+      "underage": "Du musst mindestens 18 Jahre alt sein, um Binder zu nutzen.",
+      "invalid": "Dieses Datum gibt es nicht. Prüfe Tag und Monat.",
+      "implausible": "Prüfe das eingegebene Jahr.",
+      "private": "Dein genaues Geburtsdatum bleibt privat."
     }
   },
   "beta": {
     "errors": {
-      "load": "Could not load beta settings.",
-      "updateDiagnostics": "Could not update beta diagnostics.",
-      "submitFeedback": "Could not submit beta feedback."
+      "load": "Die Beta-Einstellungen konnten nicht geladen werden.",
+      "updateDiagnostics": "Die Beta-Diagnose konnte nicht aktualisiert werden.",
+      "submitFeedback": "Das Beta-Feedback konnte nicht gesendet werden."
     },
     "messages": {
-      "diagnosticsEnabled": "Optional diagnostics enabled. Binder records only fixed technical event fields.",
-      "diagnosticsDisabled": "Optional diagnostics disabled. Existing optional client diagnostics were deleted.",
-      "feedbackReceived": "Feedback received. Thank you for testing Binder."
+      "diagnosticsEnabled": "Optionale Diagnose aktiviert. Binder erfasst nur festgelegte technische Ereignisfelder.",
+      "diagnosticsDisabled": "Optionale Diagnose deaktiviert. Vorhandene optionale Gerätediagnosen wurden gelöscht.",
+      "feedbackReceived": "Feedback erhalten. Danke, dass du Binder testest."
     },
-    "loading": "Loading beta program…",
+    "loading": "Betaprogramm wird geladen…",
     "header": {
-      "title": "Beta program",
-      "backAccessibility": "Back to profile"
+      "title": "Betaprogramm",
+      "backAccessibility": "Zurück zum Profil"
     },
     "intro": {
-      "title": "Make Binder measurable, not invasive.",
-      "copy": "Ranking quality comes from Binder's own server events. Optional client diagnostics are a separate choice and stay off by default."
+      "title": "Binder messbar machen, ohne in deine Privatsphäre einzugreifen.",
+      "copy": "Die Qualität der Sortierung beruht auf Binders eigenen Serverereignissen. Die optionale Gerätediagnose ist davon getrennt und standardmäßig deaktiviert."
     },
     "diagnostics": {
-      "title": "Optional diagnostics",
-      "copy": "Useful for load-time and render-failure debugging during beta.",
-      "accessibilityLabel": "Optional Binder beta diagnostics",
-      "canRecord": "CAN RECORD",
-      "recorded": "Fixed screen/event name, duration, small count, success/error outcome, platform and app version.",
-      "never": "NEVER IN OPTIONAL DIAGNOSTICS",
-      "excluded": "Message text, bio/profile text, photos, exact location, contacts, free-form metadata, raw exception messages or stack traces.",
-      "retention": "Client diagnostics: {clientDays} days · ranking observations: {rankingDays} days"
+      "title": "Optionale Diagnose",
+      "copy": "Hilft während der Beta bei der Fehlersuche zu Ladezeiten und Darstellungsfehlern.",
+      "accessibilityLabel": "Optionale Beta-Diagnose von Binder",
+      "canRecord": "DARF ERFASSEN",
+      "recorded": "Festgelegter Bildschirm- oder Ereignisname, Dauer, kleine Zählwerte, Erfolg oder Fehler, Plattform und App-Version.",
+      "never": "NIE IN DER OPTIONALEN DIAGNOSE",
+      "excluded": "Nachrichtentexte, Bio- oder Profiltexte, Fotos, genauer Standort, Kontakte, frei formulierte Metadaten, unbearbeitete Fehlermeldungen oder Aufruflisten.",
+      "retention": "Gerätediagnose: {clientDays} Tage · Sortierungsbeobachtungen: {rankingDays} Tage"
     },
     "ranking": {
-      "eyebrow": "RANKING OBSERVABILITY",
-      "title": "What Binder learns from the deck.",
-      "copy": "The server records rank position, shared-interest count, a 10-km distance bucket and later Bind/Pass outcome. Exact coordinates and profile content are not copied into ranking telemetry."
+      "eyebrow": "NACHVOLLZIEHBARE SORTIERUNG",
+      "title": "Was Binder aus dem Stapel lernt.",
+      "copy": "Der Server erfasst die Position, die Anzahl gemeinsamer Interessen, einen 10-km-Entfernungsbereich und später die Entscheidung Bind oder Pass. Genaue Koordinaten und Profilinhalte werden nicht in die Sortierungsdaten übernommen."
     },
     "feedback": {
-      "eyebrow": "PRIVATE BETA FEEDBACK",
-      "title": "Tell us what failed or felt wrong.",
-      "copy": "For an abusive or unsafe person, use Report & Block on their profile or chat. This form is product feedback, not the moderation queue.",
-      "overallExperience": "Overall experience",
-      "details": "Details",
+      "eyebrow": "PRIVATES BETA-FEEDBACK",
+      "title": "Sag uns, was nicht funktioniert oder sich falsch angefühlt hat.",
+      "copy": "Bei übergriffigen oder unsicheren Personen nutze im Profil oder Chat „Melden und blockieren“. Dieses Formular ist für Produktfeedback, nicht für Moderationsmeldungen.",
+      "overallExperience": "Gesamteindruck",
+      "details": "Einzelheiten",
       "characterCount": "{count}/1500",
-      "placeholder": "What happened? What did you expect instead?",
-      "send": "Send beta feedback"
+      "placeholder": "Was ist passiert? Was hattest du erwartet?",
+      "send": "Beta-Feedback senden"
     },
     "categories": {
-      "bug": "Bug",
+      "bug": "Fehler",
       "ux": "UX",
-      "safety": "Safety",
-      "performance": "Performance",
-      "other": "Other"
+      "safety": "Sicherheit",
+      "performance": "Leistung",
+      "other": "Sonstiges"
     }
   },
   "legalGate": {
     "errors": {
-      "open": "Could not open this page.",
-      "accept": "Could not save your acceptance."
+      "open": "Diese Seite konnte nicht geöffnet werden.",
+      "accept": "Deine Zustimmung konnte nicht gespeichert werden."
     },
     "header": {
-      "eyebrow": "BEFORE YOU CREATE OR SHARE",
-      "title": "Clear rules before conversation.",
-      "copy": "Binder is 18+ and built around mutual choice. Before you create a profile, upload a photo or send a message, accept the current Terms & Community Rules and Privacy Policy."
+      "eyebrow": "BEVOR DU ETWAS ERSTELLST ODER TEILST",
+      "title": "Klare Regeln vor dem ersten Gespräch.",
+      "copy": "Binder ist ab 18 und beruht auf gegenseitiger Entscheidung. Bevor du ein Profil erstellst, ein Foto hochlädst oder eine Nachricht sendest, stimme den aktuellen Nutzungsbedingungen, Community-Regeln und der Datenschutzerklärung zu."
     },
     "policies": {
       "terms": {
-        "title": "Terms & Community Rules",
-        "copy": "18+ only · consent · no harassment · no sexual exploitation · no impersonation, scams or block evasion."
+        "title": "Nutzungsbedingungen und Community-Regeln",
+        "copy": "Nur ab 18 · Einvernehmen · keine Belästigung · keine sexuelle Ausbeutung · kein Identitätsmissbrauch, Betrug oder Umgehen von Blockierungen."
       },
       "privacy": {
-        "title": "Privacy Policy",
-        "copy": "What Binder stores, why location stays private, how safety records work and how to delete your account."
+        "title": "Datenschutzerklärung",
+        "copy": "Was Binder speichert, warum dein Standort privat bleibt, wie Sicherheitsdaten behandelt werden und wie du dein Konto löschst."
       },
       "version": "Version {version}"
     },
-    "confirmation": "I have read and agree to the current Terms & Community Rules and Privacy Policy.",
+    "confirmation": "Ich habe die aktuellen Nutzungsbedingungen, Community-Regeln und die Datenschutzerklärung gelesen und stimme ihnen zu.",
     "actions": {
-      "agree": "Agree & continue"
+      "agree": "Zustimmen und weiter"
     },
-    "noSkip": "There is no skip. Material policy changes can require a new acceptance before more UGC is created."
+    "noSkip": "Dieser Schritt kann nicht übersprungen werden. Bei wesentlichen Richtlinienänderungen kann eine erneute Zustimmung erforderlich sein, bevor du weitere Inhalte erstellst."
   },
   "discoveryPreferences": {
     "groups": {
-      "preset": "Start with a preset",
-      "audience": "Who I want to meet",
-      "age": "Age",
-      "distance": "Distance"
+      "preset": "Mit einer Vorlage starten",
+      "audience": "Wen ich kennenlernen möchte",
+      "age": "Alter",
+      "distance": "Entfernung"
     },
     "accessibility": {
-      "minimumAge": "Minimum age",
-      "maximumAge": "Maximum age",
-      "searchRadius": "Search radius"
+      "minimumAge": "Mindestalter",
+      "maximumAge": "Höchstalter",
+      "searchRadius": "Suchradius"
     },
     "units": {
-      "years": "years",
+      "years": "Jahre",
       "km": "km"
     }
   },
   "about": {
     "errors": {
-      "openPage": "Could not open this page. Try again later."
+      "openPage": "Diese Seite konnte nicht geöffnet werden. Versuche es später erneut."
     },
     "header": {
-      "title": "About Binder"
+      "title": "Über Binder"
     },
     "accessibility": {
-      "backToProfile": "Back to profile"
+      "backToProfile": "Zurück zum Profil"
     },
     "intro": {
-      "title": "One free product.",
-      "copy": "Binder is built and run as an independent, non-commercial project. No ads, no paid tiers, no data brokers."
+      "title": "Ein kostenloses Angebot.",
+      "copy": "Binder wird als unabhängiges, nicht kommerzielles Projekt entwickelt und betrieben. Keine Werbung, keine Bezahlstufen, kein Datenhandel."
     },
     "policies": {
-      "eyebrow": "POLICIES",
-      "terms": "Terms & Community Rules",
-      "privacy": "Privacy Policy",
-      "deletion": "Account deletion & retention"
+      "eyebrow": "RICHTLINIEN",
+      "terms": "Nutzungsbedingungen und Community-Regeln",
+      "privacy": "Datenschutzerklärung",
+      "deletion": "Kontolöschung und Aufbewahrung"
     },
     "version": "Binder {version}"
   },
@@ -758,140 +758,140 @@
       "system": "System"
     },
     "errors": {
-      "loadDiagnostics": "Could not load diagnostics preference.",
-      "updateDiagnostics": "Could not update diagnostics.",
-      "updatePush": "Could not update push notifications."
+      "loadDiagnostics": "Die Diagnoseeinstellung konnte nicht geladen werden.",
+      "updateDiagnostics": "Die Diagnose konnte nicht aktualisiert werden.",
+      "updatePush": "Push-Benachrichtigungen konnten nicht aktualisiert werden."
     },
     "messages": {
-      "pushOff": "Push notifications are off on this installation.",
-      "pushActive": "Push notifications are active on this installation.",
-      "pushDenied": "Android notification permission is denied. You can allow Binder in system settings.",
-      "missingProject": "This build is not connected to its EAS project yet.",
-      "pushOffline": "Could not reach the push service. Try again when you are online.",
-      "pushUnavailable": "Remote push is available only in an Android or iOS development/release build."
+      "pushOff": "Push-Benachrichtigungen sind in dieser Installation deaktiviert.",
+      "pushActive": "Push-Benachrichtigungen sind in dieser Installation aktiv.",
+      "pushDenied": "Die Android-Berechtigung für Benachrichtigungen wurde verweigert. Du kannst Binder in den Systemeinstellungen erlauben.",
+      "missingProject": "Dieser Build ist noch nicht mit seinem EAS-Projekt verbunden.",
+      "pushOffline": "Der Push-Dienst ist nicht erreichbar. Versuche es erneut, wenn du online bist.",
+      "pushUnavailable": "Externe Push-Nachrichten sind nur in einem Entwicklungs- oder Veröffentlichungs-Build für Android oder iOS verfügbar."
     },
     "states": {
-      "loading": "Loading app settings…"
+      "loading": "App-Einstellungen werden geladen…"
     },
     "header": {
-      "title": "App settings",
-      "sectionTitle": "Make Binder feel right.",
-      "sectionCopy": "Visual preferences never change safety colors. Push delivery rules are enforced by Binder's server."
+      "title": "App-Einstellungen",
+      "sectionTitle": "Passe Binder an dich an.",
+      "sectionCopy": "Darstellungseinstellungen ändern niemals Sicherheitsfarben. Binders Server setzt die Regeln für die Push-Zustellung durch."
     },
     "accessibility": {
-      "backToProfile": "Back to profile"
+      "backToProfile": "Zurück zum Profil"
     },
     "appearance": {
-      "title": "Appearance",
-      "copy": "Follow your device or keep Binder dark.",
-      "dark": "Dark"
+      "title": "Darstellung",
+      "copy": "Folge deinem Gerät oder behalte Binder dunkel.",
+      "dark": "Dunkel"
     },
     "accent": {
-      "title": "Accent",
-      "copy": "Only primary/trust accents change. Warning and destructive colors stay fixed.",
+      "title": "Akzentfarbe",
+      "copy": "Nur Primär- und Vertrauensakzente ändern sich. Warn- und Gefahrenfarben bleiben unverändert.",
       "options": {
-        "lime": "Binder Lime",
-        "blue": "Electric Blue",
-        "violet": "Violet",
-        "coral": "Coral",
-        "ice": "Ice"
+        "lime": "Binder-Limette",
+        "blue": "Elektrisches Blau",
+        "violet": "Violett",
+        "coral": "Koralle",
+        "ice": "Eis"
       }
     },
     "hapticsMotion": {
-      "title": "Haptics & motion",
-      "haptics": "Haptics",
-      "copy": "Subtle feedback for meaningful actions.",
-      "motion": "Motion",
-      "reduce": "Reduce",
-      "full": "Full"
+      "title": "Haptik und Animation",
+      "haptics": "Haptik",
+      "copy": "Dezente Rückmeldung bei wichtigen Aktionen.",
+      "motion": "Animation",
+      "reduce": "Reduziert",
+      "full": "Voll"
     },
     "notifications": {
-      "title": "Notifications",
-      "copy": "Permission applies to this installation. Categories, sound and vibration follow your Binder account and are rechecked server-side before every send.",
-      "remotePush": "Remote push",
-      "newMatches": "New matches",
-      "messages": "Messages",
+      "title": "Benachrichtigungen",
+      "copy": "Die Berechtigung gilt für diese Installation. Kategorien, Ton und Vibration gehören zu deinem Binder-Konto und werden vor jeder Zustellung serverseitig erneut geprüft.",
+      "remotePush": "Push-Nachrichten",
+      "newMatches": "Neue Matches",
+      "messages": "Nachrichten",
       "moderation": "Moderation",
-      "safety": "Safety",
-      "product": "Product updates",
-      "productCopy": "Off by default.",
-      "sound": "Sound",
+      "safety": "Sicherheit",
+      "product": "Produktneuigkeiten",
+      "productCopy": "Standardmäßig aus.",
+      "sound": "Ton",
       "vibration": "Vibration"
     },
     "quietHours": {
-      "title": "Quiet hours",
-      "copy": "Match, message, moderation and product pushes wait until the local end time. Urgent safety alerts remain immediate.",
-      "use": "Use quiet hours",
-      "start": "Start",
-      "end": "End",
-      "invalid": "Use HH:MM",
+      "title": "Ruhezeiten",
+      "copy": "Push-Nachrichten zu Matches, Nachrichten, Moderation und Produktneuigkeiten warten bis zum lokalen Ende der Ruhezeit. Dringende Sicherheitswarnungen kommen sofort.",
+      "use": "Ruhezeiten verwenden",
+      "start": "Beginn",
+      "end": "Ende",
+      "invalid": "Format HH:MM verwenden",
       "startPlaceholder": "22:00",
       "endPlaceholder": "08:00"
     },
     "diagnostics": {
-      "title": "Diagnostics",
-      "copy": "Optional technical events only. No bio, messages, raw stack traces or precise location.",
-      "checking": "Checking diagnostics…",
-      "share": "Share optional diagnostics"
+      "title": "Diagnose",
+      "copy": "Nur optionale technische Ereignisse. Keine Bio, Nachrichten, unbearbeiteten Aufruflisten oder genauen Standorte.",
+      "checking": "Diagnose wird geprüft…",
+      "share": "Optionale Diagnose teilen"
     },
     "reset": {
-      "action": "Reset app settings",
-      "confirmTitle": "Reset app settings?",
-      "confirmCopy": "Appearance, motion, haptics, accent, notification categories and quiet hours return to their defaults. Your profile and conversations are untouched.",
-      "cancel": "Keep my settings",
-      "confirm": "Reset",
-      "done": "App settings are back to their defaults.",
-      "failed": "Could not reset the settings."
+      "action": "App-Einstellungen zurücksetzen",
+      "confirmTitle": "App-Einstellungen zurücksetzen?",
+      "confirmCopy": "Darstellung, Animation, Haptik, Akzentfarbe, Benachrichtigungskategorien und Ruhezeiten werden auf die Standardwerte zurückgesetzt. Dein Profil und deine Unterhaltungen bleiben unverändert.",
+      "cancel": "Einstellungen behalten",
+      "confirm": "Zurücksetzen",
+      "done": "Die App-Einstellungen wurden zurückgesetzt.",
+      "failed": "Die Einstellungen konnten nicht zurückgesetzt werden."
     }
   },
   "binderErrorBoundary": {
     "recovery": {
-      "eyebrow": "BINDER RECOVERED THE SCREEN",
-      "title": "Something failed to render.",
-      "message": "Your account data was not included in the diagnostic event. Try the screen again; if it repeats, use Beta Program feedback after Binder opens."
+      "eyebrow": "BINDER HAT DEN BILDSCHIRM WIEDERHERGESTELLT",
+      "title": "Ein Inhalt konnte nicht dargestellt werden.",
+      "message": "Deine Kontodaten waren nicht im Diagnoseereignis enthalten. Öffne den Bildschirm erneut. Falls der Fehler wiederkehrt, nutze nach dem Öffnen von Binder das Feedback im Betaprogramm."
     },
     "actions": {
-      "retry": "Try Binder again"
+      "retry": "Binder erneut öffnen"
     }
   },
   "photoPager": {
     "errors": {
-      "load": "This photo could not be loaded."
+      "load": "Dieses Foto konnte nicht geladen werden."
     },
     "accessibility": {
-      "position": "{name}, photo {current} of {count}",
-      "previous": "Previous photo of {name}",
-      "openProfile": "Open full profile for {name}",
-      "next": "Next photo of {name}"
+      "position": "{name}, Foto {current} von {count}",
+      "previous": "Vorheriges Foto von {name}",
+      "openProfile": "Vollständiges Profil von {name} öffnen",
+      "next": "Nächstes Foto von {name}"
     }
   },
   "discoveryLoading": {
     "states": {
-      "finding": "Finding people who fit both sides…"
+      "finding": "Passende Personen werden gesucht…"
     },
     "accessibility": {
-      "finding": "Finding people who fit both sides"
+      "finding": "Passende Personen werden gesucht"
     }
   },
   "binderDial": {
     "labels": {
       "minimum": "MIN",
       "maximum": "MAX",
-      "adjust": "ADJUST"
+      "adjust": "ANPASSEN"
     },
     "accessibility": {
-      "decreaseMinimum": "Decrease minimum",
-      "decreaseMaximum": "Decrease maximum",
-      "decrease": "Decrease {caption}",
-      "increaseMinimum": "Increase minimum",
-      "increaseMaximum": "Increase maximum",
-      "increase": "Increase {caption}"
+      "decreaseMinimum": "Minimum verringern",
+      "decreaseMaximum": "Maximum verringern",
+      "decrease": "{caption} verringern",
+      "increaseMinimum": "Minimum erhöhen",
+      "increaseMaximum": "Maximum erhöhen",
+      "increase": "{caption} erhöhen"
     }
   },
   "binderInput": {
     "accessibility": {
-      "hidePassword": "Hide password",
-      "showPassword": "Show password"
+      "hidePassword": "Passwort ausblenden",
+      "showPassword": "Passwort anzeigen"
     }
   },
   "binderScreenHeader": {},
@@ -906,26 +906,26 @@
   "screenState": {},
   "matchCelebration": {
     "fallback": {
-      "you": "You"
+      "you": "Du"
     },
     "copy": {
-      "eyebrow": "IT'S A BIND",
-      "title": "You and {name} chose each other.",
-      "message": "No games. The conversation is open for both of you."
+      "eyebrow": "EIN BIND",
+      "title": "Du und {name} habt euch füreinander entschieden.",
+      "message": "Keine Spielchen. Die Unterhaltung ist für euch beide offen."
     },
     "actions": {
-      "saySomething": "Say something real",
-      "keepDiscovering": "Keep discovering"
+      "saySomething": "Sag etwas Echtes",
+      "keepDiscovering": "Weiter entdecken"
     }
   },
   "root": {
     "offline": {
-      "title": "You are offline",
-      "message": "Binder needs a connection to check the current safety rules. It will work as soon as you are back online."
+      "title": "Du bist offline",
+      "message": "Binder benötigt eine Verbindung, um die aktuellen Sicherheitsregeln zu prüfen. Sobald du wieder online bist, geht es weiter."
     },
     "legalGate": {
-      "failedTitle": "Safety check failed",
-      "failedMessage": "Could not verify Binder policy state."
+      "failedTitle": "Sicherheitsprüfung fehlgeschlagen",
+      "failedMessage": "Der Richtlinienstatus von Binder konnte nicht geprüft werden."
     }
   }
 }

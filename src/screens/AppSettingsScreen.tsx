@@ -2,7 +2,7 @@ import { memo, useCallback, useEffect, useState } from 'react';
 import { Switch, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
-import { BinderButton, BinderCard, BinderChip, BinderInput, BinderScreenHeader, BinderText, ScreenState, SectionHeader } from '../components/ui';
+import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderInput, BinderScreenHeader, BinderText, MotionPressable as Pressable, ScreenState, SectionHeader } from '../components/ui';
 import { availableLocales } from '../i18n';
 import { getBetaSettings, setBetaDiagnostics } from '../lib/beta';
 import { confirmDestructive } from '../lib/confirmDestructive';
@@ -26,7 +26,7 @@ function isQuietTime(value: string): boolean {
 }
 
 export default function AppSettingsScreen({ onClose }: { onClose: () => void }) {
-  const { theme, settings, hydrated, t, updateSettings, updateNotifications, updateQuietHours, resetSettings } = useBinderTheme();
+  const { theme, settings, hydrated, locale, t, updateSettings, updateNotifications, updateQuietHours, resetSettings } = useBinderTheme();
   const languages = availableLocales();
   const haptic = useBinderHaptics();
   const [diagnostics, setDiagnostics] = useState(false);
@@ -117,21 +117,27 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
 
       {/* The language section is not a placeholder: it appears the moment a
           second locale file is registered, and stays out of the way until then. */}
+      {/* Three languages fit in a chip row; ten do not. A list of equal rows
+          stays legible at any count, shows which one is active without relying
+          on colour alone, and keeps every row a full 48 dp target. */}
       {languages.length > 1 ? (
         <SettingsSection title={t('settings.language.title')} copy={t('settings.language.copy')}>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>
-            <BinderChip
+          <View style={{ borderRadius: theme.radii.card, borderWidth: 1, borderColor: theme.colors.borderSubtle, overflow: 'hidden' }}>
+            <LanguageRow
               label={t('settings.language.systemLabel')}
+              detail={`${t('settings.language.systemCopy')} · ${languages.find((entry) => entry.code === locale)?.endonym ?? ''}`.trim()}
+              flag="🌐"
               selected={settings.language === 'system'}
-              accessibilityLabel={`${t('settings.language.systemLabel')} — ${t('settings.language.systemCopy')}`}
+              first
               onPress={() => void updateSettings({ language: 'system' })}
             />
             {languages.map((language) => (
-              <BinderChip
+              <LanguageRow
                 key={language.code}
-                label={language.flag ? `${language.flag}  ${language.endonym}` : language.endonym}
+                label={language.endonym}
+                detail={language.name}
+                flag={language.flag}
                 selected={settings.language === language.code}
-                accessibilityLabel={language.name}
                 onPress={() => void updateSettings({ language: language.code })}
               />
             ))}
@@ -205,4 +211,43 @@ type NotificationField = 'newMatches' | 'messages' | 'moderation' | 'safety' | '
 const NotificationSwitchRow = memo(function NotificationSwitchRow({ field, update, ...row }: { field: NotificationField; update: (patch: Partial<Record<NotificationField | 'enabled', boolean>>) => Promise<void>; label: string; copy?: string; value: boolean; disabled: boolean }) {
   const onValueChange = useCallback((value: boolean) => void update({ [field]: value }), [field, update]);
   return <SwitchRow {...row} onValueChange={onValueChange} />;
+});
+
+
+const LanguageRow = memo(function LanguageRow({ label, detail, flag, selected, first = false, onPress }: {
+  label: string;
+  detail: string;
+  flag: string;
+  selected: boolean;
+  first?: boolean;
+  onPress: () => void;
+}) {
+  const { theme } = useBinderTheme();
+  return (
+    <Pressable
+      accessibilityRole="radio"
+      accessibilityState={{ selected }}
+      accessibilityLabel={`${label} — ${detail}`}
+      pressedSurface={false}
+      onPress={onPress}
+      style={({ pressed }: { pressed: boolean }) => ({
+        minHeight: theme.layout.controlHeight + theme.spacing.x2,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: theme.spacing.x3,
+        paddingHorizontal: theme.spacing.x4,
+        paddingVertical: theme.spacing.x3,
+        borderTopWidth: first ? 0 : 1,
+        borderTopColor: theme.colors.borderSubtle,
+        backgroundColor: pressed ? theme.colors.surfacePressed : selected ? theme.colors.surfaceElevated : theme.colors.transparent,
+      })}
+    >
+      <BinderText variant="title" maxFontSizeMultiplier={theme.layout.chromeFontScaleCap}>{flag}</BinderText>
+      <View style={{ flex: 1 }}>
+        <BinderText variant="label" tone={selected ? 'accent' : 'primary'} numberOfLines={1}>{label}</BinderText>
+        <BinderText variant="caption" tone="muted" numberOfLines={1} style={{ marginTop: theme.spacing.x1 }}>{detail}</BinderText>
+      </View>
+      {selected ? <BinderIcon name="check" size={20} color={theme.accent.onSurface} /> : null}
+    </Pressable>
+  );
 });

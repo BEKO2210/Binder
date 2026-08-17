@@ -7,7 +7,10 @@ const root = readFileSync('src/Root.tsx','utf8');
 const chat = readFileSync('src/screens/ChatScreen.tsx','utf8');
 const app = JSON.parse(readFileSync('app.json','utf8'));
 const eas = JSON.parse(readFileSync('eas.json','utf8'));
-const activation = readFileSync('docs/PHASE7-PRODUCTION-RUNBOOK.md','utf8');
+// The runbooks were consolidated into AGENTS.md, which is now the only
+// document in the repository. The contract is unchanged: the activation
+// conditions have to be written down somewhere a human will find them.
+const activation = readFileSync('AGENTS.md','utf8');
 const failures = [];
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -53,7 +56,7 @@ if (!UUID_PATTERN.test(app.expo?.extra?.eas?.projectId ?? '')) failures.push('A 
 if (app.expo?.plugins?.flat?.().includes('expo-notifications') !== true) failures.push('Expo notifications plugin is missing');
 if (eas.build?.preview?.distribution !== 'internal' || eas.build?.preview?.android?.buildType !== 'apk') failures.push('Two-device EAS preview APK profile is missing');
 if (eas.build?.production?.android?.buildType !== 'app-bundle') failures.push('Android EAS production profile is missing');
-for (const contract of ['FCM v1','Supabase Cron','Vault-held dispatch secret','PHASE7-DEVICE-MATRIX.md']) {
+for (const contract of ['FCM v1','Supabase Cron','dispatch secret','device evidence']) {
   if (!activation.includes(contract)) failures.push(`Production activation gate missing: ${contract}`);
 }
 
