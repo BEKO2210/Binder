@@ -23,7 +23,7 @@ jobs:
           package-manager-cache: false
 
       - name: Install dependencies
-        run: npm install --ignore-scripts
+        run: npm ci --ignore-scripts
 
       - name: Materialize Binder brand assets
         run: npm run brand:assets

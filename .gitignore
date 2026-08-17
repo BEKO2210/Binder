@@ -26,3 +26,7 @@ assets/brand/splash-icon.png
 
 # Prepared only for the static GitHub Pages artifact
 site/assets/
+
+# EAS keystore credentials (Klartext-Passwoerter) — Repo ist public
+credentials.json
+supabase/.temp/

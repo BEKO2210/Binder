@@ -35,7 +35,7 @@ jobs:
           node-version: '22.13.1'
           package-manager-cache: false
       - name: Install dependencies
-        run: npm install --ignore-scripts
+        run: npm ci --ignore-scripts
       - name: Prepare Binder site assets
         run: npm run site:prepare
       - name: Verify public policy and brand contract

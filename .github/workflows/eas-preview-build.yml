@@ -37,7 +37,7 @@ jobs:
           fi
 
       - name: Install dependencies
-        run: npm install --ignore-scripts
+        run: npm ci --ignore-scripts
 
       - name: Materialize production branding
         run: npm run brand:assets
