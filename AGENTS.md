@@ -215,8 +215,9 @@ sits on the same axis in every frame — a listing where the phone jumps between
 screenshots reads as separate posters. It replaced a bash/ImageMagick version
 that could not run here, and needs only Pillow.
 
-The promo film is a Remotion project in `/home/belkis/binder-promo` with two
-compositions off one timeline: `BinderPromo` (1920×1080) for the site and
+The promo film is a Remotion project in `/home/belkis/binder-promo`, backed up
+as the private repo `BEKO2210/binder-promo`, with two compositions off one
+timeline: `BinderPromo` (1920×1080) for the site and
 YouTube, `BinderPromoVertical` (1080×1920) for phones. The scenes read their own
 stage size, so the vertical cut is a composition and not a crop. Renders are
 staged in `/home/belkis/Binder-Release/promo/`, and a 1280×720 version is
