@@ -59,7 +59,7 @@ function nearestIndex(steps: readonly number[], value: number): number {
 }
 
 export function BinderDial(props: BinderDialProps) {
-  const { theme } = useBinderTheme();
+  const { theme, t } = useBinderTheme();
   const haptic = useBinderHaptics();
   const lowInitial = props.mode === 'single' ? nearestIndex(props.steps, props.value) : nearestIndex(props.steps, props.lowValue);
   const highInitial = props.mode === 'single' ? lowInitial : nearestIndex(props.steps, props.highValue);
@@ -253,9 +253,9 @@ export function BinderDial(props: BinderDialProps) {
       <View style={{ flexDirection: 'row', gap: theme.spacing.x4 }}>
         {(props.mode === 'range' ? (['low', 'high'] as const) : (['low'] as const)).map((which) => (
           <View key={which} style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
-            <StepButton label={`Decrease ${which === 'low' && props.mode === 'range' ? 'minimum' : which === 'high' ? 'maximum' : props.caption}`} symbol="−" onStart={() => startRepeat(which, -1)} onStop={stopRepeat} />
-            <BinderText variant="caption" tone="muted">{which === 'low' && props.mode === 'range' ? 'MIN' : which === 'high' ? 'MAX' : 'ADJUST'}</BinderText>
-            <StepButton label={`Increase ${which === 'low' && props.mode === 'range' ? 'minimum' : which === 'high' ? 'maximum' : props.caption}`} symbol="+" onStart={() => startRepeat(which, 1)} onStop={stopRepeat} />
+            <StepButton label={which === 'low' && props.mode === 'range' ? t('binderDial.accessibility.decreaseMinimum') : which === 'high' ? t('binderDial.accessibility.decreaseMaximum') : t('binderDial.accessibility.decrease', { caption: props.caption })} symbol="−" onStart={() => startRepeat(which, -1)} onStop={stopRepeat} />
+            <BinderText variant="caption" tone="muted">{which === 'low' && props.mode === 'range' ? t('binderDial.labels.minimum') : which === 'high' ? t('binderDial.labels.maximum') : t('binderDial.labels.adjust')}</BinderText>
+            <StepButton label={which === 'low' && props.mode === 'range' ? t('binderDial.accessibility.increaseMinimum') : which === 'high' ? t('binderDial.accessibility.increaseMaximum') : t('binderDial.accessibility.increase', { caption: props.caption })} symbol="+" onStart={() => startRepeat(which, 1)} onStop={stopRepeat} />
           </View>
         ))}
       </View>

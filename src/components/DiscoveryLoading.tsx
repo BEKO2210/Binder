@@ -115,7 +115,7 @@ const skeletonRest = 0.62;
 const skeletonPeak = 0.92;
 
 export function DiscoveryLoading() {
-  const { theme, reduceMotion } = useBinderTheme();
+  const { theme, reduceMotion, t } = useBinderTheme();
   const [size, setSize] = useState({ width: 0, height: 0 });
   const phase = useSharedValue(stillFramePhase);
   const breath = useSharedValue(skeletonPeak);
@@ -162,7 +162,7 @@ export function DiscoveryLoading() {
   // The skeleton is the discovery card's own geometry — full-bleed media, the
   // same scrim, the same bottom block — so nothing moves when the deck lands.
   return (
-    <View style={{ flex: 1 }} accessibilityRole="progressbar" accessibilityLabel="Finding people who fit both sides">
+    <View style={{ flex: 1 }} accessibilityRole="progressbar" accessibilityLabel={t('discoveryLoading.accessibility.finding')}>
       <View
         onLayout={(event) => {
           const { width, height } = event.nativeEvent.layout;
@@ -199,7 +199,7 @@ export function DiscoveryLoading() {
 
         <View pointerEvents="none" style={{ position: 'absolute', top: theme.spacing.x5, left: theme.spacing.x5, right: theme.spacing.x5, alignItems: 'center' }}>
           <View style={{ backgroundColor: theme.colors.surfaceElevated, borderWidth: 1, borderColor: theme.colors.borderSubtle, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x2 }}>
-            <BinderText variant="caption" tone="secondary">Finding people who fit both sides…</BinderText>
+            <BinderText variant="caption" tone="secondary">{t('discoveryLoading.states.finding')}</BinderText>
           </View>
         </View>
       </View>

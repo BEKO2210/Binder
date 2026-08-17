@@ -8,11 +8,11 @@ import { BinderText } from './BinderText';
 const binderIcon = require('../../../assets/brand/icon.png');
 
 export function BinderBrand({ compact = false }: { compact?: boolean }) {
-  const { theme } = useBinderTheme();
+  const { theme, t } = useBinderTheme();
   const size = compact ? 34 : 42;
 
   return (
-    <View accessibilityLabel="Binder" style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3 }}>
+    <View accessibilityLabel={t('binderBrand.accessibility.name')} style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3 }}>
       <View style={{ width: size, height: size, borderRadius: compact ? 11 : 13, overflow: 'hidden', backgroundColor: theme.colors[IMAGE_POLICY.placeholder] }}>
         <Image
           accessibilityIgnoresInvertColors
@@ -27,7 +27,7 @@ export function BinderBrand({ compact = false }: { compact?: boolean }) {
           variant="label"
           style={{ color: theme.colors.textPrimary, letterSpacing: 3, fontFamily: fontFamilies.extraBold }}
         >
-          BINDER
+          {t('binderBrand.copy.name')}
         </BinderText>
       ) : null}
     </View>

@@ -29,7 +29,7 @@ type Props = {
 };
 
 export function PhotoPager({ photos, name, height = '100%', onOpen, interactive = true, onPageChange, swipeable = false, initialIndex = 0, fit = 'cover' }: Props) {
-  const { theme, reduceMotion } = useBinderTheme();
+  const { theme, reduceMotion, t } = useBinderTheme();
   const haptic = useBinderHaptics();
   const [index, setIndex] = useState(() => clampPhotoIndex(initialIndex, photos.length));
   const [width, setWidth] = useState(0);
@@ -101,7 +101,7 @@ export function PhotoPager({ photos, name, height = '100%', onOpen, interactive 
           return next;
         });
       }}
-      accessibilityLabel={count > 1 ? `${name}, photo ${index + 1} of ${count}` : name}
+      accessibilityLabel={count > 1 ? t('photoPager.accessibility.position', { name, current: index + 1, count }) : name}
       style={{ width: '100%', height, backgroundColor: theme.colors.surfaceElevated, overflow: 'hidden' }}
     >
       {measured ? (
@@ -110,7 +110,7 @@ export function PhotoPager({ photos, name, height = '100%', onOpen, interactive 
             <View key={`${position}-${photo}`} style={{ width, height: '100%', backgroundColor: fit === 'contain' ? theme.colors.canvas : theme.colors.surfaceElevated }}>
               {failed[position] ? (
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: theme.spacing.x5 }}>
-                  <BinderText variant="caption" tone="muted" align="center">This photo could not be loaded.</BinderText>
+                  <BinderText variant="caption" tone="muted" align="center">{t('photoPager.errors.load')}</BinderText>
                 </View>
               ) : (
                 <Image
@@ -135,9 +135,9 @@ export function PhotoPager({ photos, name, height = '100%', onOpen, interactive 
       {/* Hot zones over a photo carry no surface and no scale: the photo is the
           subject, and a grey rectangle flashing over a third of it is not
           feedback, it is damage. */}
-      {interactive && count > 1 ? <Pressable pressedSurface={false} pressScale={false} accessibilityRole="button" accessibilityLabel={`Previous photo of ${name}`} accessibilityState={{ disabled: index === 0 }} disabled={index === 0} onPress={() => move('previous')} style={{ position: 'absolute', top: theme.spacing.x10, bottom: 0, left: 0, width: '33.333%', minWidth: theme.layout.minimumTouchTarget }} /> : null}
-      {interactive && onOpen ? <Pressable pressedSurface={false} pressScale={false} accessibilityRole="button" accessibilityLabel={`Open full profile for ${name}`} onPress={() => onOpen(index)} style={{ position: 'absolute', top: theme.spacing.x10, bottom: 0, left: count > 1 ? '33.333%' : 0, right: count > 1 ? '33.333%' : 0, minWidth: theme.layout.minimumTouchTarget }} /> : null}
-      {interactive && count > 1 ? <Pressable pressedSurface={false} pressScale={false} accessibilityRole="button" accessibilityLabel={`Next photo of ${name}`} accessibilityState={{ disabled: index === count - 1 }} disabled={index === count - 1} onPress={() => move('next')} style={{ position: 'absolute', top: theme.spacing.x10, bottom: 0, right: 0, width: '33.333%', minWidth: theme.layout.minimumTouchTarget }} /> : null}
+      {interactive && count > 1 ? <Pressable pressedSurface={false} pressScale={false} accessibilityRole="button" accessibilityLabel={t('photoPager.accessibility.previous', { name })} accessibilityState={{ disabled: index === 0 }} disabled={index === 0} onPress={() => move('previous')} style={{ position: 'absolute', top: theme.spacing.x10, bottom: 0, left: 0, width: '33.333%', minWidth: theme.layout.minimumTouchTarget }} /> : null}
+      {interactive && onOpen ? <Pressable pressedSurface={false} pressScale={false} accessibilityRole="button" accessibilityLabel={t('photoPager.accessibility.openProfile', { name })} onPress={() => onOpen(index)} style={{ position: 'absolute', top: theme.spacing.x10, bottom: 0, left: count > 1 ? '33.333%' : 0, right: count > 1 ? '33.333%' : 0, minWidth: theme.layout.minimumTouchTarget }} /> : null}
+      {interactive && count > 1 ? <Pressable pressedSurface={false} pressScale={false} accessibilityRole="button" accessibilityLabel={t('photoPager.accessibility.next', { name })} accessibilityState={{ disabled: index === count - 1 }} disabled={index === count - 1} onPress={() => move('next')} style={{ position: 'absolute', top: theme.spacing.x10, bottom: 0, right: 0, width: '33.333%', minWidth: theme.layout.minimumTouchTarget }} /> : null}
     </View>
   );
 

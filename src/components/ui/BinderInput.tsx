@@ -17,7 +17,7 @@ type Props = TextInputProps & {
 };
 
 export function BinderInput({ label, error, helper, style, editable = true, inputRef, revealToggle = false, ...props }: Props) {
-  const { theme } = useBinderTheme();
+  const { theme, t } = useBinderTheme();
   const [focused, setFocused] = useState(false);
   const [revealed, setRevealed] = useState(false);
   const borderColor = error ? theme.semantic.destructive : focused ? theme.accent.accent : theme.colors.borderSubtle;
@@ -55,7 +55,7 @@ export function BinderInput({ label, error, helper, style, editable = true, inpu
           <Pressable
             accessibilityRole="button"
             accessibilityState={{ selected: revealed }}
-            accessibilityLabel={revealed ? 'Hide password' : 'Show password'}
+            accessibilityLabel={revealed ? t('binderInput.accessibility.hidePassword') : t('binderInput.accessibility.showPassword')}
             disabled={!editable}
             onPress={() => setRevealed((current) => !current)}
             hitSlop={theme.spacing.x2}

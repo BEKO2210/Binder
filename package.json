@@ -32,7 +32,8 @@
     "verify:worklets": "node scripts/verify-worklet-contract.mjs",
     "i18n:sync": "node scripts/i18n-sync.mjs",
     "verify:i18n": "node scripts/verify-i18n.mjs",
-    "i18n:coverage": "node scripts/verify-i18n-coverage.mjs"
+    "i18n:coverage": "node scripts/verify-i18n-coverage.mjs",
+    "verify:i18n-coverage": "node scripts/verify-i18n-coverage.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/manrope": "0.4.2",

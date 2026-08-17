@@ -30,14 +30,14 @@ export default class BinderErrorBoundary extends Component<Props, State> {
 }
 
 function CrashFallback({ onRetry }: { onRetry: () => void }) {
-  const { theme } = useBinderTheme();
+  const { theme, t } = useBinderTheme();
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas, justifyContent: 'center', padding: theme.spacing.x6 }}>
       <BinderBrand />
-      <BinderText variant="micro" tone="accent" style={{ marginTop: theme.spacing.x8 }}>BINDER RECOVERED THE SCREEN</BinderText>
-      <BinderText variant="displayL" style={{ marginTop: theme.spacing.x2 }}>Something failed to render.</BinderText>
-      <BinderText variant="body" tone="secondary" style={{ marginTop: theme.spacing.x3 }}>Your account data was not included in the diagnostic event. Try the screen again; if it repeats, use Beta Program feedback after Binder opens.</BinderText>
-      <BinderButton label="Try Binder again" icon="retry" onPress={onRetry} style={{ marginTop: theme.spacing.x6 }} />
+      <BinderText variant="micro" tone="accent" style={{ marginTop: theme.spacing.x8 }}>{t('binderErrorBoundary.recovery.eyebrow')}</BinderText>
+      <BinderText variant="displayL" style={{ marginTop: theme.spacing.x2 }}>{t('binderErrorBoundary.recovery.title')}</BinderText>
+      <BinderText variant="body" tone="secondary" style={{ marginTop: theme.spacing.x3 }}>{t('binderErrorBoundary.recovery.message')}</BinderText>
+      <BinderButton label={t('binderErrorBoundary.actions.retry')} icon="retry" onPress={onRetry} style={{ marginTop: theme.spacing.x6 }} />
     </View>
   );
 }

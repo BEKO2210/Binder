@@ -711,6 +711,65 @@
       "failed": "Could not reset the settings."
     }
   },
+  "binderErrorBoundary": {
+    "recovery": {
+      "eyebrow": "BINDER RECOVERED THE SCREEN",
+      "title": "Something failed to render.",
+      "message": "Your account data was not included in the diagnostic event. Try the screen again; if it repeats, use Beta Program feedback after Binder opens."
+    },
+    "actions": {
+      "retry": "Try Binder again"
+    }
+  },
+  "photoPager": {
+    "errors": {
+      "load": "This photo could not be loaded."
+    },
+    "accessibility": {
+      "position": "{name}, photo {current} of {count}",
+      "previous": "Previous photo of {name}",
+      "openProfile": "Open full profile for {name}",
+      "next": "Next photo of {name}"
+    }
+  },
+  "discoveryLoading": {
+    "states": {
+      "finding": "Finding people who fit both sides…"
+    },
+    "accessibility": {
+      "finding": "Finding people who fit both sides"
+    }
+  },
+  "binderDial": {
+    "labels": {
+      "minimum": "MIN",
+      "maximum": "MAX",
+      "adjust": "ADJUST"
+    },
+    "accessibility": {
+      "decreaseMinimum": "Decrease minimum",
+      "decreaseMaximum": "Decrease maximum",
+      "decrease": "Decrease {caption}",
+      "increaseMinimum": "Increase minimum",
+      "increaseMaximum": "Increase maximum",
+      "increase": "Increase {caption}"
+    }
+  },
+  "binderInput": {
+    "accessibility": {
+      "hidePassword": "Hide password",
+      "showPassword": "Show password"
+    }
+  },
+  "binderScreenHeader": {},
+  "binderBrand": {
+    "accessibility": {
+      "name": "Binder"
+    },
+    "copy": {
+      "name": "BINDER"
+    }
+  },
   "screenState": {
   },
   "matchCelebration": {

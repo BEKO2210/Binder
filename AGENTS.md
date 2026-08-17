@@ -107,6 +107,8 @@ every agent session must follow. Human owner: Belkis (GitHub `BEKO2210`).
 npm run typecheck && npm run typecheck:tests && npm test
 node scripts/verify-design-contract.mjs      # no literal colours/sizes/radii/durations
 node scripts/verify-worklet-contract.mjs     # a worklet may only call worklets
+node scripts/verify-i18n.mjs                 # locale registry matches the files on disk
+node scripts/verify-i18n-coverage.mjs        # no user-visible English left in the screens
 node scripts/verify-brand-assets.mjs         # plus the other verify-*.mjs
 ```
 
@@ -137,7 +139,12 @@ node scripts/verify-brand-assets.mjs         # plus the other verify-*.mjs
    `clampPhotoIndex` it called was not; the first photo swipe killed the process
    with "Tried to synchronously call a Remote Function". `verify-worklet-contract.mjs`
    is the gate now.
-7. **Press feedback belongs on controls, not on media.** An invisible hot zone
+7. **Every user-visible string lives in `src/i18n/locales/en.json`.** Screens
+   read it through `t()` from `useBinderTheme()`. The coverage gate fails on new
+   hard-coded copy; the German Impressum in `AboutScreen` is the one documented
+   exception, because § 5 DDG requires it in German whatever the interface
+   language is. Adding a language is `docs/LOCALIZATION.md`.
+8. **Press feedback belongs on controls, not on media.** An invisible hot zone
    over a photo must pass `pressedSurface={false} pressScale={false}`, and an
    icon button over a photo takes `overMedia`. A grey rectangle flashing over a
    third of someone's photo is the single most visible defect the app had.

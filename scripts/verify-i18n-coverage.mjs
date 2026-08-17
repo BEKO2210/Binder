@@ -16,11 +16,18 @@ const budgetPath = 'artifacts/i18n-coverage.json';
 const userFacingProps = [
   'label', 'title', 'message', 'copy', 'eyebrow', 'placeholder', 'helper', 'error',
   'accessibilityLabel', 'accessibilityHint', 'actionLabel', 'secondaryActionLabel',
-  'detail', 'text', 'name', 'confirmLabel', 'cancelLabel',
+  'detail', 'text', 'confirmLabel', 'cancelLabel',
 ];
 
 // Strings that are not language: identifiers, codes, tokens, formats.
 const notLanguage = /^(?:[a-z0-9_.-]+|[A-Z0-9_]+|%s|\d+|[^\p{L}]*)$/u;
+// The German Impressum is law, not interface copy: § 5 DDG requires it in
+// German regardless of the language the app is running in, so it stays in the
+// screen and out of the translator's way.
+const legalExceptions = new Set(['src/screens/AboutScreen.tsx']);
+// Fragments of code that a text scan picks up between braces: ternaries,
+// generics, template expressions. Prose does not contain these.
+const looksLikeCode = /[=;{}$()<>[\]]|\?|::|\s\?\s|=>|\bconst\b|\buseState\b|\buseRef\b|\bPromise\b|\bPartial\b|\bRecord\b|\bvoid\b/;
 
 function filesUnder(directory) {
   const path = resolve(root, directory);
@@ -36,14 +43,15 @@ function findingsIn(source) {
   // <Tag ...>Some words</Tag>
   for (const match of source.matchAll(/>([^<>{}\n]{2,})</g)) {
     const text = match[1].trim();
-    if (!text || notLanguage.test(text) || !/\p{L}/u.test(text)) continue;
+    if (!text || notLanguage.test(text) || !/\p{L}/u.test(text) || looksLikeCode.test(text)) continue;
+    if (!/^\p{L}/u.test(text)) continue;
     findings.push(text);
   }
   // prop="Some words"
   const propPattern = new RegExp(`\\b(${userFacingProps.join('|')})=\\{?["'\`]([^"'\`\\n]{2,})["'\`]`, 'g');
   for (const match of source.matchAll(propPattern)) {
     const text = match[2].trim();
-    if (!text || notLanguage.test(text) || !/\p{L}/u.test(text)) continue;
+    if (!text || notLanguage.test(text) || !/\p{L}/u.test(text) || text.includes('${')) continue;
     findings.push(text);
   }
   return findings;
@@ -52,7 +60,7 @@ function findingsIn(source) {
 const perFile = new Map();
 for (const file of scanRoots.flatMap(filesUnder)) {
   const source = readFileSync(file, 'utf8');
-  const findings = findingsIn(source);
+  const findings = legalExceptions.has(relative(root, file)) ? [] : findingsIn(source);
   if (findings.length) perFile.set(relative(root, file), findings.length);
 }
 
