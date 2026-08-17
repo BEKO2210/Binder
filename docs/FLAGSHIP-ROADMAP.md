@@ -114,3 +114,18 @@ device proves it.** No "should be fine".
 - [ ] The demo clip on the site matches what the app looks like today.
 - [ ] Data-safety answers derived from the code, not from memory: what leaves the
       device, where it lands, how long it stays.
+
+
+## L · The loading surface (approved exception, 2026-08-17)
+
+The only sanctioned new dependency: `@shopify/react-native-skia`.
+
+- [ ] Fragment shader for the discovery loading state: aurora field with real
+      glow and grain, driven by reanimated uniforms on the UI thread.
+- [ ] A skeleton beneath it in the exact shape of the discovery card, so
+      nothing moves when the deck arrives.
+- [ ] Reduced motion renders one still frame that still communicates waiting.
+- [ ] Costs stated before install, measured after: APK size, JS bundle, cold
+      start, and janky frames while the state is on screen.
+- [ ] If the measured cost is worse than promised, say so and offer the
+      dependency-free fallback rather than quietly shipping it.

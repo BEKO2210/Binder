@@ -131,10 +131,15 @@ node scripts/verify-brand-assets.mjs         # plus the other verify-*.mjs
   (waves A–K, what is still open), `docs/UI-HARDENING-ROADMAP.md` (phases and
   the device measurements table).
 - Open, in priority order:
-  1. **Discovery loading state.** The owner rejects the current one. Decide
-     whether to add `@shopify/react-native-skia` for a real shader-driven
-     surface (the honest way to reach the quality he is asking for; costs bundle
-     size and a native rebuild) or to stay dependency-free. Get the GO first.
+  1. **Discovery loading state — approved 2026-08-17.** The owner rejected the
+     current one and gave an explicit GO to add `@shopify/react-native-skia`,
+     which is the one exception to the no-new-dependency rule. Build the loading
+     surface as a fragment shader (aurora, real glow, grain) over a skeleton in
+     the shape of the discovery card. Conditions he set: state the expected
+     bundle and start-up cost before installing it, and measure both afterwards
+     on the device (`am start -W`, `scripts/report-bundle-size.mjs`,
+     `dumpsys gfxinfo` during the loading state). Keep the reduced-motion path:
+     a still frame that still says something.
   2. Full crawler run on both devices in both themes, then work the findings.
   3. Replace the broken closed-testing build.
   4. Waves G–K: session expiry as a state, filter presets with a live count,
