@@ -16,9 +16,20 @@ const phase6TotalBaselineMiB = 3.44;
 // value plus a deliberate ~0.35 MiB of headroom, not to whatever made it green.
 // Anything that pushes past this is a new decision, not a rounding error.
 const waveLJsBaselineMiB = 4.55;
-const maxJsMiB = 4.9;
 const waveLTotalBaselineMiB = 5.5;
-const maxTotalMiB = 5.9;
+
+// Fifteen languages raised it again, and the cost was measured rather than
+// assumed: the same tree exported with only `en.json` bundled is 4.63 MiB JS /
+// 5.59 MiB total, with all fifteen it is 5.02 / 5.98. Fourteen translations
+// therefore cost 0.39 MiB — about 28 KiB each, and each one is a language
+// somebody can actually use the app in. The budget follows the measurement plus
+// the same deliberate ~0.35 MiB of headroom, which leaves room for roughly a
+// dozen more languages before this is a decision again.
+const languagesJsBaselineMiB = 5.02;
+const languagesTotalBaselineMiB = 5.98;
+const perLanguageKiB = 28;
+const maxJsMiB = 5.35;
+const maxTotalMiB = 6.35;
 
 export function collectBundleReport(exportRoot) {
   let totalBytes = 0;
@@ -73,6 +84,8 @@ export function formatBundleReport(report) {
     `Phase 6 measured total baseline: ${phase6TotalBaselineMiB.toFixed(2)} MiB`,
     `Wave L JS baseline (with Skia): ${waveLJsBaselineMiB.toFixed(2)} MiB`,
     `Wave L total baseline (with Skia): ${waveLTotalBaselineMiB.toFixed(2)} MiB`,
+    `Fifteen-language JS baseline: ${languagesJsBaselineMiB.toFixed(2)} MiB (measured cost per language: ~${perLanguageKiB} KiB)`,
+    `Fifteen-language total baseline: ${languagesTotalBaselineMiB.toFixed(2)} MiB`,
     `JS/Hermes hard budget: ${maxJsMiB.toFixed(2)} MiB`,
     `Total export hard budget: ${maxTotalMiB.toFixed(2)} MiB`,
     'Largest export files:',

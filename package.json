@@ -19,6 +19,8 @@
     "typecheck": "tsc --noEmit",
     "prebundlecheck": "node scripts/materialize-brand-assets.mjs",
     "bundlecheck": "expo export --platform android --output-dir dist",
+    "site:languages": "node scripts/build-site-languages.mjs",
+    "verify:site-languages": "node scripts/build-site-languages.mjs --check",
     "verify:brand": "node scripts/verify-brand-assets.mjs",
     "verify:phase6-design": "node scripts/verify-phase6-design.mjs",
     "verify:phase6-settings": "node scripts/verify-phase6-settings.mjs",

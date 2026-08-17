@@ -25,9 +25,11 @@ server is the truth for every destructive or social action.
 2. **Never weaken a gate.** CI steps, verifiers, pgTAP and concurrency suites
    and `npm test` may become stricter, never removed or softened to get green. A
    budget number moves only when the owner decides it and the measurement that
-   justified it is written down — that happened once, for the Skia bundle
-   budgets (JS 4.20 → 4.90 MiB, total 5.25 → 5.90 MiB, after measuring
-   3.99 → 4.55 MiB and 4.95 → 5.51 MiB).
+   justified it is written down — that has happened twice. Skia: JS 4.20 → 4.90
+   MiB, total 5.25 → 5.90 MiB, after measuring 3.99 → 4.55 MiB and 4.95 → 5.51
+   MiB. Fifteen languages: JS 4.90 → 5.35 MiB, total 5.90 → 6.35 MiB, after
+   exporting the same tree with only `en.json` bundled (4.63 MiB JS / 5.59 MiB
+   total) and with all fifteen (5.02 / 5.98) — 28 KiB per language.
 3. **No secrets in the repo, in logs or in chat.** `google-services.json` is the
    only committed credential-like file (public by design). GitHub Actions
    secret: `EXPO_TOKEN`. Edge Function secret: `BINDER_PUSH_DISPATCH_SECRET`.
@@ -74,6 +76,7 @@ node scripts/verify-admin-dashboard.mjs
 node scripts/verify-brand-assets.mjs
 node scripts/verify-entrypoint.mjs
 node scripts/verify-site.mjs
+node scripts/build-site-languages.mjs --check  # site/languages.html matches the locales
 ```
 
 `tests/designTokens.test.ts` walks every semantic colour pairing in both
@@ -135,6 +138,14 @@ nuisance, the locale files can be fetched from Supabase at start-up and cached,
 with the bundled copy as the fallback. Arabic renders correctly but the layout
 is still left-to-right: real RTL support (`I18nManager`, mirrored paddings and
 icons) is its own piece of work and is not done.
+
+Each bundled language costs about 28 KiB of JS payload (measured, see rule 2),
+so the budget has room for roughly a dozen more before that is a decision again.
+
+The public site advertises the languages, and it cannot lie about them:
+`site/languages.html` and the language block on the home page are generated from
+the locale files by `npm run site:languages`, and CI fails if they drift from
+what actually ships.
 
 - Missing or empty strings fall back to English: a half-finished translation
   degrades, it does not break a screen.
