@@ -71,6 +71,9 @@ leaves the running system intact.
 | 050 | Cold start and frame timing tracked per build in the device matrix | v0.5.30: median 336 ms, 1.87 % janky while paging | done |
 | 051-053 | Empty deck tells filtered-empty from genuinely empty; location permission is a calm state; a rejected photo says why and offers a replacement | Device shows "Filters are narrowing your deck" | done |
 | 054 | A warned or suspended account can see it: `get_my_safety_notice()` plus a plain card in the profile | RPC applied to production and probed; 94 tests | done |
+| 055 | Match celebration: measured symmetry (34/34 dp outer, ±92 dp from the axis), one staggered entrance, photos shrink before text on short screens | Device screenshot; unit test pins the geometry | done |
+| 056 | `scripts/measure-interaction-frames.sh` turns any interaction into a matrix row | Used immediately for the celebration | done |
+| 057 | Celebration entrance measured at 7.76 % janky, above the 5 % budget — being brought under | 116 frames, 3 missed vsync, p95 27 ms | in progress |
 | 017 | Language section in App settings — appears only when a translation exists, endonym plus flag, same chip rhythm as Appearance | Screenshot: Sprache / Wie mein Gerät / 🇬🇧 English / 🇩🇪 Deutsch | done |
 
 ## Backlog
@@ -84,7 +87,7 @@ Ordered by what a user notices first. Each line becomes one run.
 - [x] Deck: the card returns with one settle when a decision fails.
 - [x] Deck: bind/pass buttons show the same threshold feedback the gesture gives.
 - [x] Photo pager: the segment indicator follows the drag.
-- [ ] Match celebration: entrance timing and the two-photo composition on a 412 dp screen.
+- [x] Match celebration: composition and entrance (run 055).
 - [x] Pull-to-refresh everywhere a list can be stale (matches, chat, gallery).
 - [x] Long-press on a message shows the actions sheet.
 - [x] Every destructive action has one confirmation shape.

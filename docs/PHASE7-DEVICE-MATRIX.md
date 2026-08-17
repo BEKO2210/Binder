@@ -64,3 +64,13 @@ compared against.
 Baseline before Skia, same device: 318 / 318 / 371 / 408 / 533, median 371 ms.
 The current build starts faster than the pre-Skia baseline and stays well under
 the 5 % janky-frame budget while paging photos.
+
+## Interaction frame timing
+
+Run `scripts/measure-interaction-frames.sh <device-serial> <interaction-name>
+[capture-seconds]`, perform the interaction during the capture window, then
+paste its single output row here. A row is evidence only when the named
+interaction was actually performed on the stated device.
+
+| Device serial | Interaction | Total frames | Janky frames | Missed Vsync | p50 / p90 / p95 / p99 |
+| --- | --- | ---: | ---: | ---: | --- |
