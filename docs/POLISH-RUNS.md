@@ -77,6 +77,8 @@ leaves the running system intact.
 | 058 | Cold-start push route: the listener is registered before the launch snapshot is read, routes wait for session, legal gate and onboarding, and a chat route is checked against the server's match list before it navigates | Verifier now pins the listener order; on device: delivery receipts `delivered`, notifications present | done |
 | 059 | Quiet hours proven server-side | Four decisions read straight from the production rule: inside quiet hours `defer`, safety alert `allow`, after the local end `allow`, 21:30 UTC in a Europe/Berlin recipient `defer` | done |
 | 060 | Frame timing for the card-to-profile expansion | 98 frames, 2.04 % janky, 0 missed vsync, p95 11 ms | done |
+| 061 | Store artwork pipeline: `scripts/store-frames.sh` turns captures into 1080×1920 frames with brand ground, kicker, headline and the system bar cropped away | Three frames produced from real captures | done |
+| 062 | Staging tooling for listing content: `scripts/stage-demo-profiles.mjs` creates demo profiles from a manifest and removes them again by their auth tag | `docs/STORE-SCREENSHOTS.md` | done, waiting on photos |
 | 017 | Language section in App settings — appears only when a translation exists, endonym plus flag, same chip rhythm as Appearance | Screenshot: Sprache / Wie mein Gerät / 🇬🇧 English / 🇩🇪 Deutsch | done |
 
 ## Backlog
@@ -132,6 +134,6 @@ Ordered by what a user notices first. Each line becomes one run.
 
 ### Store readiness (wave K)
 - [x] Screenshots captured from the current build (`Binder-Release/screenshots-v0.5.29/`).
-- [ ] Store-ready content for those screenshots: the deck currently shows a labelled test account, which is right for testing and wrong for a listing. Decide with the owner whether the listing uses staged profiles.
+- [x] Decision taken by the owner: the listing uses staged profiles. Tooling and procedure exist (runs 061-062); the shoot needs portrait files the owner owns the rights to.
 - [x] Data-safety answers derived from the code (`docs/DATA-SAFETY.md`).
 - [ ] The demo clip matches what the app looks like today.

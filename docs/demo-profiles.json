@@ -1,0 +1,35 @@
+{
+  "note": "Profiles used only while store screenshots are taken. Photos are files the owner supplies and owns the rights to; nothing is downloaded and no face is invented. Create, shoot, remove — see docs/STORE-SCREENSHOTS.md.",
+  "profiles": [
+    {
+      "email": "belkis.aslani+binder.demo1@gmail.com",
+      "firstName": "Lena",
+      "birthDate": "1995-04-18",
+      "gender": "woman",
+      "bio": "Läuft am Neckar, kocht zu viel für zwei, hört Podcasts über Dinge, die sie nie brauchen wird.",
+      "interests": ["Laufen", "Kochen", "Musik"],
+      "interestedIn": ["man"],
+      "minAge": 28,
+      "maxAge": 45,
+      "distanceKm": 50,
+      "latitude": 48.9268,
+      "longitude": 9.1899,
+      "photos": []
+    },
+    {
+      "email": "belkis.aslani+binder.demo2@gmail.com",
+      "firstName": "Jonas",
+      "birthDate": "1991-09-03",
+      "gender": "man",
+      "bio": "Schrauber, Bergsteiger, macht den besten Espresso im Umkreis von drei Straßen.",
+      "interests": ["Berge", "Kaffee", "Fotografie"],
+      "interestedIn": ["woman"],
+      "minAge": 26,
+      "maxAge": 42,
+      "distanceKm": 50,
+      "latitude": 48.9251,
+      "longitude": 9.1912,
+      "photos": []
+    }
+  ]
+}
