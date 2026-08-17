@@ -30,3 +30,4 @@ site/assets/
 # EAS keystore credentials (Klartext-Passwoerter) — Repo ist public
 credentials.json
 supabase/.temp/
+artifacts/
