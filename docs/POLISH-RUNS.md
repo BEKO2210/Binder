@@ -63,6 +63,7 @@ leaves the running system intact.
 | 042 | Thumbnails decode at their display size (matches avatar, gallery tiles, celebration photos) | Cold start median 402 ms, memory measured after | done |
 | 043 | Contrast of the states the token test never covered: pressed, disabled, and text over media | Test extended; light textMuted darkened to pass; media text now drawn from the dark palette in both schemes | done |
 | 044 | A repeatable memory probe for paging a gallery | `scripts/measure-gallery-memory.sh` | done |
+| 045 | Dates, times, day labels, distances and counts formatted by locale through one pure module | 89 tests including en/de edge cases; chat times unchanged on device | done |
 | 017 | Language section in App settings — appears only when a translation exists, endonym plus flag, same chip rhythm as Appearance | Screenshot: Sprache / Wie mein Gerät / 🇬🇧 English / 🇩🇪 Deutsch | done |
 
 ## Backlog
@@ -112,7 +113,7 @@ Ordered by what a user notices first. Each line becomes one run.
 ### German locale (wave J)
 - [x] The mechanism: one English file, automatic registration, fallback, picker (`docs/LOCALIZATION.md`).
 - [x] Every screen and shared component reads from the locale file; the coverage gate holds it at zero.
-- [ ] Dates, times and distances formatted by locale.
+- [x] Dates, times and distances formatted by locale (`src/lib/format.ts`).
 - [ ] German copy for the store listing and the in-app legal surfaces.
 
 ### Store readiness (wave K)

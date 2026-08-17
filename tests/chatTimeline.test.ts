@@ -3,7 +3,7 @@ process.env.TZ = 'UTC';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { buildChatTimeline, dayLabel, timeLabel } from '../src/lib/chatTimeline.ts';
+import { buildChatTimeline } from '../src/lib/chatTimeline.ts';
 
 const ref = new Date('2026-08-16T18:00:00Z');
 
@@ -40,15 +40,5 @@ test('every calendar day gets exactly one separator', () => {
   ], ref);
   const days = items.filter((item) => item.type === 'day');
   assert.equal(days.length, 2);
-  assert.deepEqual(days.map((item) => item.type === 'day' && item.label), ['Yesterday', 'Today']);
-});
-
-test('day labels resolve today, yesterday and full dates', () => {
-  assert.equal(dayLabel('2026-08-16T08:00:00Z', ref), 'Today');
-  assert.equal(dayLabel('2026-08-15T08:00:00Z', ref), 'Yesterday');
-  assert.equal(dayLabel('2026-07-01T08:00:00Z', ref), '1 July 2026');
-});
-
-test('time labels are zero-padded 24h clock values', () => {
-  assert.match(timeLabel('2026-08-16T09:05:00Z'), /^\d{2}:\d{2}$/);
+  assert.deepEqual(days.map((item) => item.type === 'day' && item.label), ['yesterday', 'today']);
 });

@@ -3,7 +3,8 @@ import { Alert, AppState, BackHandler, Clipboard, FlatList, Platform, RefreshCon
 import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
 import Animated, { FadeInDown, FadeInUp, FadeOutDown, useAnimatedStyle } from 'react-native-reanimated';
 
-import { buildChatTimeline, timeLabel, type TimelineItem } from '../lib/chatTimeline';
+import { buildChatTimeline, type TimelineItem } from '../lib/chatTimeline';
+import { formatCount, formatTime } from '../lib/format';
 import { announce } from '../lib/announce';
 import { confirmDestructive } from '../lib/confirmDestructive';
 import { composerBody } from '../lib/conversationPresentation';
@@ -57,13 +58,13 @@ type MessageRowProps = {
 };
 
 const ChatMessageRow = memo(function ChatMessageRow({ type, label, messageId, body, createdAt, mine = false, groupedWithPrevious = false, endsGroup = false, showsTimestamp = false, index, onOpenActions }: MessageRowProps) {
-  const { theme, reduceMotion, t } = useBinderTheme();
+  const { theme, reduceMotion, locale, t } = useBinderTheme();
   const longPressHandled = useRef(false);
   if (type === 'day') {
     return (
       <View style={{ alignItems: 'center', marginTop: theme.spacing.x5, marginBottom: theme.spacing.x2 }}>
         <View style={{ backgroundColor: theme.colors.surfaceElevated, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x1 }}>
-          <BinderText variant="caption" tone="muted">{label}</BinderText>
+          <BinderText variant="caption" tone="muted">{label === 'today' ? t('chat.day.today') : label === 'yesterday' ? t('chat.day.yesterday') : label}</BinderText>
         </View>
       </View>
     );
@@ -102,7 +103,7 @@ const ChatMessageRow = memo(function ChatMessageRow({ type, label, messageId, bo
         </View>
         {showsTimestamp ? (
           <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1, alignSelf: mine ? 'flex-end' : 'flex-start', marginHorizontal: theme.spacing.x2 }}>
-            {mine ? t('chat.message.sentAt', { time: timeLabel(createdAt) }) : timeLabel(createdAt)}
+            {mine ? t('chat.message.sentAt', { time: formatTime(new Date(createdAt), locale) }) : formatTime(new Date(createdAt), locale)}
           </BinderText>
         ) : null}
       </Pressable>
@@ -119,7 +120,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   onConversationEnded: () => void;
   onSessionExpired: () => void;
 }) {
-  const { theme, reduceMotion, t } = useBinderTheme();
+  const { theme, reduceMotion, locale, t } = useBinderTheme();
   const haptic = useBinderHaptics();
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
@@ -316,7 +317,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   // The list renders inverted so the newest message is always pinned to the
   // bottom edge, directly above the composer — also while the keyboard is up.
   // The timeline adds bubble grouping, timestamps and day separators.
-  const timeline = useMemo(() => [...buildChatTimeline(messages)].reverse(), [messages]);
+  const timeline = useMemo(() => [...buildChatTimeline(messages, new Date(), locale)].reverse(), [locale, messages]);
 
   useEffect(() => {
     if (!showPartnerProfile && !showSafety) return;
@@ -446,7 +447,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     // animation instead, on the UI thread, which also keeps the movement in sync
     // with the system's easing rather than approximating it.
     <Animated.View style={[{ flex: 1, backgroundColor: theme.colors.canvas }, keyboardShift]}>
-      <BinderScreenHeader title={t('chat.header.title', { name: match.firstName, age: match.age })} eyebrow={t('chat.header.eyebrow')} centered leading={{ icon: 'back', accessibilityLabel: t('chat.accessibility.backToMatches'), onPress: onClose }} onTitlePress={() => setShowPartnerProfile(true)} titleAccessibilityLabel={t('chat.accessibility.openProfile', { name: match.firstName })} trailing={<BinderIconButton name="more" accessibilityLabel={t('chat.accessibility.safetyControls')} selected={showSafety} onPress={() => { if (showSafety) closeSafety(); else { setSafetyMode('menu'); setShowSafety(true); } }} />} />
+      <BinderScreenHeader title={t('chat.header.title', { name: match.firstName, age: formatCount(match.age, locale) })} eyebrow={t('chat.header.eyebrow')} centered leading={{ icon: 'back', accessibilityLabel: t('chat.accessibility.backToMatches'), onPress: onClose }} onTitlePress={() => setShowPartnerProfile(true)} titleAccessibilityLabel={t('chat.accessibility.openProfile', { name: match.firstName })} trailing={<BinderIconButton name="more" accessibilityLabel={t('chat.accessibility.safetyControls')} selected={showSafety} onPress={() => { if (showSafety) closeSafety(); else { setSafetyMode('menu'); setShowSafety(true); } }} />} />
 
       {showSafety ? (
         <BinderCard style={{ margin: theme.spacing.x3 }}>

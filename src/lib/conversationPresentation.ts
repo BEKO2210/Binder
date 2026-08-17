@@ -1,3 +1,5 @@
+import { formatDayLabel, formatTime } from './format.ts';
+
 // Pure presentation rules for conversation lists and the composer.
 // Kept React-free so ordering and validation are independently testable.
 
@@ -28,11 +30,8 @@ export function splitConversationPreviews<T extends ConversationPreview>(items: 
   };
 }
 
-export function previewTimeLabel(iso: string, reference: Date = new Date()): string {
+export function previewTimeLabel(iso: string, locale: string, reference: Date = new Date()): string {
   const date = new Date(iso);
-  const sameDay = date.getFullYear() === reference.getFullYear()
-    && date.getMonth() === reference.getMonth()
-    && date.getDate() === reference.getDate();
-  if (sameDay) return new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false }).format(date);
-  return new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short' }).format(date);
+  const label = formatDayLabel(date, locale, reference);
+  return label === 'today' ? formatTime(date, locale) : label;
 }

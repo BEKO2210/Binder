@@ -8,6 +8,7 @@ import { BinderIcon, BinderScreenHeader, BinderText, ScreenState } from '../comp
 import type { DiscoveryProfile } from '../lib/discovery';
 import { discoveryDeckPhysics } from '../lib/discoveryDeck';
 import { fetchPartnerProfile, type PartnerProfile } from '../lib/partnerProfile';
+import { formatCount, formatDistanceKm } from '../lib/format';
 import { resolveSpring } from '../lib/motionPolicy';
 import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
@@ -19,7 +20,7 @@ function asPartnerProfile(profile: DiscoveryProfile): PartnerProfile {
 }
 
 export default function PartnerProfileScreen({ userId, fallbackName, onClose, initialProfile }: Props) {
-  const { theme, reduceMotion, t } = useBinderTheme();
+  const { theme, reduceMotion, locale, t } = useBinderTheme();
   const haptic = useBinderHaptics();
   const { width, height } = useWindowDimensions();
   const [profile, setProfile] = useState<PartnerProfile | null>(() => initialProfile ? asPartnerProfile(initialProfile) : null);
@@ -66,10 +67,10 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose, in
               )}
               <View style={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x5 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3, flexWrap: 'wrap' }}>
-                  <BinderText variant="displayL">{profile.name} <BinderText variant="heading">{profile.age}</BinderText></BinderText>
+                  <BinderText variant="displayL">{profile.name} <BinderText variant="heading">{formatCount(profile.age, locale)}</BinderText></BinderText>
                   <View accessibilityLabel={t('partnerProfile.accessibility.photosReviewed')} style={{ minHeight: theme.layout.minimumTouchTarget, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, paddingHorizontal: theme.spacing.x3, borderRadius: theme.radii.pill, backgroundColor: theme.colors.surfaceElevated }}><BinderIcon name="check" color={theme.accent.onSurface} /><BinderText variant="caption" tone="secondary">{t('partnerProfile.photosReviewed')}</BinderText></View>
                 </View>
-                {profile.distanceKm !== null ? <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>{t('partnerProfile.away', { distance: profile.distanceKm })}</BinderText> : null}
+                {profile.distanceKm !== null ? <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>{t('partnerProfile.away', { distance: formatDistanceKm(profile.distanceKm, locale) })}</BinderText> : null}
                 {profile.bio ? <BinderText variant="bodyL" tone="secondary" style={{ marginTop: theme.spacing.x4 }}>{profile.bio}</BinderText> : null}
                 {profile.interests.length > 0 ? <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2, marginTop: theme.spacing.x5 }}>{profile.interests.map((interest) => <View key={interest} accessibilityRole="text" style={{ minHeight: theme.layout.minimumTouchTarget, maxWidth: '100%', justifyContent: 'center', paddingHorizontal: theme.spacing.x4, borderRadius: theme.radii.pill, borderWidth: 1, borderColor: theme.colors.borderSubtle, backgroundColor: theme.colors.surface }}><BinderText variant="label" tone="secondary" numberOfLines={1} ellipsizeMode="tail">{interest}</BinderText></View>)}</View> : null}
               </View>

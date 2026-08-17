@@ -15,6 +15,7 @@ import { fetchMatches, type MatchSummary } from '../lib/conversation';
 import { announce } from '../lib/announce';
 import { fetchDiscoveryBatch, recordDecision, refreshDiscoveryLocation, type DiscoveryProfile } from '../lib/discovery';
 import { advanceDeck, decideSwipe, discoveryDeckPhysics, resistedTranslation, type SwipeDirection } from '../lib/discoveryDeck';
+import { formatCount, formatDistanceKm } from '../lib/format';
 import { listMyProfileMedia } from '../lib/media';
 import { resolveSpring } from '../lib/motionPolicy';
 import { reportAndBlockDiscoveryProfile, type DiscoveryReportReason } from '../lib/safety';
@@ -28,7 +29,7 @@ import { useBinderTheme } from '../theme/ThemeProvider';
 
 
 export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onOpenMatch?: (match: MatchSummary) => void; onSessionExpired: () => void }) {
-  const { theme, reduceMotion, t } = useBinderTheme();
+  const { theme, reduceMotion, locale, t } = useBinderTheme();
   const reportReasons: { value: DiscoveryReportReason; label: string; detail: string }[] = [
     { value: 'underage', label: t('discovery.safety.reasons.underage.label'), detail: t('discovery.safety.reasons.underage.detail') },
     { value: 'harassment', label: t('discovery.safety.reasons.harassment.label'), detail: t('discovery.safety.reasons.harassment.detail') },
@@ -327,7 +328,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
       <BinderScreenHeader title={t('discovery.header.title')} titleVisual={<View><BinderBrand compact /><BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>{t('discovery.header.copy')}</BinderText></View>} trailing={<View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
           {decisionPending ? <BinderText accessibilityLiveRegion="polite" variant="caption" tone="accent">{t('discovery.states.saving')}</BinderText> : null}
-          <Animated.View key={filterValues ? `${filterValues.minAge}-${filterValues.maxAge}-${filterValues.distance}` : 'filters'} entering={reduceMotion ? undefined : FadeIn.duration(theme.motion.standard)} exiting={reduceMotion ? undefined : FadeOut.duration(theme.motion.fast)}><BinderChip label={filterValues ? t('discovery.filters.summary', { minAge: filterValues.minAge, maxAge: filterValues.maxAge, distance: filterValues.distance }) : t('discovery.filters.label')} selected={filtersOpen} disabled={decisionPending} accessibilityLabel={t('discovery.accessibility.openFilters')} onPress={() => setFiltersOpen(true)} /></Animated.View>
+          <Animated.View key={filterValues ? `${filterValues.minAge}-${filterValues.maxAge}-${filterValues.distance}` : 'filters'} entering={reduceMotion ? undefined : FadeIn.duration(theme.motion.standard)} exiting={reduceMotion ? undefined : FadeOut.duration(theme.motion.fast)}><BinderChip label={filterValues ? t('discovery.filters.summary', { minAge: formatCount(filterValues.minAge, locale), maxAge: formatCount(filterValues.maxAge, locale), distance: formatDistanceKm(filterValues.distance, locale) }) : t('discovery.filters.label')} selected={filtersOpen} disabled={decisionPending} accessibilityLabel={t('discovery.accessibility.openFilters')} onPress={() => setFiltersOpen(true)} /></Animated.View>
         </View>} />
 
       <View style={{ flex: 1, marginHorizontal: theme.spacing.x4, marginTop: theme.spacing.x1, marginBottom: theme.spacing.x3, justifyContent: 'center' }}>
@@ -422,7 +423,7 @@ function DiscoveryAction({ kind, disabled, onPress, onPressIn, onPressOut }: { k
 }
 
 function ProfileCard({ profile, back = false, onOpenProfile }: { profile: DiscoveryProfile; back?: boolean; onOpenProfile?: () => void }) {
-  const { theme, t } = useBinderTheme();
+  const { theme, locale, t } = useBinderTheme();
   const { width } = useWindowDimensions();
   const backCardOffset = width * discoveryDeckPhysics.backCardOffsetRatio;
   const photos = profile.photoUrls.length > 0 ? profile.photoUrls : [profile.photoUrl];
@@ -433,12 +434,12 @@ function ProfileCard({ profile, back = false, onOpenProfile }: { profile: Discov
 
   return (
     <View style={{ position: 'absolute', inset: 0, borderRadius: theme.radii.hero, overflow: 'hidden', backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.borderSubtle, transform: back ? [{ scale: discoveryDeckPhysics.backCardScale }, { translateY: backCardOffset }] : undefined, opacity: back ? discoveryDeckPhysics.backCardOpacity : 1 }}>
-      <PhotoPager photos={photos} name={t('discovery.accessibility.profileSummary', { name: profile.name, age: profile.age, distance: profile.distanceKm })} interactive={!back} onOpen={onOpenProfile ? () => onOpenProfile() : undefined} />
+      <PhotoPager photos={photos} name={t('discovery.accessibility.profileSummary', { name: profile.name, age: formatCount(profile.age, locale), distance: formatDistanceKm(profile.distanceKm, locale) })} interactive={!back} onOpen={onOpenProfile ? () => onOpenProfile() : undefined} />
       <LinearGradient pointerEvents="none" colors={[theme.colors.transparent, theme.colors.scrim, theme.colors.overlay]} locations={[0, 0.52, 1]} style={{ position: 'absolute', inset: 0 }} />
 
       <View pointerEvents="none" style={{ position: 'absolute', left: theme.spacing.x5, right: theme.spacing.x5, bottom: theme.spacing.x5 }}>
-        <BinderText variant="displayL" style={{ color: onMedia.textPrimary }} numberOfLines={1}>{profile.name} <BinderText variant="heading" style={{ color: onMedia.textPrimary }}>{profile.age}</BinderText></BinderText>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, marginTop: theme.spacing.x2 }}><BinderText variant="caption" style={{ color: onMedia.textSecondary }}>{t('discovery.profile.away', { distance: profile.distanceKm })}</BinderText><BinderText variant="caption" style={{ color: onMedia.textMuted }}>{t('discovery.profile.photosReviewed')}</BinderText></View>
+        <BinderText variant="displayL" style={{ color: onMedia.textPrimary }} numberOfLines={1}>{profile.name} <BinderText variant="heading" style={{ color: onMedia.textPrimary }}>{formatCount(profile.age, locale)}</BinderText></BinderText>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, marginTop: theme.spacing.x2 }}><BinderText variant="caption" style={{ color: onMedia.textSecondary }}>{t('discovery.profile.away', { distance: formatDistanceKm(profile.distanceKm, locale) })}</BinderText><BinderText variant="caption" style={{ color: onMedia.textMuted }}>{t('discovery.profile.photosReviewed')}</BinderText></View>
         {profile.bio ? <BinderText variant="body" style={{ color: onMedia.textPrimary, marginTop: theme.spacing.x2 }} numberOfLines={2}>{profile.bio}</BinderText> : null}
         <View style={{ flexDirection: 'row', gap: theme.spacing.x2, marginTop: theme.spacing.x3, overflow: 'hidden' }}>
           {profile.tags.slice(0, 3).map((tag) => <View key={tag} style={{ maxWidth: '32%', backgroundColor: theme.colors.overlay, borderWidth: 1, borderColor: theme.colors.borderStrong, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x1 }}><BinderText variant="caption" style={{ color: onMedia.textPrimary }} numberOfLines={1} ellipsizeMode="tail">{tag}</BinderText></View>)}

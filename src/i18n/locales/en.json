@@ -261,6 +261,10 @@
     }
   },
   "chat": {
+    "day": {
+      "today": "Today",
+      "yesterday": "Yesterday"
+    },
     "header": {
       "title": "{name}, {age}",
       "eyebrow": "VIEW PROFILE"

@@ -6,6 +6,7 @@ import Animated, { FadeInUp } from 'react-native-reanimated';
 import { BinderButton, BinderCard, BinderIcon, BinderScreenHeader, BinderText, ChangingNumber, MotionPressable, ScreenState } from '../components/ui';
 import { fetchMatches, type MatchSummary } from '../lib/conversation';
 import { previewTimeLabel, splitConversationPreviews } from '../lib/conversationPresentation';
+import { formatCount } from '../lib/format';
 import { resolveStaggerDelay } from '../lib/motionPolicy';
 import { enablePushNotifications, getNotificationPermissionStatus, openSystemNotificationSettings } from '../lib/notifications';
 import { bannerOffersEnable, bannerStateAfterRegistration, initialBannerState, type PushBannerState } from '../lib/pushBanner';
@@ -14,7 +15,7 @@ import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
 export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery, onSessionExpired }: { refreshKey: number; onOpenMatch: (match: MatchSummary) => void; onOpenDiscovery: () => void; onSessionExpired: () => void }) {
-  const { theme, settings, updateNotifications, reduceMotion, t } = useBinderTheme();
+  const { theme, settings, updateNotifications, reduceMotion, locale, t } = useBinderTheme();
   const haptic = useBinderHaptics();
   const [matches, setMatches] = useState<MatchSummary[]>([]);
   const [loading, setLoading] = useState(true);
@@ -130,10 +131,10 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
                   {item.photoUrl ? <Image source={{ uri: item.photoUrl }} resizeMethod="resize" style={{ width: theme.spacing.x16, height: theme.spacing.x16, borderRadius: theme.radii.pill, backgroundColor: theme.colors.surfaceElevated }} /> : <View style={{ width: theme.spacing.x16, height: theme.spacing.x16, borderRadius: theme.radii.pill, backgroundColor: theme.colors.surfaceElevated, alignItems: 'center', justifyContent: 'center' }}><BinderText variant="title" tone="accent">{item.firstName.slice(0,1).toUpperCase()}</BinderText></View>}
                   <View style={{ flex: 1, minWidth: 0 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
-                      <BinderText variant="label" tone={item.unreadCount > 0 ? 'primary' : 'secondary'} numberOfLines={1} style={{ flex: 1 }}>{item.firstName}, {item.age}</BinderText>
-                      {item.lastMessageAt ? <BinderText variant="caption" tone={item.unreadCount > 0 ? 'secondary' : 'muted'}>{previewTimeLabel(item.lastMessageAt)}</BinderText> : null}
+                      <BinderText variant="label" tone={item.unreadCount > 0 ? 'primary' : 'secondary'} numberOfLines={1} style={{ flex: 1 }}>{item.firstName}, {formatCount(item.age, locale)}</BinderText>
+                      {item.lastMessageAt ? <BinderText variant="caption" tone={item.unreadCount > 0 ? 'secondary' : 'muted'}>{(() => { const label = previewTimeLabel(item.lastMessageAt, locale); return label === 'today' ? t('chat.day.today') : label === 'yesterday' ? t('chat.day.yesterday') : label; })()}</BinderText> : null}
                     </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, marginTop: theme.spacing.x2 }}>{item.unreadCount > 0 ? <View accessibilityLabel={t(item.unreadCount === 1 ? 'matches.accessibility.unreadOne' : 'matches.accessibility.unreadOther', { count: item.unreadCount })} style={{ minWidth: theme.spacing.x5, height: theme.spacing.x5, paddingHorizontal: theme.spacing.x1, borderRadius: theme.radii.pill, backgroundColor: theme.accent.accent, alignItems: 'center', justifyContent: 'center' }}><ChangingNumber value={item.unreadCount} variant="caption" /></View> : null}<BinderText variant={item.unreadCount > 0 ? 'label' : 'caption'} tone={item.unreadCount > 0 ? 'primary' : 'muted'} numberOfLines={1} style={{ flex: 1 }}>{item.lastMessageBody}</BinderText></View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, marginTop: theme.spacing.x2 }}>{item.unreadCount > 0 ? <View accessibilityLabel={t(item.unreadCount === 1 ? 'matches.accessibility.unreadOne' : 'matches.accessibility.unreadOther', { count: formatCount(item.unreadCount, locale) })} style={{ minWidth: theme.spacing.x5, height: theme.spacing.x5, paddingHorizontal: theme.spacing.x1, borderRadius: theme.radii.pill, backgroundColor: theme.accent.accent, alignItems: 'center', justifyContent: 'center' }}><ChangingNumber value={item.unreadCount} variant="caption" /></View> : null}<BinderText variant={item.unreadCount > 0 ? 'label' : 'caption'} tone={item.unreadCount > 0 ? 'primary' : 'muted'} numberOfLines={1} style={{ flex: 1 }}>{item.lastMessageBody}</BinderText></View>
                   </View>
                 </BinderCard>
               )}

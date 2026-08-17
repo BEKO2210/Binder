@@ -1,3 +1,5 @@
+import { formatDayLabel } from './format.ts';
+
 // Pure chat timeline shaping: bubble grouping, timestamp placement and day
 // separators. No React Native imports — runs under node:test.
 
@@ -34,25 +36,9 @@ function dayKey(iso: string): string {
   return localDayKey(new Date(iso));
 }
 
-export function dayLabel(iso: string, reference: Date = new Date()): string {
-  const key = dayKey(iso);
-  const todayKey = localDayKey(reference);
-  const yesterdayKey = localDayKey(new Date(reference.getTime() - 24 * 60 * 60 * 1000));
-  if (key === todayKey) return 'Today';
-  if (key === yesterdayKey) return 'Yesterday';
-  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-}
-
-export function timeLabel(iso: string): string {
-  const date = new Date(iso);
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  return `${hours}:${minutes}`;
-}
-
 // Input ascending by created_at; output ascending with day separators and
 // grouping flags resolved.
-export function buildChatTimeline<M extends TimelineMessage>(messages: M[], reference: Date = new Date()): TimelineItem<M>[] {
+export function buildChatTimeline<M extends TimelineMessage>(messages: M[], reference: Date = new Date(), locale = 'en'): TimelineItem<M>[] {
   const items: TimelineItem<M>[] = [];
   for (let index = 0; index < messages.length; index += 1) {
     const message = messages[index];
@@ -61,7 +47,7 @@ export function buildChatTimeline<M extends TimelineMessage>(messages: M[], refe
     const next = index < messages.length - 1 ? messages[index + 1] : undefined;
 
     if (!previous || dayKey(previous.created_at) !== dayKey(message.created_at)) {
-      items.push({ type: 'day', id: `day-${dayKey(message.created_at)}`, label: dayLabel(message.created_at, reference) });
+      items.push({ type: 'day', id: `day-${dayKey(message.created_at)}`, label: formatDayLabel(new Date(message.created_at), locale, reference) });
     }
 
     const groupedWithPrevious = Boolean(

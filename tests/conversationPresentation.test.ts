@@ -23,6 +23,6 @@ test('new matches are separated and unread conversations lead read ones', () => 
 
 test('preview time uses time today and a compact date otherwise', () => {
   const reference = new Date('2026-08-17T18:00:00Z');
-  assert.match(previewTimeLabel('2026-08-17T09:05:00Z', reference), /09:05/);
-  assert.equal(previewTimeLabel('2026-08-16T09:05:00Z', reference), '16 Aug');
+  assert.match(previewTimeLabel('2026-08-17T09:05:00Z', 'en', reference), /09:05/);
+  assert.equal(previewTimeLabel('2026-08-16T09:05:00Z', 'en', reference), 'yesterday');
 });
