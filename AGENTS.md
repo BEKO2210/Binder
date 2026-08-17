@@ -279,8 +279,12 @@ owner's consoles: the Google provider enabled in Firebase (which creates the
 web and Android OAuth clients), a refreshed `google-services.json`, the Play
 app-signing SHA-1 registered on the Android client, and the web client id both
 in Supabase's Google provider and in `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`.
-**Untested against a real Google account until those exist — do not claim it
-works.**
+**Proven on the S23 on 2026-08-17** (v0.7.2-vc55): the sheet opened, the
+account was chosen, the app landed in Discover, and the owner's account now
+carries both identities (`app_metadata.providers = ['email','google']`) —
+Supabase linked Google to the existing address rather than creating a second
+account. The Play app-signing SHA-1 still has to be added before the store
+build can do the same, because Google re-signs there.
 
 ## What the app collects
 
