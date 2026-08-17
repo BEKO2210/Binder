@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, AppState, BackHandler, Clipboard, FlatList, Platform, TextInput, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
 import Animated, { FadeInDown, FadeInUp, FadeOutDown, useAnimatedStyle } from 'react-native-reanimated';
@@ -39,6 +39,65 @@ const REPORT_REASONS: { value: ReportReason; labelKey: string }[] = [
 
 type LocalAttempt = { clientId: string; body: string; status: 'sending' | 'failed'; error?: ReliabilityError };
 type SafetyMode = 'menu' | 'report';
+
+type MessageRowProps = {
+  type: TimelineItem<Message>['type'];
+  label?: string;
+  messageId?: string;
+  body?: string;
+  createdAt?: string;
+  mine?: boolean;
+  groupedWithPrevious?: boolean;
+  endsGroup?: boolean;
+  showsTimestamp?: boolean;
+  index: number;
+  onLongPress: (messageId: string, body: string, mine: boolean) => void;
+};
+
+const ChatMessageRow = memo(function ChatMessageRow({ type, label, messageId, body, createdAt, mine = false, groupedWithPrevious = false, endsGroup = false, showsTimestamp = false, index, onLongPress }: MessageRowProps) {
+  const { theme, reduceMotion, t } = useBinderTheme();
+  if (type === 'day') {
+    return (
+      <View style={{ alignItems: 'center', marginTop: theme.spacing.x5, marginBottom: theme.spacing.x2 }}>
+        <View style={{ backgroundColor: theme.colors.surfaceElevated, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x1 }}>
+          <BinderText variant="caption" tone="muted">{label}</BinderText>
+        </View>
+      </View>
+    );
+  }
+  if (!messageId || body === undefined || !createdAt) return null;
+  const bubbleRadius = theme.radii.control;
+  return (
+    <Animated.View entering={reduceMotion ? undefined : FadeInDown.delay(resolveStaggerDelay(index, false)).duration(theme.motion.feedback)} style={{ marginTop: groupedWithPrevious ? theme.spacing.x1 : theme.spacing.x3 }}>
+      <Pressable
+        onLongPress={() => onLongPress(messageId, body, mine)}
+        accessibilityHint={mine ? t('chat.accessibility.holdToCopy') : t('chat.accessibility.holdToCopyOrReport')}
+        pressedSurface={false}
+        style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: theme.layout.chatBubbleMaxWidth }}
+      >
+        <View style={{
+          paddingHorizontal: theme.spacing.x4,
+          paddingVertical: theme.spacing.x3,
+          borderRadius: bubbleRadius,
+          borderBottomRightRadius: mine && endsGroup ? theme.radii.small : bubbleRadius,
+          borderBottomLeftRadius: !mine && endsGroup ? theme.radii.small : bubbleRadius,
+          backgroundColor: mine ? theme.accent.accent : theme.colors.surfaceElevated,
+          borderWidth: mine ? 0 : 1,
+          borderColor: theme.colors.borderSubtle,
+        }}>
+          <BinderText variant="body" style={{ color: mine ? theme.accent.foreground : theme.colors.textPrimary }}>{body}</BinderText>
+        </View>
+        {showsTimestamp ? (
+          <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1, alignSelf: mine ? 'flex-end' : 'flex-start', marginHorizontal: theme.spacing.x2 }}>
+            {mine ? t('chat.message.sentAt', { time: timeLabel(createdAt) }) : timeLabel(createdAt)}
+          </BinderText>
+        ) : null}
+      </Pressable>
+    </Animated.View>
+  );
+});
+
+const chatTimelineKey = (item: TimelineItem<Message>) => item.id;
 
 export default function ChatScreen({ match, currentUserId, onClose, onConversationEnded }: {
   match: MatchSummary;
@@ -255,14 +314,20 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     } finally { if (mountedRef.current) setSending(false); }
   }
 
-  function openMessageActions(message: Message) {
+  const openMessageActions = useCallback((messageId: string, body: string, mine: boolean) => {
     const actions = [
-      { text: t('chat.actions.copy'), onPress: () => Clipboard.setString(message.body) },
-      ...(message.sender_id === currentUserId ? [] : [{ text: t('chat.actions.report'), style: 'destructive' as const, onPress: () => openReport(message.id) }]),
+      { text: t('chat.actions.copy'), onPress: () => Clipboard.setString(body) },
+      ...(mine ? [] : [{ text: t('chat.actions.report'), style: 'destructive' as const, onPress: () => openReport(messageId) }]),
       { text: t('chat.actions.cancel'), style: 'cancel' as const },
     ];
     Alert.alert(t('chat.alerts.messageActions'), undefined, actions);
-  }
+  }, [t]);
+
+  const renderTimelineItem = useCallback(({ item, index }: { item: TimelineItem<Message>; index: number }) => {
+    if (item.type === 'day') return <ChatMessageRow type="day" label={item.label} index={index} onLongPress={openMessageActions} />;
+    const message = item.message;
+    return <ChatMessageRow type="message" messageId={message.id} body={message.body} createdAt={message.created_at} mine={message.sender_id === currentUserId} groupedWithPrevious={item.groupedWithPrevious} endsGroup={item.endsGroup} showsTimestamp={item.showsTimestamp} index={index} onLongPress={openMessageActions} />;
+  }, [currentUserId, openMessageActions]);
 
   function trackScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
     const nearNewest = event.nativeEvent.contentOffset.y <= theme.spacing.x8;
@@ -357,57 +422,13 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
           ref={listRef}
           data={timeline}
           inverted
-          keyExtractor={(item) => item.id}
+          keyExtractor={chatTimelineKey}
           contentContainerStyle={{ padding: theme.spacing.x4 }}
           showsVerticalScrollIndicator={false}
           onScroll={trackScroll}
           scrollEventThrottle={theme.motion.feedback}
           ListFooterComponent={hasMore ? <BinderButton label={t('chat.actions.loadEarlierMessages')} variant="ghost" loading={loadingOlder} onPress={() => void loadOlder()} style={{ marginBottom: theme.spacing.x3 }} /> : null}
-          renderItem={({ item, index }) => {
-            if (item.type === 'day') {
-              return (
-                <View style={{ alignItems: 'center', marginTop: theme.spacing.x5, marginBottom: theme.spacing.x2 }}>
-                  <View style={{ backgroundColor: theme.colors.surfaceElevated, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x1 }}>
-                    <BinderText variant="caption" tone="muted">{item.label}</BinderText>
-                  </View>
-                </View>
-              );
-            }
-            const message = item.message;
-            const mine = message.sender_id === currentUserId;
-            const bubbleRadius = theme.radii.control;
-            return (
-              <Animated.View entering={reduceMotion ? undefined : FadeInDown.delay(resolveStaggerDelay(index, false)).duration(theme.motion.feedback)} style={{ marginTop: item.groupedWithPrevious ? theme.spacing.x1 : theme.spacing.x3 }}>
-                <Pressable
-                  onLongPress={() => openMessageActions(message)}
-                  accessibilityHint={mine ? t('chat.accessibility.holdToCopy') : t('chat.accessibility.holdToCopyOrReport')}
-                  // The wrapper has no radius, so the shared pressed surface painted a
-                  // square block behind the rounded bubble. The bubble carries its own
-                  // feedback instead.
-                  pressedSurface={false}
-                  style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: theme.layout.chatBubbleMaxWidth }}
-                >
-                  <View style={{
-                    paddingHorizontal: theme.spacing.x4,
-                    paddingVertical: theme.spacing.x3,
-                    borderRadius: bubbleRadius,
-                    borderBottomRightRadius: mine && item.endsGroup ? theme.radii.small : bubbleRadius,
-                    borderBottomLeftRadius: !mine && item.endsGroup ? theme.radii.small : bubbleRadius,
-                    backgroundColor: mine ? theme.accent.accent : theme.colors.surfaceElevated,
-                    borderWidth: mine ? 0 : 1,
-                    borderColor: theme.colors.borderSubtle,
-                  }}>
-                    <BinderText variant="body" style={{ color: mine ? theme.accent.foreground : theme.colors.textPrimary }}>{message.body}</BinderText>
-                  </View>
-                  {item.showsTimestamp ? (
-                    <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1, alignSelf: mine ? 'flex-end' : 'flex-start', marginHorizontal: theme.spacing.x2 }}>
-                      {mine ? t('chat.message.sentAt', { time: timeLabel(message.created_at) }) : timeLabel(message.created_at)}
-                    </BinderText>
-                  ) : null}
-                </Pressable>
-              </Animated.View>
-            );
-          }}
+          renderItem={renderTimelineItem}
         />
       )}
 

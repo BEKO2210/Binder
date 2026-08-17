@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { TextInput, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BinderBrand, BinderButton, BinderInput, BinderText, SectionHeader } from '../components/ui';
@@ -35,6 +35,9 @@ export default function AuthScreen({ recovery = false, onRecoveryHandled }: { re
   const [submitted, setSubmitted] = useState(false);
   const [busy, setBusy] = useState(false);
   const inFlight = useRef(false);
+  const emailRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInput>(null);
+  const confirmPasswordRef = useRef<TextInput>(null);
   const [message, setMessage] = useState('');
   const [messageTone, setMessageTone] = useState<'secondary' | 'destructive'>('destructive');
 
@@ -119,6 +122,7 @@ export default function AuthScreen({ recovery = false, onRecoveryHandled }: { re
         </View>
         <View style={{ gap: theme.spacing.x4, marginTop: theme.spacing.x8 }}>
           {recovery ? null : <BinderInput
+            inputRef={emailRef}
             label={t('auth.fields.emailLabel')}
             autoCapitalize="none"
             autoComplete="email"
@@ -127,8 +131,12 @@ export default function AuthScreen({ recovery = false, onRecoveryHandled }: { re
             value={email}
             error={visibleErrors.email}
             onChangeText={setEmail}
+            returnKeyType={mode === 'reset' ? 'go' : 'next'}
+            blurOnSubmit={mode === 'reset'}
+            onSubmitEditing={() => { if (mode === 'reset') void submit(); else passwordRef.current?.focus(); }}
           />}
           {mode === 'reset' ? null : <BinderInput
+            inputRef={passwordRef}
             label={t('auth.fields.passwordLabel')}
             autoCapitalize="none"
             autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
@@ -137,9 +145,13 @@ export default function AuthScreen({ recovery = false, onRecoveryHandled }: { re
             value={password}
             error={visibleErrors.password}
             onChangeText={setPassword}
+            returnKeyType={mode === 'signup' ? 'next' : 'go'}
+            blurOnSubmit={mode !== 'signup'}
+            onSubmitEditing={() => { if (mode === 'signup') confirmPasswordRef.current?.focus(); else void submit(); }}
           />}
           {mode === 'signup' ? (
             <BinderInput
+              inputRef={confirmPasswordRef}
               label={t('auth.fields.repeatPasswordLabel')}
               autoCapitalize="none"
               autoComplete="new-password"
@@ -149,6 +161,9 @@ export default function AuthScreen({ recovery = false, onRecoveryHandled }: { re
               error={visibleErrors.confirmPassword}
               helper={t('auth.fields.repeatPasswordHelper')}
               onChangeText={setConfirmPassword}
+              returnKeyType="go"
+              blurOnSubmit
+              onSubmitEditing={() => void submit()}
             />
           ) : null}
         </View>

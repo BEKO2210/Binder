@@ -46,6 +46,9 @@ leaves the running system intact.
 | 022 | Onboarding, beta, legal gate; phase 5 verifier follows the copy | coverage 138 → 90 | done |
 | 023 | About, app settings, match celebration, shared states | coverage 90 → 45 | done |
 | 024 | Shared components and the last stragglers; metric learned to tell prose from code | **coverage 0**, gate added | done |
+| 025 | Chat rows memoised: typing no longer re-renders the timeline | Chat screenshot after refactor, no crash | done |
+| 026 | Onboarding steps move with direction; instant under reduced motion | typecheck + gates green | done |
+| 027 | Auth: return key walks the form and submits on the last field | typecheck + gates green | done |
 | 017 | Language section in App settings — appears only when a translation exists, endonym plus flag, same chip rhythm as Appearance | Screenshot: Sprache / Wie mein Gerät / 🇬🇧 English / 🇩🇪 Deutsch | done |
 
 ## Backlog
@@ -53,9 +56,9 @@ leaves the running system intact.
 Ordered by what a user notices first. Each line becomes one run.
 
 ### Interaction and feel
-- [ ] Chat timeline rows memoised: typing in the composer must not re-render the whole conversation.
-- [ ] Onboarding steps change with a short directional transition instead of a hard swap.
-- [ ] Auth: explicit focus order, return key moves to the next field, last field submits.
+- [x] Chat timeline rows memoised.
+- [x] Onboarding steps change with a short directional transition.
+- [x] Auth: explicit focus order, return key moves through the form.
 - [ ] Deck: the card returns with one settle, no second bounce, when a decision fails.
 - [ ] Deck: bind/pass buttons show the same threshold feedback the gesture gives.
 - [ ] Photo pager: the segment indicator follows the drag instead of jumping on commit.
