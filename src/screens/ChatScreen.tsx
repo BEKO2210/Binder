@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, AppState, BackHandler, Clipboard, FlatList, Platform, TextInput, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
-import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
-import Animated, { FadeInDown, FadeInUp, FadeOutDown } from 'react-native-reanimated';
+import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
+import Animated, { FadeInDown, FadeInUp, FadeOutDown, useAnimatedStyle } from 'react-native-reanimated';
 
 import { buildChatTimeline, timeLabel, type TimelineItem } from '../lib/chatTimeline';
 import { composerBody } from '../lib/conversationPresentation';
@@ -55,6 +55,8 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   const [hasMore, setHasMore] = useState(false);
   const [loadingOlder, setLoadingOlder] = useState(false);
   const [composer, setComposer] = useState('');
+  const keyboard = useReanimatedKeyboardAnimation();
+  const keyboardShift = useAnimatedStyle(() => ({ transform: [{ translateY: keyboard.height.value }] }));
   const [sending, setSending] = useState(false);
   const [localAttempt, setLocalAttempt] = useState<LocalAttempt | null>(null);
   const [showNewMessage, setShowNewMessage] = useState(false);
@@ -301,10 +303,12 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   }
 
   return (
-    // Edge-to-edge Android no longer resizes the window for the keyboard, so
-    // "padding" left the composer underneath it. Translating the whole screen
-    // keeps the composer and the newest message visible on both platforms.
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: theme.colors.canvas }} behavior="translate-with-padding" keyboardVerticalOffset={Platform.OS === 'ios' ? theme.spacing.x2 : 0}>
+    // Edge-to-edge Android stopped resizing the window for the keyboard, so a
+    // padding-based avoider had nothing to push against and the composer stayed
+    // underneath it. The screen is driven directly by the keyboard's own
+    // animation instead, on the UI thread, which also keeps the movement in sync
+    // with the system's easing rather than approximating it.
+    <Animated.View style={[{ flex: 1, backgroundColor: theme.colors.canvas }, keyboardShift]}>
       <BinderScreenHeader title={`${match.firstName}, ${match.age}`} eyebrow="VIEW PROFILE" centered leading={{ icon: 'back', accessibilityLabel: 'Back to matches', onPress: onClose }} onTitlePress={() => setShowPartnerProfile(true)} titleAccessibilityLabel={`Open ${match.firstName}'s profile`} trailing={<BinderIconButton name="more" accessibilityLabel="Conversation safety controls" selected={showSafety} onPress={() => { if (showSafety) closeSafety(); else { setSafetyMode('menu'); setShowSafety(true); } }} />} />
 
       {showSafety ? (
@@ -398,6 +402,6 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         <TextInput accessibilityLabel={`Message ${match.firstName}`} value={composer} onChangeText={setComposer} maxLength={2000} multiline scrollEnabled placeholder={`Message ${match.firstName}`} placeholderTextColor={theme.colors.textMuted} selectionColor={theme.accent.accent} style={{ flex: 1, minHeight: theme.spacing.x12, maxHeight: theme.spacing.x16 * 2, color: theme.colors.textPrimary, backgroundColor: theme.colors.surfaceElevated, borderWidth: 1, borderColor: theme.colors.borderSubtle, borderRadius: theme.radii.control, paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x3, textAlignVertical: 'center' }} />
         <BinderIconButton name={sending ? 'more' : 'send'} accessibilityLabel={sending ? 'Sending message' : `Send message to ${match.firstName}`} selected={canSend || sending} disabled={!canSend} onPress={() => void submitMessage()} />
       </View>
-    </KeyboardAvoidingView>
+    </Animated.View>
   );
 }
