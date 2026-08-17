@@ -26,9 +26,13 @@ test('placeholders are filled, and an unknown placeholder is left alone', () => 
 });
 
 test('the device language only wins when Binder actually has it', () => {
-  assert.equal(resolveLocale('system', 'de-DE'), 'en', 'no German file registered yet');
+  const bundled = new Set(availableLocales().map((locale) => locale.code));
+  // German and French are bundled today; the point of the test is the rule, so
+  // it asserts against what is actually registered rather than a fixed list.
+  assert.equal(resolveLocale('system', 'de-DE'), bundled.has('de') ? 'de' : 'en');
+  assert.equal(resolveLocale('system', 'fr-CA'), bundled.has('fr') ? 'fr' : 'en');
   assert.equal(resolveLocale('system', 'en-GB'), 'en');
   assert.equal(resolveLocale('system', undefined), 'en');
-  // A pinned language that is not bundled must not strand the interface.
-  assert.equal(resolveLocale('fr' as never, 'de-DE'), 'en');
+  // A language nobody bundled must not strand the interface.
+  assert.equal(resolveLocale('sv' as never, 'de-DE'), 'en');
 });

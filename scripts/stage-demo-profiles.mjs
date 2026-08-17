@@ -107,7 +107,11 @@ ${photos.map((photo, index) => `insert into public.profile_media (user_id, stora
 values ('${userId}', '${photo.path}', ${index}, ${profile.photoWidth ?? 720}, ${profile.photoHeight ?? 900}, ${photo.bytes}, 'image/webp', 'approved')
 on conflict (storage_path) do nothing;`).join('\n')}
 
-update public.profiles set onboarding_complete = true where user_id = '${userId}';`).join('\n');
+update public.profiles set onboarding_complete = true where user_id = '${userId}';
+
+-- Uploads always land as 'pending' — the moderation trigger forces it, which is
+-- correct for a real user and has to be undone deliberately for a staged one.
+update public.profile_media set moderation_status = 'approved' where user_id = '${userId}';`).join('\n');
 
   sql(`begin;\n${values}\ncommit;`);
   console.log(`\n${rows.length} demo profiles are live. Take the screenshots, then run:\n  node scripts/stage-demo-profiles.mjs remove ${manifestPath}`);

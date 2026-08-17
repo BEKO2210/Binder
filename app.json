@@ -8,7 +8,7 @@
         "projectId": "167de5e7-e72f-4fcd-bc7c-379513ff2b21"
       }
     },
-    "version": "0.5.36",
+    "version": "0.5.38",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "backgroundColor": "#090A0F",
@@ -71,7 +71,7 @@
         "backgroundColor": "#090A0F"
       },
       "googleServicesFile": "./google-services.json",
-      "versionCode": 39,
+      "versionCode": 41,
       "intentFilters": [
         {
           "action": "VIEW",

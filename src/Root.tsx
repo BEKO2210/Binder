@@ -101,7 +101,19 @@ function BinderApp() {
       // A reset link signs the person in with a recovery session. Until they
       // have actually chosen a new password, that session may only do that.
       if (event === 'PASSWORD_RECOVERY') setRecovering(true);
-      if (event === 'SIGNED_OUT' && hadSessionRef.current) setSessionExpired(true);
+      // Supabase also emits SIGNED_OUT when a token refresh fails, which happens
+      // every time the phone is offline long enough. Treating that as an expired
+      // session threw a signed-in user back to the sign-in screen for having
+      // been in a tunnel. Only a refusal by the server ends a session; the app
+      // asks for one before it believes it.
+      if (event === 'SIGNED_OUT' && hadSessionRef.current) {
+        void supabase.auth.getSession().then(({ data, error }) => {
+          if (!active) return;
+          if (data.session) return;
+          if (error && isLikelyOffline(error)) return;
+          setSessionExpired(true);
+        });
+      }
       hadSessionRef.current = Boolean(nextSession);
       setSession(nextSession); setLegalGate(undefined); setOnboardingComplete(undefined); setNotificationPreferencesReadyFor(null); setLoadError(''); setActiveMatch(null); setProfileRoute('home'); setTab('discover'); appSessionRecorded.current = false;
     });

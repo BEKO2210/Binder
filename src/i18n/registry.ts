@@ -3,7 +3,12 @@
 // Metro cannot read a directory at runtime, so the locale files that exist on
 // disk are listed here. Adding a translation is: copy `locales/en.json`,
 // translate the values, save it as `locales/<code>.json`, run `npm run i18n:sync`.
+import de from './locales/de.json' with { type: 'json' };
+import fr from './locales/fr.json' with { type: 'json' };
 
-export type LocaleCode = 'en';
+export type LocaleCode = 'de' | 'en' | 'fr';
 
-export const registeredLocales: Record<string, Record<string, unknown>> = {};
+export const registeredLocales: Record<string, Record<string, unknown>> = {
+  de: de as Record<string, unknown>,
+  fr: fr as Record<string, unknown>,
+};
