@@ -13,6 +13,7 @@ import {
   radii,
   spacing,
   typography,
+  resolveAccentTheme,
   type AccentThemeId,
   type AppearanceMode,
   type BinderTheme,
@@ -160,7 +161,7 @@ export function BinderThemeProvider({ children }: PropsWithChildren) {
   const theme = useMemo<BinderTheme>(() => ({
     mode: resolvedMode,
     colors: resolvedMode === 'light' ? lightPalette : darkPalette,
-    accent: accentThemes[settings.accentTheme],
+    accent: resolveAccentTheme(settings.accentTheme, resolvedMode),
     semantic: baseColors,
     spacing,
     radii,

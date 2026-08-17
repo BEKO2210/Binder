@@ -21,7 +21,7 @@ export function BinderText({ variant = 'body', tone = 'primary', align, style, .
       : tone === 'muted'
         ? theme.colors.textMuted
         : tone === 'accent'
-          ? theme.accent.accent
+          ? theme.accent.onSurface
           : tone === 'warning'
             ? theme.semantic.warning
             : theme.semantic.destructive;

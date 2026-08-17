@@ -19,7 +19,7 @@ export function ScreenState({ kind, title, message, actionLabel, onAction, icon 
   const { theme } = useBinderTheme();
   return (
     <View style={{ flex: 1, padding: theme.spacing.x6, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.canvas }}>
-      {kind === 'loading' ? <ActivityIndicator size="large" color={theme.accent.accent} /> : icon ? <BinderIcon name={icon} size={32} color={kind === 'error' ? theme.semantic.destructive : theme.colors.textSecondary} /> : null}
+      {kind === 'loading' ? <ActivityIndicator size="large" color={theme.accent.onSurface} /> : icon ? <BinderIcon name={icon} size={32} color={kind === 'error' ? theme.semantic.destructive : theme.colors.textSecondary} /> : null}
       {title ? <BinderText variant="title" align="center" style={{ marginTop: theme.spacing.x4 }}>{title}</BinderText> : null}
       <BinderText variant="body" tone="secondary" align="center" style={{ marginTop: theme.spacing.x3, maxWidth: 360 }}>{message}</BinderText>
       {actionLabel && onAction ? <BinderButton label={actionLabel} variant="secondary" fullWidth={false} onPress={onAction} style={{ marginTop: theme.spacing.x5 }} /> : null}

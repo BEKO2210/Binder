@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { accumulateDragPosition, clampRange, grabOffset, moveRange, pointToPosition, positionToStepIndex, resolveDragTarget, unwrapAngleDelta } from '../src/lib/dialMath.ts';
+import { accumulateDragPosition, clampRange, grabOffset, moveRange, pointToPosition, positionToStepIndex, resolveDragTarget, shouldReportDialChange, unwrapAngleDelta } from '../src/lib/dialMath.ts';
 import { positionToValue, radiusSteps, valueToPosition } from '../src/lib/dialScale.ts';
 
 test('radius scale round-trips every legal value exactly', () => {
@@ -63,4 +63,10 @@ test('the grabbed handle keeps its distance from the finger', () => {
   assert.ok(Math.abs(grabOffset(1, 0.78, 0.2, 0.8) - 0.02) < 1e-12);
   assert.ok(Math.abs(grabOffset(0, 0.22, 0.2, 0.8) + 0.02) < 1e-12);
   assert.equal(grabOffset(2, 0.5, 0.2, 0.8), 0.2 - 0.5);
+});
+
+test('dial drag notifications are time-throttled but release is authoritative', () => {
+  assert.equal(shouldReportDialChange(1_000, 1_099, false, 100), false);
+  assert.equal(shouldReportDialChange(1_000, 1_100, false, 100), true);
+  assert.equal(shouldReportDialChange(1_099, 1_100, true, 100), true);
 });

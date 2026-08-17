@@ -44,6 +44,11 @@ luminance and include the least-favourable surface for each semantic text token.
 | Secondary / elevated | 8.92:1 | 8.59:1 | 4.5:1 |
 | Muted / elevated | 5.08:1 | 4.54:1 | 4.5:1 |
 | Disabled primary / elevated at 60% | 6.52:1 | 4.58:1 | 4.5:1 |
+| Binder Lime accent foreground / elevated | 14.60:1 | 5.37:1 | 4.5:1 |
+| Electric Blue accent foreground / elevated | 7.10:1 | 6.41:1 | 4.5:1 |
+| Violet accent foreground / elevated | 7.41:1 | 6.01:1 | 4.5:1 |
+| Coral accent foreground / elevated | 7.50:1 | 5.88:1 | 4.5:1 |
+| Ice accent foreground / elevated | 11.82:1 | 5.71:1 | 4.5:1 |
 
 Audit decisions:
 

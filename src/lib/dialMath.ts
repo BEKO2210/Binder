@@ -73,3 +73,8 @@ export function moveRange(low: number, high: number, delta: number, minimum: num
   const nextLow = Math.max(minimum, Math.min(maximum - span, low + delta));
   return [nextLow, nextLow + span];
 }
+
+export function shouldReportDialChange(lastReportAt: number, now: number, authoritative: boolean, intervalMs: number): boolean {
+  'worklet';
+  return authoritative || now - lastReportAt >= intervalMs;
+}

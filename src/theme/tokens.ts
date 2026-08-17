@@ -46,12 +46,17 @@ export const lightPalette = {
 } as const;
 
 export const accentThemes = {
-  lime: { id: 'lime', label: 'Binder Lime', accent: '#C7FF4A', pressed: '#A8DE31', foreground: '#10120D' },
-  blue: { id: 'blue', label: 'Electric Blue', accent: '#71A7FF', pressed: '#558BE3', foreground: '#0B111B' },
-  violet: { id: 'violet', label: 'Violet', accent: '#B39BFF', pressed: '#9277E8', foreground: '#120C20' },
-  coral: { id: 'coral', label: 'Coral', accent: '#FF8A78', pressed: '#E66D5D', foreground: '#21100D' },
-  ice: { id: 'ice', label: 'Ice', accent: '#76E6F7', pressed: '#59C7D7', foreground: '#091719' },
-} as const satisfies Record<AccentThemeId, { id: AccentThemeId; label: string; accent: string; pressed: string; foreground: string }>;
+  lime: { id: 'lime', label: 'Binder Lime', accent: '#C7FF4A', pressed: '#A8DE31', foreground: '#10120D', onDark: '#C7FF4A', onLight: '#486900' },
+  blue: { id: 'blue', label: 'Electric Blue', accent: '#71A7FF', pressed: '#558BE3', foreground: '#0B111B', onDark: '#71A7FF', onLight: '#245493' },
+  violet: { id: 'violet', label: 'Violet', accent: '#B39BFF', pressed: '#9277E8', foreground: '#120C20', onDark: '#B39BFF', onLight: '#6545A5' },
+  coral: { id: 'coral', label: 'Coral', accent: '#FF8A78', pressed: '#E66D5D', foreground: '#21100D', onDark: '#FF8A78', onLight: '#9C382B' },
+  ice: { id: 'ice', label: 'Ice', accent: '#76E6F7', pressed: '#59C7D7', foreground: '#091719', onDark: '#76E6F7', onLight: '#176472' },
+} as const satisfies Record<AccentThemeId, { id: AccentThemeId; label: string; accent: string; pressed: string; foreground: string; onDark: string; onLight: string }>;
+
+export function resolveAccentTheme(id: AccentThemeId, mode: 'dark' | 'light') {
+  const accent = accentThemes[id];
+  return { ...accent, onSurface: mode === 'light' ? accent.onLight : accent.onDark };
+}
 
 export const spacing = {
   x1: 4,
@@ -138,7 +143,7 @@ export const typography = {
 export type BinderTheme = {
   mode: 'dark' | 'light';
   colors: typeof darkPalette | typeof lightPalette;
-  accent: (typeof accentThemes)[AccentThemeId];
+  accent: ReturnType<typeof resolveAccentTheme>;
   semantic: typeof baseColors;
   spacing: typeof spacing;
   radii: typeof radii;

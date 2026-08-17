@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { BackHandler, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInUp, FadeOutDown, SlideInRight, SlideOutRight, ZoomIn, ZoomOut } from 'react-native-reanimated';
 
@@ -60,7 +61,7 @@ export default function Root() {
 function TopInset({ children }: { children: React.ReactNode }) {
   const insets = useSafeAreaInsets();
   const { theme } = useBinderTheme();
-  return <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom, backgroundColor: theme.colors.canvas }}>{children}</View>;
+  return <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom, backgroundColor: theme.colors.canvas }}><StatusBar style={theme.mode === 'dark' ? 'light' : 'dark'} />{children}</View>;
 }
 
 function BinderApp() {
@@ -250,7 +251,7 @@ function BinderApp() {
 
 function NavItem({ icon, label, active, onPress }: { icon: BinderIconName; label: string; active: boolean; onPress: () => void }) {
   const { theme } = useBinderTheme();
-  return <MotionPressable accessibilityRole="tab" accessibilityLabel={label} accessibilityState={{ selected: active }} onPress={onPress} style={({ pressed }) => ({ flex: 1, minHeight: 52, borderRadius: theme.radii.control, alignItems: 'center', justifyContent: 'center', gap: 3, backgroundColor: pressed ? theme.colors.surfacePressed : 'transparent' })}><BinderIcon name={icon} size={22} color={active ? theme.accent.accent : theme.colors.textMuted} /><BinderText variant="caption" style={{ color: active ? theme.accent.accent : theme.colors.textMuted }}>{label}</BinderText></MotionPressable>;
+  return <MotionPressable accessibilityRole="tab" accessibilityLabel={label} accessibilityState={{ selected: active }} onPress={onPress} style={({ pressed }) => ({ flex: 1, minHeight: 52, borderRadius: theme.radii.control, alignItems: 'center', justifyContent: 'center', gap: 3, backgroundColor: pressed ? theme.colors.surfacePressed : 'transparent' })}><BinderIcon name={icon} size={22} color={active ? theme.accent.onSurface : theme.colors.textMuted} /><BinderText variant="caption" style={{ color: active ? theme.accent.onSurface : theme.colors.textMuted }}>{label}</BinderText></MotionPressable>;
 }
 
 function RouteFrame({ route, children }: { route: 'expand' | 'lift' | 'trailing'; children: React.ReactNode }) {

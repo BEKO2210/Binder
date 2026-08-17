@@ -88,7 +88,7 @@ export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, o
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.canvas }} contentContainerStyle={{ paddingBottom: theme.spacing.x16 }}>
       <BinderScreenHeader title="Your profile" eyebrow="BINDER" />
       <View style={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x5 }}>
-      {photoUrl ? <Image source={{ uri: photoUrl }} accessibilityLabel="Your primary profile photo" style={{ width: '100%', height: theme.layout.profileHeroHeight, borderRadius: theme.radii.hero }} resizeMode="cover" /> : <BinderCard style={{ minHeight: theme.layout.onboardingPhotoHeight, alignItems: 'center', justifyContent: 'center', gap: theme.spacing.x3 }}><BinderIcon name="addPhoto" size={34} color={theme.accent.accent} /><BinderText variant="label" tone="accent">Add your first photo</BinderText></BinderCard>}
+      {photoUrl ? <Image source={{ uri: photoUrl }} accessibilityLabel="Your primary profile photo" style={{ width: '100%', height: theme.layout.profileHeroHeight, borderRadius: theme.radii.hero }} resizeMode="cover" /> : <BinderCard style={{ minHeight: theme.layout.onboardingPhotoHeight, alignItems: 'center', justifyContent: 'center', gap: theme.spacing.x3 }}><BinderIcon name="addPhoto" size={34} color={theme.accent.onSurface} /><BinderText variant="label" tone="accent">Add your first photo</BinderText></BinderCard>}
       <BinderText variant="heading" style={{ marginTop: theme.spacing.x5 }}>{firstName || 'Your profile'}</BinderText>
       <BinderText variant="body" tone={bio ? 'secondary' : 'muted'} style={{ marginTop: theme.spacing.x2 }}>{bio || 'Add a few real lines about yourself so people know what to ask you.'}</BinderText>
       <BinderCard style={{ marginTop: theme.spacing.x5 }}>
@@ -129,7 +129,7 @@ function HubRow({ icon, title, copy, onPress }: { icon: 'edit' | 'settings' | 'b
   return (
     <Pressable accessibilityRole="button" onPress={onPress}>
       {({ pressed }) => <BinderCard style={{ backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x4 }}>
-        <View style={{ width: theme.layout.minimumTouchTarget, height: theme.layout.minimumTouchTarget, borderRadius: theme.radii.control, backgroundColor: theme.colors.surfaceElevated, alignItems: 'center', justifyContent: 'center' }}><BinderIcon name={icon} color={theme.accent.accent} /></View>
+        <View style={{ width: theme.layout.minimumTouchTarget, height: theme.layout.minimumTouchTarget, borderRadius: theme.radii.control, backgroundColor: theme.colors.surfaceElevated, alignItems: 'center', justifyContent: 'center' }}><BinderIcon name={icon} color={theme.accent.onSurface} /></View>
         <View style={{ flex: 1 }}><BinderText variant="label">{title}</BinderText><BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1 }}>{copy}</BinderText></View>
         <BinderIcon name="chevronRight" color={theme.colors.textMuted} />
       </BinderCard>}

@@ -70,7 +70,7 @@ export function BinderInput({ label, error, helper, style, editable = true, inpu
               backgroundColor: pressed ? theme.colors.surfacePressed : 'transparent',
             })}
           >
-            <BinderIcon name={revealed ? 'conceal' : 'reveal'} size={20} color={revealed ? theme.accent.accent : theme.colors.textSecondary} />
+            <BinderIcon name={revealed ? 'conceal' : 'reveal'} size={20} color={revealed ? theme.accent.onSurface : theme.colors.textSecondary} />
           </Pressable>
         ) : null}
       </View>

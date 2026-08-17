@@ -45,7 +45,7 @@ type IconProps = {
 
 export function BinderIcon({ name, size = 24, color }: IconProps) {
   const { theme } = useBinderTheme();
-  return <SymbolView name={symbols[name]} size={size} tintColor={color ?? theme.colors.textPrimary} />;
+  return <SymbolView name={symbols[name]} size={size} tintColor={color ?? theme.colors.textPrimary} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden />;
 }
 
 type IconButtonProps = IconProps & {
@@ -59,7 +59,7 @@ type IconButtonProps = IconProps & {
 
 export function BinderIconButton({ accessibilityLabel, onPress, disabled, selected, destructive, style, ...icon }: IconButtonProps) {
   const { theme } = useBinderTheme();
-  const color = destructive ? theme.semantic.destructive : selected ? theme.accent.accent : theme.colors.textSecondary;
+  const color = destructive ? theme.semantic.destructive : selected ? theme.accent.onSurface : theme.colors.textSecondary;
   return (
     <MotionPressable
       accessibilityRole="button"

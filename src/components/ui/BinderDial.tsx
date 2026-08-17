@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { View, type AccessibilityActionEvent } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue, type SharedValue } from 'react-native-reanimated';
 
-import { accumulateDragPosition, DIAL_ARC_RADIANS, DIAL_ARC_START, type DialDragTarget, grabOffset as grabOffsetFor, moveRange, pointToAngle, pointToPosition, positionToStepIndex, resolveDragTarget } from '../../lib/dialMath';
+import { accumulateDragPosition, DIAL_ARC_RADIANS, DIAL_ARC_START, type DialDragTarget, grabOffset as grabOffsetFor, moveRange, pointToAngle, pointToPosition, positionToStepIndex, resolveDragTarget, shouldReportDialChange } from '../../lib/dialMath';
 import { useBinderHaptics } from '../../theme/haptics';
 import { useBinderTheme } from '../../theme/ThemeProvider';
 import { layout } from '../../theme/tokens';
@@ -19,6 +19,7 @@ const TICK_COUNT = 72;
 // Hold-repeat timing is input cadence, not decorative motion.
 const REPEAT_DELAY_MS = 400;
 const REPEAT_RATE_MS = 120;
+const DRAG_REPORT_INTERVAL_MS = 100;
 
 type CommonProps = {
   steps: readonly number[];
@@ -70,7 +71,7 @@ export function BinderDial(props: BinderDialProps) {
   // when it did — without the offset the handle would teleport under the thumb.
   const dragTarget = useSharedValue<DialDragTarget>(0);
   const grabOffset = useSharedValue(0);
-  const lastReport = useSharedValue(0);
+  const lastReportAt = useSharedValue(0);
   const [display, setDisplay] = useState<[number, number]>([lowInitial, highInitial]);
   const displayRef = useRef<[number, number]>([lowInitial, highInitial]);
   const lastHapticStep = useSharedValue(lowInitial + highInitial * props.steps.length);
@@ -96,7 +97,7 @@ export function BinderDial(props: BinderDialProps) {
     if (repeatTimer.current) clearInterval(repeatTimer.current);
   }, []);
 
-  function notify(nextLow: number, nextHigh: number, authoritative: boolean) {
+  function notify(nextLow: number, nextHigh: number) {
     const roundedLow = Math.round(nextLow);
     const roundedHigh = Math.round(nextHigh);
     displayRef.current = [roundedLow, roundedHigh];
@@ -105,12 +106,11 @@ export function BinderDial(props: BinderDialProps) {
     else props.onChange(props.steps[roundedLow] ?? firstStep, props.steps[roundedHigh] ?? lastStep);
   }
 
-  const reportFromWorklet = (nextLow: number, nextHigh: number, authoritative: boolean) => {
+  const reportFromWorklet = (nextLow: number, nextHigh: number, now: number, authoritative: boolean) => {
     'worklet';
-    lastReport.value += 1;
-    if (authoritative || lastReport.value >= 4) {
-      lastReport.value = 0;
-      runOnJS(notify)(nextLow, nextHigh, authoritative);
+    if (shouldReportDialChange(lastReportAt.value, now, authoritative, DRAG_REPORT_INTERVAL_MS)) {
+      lastReportAt.value = now;
+      runOnJS(notify)(nextLow, nextHigh);
     }
   };
 
@@ -142,6 +142,7 @@ export function BinderDial(props: BinderDialProps) {
       previousAngle.value = pointToAngle(event.x, event.y, DIAL_SIZE);
       dragPosition.value = fingerPosition;
       grabOffset.value = grabOffsetFor(target, fingerPosition, lowPosition, highPosition);
+      lastReportAt.value = Date.now();
     })
     .onUpdate((event) => {
       const angle = pointToAngle(event.x, event.y, DIAL_SIZE);
@@ -167,9 +168,9 @@ export function BinderDial(props: BinderDialProps) {
       const moved = low.value !== previousLow || high.value !== previousHigh;
       if (atEnd && moved) runOnJS(pulseClamp)();
       pulseStepFromWorklet(low.value, high.value);
-      reportFromWorklet(low.value, high.value, false);
+      reportFromWorklet(low.value, high.value, Date.now(), false);
     })
-    .onFinalize(() => reportFromWorklet(low.value, high.value, true));
+    .onFinalize(() => reportFromWorklet(low.value, high.value, Date.now(), true));
 
   const lowStyle = useAnimatedStyle(() => {
     const angle = DIAL_ARC_START + low.value / (count - 1) * DIAL_ARC_RADIANS;
@@ -191,7 +192,7 @@ export function BinderDial(props: BinderDialProps) {
       return;
     }
     buttonClamp.current = false;
-    notify(nextLow, props.mode === 'single' ? nextLow : nextHigh, true);
+    notify(nextLow, props.mode === 'single' ? nextLow : nextHigh);
   }
 
   function accessibilityAction(which: 'low' | 'high', event: AccessibilityActionEvent) {
@@ -219,8 +220,6 @@ export function BinderDial(props: BinderDialProps) {
   const readout = props.mode === 'single' ? format(lowValue) : `${format(lowValue)} – ${format(highValue)}`;
   const caption = props.mode === 'range' ? `${highValue - lowValue}` : '';
   const ticks = useMemo(() => Array.from({ length: TICK_COUNT }, (_, index) => index), []);
-  const lowPosition = display[0] / (count - 1);
-  const highPosition = display[1] / (count - 1);
 
   const handle = (which: 'low' | 'high', style: object, label: string, now: number) => (
       <Animated.View
@@ -239,12 +238,7 @@ export function BinderDial(props: BinderDialProps) {
     <View style={{ alignItems: 'center', gap: theme.spacing.x4 }}>
       <GestureDetector gesture={ringGesture}>
         <View style={{ width: DIAL_SIZE, height: DIAL_SIZE, alignItems: 'center', justifyContent: 'center' }}>
-          {ticks.map((tick) => {
-            const position = tick / (TICK_COUNT - 1);
-            const filled = props.mode === 'single' ? position <= highPosition : position >= lowPosition && position <= highPosition;
-            const major = tick % 9 === 0;
-            return <View key={tick} style={{ position: 'absolute', width: major ? theme.spacing.x1 : 2, height: theme.spacing.x10, borderRadius: theme.radii.pill, backgroundColor: filled ? theme.accent.accent : major ? theme.colors.textMuted : theme.colors.borderStrong, transform: [{ rotate: `${135 + tick * 270 / (TICK_COUNT - 1) + 90}deg` }, { translateY: -RING_RADIUS }] }} />;
-          })}
+          {ticks.map((tick) => <DialTick key={tick} tick={tick} count={count} range={props.mode === 'range'} low={low} high={high} accent={theme.accent.accent} majorTrack={theme.colors.textMuted} minorTrack={theme.colors.borderStrong} majorWidth={theme.spacing.x1} height={theme.spacing.x10} radius={theme.radii.pill} />)}
           <View style={{ width: theme.layout.dialCenterSize, height: theme.layout.dialCenterSize, borderRadius: theme.radii.pill, backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.borderSubtle, alignItems: 'center', justifyContent: 'center', paddingHorizontal: theme.spacing.x4 }}>
             <BinderText variant="displayL" align="center">{readout}</BinderText>
             <BinderText variant="caption" tone="muted" align="center" style={{ marginTop: theme.spacing.x1 }}>{caption}</BinderText>
@@ -268,6 +262,18 @@ export function BinderDial(props: BinderDialProps) {
     </View>
   );
 }
+
+const DialTick = memo(function DialTick({ tick, count, range, low, high, accent, majorTrack, minorTrack, majorWidth, height, radius }: { tick: number; count: number; range: boolean; low: SharedValue<number>; high: SharedValue<number>; accent: string; majorTrack: string; minorTrack: string; majorWidth: number; height: number; radius: number }) {
+  const position = tick / (TICK_COUNT - 1);
+  const major = tick % 9 === 0;
+  const animatedStyle = useAnimatedStyle(() => {
+    const lowPosition = low.value / (count - 1);
+    const highPosition = high.value / (count - 1);
+    const filled = range ? position >= lowPosition && position <= highPosition : position <= highPosition;
+    return { backgroundColor: filled ? accent : major ? majorTrack : minorTrack };
+  }, [accent, count, major, majorTrack, minorTrack, position, range]);
+  return <Animated.View style={[{ position: 'absolute', width: major ? majorWidth : 2, height, borderRadius: radius, transform: [{ rotate: `${135 + tick * 270 / (TICK_COUNT - 1) + 90}deg` }, { translateY: -RING_RADIUS }] }, animatedStyle]} />;
+});
 
 function StepButton({ label, symbol, onStart, onStop }: { label: string; symbol: string; onStart: () => void; onStop: () => void }) {
   const { theme } = useBinderTheme();

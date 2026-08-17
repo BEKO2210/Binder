@@ -1,5 +1,4 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { BackHandler, Dimensions, Image, ScrollView, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -275,7 +274,6 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
-      <StatusBar style={theme.mode === 'dark' ? 'light' : 'dark'} />
       <BinderScreenHeader title="Discover" titleVisual={<View><BinderBrand compact /><BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>People who fit both sides.</BinderText></View>} trailing={<View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
           {decisionPending ? <BinderText variant="caption" tone="accent">Saving…</BinderText> : null}
           <Animated.View key={filterValues ? `${filterValues.minAge}-${filterValues.maxAge}-${filterValues.distance}` : 'filters'} entering={reduceMotion ? undefined : FadeIn.duration(theme.motion.standard)} exiting={reduceMotion ? undefined : FadeOut.duration(theme.motion.fast)}><BinderChip label={filterValues ? `${filterValues.minAge}–${filterValues.maxAge} · ${filterValues.distance} km` : 'Filters'} selected={filtersOpen} accessibilityLabel="Open discovery filters" onPress={() => setFiltersOpen(true)} /></Animated.View>

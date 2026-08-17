@@ -59,7 +59,7 @@ function PolicyCard({ index, icon, title, copy, version, onPress }: { index: str
       {({ pressed }) => (
         <BinderCard style={{ backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3 }}><BinderIcon name={icon} size={22} color={theme.accent.accent} /><BinderText variant="micro" tone="muted">{index}</BinderText></View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3 }}><BinderIcon name={icon} size={22} color={theme.accent.onSurface} /><BinderText variant="micro" tone="muted">{index}</BinderText></View>
             <BinderIcon name="chevronRight" size={22} color={theme.colors.textMuted} />
           </View>
           <BinderText variant="title" style={{ marginTop: theme.spacing.x5 }}>{title}</BinderText>
