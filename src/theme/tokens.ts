@@ -27,6 +27,7 @@ export const darkPalette = {
   textMuted: '#858C98',
   overlay: 'rgba(4,5,8,0.88)',
   scrim: 'rgba(0,0,0,0.48)',
+  transparent: 'transparent',
 } as const;
 
 export const lightPalette = {
@@ -41,6 +42,7 @@ export const lightPalette = {
   textMuted: '#646D60',
   overlay: 'rgba(16,18,13,0.76)',
   scrim: 'rgba(9,10,15,0.34)',
+  transparent: 'transparent',
 } as const;
 
 export const accentThemes = {

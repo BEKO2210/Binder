@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 
 import { useBinderTheme } from './ThemeProvider';
 
-export type BinderHaptic = 'selection' | 'bind' | 'match' | 'warning' | 'destructive';
+export type BinderHaptic = 'selection' | 'impact' | 'bind' | 'match' | 'warning' | 'destructive';
 
 export function useBinderHaptics() {
   const { settings } = useBinderTheme();
@@ -15,7 +15,7 @@ export function useBinderHaptics() {
         await Haptics.selectionAsync();
         return;
       }
-      if (kind === 'bind') {
+      if (kind === 'bind' || kind === 'impact') {
         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         return;
       }

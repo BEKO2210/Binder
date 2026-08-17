@@ -38,6 +38,8 @@ Status legend: `[ ]` open · `[~]` in progress · `[x]` done and verified on dev
       hierarchy, distance and interests, and full-card swipe gestures with
       spring physics and haptics (bind right, pass left) on top of the existing
       buttons. Undo affordance. Card stack depth so the next person is hinted.
+      Reported from the device: the bind (heart) button is not on the screen's
+      centre axis — the pass/bind pair has to be measured, not eyeballed.
 - [ ] **Discovery loading** — already replaced with the two-signal composition;
       hold it to 60 fps and reuse its language for every other loading state.
 - [ ] **Matches** — avatar, name, last message, time, unread weight. Empty state
@@ -48,6 +50,14 @@ Status legend: `[ ]` open · `[~]` in progress · `[x]` done and verified on dev
       reused for preferences, destructive actions clearly separated.
 - [ ] **Onboarding & auth** — first run is the first impression: progress that
       is honest, inputs that explain themselves, errors next to the field.
+      Reported from the device:
+      - the keyboard covers the password field on sign-in — the form has to lift
+        and stay visible (`react-native-keyboard-controller` is already a
+        dependency and is the right tool);
+      - sign-in needs a reveal toggle (the eye) on the password field, with a
+        proper accessibility label and state;
+      - registration needs a second password field and must refuse mismatches
+        at the field, not after submitting.
 - [ ] Consistent empty / error / offline / permission states on every screen.
 
 ## Phase 3 — Motion
