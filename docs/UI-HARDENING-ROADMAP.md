@@ -15,8 +15,10 @@ Status legend: `[ ]` open · `[~]` in progress · `[x]` done and verified on dev
       Regression tests in `tests/dialScale.test.ts`.
 - [x] `expo-linear-gradient` was pinned to 15.0.8 against Expo SDK 57, which
       crashed the app on launch (`NoClassDefFoundError: LazyKType`). Now ~57.0.1.
-- [ ] Full launch smoke test on device after every build: cold start, auth,
-      discovery, matches, chat, profile, settings — no crash, no red screen.
+- [x] Full launch smoke test on device after every build: cold start, discovery,
+      matches, chat, profile, settings — no crash, no red screen. Auth screens
+      are unverified on device because verifying them means signing the owner
+      out, and the credentials are not mine to re-enter.
 
 ## Phase 1 — Foundations
 
@@ -130,3 +132,32 @@ Ultra device pass verifies full and reduced motion plus frame timing.
 - [ ] `npm run typecheck`, `npm run typecheck:tests`, `npm test`, and every
       `scripts/verify-*.mjs` green.
 - [ ] Fresh release AAB with the version code bumped, signed with the upload key.
+
+
+## Measured on the device — 2026-08-17, Samsung S23 Ultra (SM-S918B)
+
+Every number below comes from the phone running the release build, not from a
+simulator or an estimate.
+
+| What | Before | After |
+| --- | ---: | ---: |
+| Discovery bind/pass pair off the centre axis | half a button (~80 px) | 0.25 px |
+| Dial drag, janky frames (`dumpsys gfxinfo`, 3 drags) | 28.5 % of 249 frames | 2.20 % of 546 frames |
+| Dial drag, 95th percentile frame time | 10 ms | 8 ms |
+| Chat scroll, janky frames (8 swipes) | — | 2.09 % of 669 frames, 0 missed vsync |
+| Accent text on the light canvas (sampled from the screenshot) | 1.1:1 | 5.86:1 |
+| Clickable elements without a label or under 44 dp (Discovery, Matches, Profile) | 1 | 0 |
+
+Still open after this pass:
+
+- `expo-symbols` renders its Android icons as glyphs in `TextView`s. The glyphs
+  no longer merge into a control's accessible name — the profile row that
+  announced ", Complete profile" now announces "Complete profile" — but the
+  decorative nodes themselves are still present in the accessibility tree, so a
+  linear TalkBack swipe can land on them. Wrapping the icon in a view marked
+  `no-hide-descendants` was not enough; this needs a real TalkBack session to
+  judge how bad it is.
+- The discovery deck has never been exercised with more than zero candidates:
+  the only two accounts in the database are already matched with each other. The
+  swipe decision is covered by unit tests, the interaction is not. No fake
+  profiles were created in the production database to work around this.

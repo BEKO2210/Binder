@@ -1,5 +1,5 @@
 import { SymbolView } from 'expo-symbols';
-import { type ColorValue, type ViewStyle } from 'react-native';
+import { View, type ColorValue, type ViewStyle } from 'react-native';
 
 import { useBinderTheme } from '../../theme/ThemeProvider';
 import { MotionPressable } from './MotionPressable';
@@ -45,7 +45,16 @@ type IconProps = {
 
 export function BinderIcon({ name, size = 24, color }: IconProps) {
   const { theme } = useBinderTheme();
-  return <SymbolView name={symbols[name]} size={size} tintColor={color ?? theme.colors.textPrimary} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden />;
+  // SymbolView renders an icon-font glyph on Android, and that glyph ends up in
+  // the accessible name of whatever contains it — a uiautomator dump showed
+  // labels like ", Complete profile". The wrapper takes the icon out of
+  // the accessibility tree so only the control's own label survives; passing the
+  // props to SymbolView alone was not enough.
+  return (
+    <View accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+      <SymbolView name={symbols[name]} size={size} tintColor={color ?? theme.colors.textPrimary} />
+    </View>
+  );
 }
 
 type IconButtonProps = IconProps & {
