@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { BackHandler, FlatList, Image, Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
-import { BinderIconButton, BinderText, ScreenState } from '../components/ui';
+import { BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import { fetchPartnerProfile, type PartnerProfile } from '../lib/partnerProfile';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
@@ -40,10 +40,7 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose }: 
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
-      <View style={{ paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x2, flexDirection: 'row', alignItems: 'center' }}>
-        <BinderIconButton name="back" accessibilityLabel="Back to conversation" onPress={onClose} />
-        <BinderText variant="label" style={{ flex: 1, textAlign: 'center', marginRight: 48 }}>{profile?.name ?? fallbackName}</BinderText>
-      </View>
+      <BinderScreenHeader title={profile?.name ?? fallbackName} centered leading={{ icon: 'back', accessibilityLabel: 'Back to conversation', onPress: onClose }} />
 
       {error ? (
         <ScreenState kind="error" icon="retry" title="Profile not available" message={error} actionLabel="Back" onAction={onClose} />
@@ -107,9 +104,7 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose }: 
 
       {viewerUrl ? (
         <View style={{ position: 'absolute', inset: 0, backgroundColor: theme.colors.canvas }}>
-          <View style={{ paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x2 }}>
-            <BinderIconButton name="close" accessibilityLabel="Close full photo" onPress={() => setViewerUrl(null)} />
-          </View>
+          <BinderScreenHeader title="Photo" leading={{ icon: 'close', accessibilityLabel: 'Close full photo', onPress: () => setViewerUrl(null) }} />
           <Image source={{ uri: viewerUrl }} style={{ flex: 1 }} resizeMode="contain" />
         </View>
       ) : null}

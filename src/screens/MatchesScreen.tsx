@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { FlatList, Image, Pressable, RefreshControl, ScrollView, View } from 'react-native';
 
-import { BinderButton, BinderCard, BinderIcon, BinderText, ScreenState, SectionHeader } from '../components/ui';
+import { BinderButton, BinderCard, BinderIcon, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import { fetchMatches, type MatchSummary } from '../lib/conversation';
 import { previewTimeLabel, splitConversationPreviews } from '../lib/conversationPresentation';
 import { enablePushNotifications, getNotificationPermissionStatus, openSystemNotificationSettings } from '../lib/notifications';
@@ -54,10 +54,7 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas, paddingHorizontal: theme.spacing.screen }}>
-      <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', paddingTop: theme.spacing.x5, paddingBottom: theme.spacing.x4 }}>
-        <SectionHeader eyebrow="CONVERSATIONS" title="Your Binds" />
-        <BinderButton label="Refresh" icon="retry" variant="ghost" fullWidth={false} onPress={() => void load()} />
-      </View>
+      <BinderScreenHeader title="Your Binds" eyebrow="CONVERSATIONS" style={{ marginHorizontal: -theme.spacing.screen, marginBottom: theme.spacing.x4 }} trailing={<BinderButton label="Refresh" icon="retry" variant="ghost" fullWidth={false} onPress={() => void load()} />} />
 
       <BinderCard style={{ marginBottom: theme.spacing.x3, padding: theme.spacing.x4 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3 }}>

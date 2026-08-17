@@ -2,7 +2,7 @@ import Constants from 'expo-constants';
 import { useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 
-import { BinderCard, BinderIconButton, BinderText, SectionHeader } from '../components/ui';
+import { BinderCard, BinderScreenHeader, BinderText, SectionHeader } from '../components/ui';
 import { DELETE_ACCOUNT_URL, PRIVACY_URL, TERMS_URL, openBinderUrl } from '../lib/safety';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
@@ -16,9 +16,10 @@ export default function AboutScreen({ onClose }: Props) {
   const [linkError, setLinkError] = useState('');
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: theme.colors.canvas }} contentContainerStyle={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x4, paddingBottom: theme.spacing.x16 }}>
-      <BinderIconButton name="back" accessibilityLabel="Back to profile" onPress={onClose} />
-      <SectionHeader eyebrow="ABOUT BINDER" title="One free product." copy="Binder is built and run as an independent, non-commercial project. No ads, no paid tiers, no data brokers." />
+    <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
+      <BinderScreenHeader title="About Binder" leading={{ icon: 'back', accessibilityLabel: 'Back to profile', onPress: onClose }} />
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x5, paddingBottom: theme.spacing.x16 }}>
+      <SectionHeader title="One free product." copy="Binder is built and run as an independent, non-commercial project. No ads, no paid tiers, no data brokers." />
 
       <BinderCard style={{ marginTop: theme.spacing.x6 }}>
         <BinderText variant="micro" tone="muted">IMPRESSUM · ANGABEN GEMÄSS § 5 DDG</BinderText>
@@ -39,14 +40,15 @@ export default function AboutScreen({ onClose }: Props) {
       </BinderCard>
 
       {version ? <BinderText variant="caption" tone="muted" align="center" style={{ marginTop: theme.spacing.x6 }}>Binder {version}</BinderText> : null}
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
 function PolicyLink({ label, onPress }: { label: string; onPress: () => void }) {
   const { theme } = useBinderTheme();
   return (
-    <Pressable accessibilityRole="link" onPress={onPress} style={({ pressed }) => ({ minHeight: 52, justifyContent: 'center', borderBottomWidth: 1, borderBottomColor: theme.colors.borderSubtle, backgroundColor: pressed ? theme.colors.surfacePressed : 'transparent' })}>
+    <Pressable accessibilityRole="link" onPress={onPress} style={({ pressed }) => ({ minHeight: theme.layout.controlHeight, justifyContent: 'center', borderBottomWidth: 1, borderBottomColor: theme.colors.borderSubtle, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.transparent })}>
       <BinderText variant="label" tone="secondary">{label}</BinderText>
     </Pressable>
   );

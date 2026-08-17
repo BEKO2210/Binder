@@ -6,6 +6,8 @@ import {
   accentThemes,
   baseColors,
   darkPalette,
+  feedback,
+  layout,
   lightPalette,
   motion,
   radii,
@@ -164,6 +166,8 @@ export function BinderThemeProvider({ children }: PropsWithChildren) {
     radii,
     motion,
     typography,
+    layout,
+    feedback,
   }), [resolvedMode, settings.accentTheme]);
 
   const value = useMemo<ThemeContextValue>(() => ({

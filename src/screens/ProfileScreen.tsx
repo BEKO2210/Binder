@@ -75,7 +75,7 @@ export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, o
       <View style={{ marginTop: theme.spacing.x6 }}>
         <SectionHeader eyebrow="YOUR BINDER" title={firstName || 'Your profile'} copy={bio || 'Add a few real lines about yourself.'} />
       </View>
-      {photoUrl ? <Image source={{ uri: photoUrl }} style={{ width: '100%', height: 360, borderRadius: theme.radii.hero, marginTop: theme.spacing.x5 }} resizeMode="cover" /> : null}
+      {photoUrl ? <Image source={{ uri: photoUrl }} style={{ width: '100%', height: theme.layout.profileHeroHeight, borderRadius: theme.radii.hero, marginTop: theme.spacing.x5 }} resizeMode="cover" /> : null}
       <View style={{ gap: theme.spacing.x3, marginTop: theme.spacing.x5 }}>
         <HubRow icon="edit" title="Profile & photos" copy="Edit your profile, discovery preferences and up to six moderated photos." onPress={onEditProfile} />
         <HubRow icon="settings" title="App settings" copy="Appearance, haptics, motion, notification preferences and quiet hours." onPress={onOpenSettings} />
@@ -117,5 +117,5 @@ function HubRow({ icon, title, copy, onPress }: { icon: 'edit' | 'settings' | 'b
 
 function PolicyRow({ icon, label, onPress }: { icon: 'legal' | 'privacy' | 'info'; label: string; onPress: () => void }) {
   const { theme } = useBinderTheme();
-  return <Pressable accessibilityRole="link" onPress={onPress} style={({ pressed }) => ({ minHeight: 52, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3, borderBottomWidth: 1, borderBottomColor: theme.colors.borderSubtle, backgroundColor: pressed ? theme.colors.surfacePressed : 'transparent' })}><BinderIcon name={icon} size={20} color={theme.colors.textSecondary} /><BinderText variant="label" tone="secondary" style={{ flex: 1 }}>{label}</BinderText><BinderIcon name="chevronRight" size={20} color={theme.colors.textMuted} /></Pressable>;
+  return <Pressable accessibilityRole="link" onPress={onPress} style={({ pressed }) => ({ minHeight: theme.layout.controlHeight, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3, borderBottomWidth: 1, borderBottomColor: theme.colors.borderSubtle, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.transparent })}><BinderIcon name={icon} size={20} color={theme.colors.textSecondary} /><BinderText variant="label" tone="secondary" style={{ flex: 1 }}>{label}</BinderText><BinderIcon name="chevronRight" size={20} color={theme.colors.textMuted} /></Pressable>;
 }

@@ -15,8 +15,6 @@ type Props = TextInputProps & {
   revealToggle?: boolean;
 };
 
-const REVEAL_TARGET = 44;
-
 export function BinderInput({ label, error, helper, style, editable = true, inputRef, revealToggle = false, ...props }: Props) {
   const { theme } = useBinderTheme();
   const [focused, setFocused] = useState(false);
@@ -38,18 +36,18 @@ export function BinderInput({ label, error, helper, style, editable = true, inpu
           placeholderTextColor={theme.colors.textMuted}
           selectionColor={theme.accent.accent}
           style={[{
-            minHeight: 52,
+            minHeight: theme.layout.controlHeight,
             color: theme.colors.textPrimary,
             backgroundColor: editable ? theme.colors.surface : theme.colors.surfaceElevated,
             borderWidth: 1,
             borderColor,
             borderRadius: theme.radii.control,
             paddingHorizontal: theme.spacing.x4,
-            paddingRight: revealToggle ? theme.spacing.x4 + REVEAL_TARGET : theme.spacing.x4,
+            paddingRight: revealToggle ? theme.spacing.x4 + theme.layout.minimumTouchTarget : theme.spacing.x4,
             paddingVertical: theme.spacing.x3,
             fontSize: theme.typography.body.fontSize,
             lineHeight: theme.typography.body.lineHeight,
-            opacity: editable ? 1 : 0.56,
+            opacity: editable ? 1 : theme.feedback.disabledOpacity,
           }, style]}
         />
         {revealToggle ? (
@@ -63,8 +61,8 @@ export function BinderInput({ label, error, helper, style, editable = true, inpu
             style={({ pressed }) => ({
               position: 'absolute',
               right: theme.spacing.x1,
-              width: REVEAL_TARGET,
-              height: REVEAL_TARGET,
+              width: theme.layout.minimumTouchTarget,
+              height: theme.layout.minimumTouchTarget,
               borderRadius: theme.radii.pill,
               alignItems: 'center',
               justifyContent: 'center',

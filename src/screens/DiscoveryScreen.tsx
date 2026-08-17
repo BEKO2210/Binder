@@ -9,7 +9,7 @@ import DiscoveryFilterSheet from '../components/DiscoveryFilterSheet';
 import { DiscoveryLoading } from '../components/DiscoveryLoading';
 import type { DiscoveryPreferenceValues } from '../components/DiscoveryPreferences';
 import { MatchCelebration } from '../components/MatchCelebration';
-import { BinderBrand, BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderText, ScreenState } from '../components/ui';
+import { BinderBrand, BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import { fetchMatches, type MatchSummary } from '../lib/conversation';
 import { fetchDiscoveryBatch, recordDecision, refreshDiscoveryLocation, type DiscoveryProfile } from '../lib/discovery';
 import { advanceDeck, decideSwipe, discoveryDeckPhysics, type SwipeDirection } from '../lib/discoveryDeck';
@@ -275,13 +275,10 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
       <StatusBar style={theme.mode === 'dark' ? 'light' : 'dark'} />
-      <View style={{ minHeight: 74, paddingHorizontal: theme.spacing.screen, paddingVertical: theme.spacing.x3, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <View><BinderBrand compact /><BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>People who fit both sides.</BinderText></View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
+      <BinderScreenHeader title="Discover" titleVisual={<View><BinderBrand compact /><BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>People who fit both sides.</BinderText></View>} trailing={<View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
           {decisionPending ? <BinderText variant="caption" tone="accent">Saving…</BinderText> : null}
           <BinderChip label={filterValues ? `${filterValues.minAge}–${filterValues.maxAge} · ${filterValues.distance} km` : 'Filters'} selected={filtersOpen} accessibilityLabel="Open discovery filters" onPress={() => setFiltersOpen(true)} />
-        </View>
-      </View>
+        </View>} />
 
       <View style={{ flex: 1, marginHorizontal: theme.spacing.x4, marginTop: theme.spacing.x1, marginBottom: theme.spacing.x3, justifyContent: 'center' }}>
         {loading ? <View style={{ position: 'absolute', inset: 0, zIndex: 2, backgroundColor: theme.colors.canvas }}><DiscoveryLoading compact /></View> : null}
@@ -312,7 +309,7 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
       </View>
 
       {error ? <BinderText variant="caption" tone="destructive" align="center" style={{ paddingHorizontal: theme.spacing.x5, paddingBottom: theme.spacing.x1 }}>{error}</BinderText> : null}
-      <View style={{ minHeight: 82, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: theme.spacing.x3, paddingBottom: theme.spacing.x3 }}>
+      <View style={{ minHeight: theme.layout.discoveryActionBarHeight, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: theme.spacing.x3, paddingBottom: theme.spacing.x3 }}>
         {/* Two buttons, one axis: a trailing spacer used to sit here and pushed
             the pair off the screen's centre line by half a button. */}
         <View style={{ width: theme.spacing.x16 }}><DiscoveryAction kind="pass" disabled={!profile || decisionPending || safetyOpen} onPress={() => void submitDecision('left')} /></View>

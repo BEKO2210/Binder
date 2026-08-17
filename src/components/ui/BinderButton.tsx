@@ -54,7 +54,7 @@ export function BinderButton({ label, variant = 'primary', loading = false, icon
       accessibilityState={{ disabled: isDisabled, busy: loading }}
       disabled={isDisabled}
       style={({ pressed }) => [{
-        minHeight: 52,
+        minHeight: theme.layout.controlHeight,
         width: fullWidth ? '100%' : undefined,
         paddingHorizontal: theme.spacing.x5,
         borderRadius: theme.radii.control,
@@ -69,7 +69,7 @@ export function BinderButton({ label, variant = 'primary', loading = false, icon
               : background,
         alignItems: 'center',
         justifyContent: 'center',
-        opacity: isDisabled ? 0.42 : 1,
+        opacity: isDisabled ? theme.feedback.disabledOpacity : 1,
       }, style]}
     >
       {loading ? (

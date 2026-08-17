@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase';
 import type { Gender } from '../lib/validation';
 import { useBinderTheme } from '../theme/ThemeProvider';
 import { DiscoveryPreferences, discoveryDefaults, type DiscoveryPreferenceValues } from './DiscoveryPreferences';
-import { BinderButton, BinderCard, BinderIconButton, BinderText, ScreenState } from './ui';
+import { BinderButton, BinderCard, BinderIconButton, BinderScreenHeader, ScreenState } from './ui';
 
 type Props = { initialValues: DiscoveryPreferenceValues | null; onClose: () => void; onApplied: (values: DiscoveryPreferenceValues) => void };
 type LoadedProfile = { first_name: string; gender: Gender; bio: string; interests: string[] };
@@ -61,10 +61,7 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
     <View style={{ position: 'absolute', inset: 0, backgroundColor: theme.colors.overlay, justifyContent: 'flex-end' }}>
       <BinderCard style={{ height: '94%', padding: 0, borderBottomLeftRadius: 0, borderBottomRightRadius: 0, borderColor: theme.colors.borderStrong, overflow: 'hidden' }}>
         <View style={{ alignItems: 'center', paddingTop: theme.spacing.x2 }}><View style={{ width: theme.spacing.x10, height: theme.spacing.x1, borderRadius: theme.radii.pill, backgroundColor: theme.colors.borderStrong }} /></View>
-        <View style={{ paddingHorizontal: theme.spacing.x5, paddingVertical: theme.spacing.x3, flexDirection: 'row', alignItems: 'center' }}>
-          <View style={{ flex: 1 }}><BinderText variant="micro" tone="accent">DISCOVERY</BinderText><BinderText variant="heading" style={{ marginTop: theme.spacing.x1 }}>Your search</BinderText></View>
-          <BinderIconButton name="close" accessibilityLabel="Close discovery filters" onPress={onClose} />
-        </View>
+        <BinderScreenHeader title="Your search" eyebrow="DISCOVERY" trailing={<BinderIconButton name="close" accessibilityLabel="Close discovery filters" onPress={onClose} />} />
         {loadError ? <ScreenState kind="error" icon="retry" title="Filters did not load" message={loadError} actionLabel="Close" onAction={onClose} /> : !profile ? <ScreenState kind="loading" message="Loading your filters…" /> : (
           <>
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: theme.spacing.x5, paddingTop: theme.spacing.x4, paddingBottom: theme.spacing.x8 }}>

@@ -7,5 +7,6 @@ export { BinderIcon, BinderIconButton } from './BinderIcon';
 export type { BinderIconName } from './BinderIcon';
 export { BinderInput } from './BinderInput';
 export { BinderText } from './BinderText';
+export { BinderScreenHeader } from './BinderScreenHeader';
 export { ScreenState } from './ScreenState';
 export { SectionHeader } from './SectionHeader';

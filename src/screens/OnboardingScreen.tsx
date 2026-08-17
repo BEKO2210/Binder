@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Image, Pressable, ScrollView, TextInput, View } from 'react-native';
+import { Animated, Image, Pressable, TextInput, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderInput, BinderText, SectionHeader } from '../components/ui';
 import { assessBirthDate, sanitizeDigits } from '../lib/birthdate';
@@ -63,26 +64,26 @@ export default function OnboardingScreen({ userId, onComplete }: Props) {
   }
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: theme.colors.canvas }} contentContainerStyle={{ paddingTop: theme.spacing.x5, paddingHorizontal: theme.spacing.screen, paddingBottom: theme.spacing.x16 }} keyboardShouldPersistTaps="handled">
+    <KeyboardAwareScrollView style={{ flex: 1, backgroundColor: theme.colors.canvas }} contentContainerStyle={{ paddingTop: theme.spacing.x5, paddingHorizontal: theme.spacing.screen, paddingBottom: theme.spacing.x16 }} keyboardShouldPersistTaps="handled">
       <SectionHeader eyebrow="BINDER · 18+" title="Build a profile people can trust." copy="Your birth date and exact location stay private. Other people only receive the age and distance Binder calculates." />
       <View style={{ gap: theme.spacing.x6, marginTop: theme.spacing.x8 }}>
         <BinderInput label="First name" value={firstName} onChangeText={setFirstName} maxLength={40} placeholder="First name" />
         <BirthDateField onValidDate={setBirthDate} />
         <ChoiceField label="I am"><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{GENDERS.map((item) => <BinderChip key={item.value} label={item.label} selected={gender === item.value} onPress={() => setGender(item.value)} />)}</View></ChoiceField>
-        <BinderInput label="Bio" helper={`${bio.length}/500`} value={bio} onChangeText={setBio} maxLength={500} multiline placeholder="A few real lines about you…" style={{ minHeight: 110, textAlignVertical: 'top' }} />
+        <BinderInput label="Bio" helper={`${bio.length}/500`} value={bio} onChangeText={setBio} maxLength={500} multiline placeholder="A few real lines about you…" style={{ minHeight: theme.layout.multilineInputHeight, textAlignVertical: 'top' }} />
         <ChoiceField label="Interests"><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{INTERESTS.map((item) => <BinderChip key={item} label={item} selected={interests.includes(item)} onPress={() => toggleInterest(item)} />)}</View></ChoiceField>
         <ChoiceField label="I want to meet"><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{GENDERS.map((item) => <BinderChip key={item.value} label={item.label} selected={interestedIn.includes(item.value)} onPress={() => toggleInterestedIn(item.value)} />)}</View></ChoiceField>
         <ChoiceField label="Discovery range"><View style={{ flexDirection: 'row', gap: theme.spacing.x2 }}><CompactNumber label="Min age" value={minAge} setValue={setMinAge} /><CompactNumber label="Max age" value={maxAge} setValue={setMaxAge} /><CompactNumber label="Max km" value={distance} setValue={setDistance} /></View></ChoiceField>
         <ChoiceField label="Primary profile photo">
           <Pressable accessibilityRole="button" accessibilityLabel={photo ? 'Replace primary profile photo' : 'Choose primary profile photo'} onPress={() => void choosePhoto()}>
-            {({ pressed }) => <BinderCard style={{ padding: 0, minHeight: 280, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface }}>{photo ? <Image source={{ uri: photo.uri }} style={{ width: '100%', height: 280 }} resizeMode="cover" /> : <View style={{ alignItems: 'center', gap: theme.spacing.x3 }}><BinderIcon name="addPhoto" size={34} color={theme.accent.accent} /><BinderText variant="label" tone="accent">Choose photo</BinderText></View>}</BinderCard>}
+            {({ pressed }) => <BinderCard style={{ padding: 0, minHeight: theme.layout.onboardingPhotoHeight, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface }}>{photo ? <Image source={{ uri: photo.uri }} style={{ width: '100%', height: theme.layout.onboardingPhotoHeight }} resizeMode="cover" /> : <View style={{ alignItems: 'center', gap: theme.spacing.x3 }}><BinderIcon name="addPhoto" size={34} color={theme.accent.accent} /><BinderText variant="label" tone="accent">Choose photo</BinderText></View>}</BinderCard>}
           </Pressable>
           <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>Photos are optimized automatically before upload.</BinderText>
         </ChoiceField>
       </View>
       {error ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x5 }}>{error}</BinderText> : null}
       <BinderButton label="Enter Binder" loading={busy} onPress={() => void finish()} style={{ marginTop: theme.spacing.x6 }} />
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 }
 

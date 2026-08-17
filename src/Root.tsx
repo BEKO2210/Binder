@@ -59,12 +59,11 @@ export default function Root() {
 function TopInset({ children }: { children: React.ReactNode }) {
   const insets = useSafeAreaInsets();
   const { theme } = useBinderTheme();
-  return <View style={{ flex: 1, paddingTop: insets.top, backgroundColor: theme.colors.canvas }}>{children}</View>;
+  return <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom, backgroundColor: theme.colors.canvas }}>{children}</View>;
 }
 
 function BinderApp() {
   const { theme, settings, hydrated, updateSettings } = useBinderTheme();
-  const tabBarInsetBottom = Math.max(useSafeAreaInsets().bottom, 8);
   const haptic = useBinderHaptics();
   const [session, setSession] = useState<Session | null | undefined>(undefined);
   const [legalGate, setLegalGate] = useState<LegalGate | null | undefined>(undefined);
@@ -239,7 +238,7 @@ function BinderApp() {
         {tab === 'matches' ? <MatchesScreen refreshKey={matchesRefreshKey} onOpenMatch={setActiveMatch} onOpenDiscovery={() => setTab('discover')} /> : null}
         {tab === 'profile' ? <ProfileScreen userId={session.user.id} onEditProfile={() => setProfileRoute('edit')} onOpenSettings={() => setProfileRoute('settings')} onOpenBeta={() => setProfileRoute('beta')} onOpenAbout={() => setProfileRoute('about')} /> : null}
       </View>
-      <View style={{ minHeight: 76, flexDirection: 'row', paddingHorizontal: theme.spacing.x3, paddingTop: theme.spacing.x2, paddingBottom: theme.spacing.x2 + tabBarInsetBottom, backgroundColor: theme.colors.surface, borderTopColor: theme.colors.borderSubtle, borderTopWidth: 1 }}>
+      <View style={{ minHeight: theme.layout.screenHeaderHeight + theme.spacing.x1, flexDirection: 'row', paddingHorizontal: theme.spacing.x3, paddingTop: theme.spacing.x2, paddingBottom: theme.spacing.x2, backgroundColor: theme.colors.surface, borderTopColor: theme.colors.borderSubtle, borderTopWidth: 1 }}>
         <NavItem icon="discover" label="Discover" active={tab === 'discover'} onPress={() => setTab('discover')} />
         <NavItem icon="matches" label="Matches" active={tab === 'matches'} onPress={() => { setTab('matches'); setMatchesRefreshKey((value) => value + 1); }} />
         <NavItem icon="profile" label="Profile" active={tab === 'profile'} onPress={() => { setTab('profile'); setProfileRoute('home'); }} />

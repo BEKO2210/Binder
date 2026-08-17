@@ -32,6 +32,36 @@ Status legend: `[ ]` open · `[~]` in progress · `[x]` done and verified on dev
 - [ ] One shared feedback language: press states, focus states, disabled states
       and loading states defined once and used everywhere.
 
+### Phase 1 foundation sweep — 2026-08-17
+
+The code audit is complete; the checklist remains open until the required
+S23 Ultra device pass records both orientations. Ratios use WCAG 2.x relative
+luminance and include the least-favourable surface for each semantic text token.
+
+| Pair (worst rendered surface) | Dark | Light | Requirement |
+| --- | ---: | ---: | ---: |
+| Primary / elevated | 16.11:1 | 15.64:1 | 4.5:1 |
+| Secondary / elevated | 8.92:1 | 8.59:1 | 4.5:1 |
+| Muted / elevated | 5.08:1 | 4.54:1 | 4.5:1 |
+| Disabled primary / elevated at 60% | 6.52:1 | 4.58:1 | 4.5:1 |
+
+Audit decisions:
+
+- `BinderScreenHeader` owns navigation-header height, horizontal padding,
+  leading/trailing control slots and title alignment. Hero/editorial headings
+  remain `SectionHeader`; they are content, not navigation chrome.
+- `layout` tokens own stable control and media geometry; `spacing`, `radii`,
+  `typography`, and `motion` continue to own their respective scales.
+- Pressed surfaces, disabled opacity, focus borders, and loading indicators are
+  resolved by shared primitives. `DiscoveryLoading` remains the full loading
+  composition; compact states consistently use the shared accent spinner.
+- Root insets protect both system bars. Editable scroll screens use the existing
+  keyboard-controller-aware scroller. Full-screen viewers and bottom sheets sit
+  inside the same inset choke point.
+- The discovery deck, chat, matches, authentication, and dial implementations
+  were otherwise left intact because they were freshly rebuilt; only shared
+  foundation behaviour applies to them.
+
 ## Phase 2 — Screen by screen
 
 - [ ] **Discovery** — the card is the product. Photo treatment, scrim, name/age

@@ -6,12 +6,16 @@ import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-nativ
 import { accumulateDragPosition, DIAL_ARC_RADIANS, DIAL_ARC_START, type DialDragTarget, grabOffset as grabOffsetFor, moveRange, pointToAngle, pointToPosition, positionToStepIndex, resolveDragTarget } from '../../lib/dialMath';
 import { useBinderHaptics } from '../../theme/haptics';
 import { useBinderTheme } from '../../theme/ThemeProvider';
+import { layout } from '../../theme/tokens';
 import { BinderText } from './BinderText';
 
-const DIAL_SIZE = 260;
+const DIAL_SIZE = layout.dialSize;
+// These dimensions form the tested polar hit geometry; changing one requires
+// recalibrating dialMath and the dialScale regression suite as a unit.
 const RING_RADIUS = 104;
 const HANDLE_SIZE = 48;
 const TICK_COUNT = 72;
+// Hold-repeat timing is input cadence, not decorative motion.
 const REPEAT_DELAY_MS = 400;
 const REPEAT_RATE_MS = 120;
 
@@ -240,7 +244,7 @@ export function BinderDial(props: BinderDialProps) {
             const major = tick % 9 === 0;
             return <View key={tick} style={{ position: 'absolute', width: major ? theme.spacing.x1 : 2, height: theme.spacing.x10, borderRadius: theme.radii.pill, backgroundColor: filled ? theme.accent.accent : major ? theme.colors.textMuted : theme.colors.borderStrong, transform: [{ rotate: `${135 + tick * 270 / (TICK_COUNT - 1) + 90}deg` }, { translateY: -RING_RADIUS }] }} />;
           })}
-          <View style={{ width: 166, height: 166, borderRadius: theme.radii.pill, backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.borderSubtle, alignItems: 'center', justifyContent: 'center', paddingHorizontal: theme.spacing.x4 }}>
+          <View style={{ width: theme.layout.dialCenterSize, height: theme.layout.dialCenterSize, borderRadius: theme.radii.pill, backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.borderSubtle, alignItems: 'center', justifyContent: 'center', paddingHorizontal: theme.spacing.x4 }}>
             <BinderText variant="displayL" align="center">{readout}</BinderText>
             <BinderText variant="caption" tone="muted" align="center" style={{ marginTop: theme.spacing.x1 }}>{caption}</BinderText>
           </View>

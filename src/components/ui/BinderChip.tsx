@@ -18,7 +18,7 @@ export function BinderChip({ label, selected = false, disabled, ...props }: Prop
       accessibilityState={{ selected, disabled: isDisabled }}
       disabled={isDisabled}
       style={({ pressed }) => ({
-        minHeight: 48,
+        minHeight: theme.layout.minimumTouchTarget,
         paddingHorizontal: theme.spacing.x4,
         borderRadius: theme.radii.pill,
         borderWidth: 1,
@@ -26,7 +26,7 @@ export function BinderChip({ label, selected = false, disabled, ...props }: Prop
         backgroundColor: selected ? theme.accent.accent : pressed ? theme.colors.surfacePressed : theme.colors.surface,
         alignItems: 'center',
         justifyContent: 'center',
-        opacity: isDisabled ? 0.42 : 1,
+        opacity: isDisabled ? theme.feedback.disabledOpacity : 1,
       })}
     >
       <BinderText variant="label" style={{ color: selected ? theme.accent.foreground : theme.colors.textSecondary }}>{label}</BinderText>

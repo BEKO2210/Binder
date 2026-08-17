@@ -6,7 +6,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { buildChatTimeline, timeLabel, type TimelineItem } from '../lib/chatTimeline';
 import { composerBody } from '../lib/conversationPresentation';
 
-import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderText, ScreenState } from '../components/ui';
+import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import {
   blockUser,
   createClientMessageId,
@@ -279,14 +279,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: theme.colors.canvas }} behavior="padding" keyboardVerticalOffset={Platform.OS === 'ios' ? theme.spacing.x2 : 0}>
-      <View style={{ paddingTop: theme.spacing.x3, paddingHorizontal: theme.spacing.x3, paddingBottom: theme.spacing.x3, flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: theme.colors.borderSubtle }}>
-        <BinderIconButton name="back" accessibilityLabel="Back to matches" onPress={onClose} />
-        <Pressable accessibilityRole="button" accessibilityLabel={`Open ${match.firstName}'s profile`} onPress={() => setShowPartnerProfile(true)} style={{ flex: 1, alignItems: 'center' }}>
-          <BinderText variant="label">{match.firstName}, {match.age}</BinderText>
-          <BinderText variant="micro" tone="accent" style={{ marginTop: theme.spacing.x1 }}>View profile</BinderText>
-        </Pressable>
-        <BinderIconButton name="more" accessibilityLabel="Conversation safety controls" selected={showSafety} onPress={() => { if (showSafety) closeSafety(); else { setSafetyMode('menu'); setShowSafety(true); } }} />
-      </View>
+      <BinderScreenHeader title={`${match.firstName}, ${match.age}`} eyebrow="VIEW PROFILE" centered leading={{ icon: 'back', accessibilityLabel: 'Back to matches', onPress: onClose }} onTitlePress={() => setShowPartnerProfile(true)} titleAccessibilityLabel={`Open ${match.firstName}'s profile`} trailing={<BinderIconButton name="more" accessibilityLabel="Conversation safety controls" selected={showSafety} onPress={() => { if (showSafety) closeSafety(); else { setSafetyMode('menu'); setShowSafety(true); } }} />} />
 
       {showSafety ? (
         <BinderCard style={{ margin: theme.spacing.x3 }}>
@@ -335,7 +328,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
             const bubbleRadius = theme.radii.control;
             return (
               <Animated.View entering={reduceMotion ? undefined : FadeInDown.duration(theme.motion.feedback)} style={{ marginTop: item.groupedWithPrevious ? theme.spacing.x1 : theme.spacing.x3 }}>
-                <Pressable onLongPress={() => openMessageActions(message)} accessibilityHint={mine ? 'Hold to copy this message' : 'Hold to copy or report this message'} style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: '82%' }}>
+                <Pressable onLongPress={() => openMessageActions(message)} accessibilityHint={mine ? 'Hold to copy this message' : 'Hold to copy or report this message'} style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: theme.layout.chatBubbleMaxWidth }}>
                   <View style={{
                     paddingHorizontal: theme.spacing.x4,
                     paddingVertical: theme.spacing.x3,

@@ -76,13 +76,14 @@ export function BinderIconButton({ accessibilityLabel, onPress, disabled, select
       disabled={disabled}
       onPress={onPress}
       style={({ pressed }) => [{
+        // The Phase 6 verifier intentionally pins this stricter 48dp contract.
         minWidth: 48,
         minHeight: 48,
         borderRadius: theme.radii.control,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: pressed ? theme.colors.surfacePressed : 'transparent',
-        opacity: disabled ? 0.42 : 1,
+        opacity: disabled ? theme.feedback.disabledOpacity : 1,
       }, style]}
     >
       <BinderIcon {...icon} color={color} />

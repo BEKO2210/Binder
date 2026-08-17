@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { ScrollView, Switch, View } from 'react-native';
+import { Switch, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
-import { BinderButton, BinderCard, BinderChip, BinderIconButton, BinderInput, BinderText, ScreenState, SectionHeader } from '../components/ui';
+import { BinderButton, BinderCard, BinderChip, BinderInput, BinderScreenHeader, BinderText, ScreenState, SectionHeader } from '../components/ui';
 import { getBetaSettings, setBetaDiagnostics, submitBetaFeedback, type BetaFeedbackCategory, type BetaSettings } from '../lib/beta';
 import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
@@ -50,9 +51,10 @@ export default function BetaScreen({ onClose }: { onClose: () => void }) {
   if (loading) return <ScreenState kind="loading" message="Loading beta program…" />;
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: theme.colors.canvas }} contentContainerStyle={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x4, paddingBottom: theme.spacing.x16 }} keyboardShouldPersistTaps="handled">
-      <BinderIconButton name="back" accessibilityLabel="Back to profile" onPress={onClose} />
-      <SectionHeader eyebrow="BETA PROGRAM" title="Make Binder measurable, not invasive." copy="Ranking quality comes from Binder's own server events. Optional client diagnostics are a separate choice and stay off by default." />
+    <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
+      <BinderScreenHeader title="Beta program" leading={{ icon: 'back', accessibilityLabel: 'Back to profile', onPress: onClose }} />
+      <KeyboardAwareScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x5, paddingBottom: theme.spacing.x16 }} keyboardShouldPersistTaps="handled">
+      <SectionHeader title="Make Binder measurable, not invasive." copy="Ranking quality comes from Binder's own server events. Optional client diagnostics are a separate choice and stay off by default." />
 
       <BinderCard style={{ marginTop: theme.spacing.x6 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x4 }}>
@@ -79,9 +81,10 @@ export default function BetaScreen({ onClose }: { onClose: () => void }) {
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2, marginTop: theme.spacing.x5 }}>{CATEGORIES.map((item) => <BinderChip key={item.value} label={item.label} selected={category === item.value} onPress={() => setCategory(item.value)} />)}</View>
       <BinderText variant="label" tone="secondary" style={{ marginTop: theme.spacing.x5, marginBottom: theme.spacing.x2 }}>Overall experience</BinderText>
       <View style={{ flexDirection: 'row', gap: theme.spacing.x2 }}>{[1,2,3,4,5].map((value) => <View key={value} style={{ flex: 1 }}><BinderChip label={String(value)} selected={rating === value} onPress={() => setRating(value)} /></View>)}</View>
-      <View style={{ marginTop: theme.spacing.x5 }}><BinderInput label="Details" helper={`${details.length}/1500`} value={details} onChangeText={setDetails} maxLength={1500} multiline textAlignVertical="top" placeholder="What happened? What did you expect instead?" style={{ minHeight: 150 }} /></View>
+      <View style={{ marginTop: theme.spacing.x5 }}><BinderInput label="Details" helper={`${details.length}/1500`} value={details} onChangeText={setDetails} maxLength={1500} multiline textAlignVertical="top" placeholder="What happened? What did you expect instead?" style={{ minHeight: theme.layout.feedbackInputHeight }} /></View>
       {message ? <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x4 }}>{message}</BinderText> : null}
       <BinderButton label="Send beta feedback" loading={busy} onPress={() => void submit()} style={{ marginTop: theme.spacing.x5 }} />
-    </ScrollView>
+      </KeyboardAwareScrollView>
+    </View>
   );
 }

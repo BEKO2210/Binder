@@ -67,6 +67,36 @@ export const spacing = {
   screen: 20,
 } as const;
 
+// Stable component geometry is not spacing: naming it keeps interaction and
+// media dimensions consistent without pretending they belong to the 4dp grid.
+export const layout = {
+  minimumTouchTarget: 44,
+  controlHeight: 52,
+  screenHeaderHeight: 72,
+  compactAvatar: 44,
+  profileHeroHeight: 360,
+  photoTileHeight: 190,
+  photoAddTileHeight: 220,
+  multilineInputHeight: 110,
+  feedbackInputHeight: 150,
+  onboardingPhotoHeight: 280,
+  statusDot: 8,
+  pagerDot: 6,
+  pagerDotActive: 18,
+  contentMaxWidth: 560,
+  stateContentMaxWidth: 360,
+  modalContentMaxWidth: 440,
+  dialSize: 260,
+  dialCenterSize: 166,
+  discoveryActionBarHeight: 82,
+  chatBubbleMaxWidth: '82%',
+} as const;
+
+export const feedback = {
+  // Keeps disabled primary text at 4.58:1 on the light elevated surface.
+  disabledOpacity: 0.6,
+} as const;
+
 export const radii = {
   small: 12,
   control: 16,
@@ -113,4 +143,6 @@ export type BinderTheme = {
   radii: typeof radii;
   motion: typeof motion;
   typography: typeof typography;
+  layout: typeof layout;
+  feedback: typeof feedback;
 };

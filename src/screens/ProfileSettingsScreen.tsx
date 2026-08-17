@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Alert, Image, Pressable, ScrollView, View } from 'react-native';
+import { Alert, Image, Pressable, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { DiscoveryPreferences } from '../components/DiscoveryPreferences';
-import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderInput, BinderText, ScreenState, SectionHeader } from '../components/ui';
+import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderInput, BinderScreenHeader, BinderText, ScreenState, SectionHeader } from '../components/ui';
 import { pickAndPrepareProfileImage } from '../lib/images';
 import { addProfileImage, listMyProfileMedia, removeProfileMedia, reorderProfileMedia, setPrimaryProfileMedia, type GalleryMedia } from '../lib/media';
 import { supabase } from '../lib/supabase';
@@ -139,18 +140,17 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
   if (viewerUrl) {
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
-        <View style={{ paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x2 }}>
-          <BinderIconButton name="close" accessibilityLabel="Close full photo" onPress={() => setViewerUrl(null)} />
-        </View>
+        <BinderScreenHeader title="Photo" leading={{ icon: 'close', accessibilityLabel: 'Close full photo', onPress: () => setViewerUrl(null) }} />
         <Image source={{ uri: viewerUrl }} style={{ flex: 1 }} resizeMode="contain" />
       </View>
     );
   }
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: theme.colors.canvas }} contentContainerStyle={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x4, paddingBottom: theme.spacing.x16 }} keyboardShouldPersistTaps="handled">
-      <BinderIconButton name="back" accessibilityLabel="Back to profile" onPress={onClose} />
-      <SectionHeader eyebrow="PROFILE SETTINGS" title="Profile, discovery and photos." copy="Your birth date stays locked. Photos are optimized before upload and reviewed independently." />
+    <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
+      <BinderScreenHeader title="Profile settings" leading={{ icon: 'back', accessibilityLabel: 'Back to profile', onPress: onClose }} />
+      <KeyboardAwareScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x5, paddingBottom: theme.spacing.x16 }} keyboardShouldPersistTaps="handled">
+      <SectionHeader title="Profile, discovery and photos." copy="Your birth date stays locked. Photos are optimized before upload and reviewed independently." />
 
       <View style={{ marginTop: theme.spacing.x8 }}>
         <BinderText variant="micro" tone="muted">PHOTOS · {media.length}/6</BinderText>
@@ -163,7 +163,7 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
 
       <View style={{ gap: theme.spacing.x5, marginTop: theme.spacing.x8 }}>
         <BinderInput label="First name" value={firstName} onChangeText={setFirstName} maxLength={40} />
-        <BinderInput label="Bio" helper={`${bio.length}/500`} value={bio} onChangeText={setBio} maxLength={500} multiline style={{ minHeight: 110, textAlignVertical: 'top' }} />
+        <BinderInput label="Bio" helper={`${bio.length}/500`} value={bio} onChangeText={setBio} maxLength={500} multiline style={{ minHeight: theme.layout.multilineInputHeight, textAlignVertical: 'top' }} />
         <Choice label="I am"><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{GENDERS.map((item) => <BinderChip key={item.value} label={item.label} selected={gender === item.value} onPress={() => setGender(item.value)} />)}</View></Choice>
         <Choice label="Interests"><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{INTERESTS.map((item) => <BinderChip key={item} label={item} selected={interests.includes(item)} onPress={() => setInterests((current) => current.includes(item) ? current.filter((value) => value !== item) : current.length < 12 ? [...current, item] : current)} />)}</View></Choice>
         <Choice label="Discovery range">
@@ -171,7 +171,8 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
         </Choice>
       </View>
       <BinderButton label="Save profile" loading={busy} onPress={() => void save()} style={{ marginTop: theme.spacing.x6 }} />
-    </ScrollView>
+      </KeyboardAwareScrollView>
+    </View>
   );
 }
 
@@ -182,7 +183,7 @@ function Choice({ label, children }: { label: string; children: React.ReactNode 
 
 function AddPhotoTile({ disabled, onPress }: { disabled: boolean; onPress: () => void }) {
   const { theme } = useBinderTheme();
-  return <Pressable accessibilityRole="button" accessibilityLabel="Add profile photo" disabled={disabled} onPress={onPress} style={({ pressed }) => ({ width: '47%', minHeight: 220, borderRadius: theme.radii.card, borderWidth: 1, borderStyle: 'dashed', borderColor: theme.colors.borderStrong, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface, alignItems: 'center', justifyContent: 'center', gap: theme.spacing.x2, opacity: disabled ? 0.42 : 1 })}><BinderIcon name="addPhoto" size={30} color={theme.accent.accent} /><BinderText variant="label" tone="accent">Add photo</BinderText><BinderText variant="caption" tone="muted" align="center">Optimized before upload</BinderText></Pressable>;
+  return <Pressable accessibilityRole="button" accessibilityLabel="Add profile photo" disabled={disabled} onPress={onPress} style={({ pressed }) => ({ width: '47%', minHeight: theme.layout.photoAddTileHeight, borderRadius: theme.radii.card, borderWidth: 1, borderStyle: 'dashed', borderColor: theme.colors.borderStrong, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface, alignItems: 'center', justifyContent: 'center', gap: theme.spacing.x2, opacity: disabled ? theme.feedback.disabledOpacity : 1 })}><BinderIcon name="addPhoto" size={30} color={theme.accent.accent} /><BinderText variant="label" tone="accent">Add photo</BinderText><BinderText variant="caption" tone="muted" align="center">Optimized before upload</BinderText></Pressable>;
 }
 
 function PhotoTile({ item, index, total, busy, onLeft, onRight, onPrimary, onRemove, onView }: { item: GalleryMedia; index: number; total: number; busy: boolean; onLeft: () => void; onRight: () => void; onPrimary: () => void; onRemove: () => void; onView: () => void }) {
@@ -192,7 +193,7 @@ function PhotoTile({ item, index, total, busy, onLeft, onRight, onPrimary, onRem
   return (
     <BinderCard style={{ width: '47%', padding: 0, overflow: 'hidden' }}>
       <Pressable accessibilityRole="imagebutton" accessibilityLabel={`View photo ${index + 1} in full`} onPress={onView}>
-        <Image source={{ uri: item.signedUrl }} style={{ width: '100%', height: 190 }} resizeMode="cover" />
+        <Image source={{ uri: item.signedUrl }} style={{ width: '100%', height: theme.layout.photoTileHeight }} resizeMode="cover" />
       </Pressable>
       <View style={{ padding: theme.spacing.x3, gap: theme.spacing.x2 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}><View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: statusTone }} /><BinderText variant="caption" style={{ color: statusTone }}>{statusCopy}</BinderText></View>
