@@ -39,6 +39,13 @@ leaves the running system intact.
 | 014 | Reset app settings asks first and reports the outcome | typecheck + tests green | done |
 | 015 | A loading button keeps its label and its width | typecheck + tests green | done |
 | 016 | Localization foundation: one English file, fallback to English, `npm run i18n:sync`, locale contract gate, 5 tests | German probe file registered itself and rendered on the S23 | done |
+| 018 | Auth, matches, partner profile into the locale file; coverage gate added (baseline 276) | typecheck + tests green | done |
+| 019 | Discovery, filter sheet, preferences into the locale file | coverage 249 → 212 | done |
+| 020 | Chat into the locale file | coverage 212 → 187 | done |
+| 021 | Profile and profile settings; two contract verifiers follow the copy | coverage 187 → 138 | done |
+| 022 | Onboarding, beta, legal gate; phase 5 verifier follows the copy | coverage 138 → 90 | done |
+| 023 | About, app settings, match celebration, shared states | coverage 90 → 45 | done |
+| 024 | Shared components and the last stragglers; metric learned to tell prose from code | **coverage 0**, gate added | done |
 | 017 | Language section in App settings — appears only when a translation exists, endonym plus flag, same chip rhythm as Appearance | Screenshot: Sprache / Wie mein Gerät / 🇬🇧 English / 🇩🇪 Deutsch | done |
 
 ## Backlog
@@ -86,7 +93,7 @@ Ordered by what a user notices first. Each line becomes one run.
 
 ### German locale (wave J)
 - [x] The mechanism: one English file, automatic registration, fallback, picker (`docs/LOCALIZATION.md`).
-- [ ] Move the remaining screens into the locale file, one screen per run: auth, onboarding, discovery, chat, matches, profile, legal.
+- [x] Every screen and shared component reads from the locale file; the coverage gate holds it at zero.
 - [ ] Dates, times and distances formatted by locale.
 - [ ] German copy for the store listing and the in-app legal surfaces.
 
