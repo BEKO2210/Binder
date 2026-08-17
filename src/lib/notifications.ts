@@ -230,8 +230,10 @@ export function observeNotificationResponses(onRoute: (route: NotificationRoute)
     if (route) onRoute(route);
   };
 
-  void Notifications.getLastNotificationResponseAsync().then(handle).catch(() => undefined);
+  // Subscribe first so a response that arrives while the cold-start snapshot is
+  // being read cannot fall into the gap between those two operations.
   const subscription = Notifications.addNotificationResponseReceivedListener(handle);
+  void Notifications.getLastNotificationResponseAsync().then(handle).catch(() => undefined);
   return () => {
     active = false;
     subscription.remove();

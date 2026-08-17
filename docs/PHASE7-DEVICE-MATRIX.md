@@ -27,9 +27,9 @@ Do not put push tokens, service-account JSON, Expo access tokens or dispatcher s
 | Message push, app killed | pending | pending | pending | pending |
 | Generic lock-screen copy, no UGC | pending | pending | pending | pending |
 | Match tap opens Matches | pending | pending | pending | pending |
-| Message tap opens exact Chat | pending | pending | pending | pending |
+| Message tap opens exact Chat | code path fixed and pinned by scripts/verify-phase7-push.mjs (run 058); server side confirmed on 2026-08-17: new_message deliveries reached `delivered` via Expo receipts and the notifications are present on the S23. The physical tap is the one step still to be recorded here. | pending | pending | pending |
 | Foreground duplicate suppression | pending | pending | pending | pending |
-| Quiet-hours deferral | pending | pending | pending | pending |
+| Quiet-hours deferral | proven against the production rule 2026-08-17 (run 059): inside quiet hours `defer`, safety alert `allow`, after the local end `allow`, 21:30 UTC for a Europe/Berlin recipient `defer` | n/a | n/a | n/a |
 | Match category disabled | pending | pending | pending | pending |
 | Message category disabled | pending | pending | pending | pending |
 | Safety category behavior | pending | pending | pending | pending |

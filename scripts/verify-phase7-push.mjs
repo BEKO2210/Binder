@@ -37,6 +37,9 @@ if (!migration.includes('Open Binder to continue the conversation.')) failures.p
 for (const contract of ['addPushTokenListener','getExpoPushTokenAsync','AndroidNotificationVisibility.PRIVATE','notificationChannelId','parseNotificationRoute','UUID_PATTERN','syncNotificationPreferences','loadNotificationPreferences']) {
   if (!notifications.includes(contract)) failures.push(`Client notification runtime missing: ${contract}`);
 }
+if (notifications.indexOf('addNotificationResponseReceivedListener(handle)') > notifications.indexOf('getLastNotificationResponseAsync()')) {
+  failures.push('Cold-start notification listener must exist before the last-response snapshot is requested');
+}
 if (!root.includes('observeNotificationResponses') || !root.includes('fetchMatches')) failures.push('Root does not validate and resolve notification navigation against server matches');
 // The pagination control's words moved into the locale file; the contract is
 // that the control exists and is wired, not where its label is stored.

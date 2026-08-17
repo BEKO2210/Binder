@@ -74,6 +74,8 @@ leaves the running system intact.
 | 055 | Match celebration: measured symmetry (34/34 dp outer, ±92 dp from the axis), one staggered entrance, photos shrink before text on short screens | Device screenshot; unit test pins the geometry | done |
 | 056 | `scripts/measure-interaction-frames.sh` turns any interaction into a matrix row | Used immediately for the celebration | done |
 | 057 | Celebration entrance brought under budget: 7.76 % → 4.82 % janky, 3 → 0 missed vsync | Three measured builds in the device matrix | done |
+| 058 | Cold-start push route: the listener is registered before the launch snapshot is read, routes wait for session, legal gate and onboarding, and a chat route is checked against the server's match list before it navigates | Verifier now pins the listener order; on device: delivery receipts `delivered`, notifications present | done |
+| 059 | Quiet hours proven server-side | Four decisions read straight from the production rule: inside quiet hours `defer`, safety alert `allow`, after the local end `allow`, 21:30 UTC in a Europe/Berlin recipient `defer` | done |
 | 017 | Language section in App settings — appears only when a translation exists, endonym plus flag, same chip rhythm as Appearance | Screenshot: Sprache / Wie mein Gerät / 🇬🇧 English / 🇩🇪 Deutsch | done |
 
 ## Backlog
@@ -118,8 +120,8 @@ Ordered by what a user notices first. Each line becomes one run.
 ### Correctness left from the review
 - [x] Onboarding must not re-upload the same photo after a failed finalisation.
 - [x] Discovery: the deck and the filter sheet share one source of truth for preferences.
-- [ ] Push: tapping a notification lands on the exact conversation from a cold start.
-- [ ] Quiet hours are honoured server-side, verified end to end.
+- [x] Push route from a cold start: code path fixed and pinned by the verifier (run 058). The last mile — physically tapping the notification — could not be automated through the shade in this session; it needs one manual tap to be recorded in the device matrix.
+- [x] Quiet hours honoured server-side, proven against the production rule (run 059).
 
 ### German locale (wave J)
 - [x] The mechanism: one English file, automatic registration, fallback, picker (`docs/LOCALIZATION.md`).

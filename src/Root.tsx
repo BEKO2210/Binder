@@ -260,7 +260,9 @@ function BinderApp() {
     // first re-ran this effect and its cleanup cancelled the fetch, so a
     // notification tap never opened the chat. The route clears in finally,
     // whose re-run exits at the guard above.
+    let active = true;
     void fetchMatches().then((matches) => {
+      if (!active) return;
       const target = matches.find((match) => match.matchId === route.matchId);
       if (target) setActiveMatch(target);
       else {
@@ -269,10 +271,12 @@ function BinderApp() {
         setMatchesRefreshKey((value) => value + 1);
       }
     }).catch(() => {
+      if (!active) return;
       setTab('matches');
     }).finally(() => {
-      setPendingNotificationRoute(null);
+      if (active) setPendingNotificationRoute(null);
     });
+    return () => { active = false; };
   }, [pendingNotificationRoute, session?.user.id, legalGate?.accepted, onboardingComplete]);
 
   if (sessionExpired) return <ScreenState kind="permission" icon="profile" title={t('sessionExpired.title')} message={t('sessionExpired.message')} actionLabel={t('sessionExpired.action')} onAction={returnToSignIn} />;
