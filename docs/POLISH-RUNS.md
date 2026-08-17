@@ -51,6 +51,9 @@ leaves the running system intact.
 | 027 | Auth: return key walks the form and submits on the last field | typecheck + gates green | done |
 | 028-031 | Offline, session expiry, upload progress and a match ended while you are in it | Gates green, v0.5.15 on device | done |
 | 032 | The first screen without network says "You are offline", not "Safety check failed" | Device with Wi-Fi and data off: title reads "You are offline" | done |
+| 033 | Photo pager: the segment fills with the drag instead of jumping on commit | Gates green, device check | done |
+| 034 | Bind and pass buttons raise the same stamp the gesture raises; a failed decision returns in one movement | Gates green, device check | done |
+| 035 | Pull-to-refresh in the gallery and the conversation | Gallery screenshot after a pull, layout unchanged | done |
 | 017 | Language section in App settings — appears only when a translation exists, endonym plus flag, same chip rhythm as Appearance | Screenshot: Sprache / Wie mein Gerät / 🇬🇧 English / 🇩🇪 Deutsch | done |
 
 ## Backlog
@@ -61,11 +64,11 @@ Ordered by what a user notices first. Each line becomes one run.
 - [x] Chat timeline rows memoised.
 - [x] Onboarding steps change with a short directional transition.
 - [x] Auth: explicit focus order, return key moves through the form.
-- [ ] Deck: the card returns with one settle, no second bounce, when a decision fails.
-- [ ] Deck: bind/pass buttons show the same threshold feedback the gesture gives.
-- [ ] Photo pager: the segment indicator follows the drag instead of jumping on commit.
+- [x] Deck: the card returns with one settle when a decision fails.
+- [x] Deck: bind/pass buttons show the same threshold feedback the gesture gives.
+- [x] Photo pager: the segment indicator follows the drag.
 - [ ] Match celebration: entrance timing and the two-photo composition on a 412 dp screen.
-- [ ] Pull-to-refresh everywhere a list can be stale (matches, chat, gallery).
+- [x] Pull-to-refresh everywhere a list can be stale (matches, chat, gallery).
 - [ ] Long-press on a message shows the actions sheet, not only the overflow tap.
 - [ ] Every destructive action has one confirmation shape, not three different ones.
 

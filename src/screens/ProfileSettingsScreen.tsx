@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Image, View } from 'react-native';
+import { Alert, Image, RefreshControl, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { PhotoPager } from '../components/PhotoPager';
@@ -19,6 +19,7 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
   const { theme, t } = useBinderTheme();
   const haptic = useBinderHaptics();
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [messageKind, setMessageKind] = useState<'success' | 'error'>('error');
@@ -66,6 +67,18 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
       setMedia(gallery);
     } catch (error) { setMessageKind('error'); setMessage(errorMessage(error, t('profileSettings.errors.load'))); }
     finally { setLoading(false); }
+  }
+
+  async function refreshGallery() {
+    if (refreshing) return;
+    setRefreshing(true);
+    setMessage('');
+    try {
+      setMedia(await listMyProfileMedia());
+    } catch (error) {
+      setMessageKind('error');
+      setMessage(errorMessage(error, t('profileSettings.errors.load')));
+    } finally { setRefreshing(false); }
   }
 
   async function addPhoto() {
@@ -195,7 +208,7 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
       <BinderScreenHeader title={t('profileSettings.header.title')} leading={{ icon: 'back', accessibilityLabel: t('profileSettings.accessibility.backToProfile'), onPress: onClose }} />
-      <KeyboardAwareScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x5, paddingBottom: theme.spacing.x16 }} keyboardShouldPersistTaps="handled">
+      <KeyboardAwareScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x5, paddingBottom: theme.spacing.x16 }} keyboardShouldPersistTaps="handled" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => void refreshGallery()} tintColor={theme.accent.onSurface} colors={[theme.accent.onSurface]} progressBackgroundColor={theme.colors.surfaceElevated} />}>
       <SectionHeader title={t('profileSettings.header.sectionTitle')} copy={t('profileSettings.header.sectionCopy')} />
 
       <View style={{ marginTop: theme.spacing.x8 }}>

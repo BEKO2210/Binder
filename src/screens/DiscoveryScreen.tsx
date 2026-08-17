@@ -60,6 +60,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
   const x = useSharedValue(0);
   const y = useSharedValue(0);
   const intentX = useSharedValue(0);
+  const buttonStamp = useSharedValue(0);
   const thresholdDirection = useSharedValue(0);
   const profileOpenProgress = useSharedValue(0);
   const profile = profiles[0];
@@ -154,8 +155,8 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
       { translateY: -HINGE_OFFSET },
     ],
   }));
-  const bindStampStyle = useAnimatedStyle(() => ({ opacity: reduceMotion ? (intentX.value >= SWIPE_THRESHOLD ? 1 : 0) : interpolate(intentX.value, [0, SWIPE_THRESHOLD], [0, 1], Extrapolation.CLAMP) }));
-  const passStampStyle = useAnimatedStyle(() => ({ opacity: reduceMotion ? (intentX.value <= -SWIPE_THRESHOLD ? 1 : 0) : interpolate(intentX.value, [-SWIPE_THRESHOLD, 0], [1, 0], Extrapolation.CLAMP) }));
+  const bindStampStyle = useAnimatedStyle(() => ({ opacity: Math.max(reduceMotion ? (intentX.value >= SWIPE_THRESHOLD ? 1 : 0) : interpolate(intentX.value, [0, SWIPE_THRESHOLD], [0, 1], Extrapolation.CLAMP), Math.max(0, buttonStamp.value)) }));
+  const passStampStyle = useAnimatedStyle(() => ({ opacity: Math.max(reduceMotion ? (intentX.value <= -SWIPE_THRESHOLD ? 1 : 0) : interpolate(intentX.value, [-SWIPE_THRESHOLD, 0], [1, 0], Extrapolation.CLAMP), Math.max(0, -buttonStamp.value)) }));
   // The card underneath grows toward full size as the top card leaves.
   const backCardStyle = useAnimatedStyle(() => {
     const progress = interpolate(Math.abs(x.value), [0, SWIPE_THRESHOLD * 1.6], [0, 1], Extrapolation.CLAMP);
@@ -306,6 +307,11 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
     void submitDecision(direction);
   }
 
+  function previewDecision(direction: SwipeDirection | null) {
+    const target = direction === 'right' ? 1 : direction === 'left' ? -1 : 0;
+    buttonStamp.value = reduceMotion ? target : withTiming(target, { duration: theme.motion.standard });
+  }
+
   if (error && profiles.length === 0) {
     const locationRelated = /location|gps/i.test(error.message);
     if (locationRelated) return <ScreenState kind="permission" icon="discover" title={t('discovery.states.pausedTitle')} message={t('discovery.states.locationMessage', { error: error.message })} actionLabel={t('discovery.actions.tryAgain')} onAction={() => void loadDiscovery(true)} />;
@@ -351,8 +357,8 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
       <View style={{ minHeight: theme.layout.discoveryActionBarHeight, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: theme.spacing.x3, paddingBottom: theme.spacing.x3 }}>
         {/* Two buttons, one axis: a trailing spacer used to sit here and pushed
             the pair off the screen's centre line by half a button. */}
-        <View style={{ width: theme.spacing.x16 }}><DiscoveryAction kind="pass" disabled={!profile || decisionPending || safetyOpen} onPress={() => void submitDecision('left')} /></View>
-        <View style={{ width: theme.spacing.x16 }}><DiscoveryAction kind="bind" disabled={!profile || decisionPending || safetyOpen} onPress={() => void submitDecision('right')} /></View>
+        <View style={{ width: theme.spacing.x16 }}><DiscoveryAction kind="pass" disabled={!profile || decisionPending || safetyOpen} onPressIn={() => previewDecision('left')} onPressOut={() => previewDecision(null)} onPress={() => void submitDecision('left')} /></View>
+        <View style={{ width: theme.spacing.x16 }}><DiscoveryAction kind="bind" disabled={!profile || decisionPending || safetyOpen} onPressIn={() => previewDecision('right')} onPressOut={() => previewDecision(null)} onPress={() => void submitDecision('right')} /></View>
       </View>
 
       {viewingProfile ? (
@@ -400,11 +406,11 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
   );
 }
 
-function DiscoveryAction({ kind, disabled, onPress }: { kind: 'pass' | 'bind'; disabled: boolean; onPress: () => void }) {
+function DiscoveryAction({ kind, disabled, onPress, onPressIn, onPressOut }: { kind: 'pass' | 'bind'; disabled: boolean; onPress: () => void; onPressIn: () => void; onPressOut: () => void }) {
   const { theme, reduceMotion, t } = useBinderTheme();
   const bind = kind === 'bind';
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={bind ? t('discovery.accessibility.bindProfile') : t('discovery.accessibility.passProfile')} disabled={disabled} onPress={onPress} style={({ pressed }) => ({ width: theme.spacing.x16, height: theme.spacing.x16, borderRadius: theme.radii.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: bind ? theme.accent.accent : theme.colors.surface, borderWidth: 1, borderColor: bind ? theme.accent.accent : theme.colors.borderStrong, opacity: disabled ? 0.42 : pressed ? 0.78 : 1, transform: [{ scale: pressed && !reduceMotion ? theme.motion.pressScale : 1 }] })}>
+    <Pressable accessibilityRole="button" accessibilityLabel={bind ? t('discovery.accessibility.bindProfile') : t('discovery.accessibility.passProfile')} disabled={disabled} onPressIn={onPressIn} onPressOut={onPressOut} onPress={onPress} style={({ pressed }) => ({ width: theme.spacing.x16, height: theme.spacing.x16, borderRadius: theme.radii.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: bind ? theme.accent.accent : theme.colors.surface, borderWidth: 1, borderColor: bind ? theme.accent.accent : theme.colors.borderStrong, opacity: disabled ? 0.42 : pressed ? 0.78 : 1, transform: [{ scale: pressed && !reduceMotion ? theme.motion.pressScale : 1 }] })}>
       <BinderIcon name={bind ? 'matches' : 'close'} size={theme.spacing.x8} color={bind ? theme.accent.foreground : theme.semantic.destructive} />
     </Pressable>
   );

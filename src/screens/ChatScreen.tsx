@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, AppState, BackHandler, Clipboard, FlatList, Platform, TextInput, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import { Alert, AppState, BackHandler, Clipboard, FlatList, Platform, RefreshControl, TextInput, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
 import Animated, { FadeInDown, FadeInUp, FadeOutDown, useAnimatedStyle } from 'react-native-reanimated';
 
@@ -114,6 +114,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   const [loadError, setLoadError] = useState<ReliabilityError | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [loadingOlder, setLoadingOlder] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [composer, setComposer] = useState('');
   const keyboard = useReanimatedKeyboardAnimation();
   const keyboardShift = useAnimatedStyle(() => ({ transform: [{ translateY: keyboard.height.value }] }));
@@ -272,6 +273,27 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
       if (mountedRef.current && !isAbortError(error)) setLoadError(classifyError(error));
     } finally {
       if (mountedRef.current) setLoadingOlder(false);
+    }
+  }
+
+  async function refreshMessages() {
+    if (refreshing) return;
+    setRefreshing(true);
+    setLoadError(null);
+    try {
+      const page = await withRetry((signal) => fetchMessagesPage(match.matchId, undefined, 50, { signal }), { attempts: 3, signal: lifecycleControllerRef.current.signal });
+      if (!mountedRef.current) return;
+      mergeMessages(page.messages);
+      setHasMore(page.hasMore);
+      void markMatchRead(match.matchId, { signal: lifecycleControllerRef.current.signal }).catch(() => undefined);
+    } catch (error) {
+      if (mountedRef.current && !isAbortError(error)) {
+        const failure = classifyError(error);
+        if (failure.kind === 'permission-denied') onSessionExpired();
+        else setLoadError(failure);
+      }
+    } finally {
+      if (mountedRef.current) setRefreshing(false);
     }
   }
 
@@ -448,6 +470,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
           showsVerticalScrollIndicator={false}
           onScroll={trackScroll}
           scrollEventThrottle={theme.motion.feedback}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => void refreshMessages()} tintColor={theme.accent.onSurface} colors={[theme.accent.onSurface]} progressBackgroundColor={theme.colors.surfaceElevated} />}
           ListFooterComponent={hasMore ? <BinderButton label={t('chat.actions.loadEarlierMessages')} variant="ghost" loading={loadingOlder} onPress={() => void loadOlder()} style={{ marginBottom: theme.spacing.x3 }} /> : null}
           renderItem={renderTimelineItem}
         />

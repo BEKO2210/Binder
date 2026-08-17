@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Image, View, type DimensionValue } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { runOnJS, type SharedValue, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
 import { adjacentPhotoIndex, clampPhotoIndex, nextPhotoPage, photosToPreload, resistedPhotoTranslation } from '../lib/photoPager';
 import { resolveSpring } from '../lib/motionPolicy';
@@ -128,7 +128,7 @@ export function PhotoPager({ photos, name, height = '100%', onOpen, interactive 
 
       {count > 1 ? (
         <View pointerEvents="none" accessibilityElementsHidden style={{ position: 'absolute', top: theme.spacing.x3, left: theme.spacing.x3, right: theme.spacing.x3, flexDirection: 'row', gap: theme.spacing.x1 }}>
-          {photos.map((photo, segment) => <View key={`${segment}-${photo}`} style={{ flex: 1, height: theme.spacing.x1, borderRadius: theme.radii.pill, backgroundColor: segment <= index ? theme.accent.accent : theme.colors.scrim }} />)}
+          {photos.map((photo, segment) => <PhotoProgressSegment key={`${segment}-${photo}`} segment={segment} index={index} offset={offset} width={width} reduceMotion={reduceMotion} />)}
         </View>
       ) : null}
 
@@ -143,4 +143,19 @@ export function PhotoPager({ photos, name, height = '100%', onOpen, interactive 
 
   if (!swipeable) return content;
   return <GestureDetector gesture={swipe}>{content}</GestureDetector>;
+}
+
+function PhotoProgressSegment({ segment, index, offset, width, reduceMotion }: { segment: number; index: number; offset: SharedValue<number>; width: number; reduceMotion: boolean }) {
+  const { theme } = useBinderTheme();
+  const fillStyle = useAnimatedStyle(() => {
+    const pageProgress = width > 0 ? -offset.value / width : index;
+    const progress = reduceMotion ? (segment <= index ? 1 : 0) : Math.max(0, Math.min(1, pageProgress - segment + 1));
+    return { transform: [{ scaleX: progress }] };
+  });
+
+  return (
+    <View style={{ flex: 1, height: theme.spacing.x1, borderRadius: theme.radii.pill, backgroundColor: theme.colors.scrim, overflow: 'hidden' }}>
+      <Animated.View style={[{ width: '100%', height: '100%', borderRadius: theme.radii.pill, backgroundColor: theme.accent.accent, transformOrigin: 'left' }, fillStyle]} />
+    </View>
+  );
 }
