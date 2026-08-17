@@ -20,7 +20,7 @@ jobs:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
     steps:
       - name: Checkout exact candidate
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Use Node.js 22
         uses: actions/setup-node@v7
