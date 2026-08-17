@@ -64,6 +64,7 @@ leaves the running system intact.
 | 043 | Contrast of the states the token test never covered: pressed, disabled, and text over media | Test extended; light textMuted darkened to pass; media text now drawn from the dark palette in both schemes | done |
 | 044 | A repeatable memory probe for paging a gallery | `scripts/measure-gallery-memory.sh` | done |
 | 045 | Dates, times, day labels, distances and counts formatted by locale through one pure module | 89 tests including en/de edge cases; chat times unchanged on device | done |
+| 046 | Play Data-safety answers derived from the code, with the file that proves each line | `docs/DATA-SAFETY.md` | done |
 | 017 | Language section in App settings — appears only when a translation exists, endonym plus flag, same chip rhythm as Appearance | Screenshot: Sprache / Wie mein Gerät / 🇬🇧 English / 🇩🇪 Deutsch | done |
 
 ## Backlog
@@ -118,5 +119,5 @@ Ordered by what a user notices first. Each line becomes one run.
 
 ### Store readiness (wave K)
 - [ ] Screenshots regenerated from the current build for every listed surface.
-- [ ] Data-safety answers derived from the code.
+- [x] Data-safety answers derived from the code (`docs/DATA-SAFETY.md`).
 - [ ] The demo clip matches what the app looks like today.
