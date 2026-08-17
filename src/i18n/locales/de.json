@@ -78,7 +78,8 @@
       "registered": "Diese E-Mail-Adresse ist bereits registriert. Melde dich stattdessen an.",
       "passwordLength": "Das Passwort muss mindestens 8 Zeichen lang sein.",
       "email": "Gib eine gültige E-Mail-Adresse ein.",
-      "generic": "Etwas ist schiefgelaufen. Versuche es erneut."
+      "generic": "Etwas ist schiefgelaufen. Versuche es erneut.",
+      "rateLimit": "Gerade zu viele E-Mails. Warte eine Minute und versuche es erneut."
     },
     "messages": {
       "passwordChanged": "Passwort geändert. Du bist angemeldet.",

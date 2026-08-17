@@ -78,7 +78,8 @@
       "registered": "Email ini sudah terdaftar. Masuk sebagai gantinya.",
       "passwordLength": "Kata sandi harus terdiri dari setidaknya 8 karakter.",
       "email": "Masukkan alamat email yang valid.",
-      "generic": "Terjadi kesalahan. Coba lagi."
+      "generic": "Terjadi kesalahan. Coba lagi.",
+      "rateLimit": "Terlalu banyak email saat ini. Tunggu sebentar, lalu coba lagi."
     },
     "messages": {
       "passwordChanged": "Kata sandi diubah. Anda sudah masuk.",

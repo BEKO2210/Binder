@@ -78,7 +78,8 @@
       "registered": "This email is already registered. Sign in instead.",
       "passwordLength": "The password must be at least 8 characters.",
       "email": "Enter a valid email address.",
-      "generic": "Something went wrong. Try again."
+      "generic": "Something went wrong. Try again.",
+      "rateLimit": "Too many emails just now. Wait a minute, then try again."
     },
     "messages": {
       "passwordChanged": "Password changed. You are signed in.",

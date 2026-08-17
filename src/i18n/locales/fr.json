@@ -78,7 +78,8 @@
       "registered": "Cette adresse e-mail est déjà enregistrée. Connectez-vous à la place.",
       "passwordLength": "Le mot de passe doit contenir au moins 8 caractères.",
       "email": "Saisissez une adresse e-mail valide.",
-      "generic": "Une erreur est survenue. Réessayez."
+      "generic": "Une erreur est survenue. Réessayez.",
+      "rateLimit": "Trop d'e-mails en ce moment. Attends une minute, puis réessaie."
     },
     "messages": {
       "passwordChanged": "Mot de passe modifié. Vous êtes connecté.",

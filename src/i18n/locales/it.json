@@ -78,7 +78,8 @@
       "registered": "Questa email è già registrata. Accedi invece.",
       "passwordLength": "La password deve contenere almeno 8 caratteri.",
       "email": "Inserisci un indirizzo email valido.",
-      "generic": "Qualcosa è andato storto. Riprova."
+      "generic": "Qualcosa è andato storto. Riprova.",
+      "rateLimit": "Troppe email in questo momento. Aspetta un minuto e riprova."
     },
     "messages": {
       "passwordChanged": "Password modificata. Hai effettuato l'accesso.",

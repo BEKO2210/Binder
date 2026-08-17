@@ -78,7 +78,8 @@
       "registered": "Bu e-posta zaten kayıtlı. Bunun yerine giriş yapın.",
       "passwordLength": "Parola en az 8 karakter olmalıdır.",
       "email": "Geçerli bir e-posta adresi girin.",
-      "generic": "Bir şeyler ters gitti. Tekrar deneyin."
+      "generic": "Bir şeyler ters gitti. Tekrar deneyin.",
+      "rateLimit": "Şu anda çok fazla e-posta gönderildi. Bir dakika bekleyip tekrar dene."
     },
     "messages": {
       "passwordChanged": "Parola değiştirildi. Giriş yaptınız.",

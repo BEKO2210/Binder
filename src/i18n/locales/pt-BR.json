@@ -78,7 +78,8 @@
       "registered": "Este e-mail já está cadastrado. Entre na sua conta.",
       "passwordLength": "A senha deve ter pelo menos 8 caracteres.",
       "email": "Digite um endereço de e-mail válido.",
-      "generic": "Algo deu errado. Tente novamente."
+      "generic": "Algo deu errado. Tente novamente.",
+      "rateLimit": "E-mails demais agora. Espere um minuto e tente de novo."
     },
     "messages": {
       "passwordChanged": "Senha alterada. Você está conectado.",

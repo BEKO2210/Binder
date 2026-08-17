@@ -78,7 +78,8 @@
       "registered": "Este correo electrónico ya está registrado. Inicia sesión en su lugar.",
       "passwordLength": "La contraseña debe tener al menos 8 caracteres.",
       "email": "Introduce una dirección de correo electrónico válida.",
-      "generic": "Algo ha salido mal. Inténtalo de nuevo."
+      "generic": "Algo ha salido mal. Inténtalo de nuevo.",
+      "rateLimit": "Demasiados correos ahora mismo. Espera un minuto e inténtalo de nuevo."
     },
     "messages": {
       "passwordChanged": "Contraseña cambiada. Has iniciado sesión.",

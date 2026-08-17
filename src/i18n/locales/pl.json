@@ -78,7 +78,8 @@
       "registered": "Ten adres e-mail jest już zarejestrowany. Zaloguj się zamiast tego.",
       "passwordLength": "Hasło musi mieć co najmniej 8 znaków.",
       "email": "Wpisz prawidłowy adres e-mail.",
-      "generic": "Coś poszło nie tak. Spróbuj ponownie."
+      "generic": "Coś poszło nie tak. Spróbuj ponownie.",
+      "rateLimit": "Za dużo e-maili w tej chwili. Poczekaj minutę i spróbuj ponownie."
     },
     "messages": {
       "passwordChanged": "Hasło zostało zmienione. Jesteś zalogowany.",

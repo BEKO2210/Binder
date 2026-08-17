@@ -78,7 +78,8 @@
       "registered": "该邮箱已注册。请直接登录。",
       "passwordLength": "密码至少需要 8 个字符。",
       "email": "请输入有效的邮箱地址。",
-      "generic": "出现错误。请重试。"
+      "generic": "出现错误。请重试。",
+      "rateLimit": "当前邮件发送过多。请稍等片刻后重试。"
     },
     "messages": {
       "passwordChanged": "密码已更改。你已登录。",

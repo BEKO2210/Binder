@@ -228,6 +228,31 @@ staged in `/home/belkis/Binder-Release/promo/`, and a 1280×720 version is
 embedded on the public site. Play accepts no video upload — only a YouTube link
 in the listing.
 
+## Email verification — measured, and its ceiling
+
+Sign-up requires a confirmed address, and the whole path was tested end to end
+on 2026-08-17 with a real inbox (AgentMail): sign-up returns a user without a
+session, the mail arrives ("Confirm your email address"), the link
+`…/auth/v1/verify?token=…&type=signup&redirect_to=https://beko2210.github.io/Binder/`
+answers 303 and `email_confirmed_at` is set. Test accounts and inbox removed
+afterwards.
+
+Two facts that matter before the store listing goes public:
+
+1. **The mail comes from Supabase's built-in service, which allows two per
+   hour.** A third sign-up in the same hour was refused with
+   `over_email_send_rate_limit` (HTTP 429) — proven, not assumed. That is fine
+   for a beta and unusable the day more than two strangers sign up in an hour.
+   The fix is custom SMTP on Auth (a provider plus a sender on a domain the
+   owner controls); until then this is the hard ceiling on sign-ups.
+2. **The confirmation link lands on the website, not in the app.** It confirms
+   correctly and the person then signs in, but a deep link back into Binder
+   would be the finished version.
+
+`auth.errors.rateLimit` exists in all fifteen locales so that a person who hits
+the ceiling reads a sentence in their own language rather than
+"email rate limit exceeded".
+
 ## What the app collects
 
 One balanced-accuracy location point, overwritten on every refresh — never a

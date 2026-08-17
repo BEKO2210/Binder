@@ -20,6 +20,10 @@ function mapAuthError(error: unknown, t: (key: string, values?: Record<string, s
   if (/already registered|already exists/i.test(raw)) return t('auth.errors.registered');
   if (/at least 6|password should be|at least 8/i.test(raw)) return t('auth.errors.passwordLength');
   if (/invalid email|valid email/i.test(raw)) return t('auth.errors.email');
+  // Supabase answers `over_email_send_rate_limit` when the mail budget for the
+  // hour is spent. Without this the person reads "email rate limit exceeded" in
+  // English, whatever language the rest of the screen is in.
+  if (/rate limit|too many requests/i.test(raw)) return t('auth.errors.rateLimit');
   return raw || t('auth.errors.generic');
 }
 
