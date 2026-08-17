@@ -231,6 +231,81 @@
       "photosReviewed": "· Photos reviewed"
     }
   },
+  "chat": {
+    "header": {
+      "title": "{name}, {age}",
+      "eyebrow": "VIEW PROFILE"
+    },
+    "alerts": {
+      "messageActions": "Message actions",
+      "unmatchTitle": "Unmatch {name}?",
+      "unmatchMessage": "The conversation closes for both of you immediately.",
+      "blockTitle": "Block {name}?",
+      "blockMessage": "You will disappear from each other and the conversation closes immediately."
+    },
+    "actions": {
+      "copy": "Copy",
+      "report": "Report",
+      "cancel": "Cancel",
+      "unmatch": "Unmatch",
+      "block": "Block",
+      "reportAndBlock": "Report & block",
+      "backToSafetyControls": "Back to safety controls",
+      "refresh": "Refresh",
+      "tryAgain": "Try again",
+      "loadEarlierMessages": "Load earlier messages",
+      "retry": "Retry",
+      "discard": "Discard"
+    },
+    "safety": {
+      "title": "Safety controls",
+      "reportMessage": "Report this message",
+      "reportPerson": "Report {name}",
+      "detailsPlaceholder": "Optional details for the safety team",
+      "reasons": {
+        "harassment": "Harassment",
+        "spam": "Spam",
+        "fake": "Fake profile",
+        "underage": "Under 18",
+        "sexualContent": "Sexual content",
+        "violence": "Violence",
+        "other": "Other"
+      }
+    },
+    "states": {
+      "opening": "Opening conversation…",
+      "offlineTitle": "You are offline",
+      "loadErrorTitle": "Conversation did not load"
+    },
+    "empty": {
+      "title": "You matched.",
+      "message": "Normal chat opens only after mutual interest. Say something real."
+    },
+    "message": {
+      "sentAt": "{time} · Sent",
+      "new": "New message",
+      "sending": "Sending…",
+      "placeholder": "Message {name}"
+    },
+    "errors": {
+      "messageNotSent": "Message not sent."
+    },
+    "accessibility": {
+      "backToMatches": "Back to matches",
+      "openProfile": "Open {name}'s profile",
+      "safetyControls": "Conversation safety controls",
+      "closeSafetyControls": "Close safety controls",
+      "reportDetails": "Report details",
+      "holdToCopy": "Hold to copy this message",
+      "holdToCopyOrReport": "Hold to copy or report this message",
+      "scrollToNewMessage": "Scroll to new message",
+      "retrySending": "Retry sending \"{message}\"",
+      "discardUnsent": "Discard unsent message \"{message}\"",
+      "messagePerson": "Message {name}",
+      "sendingMessage": "Sending message",
+      "sendMessageTo": "Send message to {name}"
+    }
+  },
   "discoveryFilterSheet": {
     "errors": {
       "authentication": "Authentication required.",

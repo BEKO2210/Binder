@@ -27,14 +27,14 @@ import PartnerProfileScreen from './PartnerProfileScreen';
 import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
-const REPORT_REASONS: { value: ReportReason; label: string }[] = [
-  { value: 'harassment', label: 'Harassment' },
-  { value: 'spam', label: 'Spam' },
-  { value: 'fake', label: 'Fake profile' },
-  { value: 'underage', label: 'Under 18' },
-  { value: 'sexual_content', label: 'Sexual content' },
-  { value: 'violence', label: 'Violence' },
-  { value: 'other', label: 'Other' },
+const REPORT_REASONS: { value: ReportReason; labelKey: string }[] = [
+  { value: 'harassment', labelKey: 'chat.safety.reasons.harassment' },
+  { value: 'spam', labelKey: 'chat.safety.reasons.spam' },
+  { value: 'fake', labelKey: 'chat.safety.reasons.fake' },
+  { value: 'underage', labelKey: 'chat.safety.reasons.underage' },
+  { value: 'sexual_content', labelKey: 'chat.safety.reasons.sexualContent' },
+  { value: 'violence', labelKey: 'chat.safety.reasons.violence' },
+  { value: 'other', labelKey: 'chat.safety.reasons.other' },
 ];
 
 type LocalAttempt = { clientId: string; body: string; status: 'sending' | 'failed'; error?: ReliabilityError };
@@ -46,7 +46,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   onClose: () => void;
   onConversationEnded: () => void;
 }) {
-  const { theme, reduceMotion } = useBinderTheme();
+  const { theme, reduceMotion, t } = useBinderTheme();
   const haptic = useBinderHaptics();
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
@@ -257,11 +257,11 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
 
   function openMessageActions(message: Message) {
     const actions = [
-      { text: 'Copy', onPress: () => Clipboard.setString(message.body) },
-      ...(message.sender_id === currentUserId ? [] : [{ text: 'Report', style: 'destructive' as const, onPress: () => openReport(message.id) }]),
-      { text: 'Cancel', style: 'cancel' as const },
+      { text: t('chat.actions.copy'), onPress: () => Clipboard.setString(message.body) },
+      ...(message.sender_id === currentUserId ? [] : [{ text: t('chat.actions.report'), style: 'destructive' as const, onPress: () => openReport(message.id) }]),
+      { text: t('chat.actions.cancel'), style: 'cancel' as const },
     ];
-    Alert.alert('Message actions', undefined, actions);
+    Alert.alert(t('chat.alerts.messageActions'), undefined, actions);
   }
 
   function trackScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
@@ -272,17 +272,17 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
 
   function confirmUnmatch() {
     if (safetyBusy) return;
-    Alert.alert(`Unmatch ${match.firstName}?`, 'The conversation closes for both of you immediately.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Unmatch', style: 'destructive', onPress: () => { if (safetyBusy) return; setSafetyError(null); setSafetyBusy('unmatch'); void unmatch(match.matchId, { signal: lifecycleControllerRef.current.signal }).then(async () => { if (!mountedRef.current) return; await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => { if (mountedRef.current && !isAbortError(error)) setSafetyError(classifyError(error)); }).finally(() => { if (mountedRef.current) setSafetyBusy(null); }); } },
+    Alert.alert(t('chat.alerts.unmatchTitle', { name: match.firstName }), t('chat.alerts.unmatchMessage'), [
+      { text: t('chat.actions.cancel'), style: 'cancel' },
+      { text: t('chat.actions.unmatch'), style: 'destructive', onPress: () => { if (safetyBusy) return; setSafetyError(null); setSafetyBusy('unmatch'); void unmatch(match.matchId, { signal: lifecycleControllerRef.current.signal }).then(async () => { if (!mountedRef.current) return; await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => { if (mountedRef.current && !isAbortError(error)) setSafetyError(classifyError(error)); }).finally(() => { if (mountedRef.current) setSafetyBusy(null); }); } },
     ]);
   }
 
   function confirmBlock() {
     if (safetyBusy) return;
-    Alert.alert(`Block ${match.firstName}?`, 'You will disappear from each other and the conversation closes immediately.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Block', style: 'destructive', onPress: () => { if (safetyBusy) return; setSafetyError(null); setSafetyBusy('block'); void blockUser(match.otherUserId, { signal: lifecycleControllerRef.current.signal }).then(async () => { if (!mountedRef.current) return; await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => { if (mountedRef.current && !isAbortError(error)) setSafetyError(classifyError(error)); }).finally(() => { if (mountedRef.current) setSafetyBusy(null); }); } },
+    Alert.alert(t('chat.alerts.blockTitle', { name: match.firstName }), t('chat.alerts.blockMessage'), [
+      { text: t('chat.actions.cancel'), style: 'cancel' },
+      { text: t('chat.actions.block'), style: 'destructive', onPress: () => { if (safetyBusy) return; setSafetyError(null); setSafetyBusy('block'); void blockUser(match.otherUserId, { signal: lifecycleControllerRef.current.signal }).then(async () => { if (!mountedRef.current) return; await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => { if (mountedRef.current && !isAbortError(error)) setSafetyError(classifyError(error)); }).finally(() => { if (mountedRef.current) setSafetyBusy(null); }); } },
     ]);
   }
 
@@ -328,31 +328,31 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     // animation instead, on the UI thread, which also keeps the movement in sync
     // with the system's easing rather than approximating it.
     <Animated.View style={[{ flex: 1, backgroundColor: theme.colors.canvas }, keyboardShift]}>
-      <BinderScreenHeader title={`${match.firstName}, ${match.age}`} eyebrow="VIEW PROFILE" centered leading={{ icon: 'back', accessibilityLabel: 'Back to matches', onPress: onClose }} onTitlePress={() => setShowPartnerProfile(true)} titleAccessibilityLabel={`Open ${match.firstName}'s profile`} trailing={<BinderIconButton name="more" accessibilityLabel="Conversation safety controls" selected={showSafety} onPress={() => { if (showSafety) closeSafety(); else { setSafetyMode('menu'); setShowSafety(true); } }} />} />
+      <BinderScreenHeader title={t('chat.header.title', { name: match.firstName, age: match.age })} eyebrow={t('chat.header.eyebrow')} centered leading={{ icon: 'back', accessibilityLabel: t('chat.accessibility.backToMatches'), onPress: onClose }} onTitlePress={() => setShowPartnerProfile(true)} titleAccessibilityLabel={t('chat.accessibility.openProfile', { name: match.firstName })} trailing={<BinderIconButton name="more" accessibilityLabel={t('chat.accessibility.safetyControls')} selected={showSafety} onPress={() => { if (showSafety) closeSafety(); else { setSafetyMode('menu'); setShowSafety(true); } }} />} />
 
       {showSafety ? (
         <BinderCard style={{ margin: theme.spacing.x3 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3 }}><BinderIcon name="safety" color={theme.semantic.destructive} /><BinderText variant="title" style={{ flex: 1 }}>{safetyMode === 'report' ? reportMessageId ? 'Report this message' : `Report ${match.firstName}` : 'Safety controls'}</BinderText><BinderIconButton name="close" size={19} accessibilityLabel="Close safety controls" onPress={closeSafety} /></View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3 }}><BinderIcon name="safety" color={theme.semantic.destructive} /><BinderText variant="title" style={{ flex: 1 }}>{safetyMode === 'report' ? reportMessageId ? t('chat.safety.reportMessage') : t('chat.safety.reportPerson', { name: match.firstName }) : t('chat.safety.title')}</BinderText><BinderIconButton name="close" size={19} accessibilityLabel={t('chat.accessibility.closeSafetyControls')} onPress={closeSafety} /></View>
           {safetyMode === 'report' ? (
             <View style={{ marginTop: theme.spacing.x4 }}>
               {reportingMessage ? <BinderCard style={{ backgroundColor: theme.colors.surfaceElevated, padding: theme.spacing.x3 }}><BinderText variant="caption" tone="secondary" numberOfLines={4}>{reportingMessage.body}</BinderText></BinderCard> : null}
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2, marginTop: theme.spacing.x3 }}>{REPORT_REASONS.map((reason) => <BinderChip key={reason.value} label={reason.label} selected={reportReason === reason.value} onPress={() => setReportReason(reason.value)} />)}</View>
-              <TextInput accessibilityLabel="Report details" value={reportDetails} onChangeText={setReportDetails} maxLength={1000} multiline placeholder="Optional details for the safety team" placeholderTextColor={theme.colors.textMuted} selectionColor={theme.accent.accent} style={{ minHeight: theme.spacing.x16 + theme.spacing.x6, maxHeight: theme.spacing.x16 * 2 + theme.spacing.x6, marginTop: theme.spacing.x3, color: theme.colors.textPrimary, backgroundColor: theme.colors.surfaceElevated, borderWidth: 1, borderColor: theme.colors.borderSubtle, borderRadius: theme.radii.control, padding: theme.spacing.x3, textAlignVertical: 'top' }} />
-              <BinderButton label="Report & block" icon="report" variant="destructive" loading={reporting} onPress={() => void submitReport()} style={{ marginTop: theme.spacing.x3 }} />
-              <BinderButton label="Back to safety controls" variant="ghost" disabled={reporting} onPress={() => { setSafetyMode('menu'); setReportMessageId(null); setReportDetails(''); }} style={{ marginTop: theme.spacing.x2 }} />
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2, marginTop: theme.spacing.x3 }}>{REPORT_REASONS.map((reason) => <BinderChip key={reason.value} label={t(reason.labelKey)} selected={reportReason === reason.value} onPress={() => setReportReason(reason.value)} />)}</View>
+              <TextInput accessibilityLabel={t('chat.accessibility.reportDetails')} value={reportDetails} onChangeText={setReportDetails} maxLength={1000} multiline placeholder={t('chat.safety.detailsPlaceholder')} placeholderTextColor={theme.colors.textMuted} selectionColor={theme.accent.accent} style={{ minHeight: theme.spacing.x16 + theme.spacing.x6, maxHeight: theme.spacing.x16 * 2 + theme.spacing.x6, marginTop: theme.spacing.x3, color: theme.colors.textPrimary, backgroundColor: theme.colors.surfaceElevated, borderWidth: 1, borderColor: theme.colors.borderSubtle, borderRadius: theme.radii.control, padding: theme.spacing.x3, textAlignVertical: 'top' }} />
+              <BinderButton label={t('chat.actions.reportAndBlock')} icon="report" variant="destructive" loading={reporting} onPress={() => void submitReport()} style={{ marginTop: theme.spacing.x3 }} />
+              <BinderButton label={t('chat.actions.backToSafetyControls')} variant="ghost" disabled={reporting} onPress={() => { setSafetyMode('menu'); setReportMessageId(null); setReportDetails(''); }} style={{ marginTop: theme.spacing.x2 }} />
             </View>
           ) : (
             <View style={{ gap: theme.spacing.x2, marginTop: theme.spacing.x4 }}>
-              <BinderButton label="Unmatch" icon="close" variant="secondary" onPress={confirmUnmatch} />
-              <BinderButton label="Block" icon="block" variant="destructive" onPress={confirmBlock} />
-              <BinderButton label="Report & block" icon="report" variant="destructive" onPress={() => openReport()} />
+              <BinderButton label={t('chat.actions.unmatch')} icon="close" variant="secondary" onPress={confirmUnmatch} />
+              <BinderButton label={t('chat.actions.block')} icon="block" variant="destructive" onPress={confirmBlock} />
+              <BinderButton label={t('chat.actions.reportAndBlock')} icon="report" variant="destructive" onPress={() => openReport()} />
             </View>
           )}
           {safetyError ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x3 }}>{safetyError.message}</BinderText> : null}
         </BinderCard>
       ) : null}
 
-      {loading ? <ScreenState kind="loading" loadingShape="conversation" message="Opening conversation…" /> : loadError && messages.length === 0 ? <ScreenState kind={loadError.kind === 'offline' ? 'offline' : loadError.kind === 'permission-denied' ? 'permission' : 'error'} icon="retry" title={loadError.kind === 'offline' ? 'You are offline' : 'Conversation did not load'} message={loadError.message} actionLabel={loadError.recovery === 'refresh' ? 'Refresh' : 'Try again'} onAction={() => setReloadKey((value) => value + 1)} /> : messages.length === 0 ? <ScreenState kind="empty" icon="matches" title="You matched." message="Normal chat opens only after mutual interest. Say something real." /> : (
+      {loading ? <ScreenState kind="loading" loadingShape="conversation" message={t('chat.states.opening')} /> : loadError && messages.length === 0 ? <ScreenState kind={loadError.kind === 'offline' ? 'offline' : loadError.kind === 'permission-denied' ? 'permission' : 'error'} icon="retry" title={loadError.kind === 'offline' ? t('chat.states.offlineTitle') : t('chat.states.loadErrorTitle')} message={loadError.message} actionLabel={loadError.recovery === 'refresh' ? t('chat.actions.refresh') : t('chat.actions.tryAgain')} onAction={() => setReloadKey((value) => value + 1)} /> : messages.length === 0 ? <ScreenState kind="empty" icon="matches" title={t('chat.empty.title')} message={t('chat.empty.message')} /> : (
         <FlatList
           ref={listRef}
           data={timeline}
@@ -362,7 +362,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
           showsVerticalScrollIndicator={false}
           onScroll={trackScroll}
           scrollEventThrottle={theme.motion.feedback}
-          ListFooterComponent={hasMore ? <BinderButton label="Load earlier messages" variant="ghost" loading={loadingOlder} onPress={() => void loadOlder()} style={{ marginBottom: theme.spacing.x3 }} /> : null}
+          ListFooterComponent={hasMore ? <BinderButton label={t('chat.actions.loadEarlierMessages')} variant="ghost" loading={loadingOlder} onPress={() => void loadOlder()} style={{ marginBottom: theme.spacing.x3 }} /> : null}
           renderItem={({ item, index }) => {
             if (item.type === 'day') {
               return (
@@ -380,7 +380,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
               <Animated.View entering={reduceMotion ? undefined : FadeInDown.delay(resolveStaggerDelay(index, false)).duration(theme.motion.feedback)} style={{ marginTop: item.groupedWithPrevious ? theme.spacing.x1 : theme.spacing.x3 }}>
                 <Pressable
                   onLongPress={() => openMessageActions(message)}
-                  accessibilityHint={mine ? 'Hold to copy this message' : 'Hold to copy or report this message'}
+                  accessibilityHint={mine ? t('chat.accessibility.holdToCopy') : t('chat.accessibility.holdToCopyOrReport')}
                   // The wrapper has no radius, so the shared pressed surface painted a
                   // square block behind the rounded bubble. The bubble carries its own
                   // feedback instead.
@@ -401,7 +401,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
                   </View>
                   {item.showsTimestamp ? (
                     <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1, alignSelf: mine ? 'flex-end' : 'flex-start', marginHorizontal: theme.spacing.x2 }}>
-                      {timeLabel(message.created_at)}{mine ? ' · Sent' : ''}
+                      {mine ? t('chat.message.sentAt', { time: timeLabel(message.created_at) }) : timeLabel(message.created_at)}
                     </BinderText>
                   ) : null}
                 </Pressable>
@@ -411,7 +411,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         />
       )}
 
-      {showNewMessage ? <Pressable accessibilityRole="button" accessibilityLabel="Scroll to new message" onPress={() => { listRef.current?.scrollToOffset({ offset: 0, animated: !reduceMotion }); setShowNewMessage(false); }} style={({ pressed }) => ({ minHeight: theme.spacing.x12, alignSelf: 'center', justifyContent: 'center', paddingHorizontal: theme.spacing.x4, borderRadius: theme.radii.pill, backgroundColor: pressed ? theme.accent.pressed : theme.accent.accent })}><BinderText variant="label" style={{ color: theme.accent.foreground }}>New message</BinderText></Pressable> : null}
+      {showNewMessage ? <Pressable accessibilityRole="button" accessibilityLabel={t('chat.accessibility.scrollToNewMessage')} onPress={() => { listRef.current?.scrollToOffset({ offset: 0, animated: !reduceMotion }); setShowNewMessage(false); }} style={({ pressed }) => ({ minHeight: theme.spacing.x12, alignSelf: 'center', justifyContent: 'center', paddingHorizontal: theme.spacing.x4, borderRadius: theme.radii.pill, backgroundColor: pressed ? theme.accent.pressed : theme.accent.accent })}><BinderText variant="label" style={{ color: theme.accent.foreground }}>{t('chat.message.new')}</BinderText></Pressable> : null}
 
       {attempts.map((attempt) => (
         <View key={attempt.clientId} style={{ alignItems: 'flex-end', paddingHorizontal: theme.spacing.x4, paddingTop: theme.spacing.x2 }}>
@@ -419,22 +419,22 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
             <BinderText variant="body" style={{ color: attempt.status === 'failed' ? theme.colors.textPrimary : theme.accent.foreground }}>{attempt.body}</BinderText>
           </View>
           <View style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
-            {attempt.status === 'sending' ? <BinderText variant="caption" tone="muted">Sending…</BinderText> : (
+            {attempt.status === 'sending' ? <BinderText variant="caption" tone="muted">{t('chat.message.sending')}</BinderText> : (
               <>
-                <BinderText variant="caption" tone="destructive" style={{ flexShrink: 1 }}>{attempt.error?.message ?? 'Message not sent.'}</BinderText>
-                <Pressable accessibilityRole="button" accessibilityLabel={`Retry sending "${attempt.body.slice(0, 24)}"`} disabled={sending} onPress={() => void submitMessage(attempt.clientId)} style={({ pressed }) => ({ minHeight: theme.spacing.x12, justifyContent: 'center', paddingHorizontal: theme.spacing.x3, borderRadius: theme.radii.pill, opacity: sending ? theme.feedback.disabledOpacity : 1, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surfaceElevated })}><BinderText variant="label" tone="accent">Retry</BinderText></Pressable>
-                <Pressable accessibilityRole="button" accessibilityLabel={`Discard unsent message "${attempt.body.slice(0, 24)}"`} onPress={() => discardAttempt(attempt.clientId)} style={({ pressed }) => ({ minHeight: theme.spacing.x12, justifyContent: 'center', paddingHorizontal: theme.spacing.x3, borderRadius: theme.radii.pill, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.transparent })}><BinderText variant="label" tone="muted">Discard</BinderText></Pressable>
+                <BinderText variant="caption" tone="destructive" style={{ flexShrink: 1 }}>{attempt.error?.message ?? t('chat.errors.messageNotSent')}</BinderText>
+                <Pressable accessibilityRole="button" accessibilityLabel={t('chat.accessibility.retrySending', { message: attempt.body.slice(0, 24) })} disabled={sending} onPress={() => void submitMessage(attempt.clientId)} style={({ pressed }) => ({ minHeight: theme.spacing.x12, justifyContent: 'center', paddingHorizontal: theme.spacing.x3, borderRadius: theme.radii.pill, opacity: sending ? theme.feedback.disabledOpacity : 1, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surfaceElevated })}><BinderText variant="label" tone="accent">{t('chat.actions.retry')}</BinderText></Pressable>
+                <Pressable accessibilityRole="button" accessibilityLabel={t('chat.accessibility.discardUnsent', { message: attempt.body.slice(0, 24) })} onPress={() => discardAttempt(attempt.clientId)} style={({ pressed }) => ({ minHeight: theme.spacing.x12, justifyContent: 'center', paddingHorizontal: theme.spacing.x3, borderRadius: theme.radii.pill, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.transparent })}><BinderText variant="label" tone="muted">{t('chat.actions.discard')}</BinderText></Pressable>
               </>
             )}
           </View>
         </View>
       ))}
 
-      {loadError && messages.length > 0 ? <View style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', paddingHorizontal: theme.spacing.x4 }}><BinderText variant="caption" tone="destructive" style={{ flex: 1 }}>{loadError.message}</BinderText><BinderButton label="Retry" variant="ghost" fullWidth={false} onPress={() => setReloadKey((value) => value + 1)} /></View> : null}
+      {loadError && messages.length > 0 ? <View style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', paddingHorizontal: theme.spacing.x4 }}><BinderText variant="caption" tone="destructive" style={{ flex: 1 }}>{loadError.message}</BinderText><BinderButton label={t('chat.actions.retry')} variant="ghost" fullWidth={false} onPress={() => setReloadKey((value) => value + 1)} /></View> : null}
 
       <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: theme.spacing.x2, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x3, borderTopWidth: 1, borderTopColor: theme.colors.borderSubtle, backgroundColor: theme.colors.surface }}>
-        <TextInput accessibilityLabel={`Message ${match.firstName}`} value={composer} onChangeText={setComposer} maxLength={2000} multiline scrollEnabled placeholder={`Message ${match.firstName}`} placeholderTextColor={theme.colors.textMuted} selectionColor={theme.accent.accent} style={{ flex: 1, minHeight: theme.spacing.x12, maxHeight: theme.spacing.x16 * 2, color: theme.colors.textPrimary, backgroundColor: theme.colors.surfaceElevated, borderWidth: 1, borderColor: theme.colors.borderSubtle, borderRadius: theme.radii.control, paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x3, textAlignVertical: 'center' }} />
-        <BinderIconButton name={sending ? 'more' : 'send'} accessibilityLabel={sending ? 'Sending message' : `Send message to ${match.firstName}`} selected={canSend || sending} disabled={!canSend} onPress={() => void submitMessage()} />
+        <TextInput accessibilityLabel={t('chat.accessibility.messagePerson', { name: match.firstName })} value={composer} onChangeText={setComposer} maxLength={2000} multiline scrollEnabled placeholder={t('chat.message.placeholder', { name: match.firstName })} placeholderTextColor={theme.colors.textMuted} selectionColor={theme.accent.accent} style={{ flex: 1, minHeight: theme.spacing.x12, maxHeight: theme.spacing.x16 * 2, color: theme.colors.textPrimary, backgroundColor: theme.colors.surfaceElevated, borderWidth: 1, borderColor: theme.colors.borderSubtle, borderRadius: theme.radii.control, paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x3, textAlignVertical: 'center' }} />
+        <BinderIconButton name={sending ? 'more' : 'send'} accessibilityLabel={sending ? t('chat.accessibility.sendingMessage') : t('chat.accessibility.sendMessageTo', { name: match.firstName })} selected={canSend || sending} disabled={!canSend} onPress={() => void submitMessage()} />
       </View>
     </Animated.View>
   );
