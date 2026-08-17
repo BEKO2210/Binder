@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Alert, Image, Pressable, ScrollView, View } from 'react-native';
 
-import { BinderBrand, BinderButton, BinderCard, BinderIcon, BinderText, ScreenState, SectionHeader } from '../components/ui';
+import { BinderButton, BinderCard, BinderIcon, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import { recordBetaEvent } from '../lib/beta';
 import { listMyProfileMedia } from '../lib/media';
+import { profileCompleteness } from '../lib/profileCompleteness';
 import { DELETE_ACCOUNT_URL, PRIVACY_URL, TERMS_URL, deleteCurrentAccount, openBinderUrl } from '../lib/safety';
 import { supabase } from '../lib/supabase';
 import { useBinderTheme } from '../theme/ThemeProvider';
@@ -23,6 +24,8 @@ export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, o
   const [firstName, setFirstName] = useState('');
   const [bio, setBio] = useState('');
   const [photoUrl, setPhotoUrl] = useState('');
+  const [photoCount, setPhotoCount] = useState(0);
+  const [interestCount, setInterestCount] = useState(0);
   const [message, setMessage] = useState('');
 
   useEffect(() => { void load(); }, [userId]);
@@ -33,13 +36,15 @@ export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, o
     setMessage('');
     try {
       const [profile, media] = await Promise.all([
-        supabase.from('profiles').select('first_name,bio').eq('user_id', userId).single(),
+        supabase.from('profiles').select('first_name,bio,interests').eq('user_id', userId).single(),
         listMyProfileMedia(),
       ]);
       if (profile.error) throw profile.error;
       setFirstName(profile.data.first_name);
       setBio(profile.data.bio);
       setPhotoUrl(media[0]?.signedUrl ?? '');
+      setPhotoCount(media.length);
+      setInterestCount(profile.data.interests?.length ?? 0);
       void recordBetaEvent('profile_load', 'profile', { durationMs: Date.now() - startedAt, outcome: 'ok' });
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Could not load profile.');
@@ -60,6 +65,13 @@ export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, o
     ]);
   }
 
+  function confirmSignOut() {
+    Alert.alert('Sign out of Binder?', 'You will stop receiving in-app updates on this device until you sign in again. Your profile, matches, and messages stay in Binder.', [
+      { text: 'Stay signed in', style: 'cancel' },
+      { text: 'Sign out', onPress: () => void supabase.auth.signOut() },
+    ]);
+  }
+
   async function performDeletion() {
     setBusy(true);
     setMessage('');
@@ -69,13 +81,21 @@ export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, o
 
   if (loading) return <ScreenState kind="loading" message="Loading your profile…" />;
 
+  const completeness = profileCompleteness({ photoCount, bio, interestCount });
+
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: theme.colors.canvas }} contentContainerStyle={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x5, paddingBottom: theme.spacing.x16 }}>
-      <BinderBrand compact />
-      <View style={{ marginTop: theme.spacing.x6 }}>
-        <SectionHeader eyebrow="YOUR BINDER" title={firstName || 'Your profile'} copy={bio || 'Add a few real lines about yourself.'} />
-      </View>
-      {photoUrl ? <Image source={{ uri: photoUrl }} style={{ width: '100%', height: theme.layout.profileHeroHeight, borderRadius: theme.radii.hero, marginTop: theme.spacing.x5 }} resizeMode="cover" /> : null}
+    <ScrollView style={{ flex: 1, backgroundColor: theme.colors.canvas }} contentContainerStyle={{ paddingBottom: theme.spacing.x16 }}>
+      <BinderScreenHeader title="Your profile" eyebrow="BINDER" />
+      <View style={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x5 }}>
+      {photoUrl ? <Image source={{ uri: photoUrl }} accessibilityLabel="Your primary profile photo" style={{ width: '100%', height: theme.layout.profileHeroHeight, borderRadius: theme.radii.hero }} resizeMode="cover" /> : <BinderCard style={{ minHeight: theme.layout.onboardingPhotoHeight, alignItems: 'center', justifyContent: 'center', gap: theme.spacing.x3 }}><BinderIcon name="addPhoto" size={34} color={theme.accent.accent} /><BinderText variant="label" tone="accent">Add your first photo</BinderText></BinderCard>}
+      <BinderText variant="heading" style={{ marginTop: theme.spacing.x5 }}>{firstName || 'Your profile'}</BinderText>
+      <BinderText variant="body" tone={bio ? 'secondary' : 'muted'} style={{ marginTop: theme.spacing.x2 }}>{bio || 'Add a few real lines about yourself so people know what to ask you.'}</BinderText>
+      <BinderCard style={{ marginTop: theme.spacing.x5 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}><View><BinderText variant="micro" tone="muted">PROFILE STRENGTH</BinderText><BinderText variant="title" style={{ marginTop: theme.spacing.x1 }}>{completeness.percent}% complete</BinderText></View><BinderText variant="label" tone="accent">{completeness.completed}/{completeness.total}</BinderText></View>
+        <View accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: 100, now: completeness.percent }} style={{ height: theme.spacing.x2, borderRadius: theme.radii.pill, backgroundColor: theme.colors.borderStrong, overflow: 'hidden', marginTop: theme.spacing.x4 }}><View style={{ width: `${completeness.percent}%`, height: '100%', backgroundColor: theme.accent.accent }} /></View>
+        <View style={{ marginTop: theme.spacing.x3, gap: theme.spacing.x2 }}>{completeness.items.map((item) => <View key={item.key} style={{ minHeight: theme.layout.minimumTouchTarget, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3 }}><BinderIcon name={item.complete ? 'check' : 'chevronRight'} size={20} color={item.complete ? theme.semantic.success : theme.colors.textMuted} /><BinderText variant="label" tone={item.complete ? 'muted' : 'secondary'} style={{ flex: 1 }}>{item.complete ? `${item.label} · done` : item.label}</BinderText></View>)}</View>
+        {!completeness.complete ? <BinderButton label="Complete profile" variant="secondary" icon="edit" onPress={onEditProfile} style={{ marginTop: theme.spacing.x3 }} /> : null}
+      </BinderCard>
       <View style={{ gap: theme.spacing.x3, marginTop: theme.spacing.x5 }}>
         <HubRow icon="edit" title="Profile & photos" copy="Edit your profile, discovery preferences and up to six moderated photos." onPress={onEditProfile} />
         <HubRow icon="settings" title="App settings" copy="Appearance, haptics, motion, notification preferences and quiet hours." onPress={onOpenSettings} />
@@ -91,13 +111,14 @@ export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, o
         </View>
       </View>
       {message ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x4 }}>{message}</BinderText> : null}
-      <BinderButton label="Sign out" icon="logout" variant="secondary" disabled={busy} onPress={() => void supabase.auth.signOut()} style={{ marginTop: theme.spacing.x6 }} />
-      <BinderCard style={{ marginTop: theme.spacing.x6, borderColor: theme.semantic.destructive, backgroundColor: theme.mode === 'dark' ? theme.semantic.destructiveSoftDark : theme.semantic.destructiveSoftLight }}>
+      <View style={{ marginTop: theme.spacing.x10, paddingTop: theme.spacing.x6, borderTopWidth: 1, borderTopColor: theme.colors.borderSubtle }}><BinderText variant="micro" tone="muted">ACCOUNT ACTIONS</BinderText><BinderButton label="Sign out" icon="logout" variant="secondary" disabled={busy} onPress={confirmSignOut} style={{ marginTop: theme.spacing.x4 }} /></View>
+      <BinderCard style={{ marginTop: theme.spacing.x8, borderColor: theme.semantic.destructive, backgroundColor: theme.mode === 'dark' ? theme.semantic.destructiveSoftDark : theme.semantic.destructiveSoftLight }}>
         <BinderText variant="micro" tone="destructive">IRREVERSIBLE</BinderText>
         <BinderText variant="title" style={{ marginTop: theme.spacing.x2 }}>Delete Binder account</BinderText>
         <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>Stops discovery and conversations, removes profile media and deletes your authentication identity.</BinderText>
         <BinderButton label="Delete account" icon="delete" variant="destructive" disabled={busy} onPress={confirmDeletion} style={{ marginTop: theme.spacing.x4 }} />
       </BinderCard>
+      </View>
     </ScrollView>
   );
 }
@@ -107,7 +128,7 @@ function HubRow({ icon, title, copy, onPress }: { icon: 'edit' | 'settings' | 'b
   return (
     <Pressable accessibilityRole="button" onPress={onPress}>
       {({ pressed }) => <BinderCard style={{ backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x4 }}>
-        <View style={{ width: 44, height: 44, borderRadius: theme.radii.control, backgroundColor: theme.colors.surfaceElevated, alignItems: 'center', justifyContent: 'center' }}><BinderIcon name={icon} color={theme.accent.accent} /></View>
+        <View style={{ width: theme.layout.minimumTouchTarget, height: theme.layout.minimumTouchTarget, borderRadius: theme.radii.control, backgroundColor: theme.colors.surfaceElevated, alignItems: 'center', justifyContent: 'center' }}><BinderIcon name={icon} color={theme.accent.accent} /></View>
         <View style={{ flex: 1 }}><BinderText variant="label">{title}</BinderText><BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1 }}>{copy}</BinderText></View>
         <BinderIcon name="chevronRight" color={theme.colors.textMuted} />
       </BinderCard>}

@@ -6,6 +6,7 @@ import { DiscoveryPreferences } from '../components/DiscoveryPreferences';
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderInput, BinderScreenHeader, BinderText, ScreenState, SectionHeader } from '../components/ui';
 import { pickAndPrepareProfileImage } from '../lib/images';
 import { addProfileImage, listMyProfileMedia, removeProfileMedia, reorderProfileMedia, setPrimaryProfileMedia, type GalleryMedia } from '../lib/media';
+import { hasErrors, validateDiscovery, validateIdentity } from '../lib/onboardingFlow';
 import { supabase } from '../lib/supabase';
 import { GENDERS, INTERESTS, type Gender } from '../lib/validation';
 import { useBinderHaptics } from '../theme/haptics';
@@ -27,6 +28,8 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
   const [maxAge, setMaxAge] = useState(45);
   const [distance, setDistance] = useState(50);
   const [media, setMedia] = useState<GalleryMedia[]>([]);
+  const [profileErrors, setProfileErrors] = useState<ReturnType<typeof validateIdentity>>({ firstName: undefined, gender: undefined });
+  const [discoveryErrors, setDiscoveryErrors] = useState<ReturnType<typeof validateDiscovery>>({ audience: undefined, age: undefined, distance: undefined });
 
   useEffect(() => { void load(); }, [userId]);
 
@@ -119,16 +122,15 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
   }
 
   async function save() {
+    const identity = validateIdentity(firstName, gender); const discovery = validateDiscovery(interestedIn, minAge, maxAge, distance);
+    setProfileErrors(identity); setDiscoveryErrors(discovery); if (hasErrors(identity) || hasErrors(discovery)) return;
     const min = minAge; const max = maxAge; const maxDistance = distance;
-    if (!firstName.trim() || interestedIn.length === 0 || !Number.isInteger(min) || !Number.isInteger(max) || min < 18 || max > 100 || min > max || !Number.isInteger(maxDistance) || maxDistance < 1 || maxDistance > 500) {
-      setMessage('Check your profile and discovery settings.'); return;
-    }
     setBusy(true); setMessage('');
     try {
       const { error } = await supabase.rpc('update_my_profile', { p_first_name: firstName.trim(), p_gender: gender, p_bio: bio.trim(), p_interests: interests, p_interested_in: interestedIn, p_min_age: min, p_max_age: max, p_max_distance_km: maxDistance });
       if (error) throw error;
       await haptic('selection');
-      setMessage('Profile settings saved.');
+      setMessageKind('success'); setMessage('Profile settings saved.');
     } catch (error) { setMessageKind('error'); setMessage(error instanceof Error ? error.message : 'Could not save profile settings.'); }
     finally { setBusy(false); }
   }
@@ -150,10 +152,11 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
       <BinderScreenHeader title="Profile settings" leading={{ icon: 'back', accessibilityLabel: 'Back to profile', onPress: onClose }} />
       <KeyboardAwareScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x5, paddingBottom: theme.spacing.x16 }} keyboardShouldPersistTaps="handled">
-      <SectionHeader title="Profile, discovery and photos." copy="Your birth date stays locked. Photos are optimized before upload and reviewed independently." />
+      <SectionHeader title="Shape the profile people see." copy="Your birth date stays locked. Every photo is reviewed independently before it can appear in Discovery." />
 
       <View style={{ marginTop: theme.spacing.x8 }}>
         <BinderText variant="micro" tone="muted">PHOTOS · {media.length}/6</BinderText>
+        <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>Drag is not required: use the arrow controls to set the exact order. Photo 1 is the photo people see first.</BinderText>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x3, marginTop: theme.spacing.x3 }}>
           {media.map((item, index) => <PhotoTile key={item.id} item={item} index={index} total={media.length} busy={busy} onLeft={() => void movePhoto(index, -1)} onRight={() => void movePhoto(index, 1)} onPrimary={() => void makePrimary(item)} onRemove={() => confirmRemove(item)} onView={() => setViewerUrl(item.signedUrl)} />)}
           {media.length < 6 ? <AddPhotoTile disabled={busy} onPress={() => void addPhoto()} /> : null}
@@ -161,24 +164,25 @@ export default function ProfileSettingsScreen({ userId, onClose }: { userId: str
         {message ? <BinderText variant="caption" tone={messageKind === 'success' ? 'accent' : 'destructive'} style={{ marginTop: theme.spacing.x3 }}>{message}</BinderText> : null}
       </View>
 
-      <View style={{ gap: theme.spacing.x5, marginTop: theme.spacing.x8 }}>
-        <BinderInput label="First name" value={firstName} onChangeText={setFirstName} maxLength={40} />
+      <BinderCard style={{ gap: theme.spacing.x5, marginTop: theme.spacing.x8 }}>
+        <View><BinderText variant="micro" tone="muted">PROFILE DETAILS</BinderText><BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>This is the identity and context people see.</BinderText></View>
+        <BinderInput label="First name" error={profileErrors.firstName} value={firstName} onChangeText={(value) => { setFirstName(value); if (profileErrors.firstName) setProfileErrors(validateIdentity(value, gender)); }} maxLength={40} />
         <BinderInput label="Bio" helper={`${bio.length}/500`} value={bio} onChangeText={setBio} maxLength={500} multiline style={{ minHeight: theme.layout.multilineInputHeight, textAlignVertical: 'top' }} />
-        <Choice label="I am"><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{GENDERS.map((item) => <BinderChip key={item.value} label={item.label} selected={gender === item.value} onPress={() => setGender(item.value)} />)}</View></Choice>
+        <Choice label="I am" error={profileErrors.gender}><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{GENDERS.map((item) => <BinderChip key={item.value} label={item.label} selected={gender === item.value} onPress={() => { setGender(item.value); setProfileErrors(validateIdentity(firstName, item.value)); }} />)}</View></Choice>
         <Choice label="Interests"><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{INTERESTS.map((item) => <BinderChip key={item} label={item} selected={interests.includes(item)} onPress={() => setInterests((current) => current.includes(item) ? current.filter((value) => value !== item) : current.length < 12 ? [...current, item] : current)} />)}</View></Choice>
-        <Choice label="Discovery range">
-          <DiscoveryPreferences interestedIn={interestedIn} minAge={minAge} maxAge={maxAge} distance={distance} onChange={(next) => { setInterestedIn(next.interestedIn); setMinAge(next.minAge); setMaxAge(next.maxAge); setDistance(next.distance); }} />
-        </Choice>
-      </View>
+      </BinderCard>
+      <BinderCard style={{ marginTop: theme.spacing.x5 }}><View><BinderText variant="micro" tone="muted">DISCOVERY PREFERENCES</BinderText><BinderText variant="title" style={{ marginTop: theme.spacing.x2 }}>Discovery range</BinderText><BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2, marginBottom: theme.spacing.x6 }}>Controls who can appear in your Discovery deck.</BinderText></View>
+          <DiscoveryPreferences interestedIn={interestedIn} minAge={minAge} maxAge={maxAge} distance={distance} errors={discoveryErrors} onChange={(next) => { setInterestedIn(next.interestedIn); setMinAge(next.minAge); setMaxAge(next.maxAge); setDistance(next.distance); setDiscoveryErrors(validateDiscovery(next.interestedIn, next.minAge, next.maxAge, next.distance)); }} />
+      </BinderCard>
       <BinderButton label="Save profile" loading={busy} onPress={() => void save()} style={{ marginTop: theme.spacing.x6 }} />
       </KeyboardAwareScrollView>
     </View>
   );
 }
 
-function Choice({ label, children }: { label: string; children: React.ReactNode }) {
+function Choice({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
   const { theme } = useBinderTheme();
-  return <View><BinderText variant="label" tone="secondary" style={{ marginBottom: theme.spacing.x2 }}>{label}</BinderText>{children}</View>;
+  return <View><BinderText variant="label" tone={error ? 'destructive' : 'secondary'} style={{ marginBottom: theme.spacing.x2 }}>{label}</BinderText>{children}{error ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x2 }}>{error}</BinderText> : null}</View>;
 }
 
 function AddPhotoTile({ disabled, onPress }: { disabled: boolean; onPress: () => void }) {
@@ -189,15 +193,15 @@ function AddPhotoTile({ disabled, onPress }: { disabled: boolean; onPress: () =>
 function PhotoTile({ item, index, total, busy, onLeft, onRight, onPrimary, onRemove, onView }: { item: GalleryMedia; index: number; total: number; busy: boolean; onLeft: () => void; onRight: () => void; onPrimary: () => void; onRemove: () => void; onView: () => void }) {
   const { theme } = useBinderTheme();
   const statusTone = item.moderationStatus === 'approved' ? theme.semantic.success : item.moderationStatus === 'pending' ? theme.semantic.warning : theme.semantic.destructive;
-  const statusCopy = item.moderationStatus === 'approved' ? 'Approved' : item.moderationStatus === 'pending' ? 'Pending review' : item.moderationStatus === 'rejected' ? 'Not approved' : 'Removed';
+  const statusCopy = item.moderationStatus === 'approved' ? 'Approved' : item.moderationStatus === 'pending' ? 'In review' : item.moderationStatus === 'rejected' ? 'Not approved' : 'Removed';
   return (
     <BinderCard style={{ width: '47%', padding: 0, overflow: 'hidden' }}>
       <Pressable accessibilityRole="imagebutton" accessibilityLabel={`View photo ${index + 1} in full`} onPress={onView}>
         <Image source={{ uri: item.signedUrl }} style={{ width: '100%', height: theme.layout.photoTileHeight }} resizeMode="cover" />
       </Pressable>
       <View style={{ padding: theme.spacing.x3, gap: theme.spacing.x2 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}><View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: statusTone }} /><BinderText variant="caption" style={{ color: statusTone }}>{statusCopy}</BinderText></View>
-        {item.position === 0 ? <BinderText variant="micro" tone="accent">PRIMARY</BinderText> : item.moderationStatus === 'approved' ? <BinderButton label="Make primary" variant="ghost" disabled={busy} onPress={onPrimary} /> : null}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}><View style={{ width: theme.layout.statusDot, height: theme.layout.statusDot, borderRadius: theme.radii.pill, backgroundColor: statusTone }} /><BinderText variant="caption" style={{ color: statusTone }}>{statusCopy}</BinderText></View>
+        {item.position === 0 ? <BinderText variant="micro" tone="accent">PHOTO 1 · PRIMARY</BinderText> : item.moderationStatus === 'approved' ? <BinderButton label="Make primary" variant="ghost" disabled={busy} onPress={onPrimary} /> : null}
         <BinderText variant="caption" tone="muted">{Math.max(1, Math.round(item.byteSize / 1024))} KB · {item.width} by {item.height}</BinderText>
         {item.moderationReason ? <BinderText variant="caption" tone="destructive">{item.moderationReason}</BinderText> : null}
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
