@@ -236,7 +236,18 @@ the mail arrives, the verify link answers 303 and `email_confirmed_at` is set.
 Test accounts and inbox removed afterwards. Two facts came out of that test and
 both now have an answer in the repo:
 
-1. **The built-in Supabase mailer allows two mails an hour.** A third sign-up in
+0. **Solved on 2026-08-17:** mail leaves through the Brevo relay as
+   `Binder <no-reply@it-handwerk-stuttgart.de>` (domain already DKIM-signed in
+   Cloudflare, SPF now includes `spf.brevo.com`), the hourly limit is 60, the
+   four branded templates are live, and both deep links are in the redirect
+   allow list. Proven by a real sign-up: branded mail delivered, link answered
+   303 to `binder://confirm-email`, `email_confirmed_at` set, test account and
+   inbox deleted. Brevo cannot switch off open/click measurement on
+   transactional mail — only anonymise it, which is what the account does, and
+   the privacy policy names Brevo and says so. **Amazon SES is the planned
+   move** precisely because it measures nothing.
+
+1. **The built-in Supabase mailer allowed two mails an hour.** A third sign-up in
    the same hour was refused with `over_email_send_rate_limit` (HTTP 429) —
    measured, not assumed. The fix is custom SMTP on the project. Brevo already
    authenticates `it-handwerk-stuttgart.de` (DKIM CNAMEs and the brevo-code TXT
