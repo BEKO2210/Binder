@@ -9,6 +9,8 @@ const requiredFiles = [
   'supabase/migrations/20260816180415_phase8_admin_moderation_dashboard.sql',
   'supabase/migrations/20260816181817_phase8_admin_session_revalidation.sql',
   'supabase/tests/phase8_admin_moderation_dashboard_test.sql',
+  'supabase/migrations/20260817090000_phase9_admin_diagnostics.sql',
+  'supabase/tests/phase9_admin_diagnostics_test.sql',
   'supabase/functions/invite-moderator/index.ts',
   'supabase/functions/invite-moderator/deno.json',
 ];
@@ -31,6 +33,7 @@ if (!failures.length) {
   for (const required of [
     'Content-Security-Policy', 'noindex,nofollow,noarchive', '../assets/supabase.js',
     'belkis.aslani@gmail.com', 'Fotos', 'Meldungen', 'Moderatoren', 'Aktivitätsprotokoll',
+    'Diagnose', 'diagnostics-health', 'diagnostics-summary', 'diagnostics-errors', 'diagnostics-feedback',
   ]) {
     if (!html.includes(required)) failures.push(`admin HTML contract missing: ${required}`);
   }
@@ -39,11 +42,18 @@ if (!failures.length) {
     'shouldCreateUser: false', 'claim_admin_session', 'admin_list_media_queue',
     'admin_list_report_queue', 'admin_review_media', 'admin_review_report',
     "functions.invoke('invite-moderator'", "storage.from('profile-media').download",
+    'admin_diagnostics_health', 'admin_diagnostics_summary',
+    'admin_diagnostics_client_errors', 'admin_diagnostics_feedback',
   ]) {
     if (!script.includes(required)) failures.push(`admin client contract missing: ${required}`);
   }
 
   if (/service[_-]?role/i.test(publicSurface)) failures.push('public admin files mention or embed a service-role credential');
+  // The dashboard may only reach diagnostics through the gated RPCs: a direct
+  // table read would need a grant on the private schema, which must never exist.
+  if (/from\(['"](?:private\.)?beta_(?:client_events|feedback|server_events|preferences)['"]\)/.test(script)) {
+    failures.push('admin client must read diagnostics through the gated RPCs, not from a table');
+  }
   if (/innerHTML|insertAdjacentHTML|document\.write/.test(script)) failures.push('admin client must render UGC through textContent-only DOM construction');
   if (/https:\/\/(cdn|esm|unpkg|jsdelivr)/i.test(publicSurface)) failures.push('admin client loads executable code from a third-party CDN');
 
@@ -80,6 +90,19 @@ if (!failures.length) {
     if (!invite.includes(required)) failures.push(`moderator invite boundary missing: ${required}`);
   }
   if (/console\.(log|info|warn|error)/.test(invite)) failures.push('moderator invite function must not log moderator emails or invite errors');
+
+  const diagnostics = readFileSync('supabase/migrations/20260817090000_phase9_admin_diagnostics.sql', 'utf8');
+  for (const required of [
+    'public.admin_diagnostics_summary', 'public.admin_diagnostics_health',
+    'public.admin_diagnostics_client_errors', 'public.admin_diagnostics_feedback',
+    "private.require_admin_permission('dashboard')", 'security definer', "set search_path = ''",
+    'revoke all on function public.admin_diagnostics_summary(integer) from public, anon',
+  ]) {
+    if (!diagnostics.includes(required)) failures.push(`diagnostics SQL contract missing: ${required}`);
+  }
+  if (/grant\s+execute[^;]*admin_diagnostics[^;]*to\s+anon/is.test(diagnostics)) {
+    failures.push('diagnostics functions must never be granted to anon');
+  }
 
   try {
     execFileSync(process.execPath, ['--check', 'site/admin/admin.js'], { stdio: 'pipe' });

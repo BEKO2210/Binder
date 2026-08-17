@@ -39,6 +39,9 @@
 
   function humanize(value) {
     const labels = {
+      app: 'App', legal: 'Rechtliches', discover: 'Discovery', matches: 'Matches',
+      chat: 'Chat', profile: 'Profil', beta: 'Beta', empty: 'Leer', cancel: 'Abgebrochen',
+      bug: 'Fehler', ux: 'Bedienung', safety: 'Sicherheit', performance: 'Tempo',
       photo_review: 'Foto', report: 'Meldung', approve_media: 'Foto freigegeben',
       reject_media: 'Foto abgelehnt', remove_media: 'Foto entfernt', warn: 'Verwarnung',
       suspend: 'Konto gesperrt', dismiss: 'Meldung geschlossen', spam: 'Spam',
@@ -84,6 +87,7 @@
     if (state.member.can_review_reports) tabs.push('reports');
     if (state.member.admin_role === 'owner') tabs.push('moderators');
     tabs.push('audit');
+    tabs.push('diagnostics');
     return tabs;
   }
 
@@ -356,8 +360,96 @@
     container.replaceChildren(fragment);
   }
 
+  async function refreshDiagnostics() {
+    const [health, summary, errors, feedback] = await Promise.all([
+      rpc('admin_diagnostics_health'),
+      rpc('admin_diagnostics_summary', { p_days: 14 }),
+      rpc('admin_diagnostics_client_errors', { p_limit: 50 }),
+      rpc('admin_diagnostics_feedback', { p_limit: 50 }),
+    ]);
+
+    const healthRow = firstRow(health) || {};
+    const cards = [
+      ['Diagnose an', healthRow.diagnostics_opted_in ?? 0],
+      ['Diagnose aus', healthRow.diagnostics_opted_out ?? 0],
+      ['Geräte (7 Tage)', healthRow.reporting_devices_7d ?? 0],
+      ['Ereignisse (24 h)', healthRow.client_events_24h ?? 0],
+      ['Fehler (24 h)', healthRow.client_errors_24h ?? 0],
+      ['Letztes Ereignis', formatDate(healthRow.newest_event_at)],
+    ];
+    const healthFragment = document.createDocumentFragment();
+    cards.forEach(([label, value]) => {
+      const card = make('article', 'summary-card');
+      card.append(make('span', '', label), make('strong', '', value));
+      healthFragment.append(card);
+    });
+    byId('diagnostics-health').replaceChildren(healthFragment);
+
+    const summaryContainer = byId('diagnostics-summary');
+    const days = (summary || []).filter((row) => Number(row.new_users) || Number(row.decisions) || Number(row.client_errors) || Number(row.feedback));
+    if (!days.length) {
+      empty(summaryContainer, 'In diesem Zeitraum wurde nichts gemeldet.');
+    } else {
+      const table = make('table', 'diagnostics-grid');
+      const head = make('tr');
+      ['Tag', 'Neu', 'Entscheidungen', 'Binds', 'Matches', '1. Nachricht', 'Meldungen', 'Feedback', 'Fehler', 'Discovery p95'].forEach((label) => head.append(make('th', '', label)));
+      const header = make('thead');
+      header.append(head);
+      table.append(header);
+      const body = make('tbody');
+      days.forEach((row) => {
+        const line = make('tr');
+        [
+          new Intl.DateTimeFormat('de-DE', { day: '2-digit', month: '2-digit' }).format(new Date(row.day)),
+          row.new_users, row.decisions, row.binds, row.matches, row.first_messages,
+          row.reports, row.feedback, row.client_errors,
+          row.discovery_p95_ms == null ? '–' : `${Math.round(row.discovery_p95_ms)} ms`,
+        ].forEach((value) => line.append(make('td', '', value)));
+        body.append(line);
+      });
+      table.append(body);
+      summaryContainer.replaceChildren(table);
+    }
+
+    const errorContainer = byId('diagnostics-errors');
+    if (!errors.length) {
+      empty(errorContainer, 'Keine Fehlerereignisse gemeldet.');
+    } else {
+      const fragment = document.createDocumentFragment();
+      errors.forEach((row) => {
+        const item = make('article', 'audit-row');
+        item.append(
+          make('time', '', formatDate(row.created_at)),
+          make('strong', '', `${humanize(row.surface)} · ${row.outcome === 'error' ? 'Fehler' : humanize(row.outcome)}`),
+          make('span', '', `${row.event_name} · ${row.platform} · App ${row.app_version}${row.duration_ms == null ? '' : ` · ${row.duration_ms} ms`}`),
+          make('p', '', `Sitzung ${String(row.session_id).slice(0, 8)}`),
+        );
+        fragment.append(item);
+      });
+      errorContainer.replaceChildren(fragment);
+    }
+
+    const feedbackContainer = byId('diagnostics-feedback');
+    if (!feedback.length) {
+      empty(feedbackContainer, 'Noch keine Rückmeldungen.');
+    } else {
+      const fragment = document.createDocumentFragment();
+      feedback.forEach((row) => {
+        const item = make('article', 'audit-row');
+        item.append(
+          make('time', '', formatDate(row.created_at)),
+          make('strong', '', `${humanize(row.category)} · ${row.rating}/5`),
+          make('span', '', row.profile_first_name ? `${row.profile_first_name}` : 'Konto ohne Profilnamen'),
+          make('p', '', row.details || 'Keine Beschreibung'),
+        );
+        fragment.append(item);
+      });
+      feedbackContainer.replaceChildren(fragment);
+    }
+  }
+
   async function refreshAll() {
-    const jobs = [refreshSummary(), refreshAudit()];
+    const jobs = [refreshSummary(), refreshAudit(), refreshDiagnostics()];
     if (state.member.can_review_media) jobs.push(refreshPhotos());
     if (state.member.can_review_reports) jobs.push(refreshReports());
     if (state.member.admin_role === 'owner') jobs.push(refreshModerators());
@@ -468,7 +560,7 @@
     });
     all('[data-tab]').forEach((button) => button.addEventListener('click', () => selectTab(button.dataset.tab)));
     all('[data-refresh]').forEach((button) => button.addEventListener('click', async () => {
-      const jobs = { photos: refreshPhotos, reports: refreshReports, audit: refreshAudit };
+      const jobs = { photos: refreshPhotos, reports: refreshReports, audit: refreshAudit, diagnostics: refreshDiagnostics };
       button.disabled = true;
       try { await jobs[button.dataset.refresh](); }
       catch (error) { toast(error.message, true); }

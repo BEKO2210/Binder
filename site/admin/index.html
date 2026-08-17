@@ -59,6 +59,7 @@
         <button class="tab-button" type="button" data-tab="reports">Meldungen</button>
         <button class="tab-button" type="button" data-tab="moderators">Moderatoren</button>
         <button class="tab-button" type="button" data-tab="audit">Aktivitätsprotokoll</button>
+        <button class="tab-button" type="button" data-tab="diagnostics">Diagnose</button>
       </nav>
 
       <section class="tab-panel" data-panel="photos" aria-labelledby="photos-title">
@@ -93,6 +94,36 @@
           <p id="invite-status" class="form-status field-wide" role="status" aria-live="polite"></p>
         </form>
         <div id="moderator-list" class="moderator-list" aria-live="polite"></div>
+      </section>
+
+      <section class="tab-panel" data-panel="diagnostics" aria-labelledby="diagnostics-title" hidden>
+        <div class="panel-heading">
+          <div><span class="admin-kicker">Freiwillige Diagnose</span><h2 id="diagnostics-title">Was die App meldet</h2></div>
+          <button class="admin-button ghost queue-refresh" type="button" data-refresh="diagnostics">Aktualisieren</button>
+        </div>
+
+        <div id="diagnostics-health" class="summary-grid" aria-live="polite"></div>
+
+        <div class="diagnostics-block">
+          <h3>Letzte 14 Tage</h3>
+          <div id="diagnostics-summary" class="diagnostics-table" aria-live="polite"></div>
+        </div>
+
+        <div class="diagnostics-block">
+          <h3>Fehler aus der App</h3>
+          <div id="diagnostics-errors" class="audit-list" aria-live="polite"></div>
+        </div>
+
+        <div class="diagnostics-block">
+          <h3>Rückmeldungen der Tester</h3>
+          <div id="diagnostics-feedback" class="report-list" aria-live="polite"></div>
+        </div>
+
+        <p class="diagnostics-note">
+          Erhoben wird nur, was hier steht: Bildschirm, Dauer, Ergebnis, Plattform und App-Version — keine Nachrichten, keine Fotos, keine Standorte.
+          Diagnose ist standardmäßig aus und wird pro Konto in den App-Einstellungen eingeschaltet.
+          Ereignisse werden nach 30 Tagen gelöscht, Rückmeldungen nach 180 Tagen.
+        </p>
       </section>
 
       <section class="tab-panel" data-panel="audit" aria-labelledby="audit-title" hidden>
