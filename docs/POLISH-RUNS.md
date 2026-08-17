@@ -49,6 +49,8 @@ leaves the running system intact.
 | 025 | Chat rows memoised: typing no longer re-renders the timeline | Chat screenshot after refactor, no crash | done |
 | 026 | Onboarding steps move with direction; instant under reduced motion | typecheck + gates green | done |
 | 027 | Auth: return key walks the form and submits on the last field | typecheck + gates green | done |
+| 028-031 | Offline, session expiry, upload progress and a match ended while you are in it | Gates green, v0.5.15 on device | done |
+| 032 | The first screen without network says "You are offline", not "Safety check failed" | Device with Wi-Fi and data off: title reads "You are offline" | done |
 | 017 | Language section in App settings — appears only when a translation exists, endonym plus flag, same chip rhythm as Appearance | Screenshot: Sprache / Wie mein Gerät / 🇬🇧 English / 🇩🇪 Deutsch | done |
 
 ## Backlog
@@ -68,12 +70,12 @@ Ordered by what a user notices first. Each line becomes one run.
 - [ ] Every destructive action has one confirmation shape, not three different ones.
 
 ### States nobody has seen yet
-- [ ] Offline: what each screen shows when the device has no network, and how it recovers.
-- [ ] Session expiry as a state (wave G) instead of a wall of errors.
-- [ ] Photo upload: progress, failure and retry on the profile gallery.
+- [x] Offline: every screen and the pre-app safety check.
+- [x] Session expiry as a state (wave G).
+- [x] Photo upload: progress, failure and retry on the profile gallery.
 - [ ] Moderation outcomes visible to the user: rejected photo, warned account.
 - [ ] Empty deck vs. filtered-to-nothing deck read differently and offer the right control.
-- [ ] Chat: the other side unmatched while the screen is open.
+- [x] Chat: the other side unmatched while the screen is open.
 - [ ] First run on a fresh install: what the deck shows before location permission.
 
 ### Accessibility

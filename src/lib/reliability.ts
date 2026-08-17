@@ -26,6 +26,24 @@ function errorText(value: unknown): string {
   return '';
 }
 
+/**
+ * A request that never reached the server.
+ *
+ * The message a fetch failure carries differs by platform, engine and SDK, so
+ * matching text alone missed real outages: the first screen of the app told an
+ * offline user that Binder's safety rules could not be verified, which sounds
+ * like a policy problem and is not one. A refusal from the server always
+ * carries a PostgREST code or an HTTP status; a transport failure carries
+ * neither, and that is the reliable signal.
+ */
+export function isLikelyOffline(value: unknown): boolean {
+  if (classifyError(value).kind === 'offline') return true;
+  if (!value || typeof value !== 'object') return false;
+  const candidate = value as { code?: unknown; status?: unknown; statusCode?: unknown };
+  const hasServerAnswer = Boolean(candidate.code) || Boolean(candidate.status) || Boolean(candidate.statusCode);
+  return !hasServerAnswer;
+}
+
 export function classifyError(value: unknown): ReliabilityError {
   const text = errorText(value);
   let kind: ReliabilityErrorKind = 'unknown';

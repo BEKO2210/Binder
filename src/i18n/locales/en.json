@@ -224,13 +224,34 @@
       "title": "What should Binder review?",
       "message": "Reporting also blocks this profile immediately. They are not told who reported or blocked them.",
       "reasons": {
-        "underage": { "label": "May be under 18", "detail": "Highest-priority safety review." },
-        "harassment": { "label": "Harassment or threats", "detail": "Abusive, coercive or threatening behavior." },
-        "fake": { "label": "Fake or impersonation", "detail": "Identity or profile appears deceptive." },
-        "spam": { "label": "Spam or scam", "detail": "Commercial spam, fraud or suspicious solicitation." },
-        "sexualContent": { "label": "Sexual content", "detail": "Explicit or unwanted sexual profile content." },
-        "violence": { "label": "Violence", "detail": "Threats or graphic violent content." },
-        "other": { "label": "Other safety concern", "detail": "A concern not covered above." }
+        "underage": {
+          "label": "May be under 18",
+          "detail": "Highest-priority safety review."
+        },
+        "harassment": {
+          "label": "Harassment or threats",
+          "detail": "Abusive, coercive or threatening behavior."
+        },
+        "fake": {
+          "label": "Fake or impersonation",
+          "detail": "Identity or profile appears deceptive."
+        },
+        "spam": {
+          "label": "Spam or scam",
+          "detail": "Commercial spam, fraud or suspicious solicitation."
+        },
+        "sexualContent": {
+          "label": "Sexual content",
+          "detail": "Explicit or unwanted sexual profile content."
+        },
+        "violence": {
+          "label": "Violence",
+          "detail": "Threats or graphic violent content."
+        },
+        "other": {
+          "label": "Other safety concern",
+          "detail": "A concern not covered above."
+        }
       }
     },
     "profile": {
@@ -262,8 +283,8 @@
       "tryAgain": "Try again",
       "loadEarlierMessages": "Load earlier messages",
       "retry": "Retry",
-      "discard": "Discard"
-      ,"backToMatches": "Back to Matches"
+      "discard": "Discard",
+      "backToMatches": "Back to Matches"
     },
     "ended": {
       "title": "This conversation has ended",
@@ -509,18 +530,46 @@
   "onboarding": {
     "progress": "STEP {number} OF {total}",
     "steps": {
-      "eligibility": { "eyebrow": "ELIGIBILITY · 18+", "title": "First, confirm your age.", "copy": "Binder is only for adults. Your birth date is checked once, locked after onboarding, and never shown to other people.", "next": "Next: your name and gender" },
-      "identity": { "eyebrow": "THE BASICS", "title": "How should people know you?", "copy": "Use the first name you go by. These details appear on your profile.", "next": "Next: your bio and interests" },
-      "profile": { "eyebrow": "ABOUT YOU", "title": "Give people a reason to say hello.", "copy": "A short, specific bio and a few interests make starting a real conversation easier.", "next": "Next: who you want to meet" },
-      "discovery": { "eyebrow": "DISCOVERY", "title": "Choose who feels relevant.", "copy": "These preferences shape Discovery and can be changed later.", "next": "Next: add your first photo" },
-      "photo": { "eyebrow": "YOUR PHOTO", "title": "Put a face to the profile.", "copy": "Your first photo is what people see first. It is optimized, then reviewed for safety before appearing.", "next": "Finish and enter Binder" }
+      "eligibility": {
+        "eyebrow": "ELIGIBILITY · 18+",
+        "title": "First, confirm your age.",
+        "copy": "Binder is only for adults. Your birth date is checked once, locked after onboarding, and never shown to other people.",
+        "next": "Next: your name and gender"
+      },
+      "identity": {
+        "eyebrow": "THE BASICS",
+        "title": "How should people know you?",
+        "copy": "Use the first name you go by. These details appear on your profile.",
+        "next": "Next: your bio and interests"
+      },
+      "profile": {
+        "eyebrow": "ABOUT YOU",
+        "title": "Give people a reason to say hello.",
+        "copy": "A short, specific bio and a few interests make starting a real conversation easier.",
+        "next": "Next: who you want to meet"
+      },
+      "discovery": {
+        "eyebrow": "DISCOVERY",
+        "title": "Choose who feels relevant.",
+        "copy": "These preferences shape Discovery and can be changed later.",
+        "next": "Next: add your first photo"
+      },
+      "photo": {
+        "eyebrow": "YOUR PHOTO",
+        "title": "Put a face to the profile.",
+        "copy": "Your first photo is what people see first. It is optimized, then reviewed for safety before appearing.",
+        "next": "Finish and enter Binder"
+      }
     },
     "errors": {
       "preparePhoto": "Could not prepare photo.",
       "photoRequired": "Add a profile photo to continue.",
       "complete": "Onboarding could not be completed."
     },
-    "identity": { "firstName": "First name", "gender": "I am" },
+    "identity": {
+      "firstName": "First name",
+      "gender": "I am"
+    },
     "profile": {
       "bioLabel": "Bio · optional",
       "bioHelper": "{count}/500 · You can change this later",
@@ -535,7 +584,11 @@
       "resizing": "Resizing and compressing before upload",
       "openLibrary": "Tap to open your photo library"
     },
-    "actions": { "back": "Back", "finish": "Finish profile", "continue": "Continue" },
+    "actions": {
+      "back": "Back",
+      "finish": "Finish profile",
+      "continue": "Continue"
+    },
     "birthDate": {
       "title": "You must be 18 or older",
       "copy": "Enter your real date of birth. If you are under 18, you cannot create a Binder profile.",
@@ -553,15 +606,25 @@
     }
   },
   "beta": {
-    "errors": { "load": "Could not load beta settings.", "updateDiagnostics": "Could not update beta diagnostics.", "submitFeedback": "Could not submit beta feedback." },
+    "errors": {
+      "load": "Could not load beta settings.",
+      "updateDiagnostics": "Could not update beta diagnostics.",
+      "submitFeedback": "Could not submit beta feedback."
+    },
     "messages": {
       "diagnosticsEnabled": "Optional diagnostics enabled. Binder records only fixed technical event fields.",
       "diagnosticsDisabled": "Optional diagnostics disabled. Existing optional client diagnostics were deleted.",
       "feedbackReceived": "Feedback received. Thank you for testing Binder."
     },
     "loading": "Loading beta program…",
-    "header": { "title": "Beta program", "backAccessibility": "Back to profile" },
-    "intro": { "title": "Make Binder measurable, not invasive.", "copy": "Ranking quality comes from Binder's own server events. Optional client diagnostics are a separate choice and stay off by default." },
+    "header": {
+      "title": "Beta program",
+      "backAccessibility": "Back to profile"
+    },
+    "intro": {
+      "title": "Make Binder measurable, not invasive.",
+      "copy": "Ranking quality comes from Binder's own server events. Optional client diagnostics are a separate choice and stay off by default."
+    },
     "diagnostics": {
       "title": "Optional diagnostics",
       "copy": "Useful for load-time and render-failure debugging during beta.",
@@ -572,7 +635,11 @@
       "excluded": "Message text, bio/profile text, photos, exact location, contacts, free-form metadata, raw exception messages or stack traces.",
       "retention": "Client diagnostics: {clientDays} days · ranking observations: {rankingDays} days"
     },
-    "ranking": { "eyebrow": "RANKING OBSERVABILITY", "title": "What Binder learns from the deck.", "copy": "The server records rank position, shared-interest count, a 10-km distance bucket and later Bind/Pass outcome. Exact coordinates and profile content are not copied into ranking telemetry." },
+    "ranking": {
+      "eyebrow": "RANKING OBSERVABILITY",
+      "title": "What Binder learns from the deck.",
+      "copy": "The server records rank position, shared-interest count, a 10-km distance bucket and later Bind/Pass outcome. Exact coordinates and profile content are not copied into ranking telemetry."
+    },
     "feedback": {
       "eyebrow": "PRIVATE BETA FEEDBACK",
       "title": "Tell us what failed or felt wrong.",
@@ -583,22 +650,39 @@
       "placeholder": "What happened? What did you expect instead?",
       "send": "Send beta feedback"
     },
-    "categories": { "bug": "Bug", "ux": "UX", "safety": "Safety", "performance": "Performance", "other": "Other" }
+    "categories": {
+      "bug": "Bug",
+      "ux": "UX",
+      "safety": "Safety",
+      "performance": "Performance",
+      "other": "Other"
+    }
   },
   "legalGate": {
-    "errors": { "open": "Could not open this page.", "accept": "Could not save your acceptance." },
+    "errors": {
+      "open": "Could not open this page.",
+      "accept": "Could not save your acceptance."
+    },
     "header": {
       "eyebrow": "BEFORE YOU CREATE OR SHARE",
       "title": "Clear rules before conversation.",
       "copy": "Binder is 18+ and built around mutual choice. Before you create a profile, upload a photo or send a message, accept the current Terms & Community Rules and Privacy Policy."
     },
     "policies": {
-      "terms": { "title": "Terms & Community Rules", "copy": "18+ only · consent · no harassment · no sexual exploitation · no impersonation, scams or block evasion." },
-      "privacy": { "title": "Privacy Policy", "copy": "What Binder stores, why location stays private, how safety records work and how to delete your account." },
+      "terms": {
+        "title": "Terms & Community Rules",
+        "copy": "18+ only · consent · no harassment · no sexual exploitation · no impersonation, scams or block evasion."
+      },
+      "privacy": {
+        "title": "Privacy Policy",
+        "copy": "What Binder stores, why location stays private, how safety records work and how to delete your account."
+      },
       "version": "Version {version}"
     },
     "confirmation": "I have read and agree to the current Terms & Community Rules and Privacy Policy.",
-    "actions": { "agree": "Agree & continue" },
+    "actions": {
+      "agree": "Agree & continue"
+    },
     "noSkip": "There is no skip. Material policy changes can require a new acceptance before more UGC is created."
   },
   "discoveryPreferences": {
@@ -790,8 +874,7 @@
       "name": "BINDER"
     }
   },
-  "screenState": {
-  },
+  "screenState": {},
   "matchCelebration": {
     "fallback": {
       "you": "You"
@@ -804,6 +887,16 @@
     "actions": {
       "saySomething": "Say something real",
       "keepDiscovering": "Keep discovering"
+    }
+  },
+  "root": {
+    "offline": {
+      "title": "You are offline",
+      "message": "Binder needs a connection to check the current safety rules. It will work as soon as you are back online."
+    },
+    "legalGate": {
+      "failedTitle": "Safety check failed",
+      "failedMessage": "Could not verify Binder policy state."
     }
   }
 }

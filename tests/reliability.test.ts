@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { abortable, backoffDelay, classifyError, isConversationEndedError, withRetry } from '../src/lib/reliability.ts';
+import { abortable, backoffDelay, classifyError, isConversationEndedError, isLikelyOffline, withRetry } from '../src/lib/reliability.ts';
 
 test('classifies every reliability family with distinct recovery', () => {
   const cases = [
@@ -59,4 +59,14 @@ test('recognizes only server-confirmed terminal conversation errors', () => {
   assert.equal(isConversationEndedError(new Error('This conversation is no longer active.')), true);
   assert.equal(isConversationEndedError({ code: '42501', message: 'Active match membership required.' }), true);
   assert.equal(isConversationEndedError(new Error('Network request failed')), false);
+});
+
+test('a request that never reached the server counts as offline', () => {
+  // Transport failures differ by platform; what they share is the absence of a
+  // server answer. A refusal always carries a code or a status.
+  assert.equal(isLikelyOffline(new Error('Network request failed')), true);
+  assert.equal(isLikelyOffline({ message: 'connection closed' }), true);
+  assert.equal(isLikelyOffline({ code: '42501', message: 'Admin permission required.' }), false);
+  assert.equal(isLikelyOffline({ status: 500, message: 'server exploded' }), false);
+  assert.equal(isLikelyOffline({ statusCode: 400, message: 'bad request' }), false);
 });

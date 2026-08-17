@@ -24,6 +24,7 @@ import {
 } from './lib/notifications';
 import { getLegalGate, type LegalGate } from './lib/safety';
 import { safeLog } from './lib/safeLog';
+import { isLikelyOffline } from './lib/reliability';
 import { supabase } from './lib/supabase';
 import AboutScreen from './screens/AboutScreen';
 import AppSettingsScreen from './screens/AppSettingsScreen';
@@ -80,6 +81,10 @@ function BinderApp() {
   const [legalRefreshKey, setLegalRefreshKey] = useState(0);
   const [onboardingComplete, setOnboardingComplete] = useState<boolean | undefined>(undefined);
   const [loadError, setLoadError] = useState('');
+  // The very first screen a user without network sees was "Safety check failed
+  // — could not verify Binder policy state". Nothing is wrong with the policy;
+  // the phone is offline, and that is what it has to say.
+  const [loadOffline, setLoadOffline] = useState(false);
   const [tab, setTab] = useState<Tab>('discover');
   const [profileRoute, setProfileRoute] = useState<ProfileRoute>('home');
   const [activeMatch, setActiveMatch] = useState<MatchSummary | null>(null);
@@ -141,8 +146,8 @@ function BinderApp() {
 
   useEffect(() => {
     if (!session) { setLegalGate(undefined); return; }
-    let active = true; const startedAt = Date.now(); setLegalGate(undefined); setLoadError(''); void initializeBetaDiagnostics();
-    getLegalGate().then((gate) => { if (!active) return; setLegalGate(gate); void recordBetaEvent('legal_gate_load', 'legal', { durationMs: Date.now() - startedAt, outcome: 'ok' }); }).catch((error: unknown) => { if (!active) return; setLoadError(error instanceof Error ? error.message : 'Could not verify Binder policy state.'); setLegalGate(null); void recordBetaEvent('legal_gate_load', 'legal', { durationMs: Date.now() - startedAt, outcome: 'error' }); });
+    let active = true; const startedAt = Date.now(); setLegalGate(undefined); setLoadError(''); setLoadOffline(false); void initializeBetaDiagnostics();
+    getLegalGate().then((gate) => { if (!active) return; setLegalGate(gate); void recordBetaEvent('legal_gate_load', 'legal', { durationMs: Date.now() - startedAt, outcome: 'ok' }); }).catch((error: unknown) => { if (!active) return; const offline = isLikelyOffline(error); setLoadOffline(offline); setLoadError(offline ? t('root.offline.message') : error instanceof Error ? error.message : t('root.legalGate.failedMessage')); setLegalGate(null); void recordBetaEvent('legal_gate_load', 'legal', { durationMs: Date.now() - startedAt, outcome: 'error' }); });
     return () => { active = false; };
   }, [session?.user.id, legalRefreshKey]);
 
@@ -275,7 +280,16 @@ function BinderApp() {
   if (!session) return <AuthScreen />;
   if (recovering) return <AuthScreen recovery onRecoveryHandled={() => setRecovering(false)} />;
   if (legalGate === undefined) return <ScreenState kind="loading" message="Checking Binder safety rules…" />;
-  if (legalGate === null) return <ScreenState kind="error" icon="retry" title="Safety check failed" message={loadError || 'Could not verify Binder safety rules.'} actionLabel="Try again" onAction={() => setLegalRefreshKey((value) => value + 1)} />;
+  if (legalGate === null) return (
+    <ScreenState
+      kind={loadOffline ? 'offline' : 'error'}
+      icon="retry"
+      title={loadOffline ? t('root.offline.title') : t('root.legalGate.failedTitle')}
+      message={loadError || t('root.legalGate.failedMessage')}
+      actionLabel={t('common.retry')}
+      onAction={() => setLegalRefreshKey((value) => value + 1)}
+    />
+  );
   if (!legalGate.accepted) return <LegalGateScreen gate={legalGate} onAccepted={() => { setLegalGate((current) => current ? { ...current, accepted: true } : current); setLoadError(''); }} />;
   if (onboardingComplete === undefined) return <ScreenState kind="loading" message={loadError || 'Loading your Binder profile…'} />;
   if (!onboardingComplete) return <OnboardingScreen userId={session.user.id} onComplete={() => { setOnboardingComplete(true); setTab('discover'); }} />;
