@@ -20,6 +20,7 @@ test('messages inside five minutes from one sender form a group', () => {
   const messages = items.filter((item) => item.type === 'message');
   assert.deepEqual(messages.map((item) => item.type === 'message' && item.groupedWithPrevious), [false, true, false]);
   assert.deepEqual(messages.map((item) => item.type === 'message' && item.showsTimestamp), [false, true, true]);
+  assert.deepEqual(messages.map((item) => item.type === 'message' && item.endsGroup), [false, true, true]);
 });
 
 test('a sender change breaks the group', () => {

@@ -313,9 +313,10 @@ export default function DiscoveryScreen({ onOpenMatch }: { onOpenMatch?: (match:
 
       {error ? <BinderText variant="caption" tone="destructive" align="center" style={{ paddingHorizontal: theme.spacing.x5, paddingBottom: theme.spacing.x1 }}>{error}</BinderText> : null}
       <View style={{ minHeight: 82, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: theme.spacing.x3, paddingBottom: theme.spacing.x3 }}>
+        {/* Two buttons, one axis: a trailing spacer used to sit here and pushed
+            the pair off the screen's centre line by half a button. */}
         <View style={{ width: theme.spacing.x16 }}><DiscoveryAction kind="pass" disabled={!profile || decisionPending || safetyOpen} onPress={() => void submitDecision('left')} /></View>
         <View style={{ width: theme.spacing.x16 }}><DiscoveryAction kind="bind" disabled={!profile || decisionPending || safetyOpen} onPress={() => void submitDecision('right')} /></View>
-        <View style={{ width: theme.spacing.x16 }} />
       </View>
 
       {viewingProfile ? (

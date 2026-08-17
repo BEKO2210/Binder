@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Alert, AppState, BackHandler, FlatList, Platform, Pressable, TextInput, View } from 'react-native';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Alert, AppState, BackHandler, Clipboard, FlatList, Platform, Pressable, TextInput, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { buildChatTimeline, timeLabel, type TimelineItem } from '../lib/chatTimeline';
+import { composerBody } from '../lib/conversationPresentation';
 
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderText, ScreenState } from '../components/ui';
 import {
@@ -33,7 +34,7 @@ const REPORT_REASONS: { value: ReportReason; label: string }[] = [
   { value: 'other', label: 'Other' },
 ];
 
-type FailedAttempt = { clientId: string; body: string };
+type LocalAttempt = { clientId: string; body: string; status: 'sending' | 'failed' };
 type SafetyMode = 'menu' | 'report';
 
 export default function ChatScreen({ match, currentUserId, onClose, onConversationEnded }: {
@@ -52,7 +53,10 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   const [composer, setComposer] = useState('');
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState('');
-  const [failedAttempt, setFailedAttempt] = useState<FailedAttempt | null>(null);
+  const [localAttempt, setLocalAttempt] = useState<LocalAttempt | null>(null);
+  const [showNewMessage, setShowNewMessage] = useState(false);
+  const listRef = useRef<FlatList<TimelineItem<Message>>>(null);
+  const nearNewestRef = useRef(true);
   const [showSafety, setShowSafety] = useState(false);
   const [safetyMode, setSafetyMode] = useState<SafetyMode>('menu');
   const [reportReason, setReportReason] = useState<ReportReason>('harassment');
@@ -111,6 +115,8 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
           retryAttempt = 0;
           setLoadError('');
           mergeMessage(message);
+          if (nearNewestRef.current) listRef.current?.scrollToOffset({ offset: 0, animated: !reduceMotion });
+          else if (message.sender_id !== currentUserId) setShowNewMessage(true);
           if (message.sender_id !== currentUserId) void markMatchRead(match.matchId).catch(() => undefined);
         },
         (message) => {
@@ -154,7 +160,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
       unsubscribe?.();
       appState.remove();
     };
-  }, [currentUserId, match.matchId]);
+  }, [currentUserId, match.matchId, reduceMotion]);
 
   async function loadOlder() {
     const oldest = messages[0];
@@ -172,8 +178,8 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     }
   }
 
-  const trimmedComposer = composer.trim();
-  const canSend = trimmedComposer.length > 0 && trimmedComposer.length <= 2000 && !sending;
+  const validComposer = composerBody(composer);
+  const canSend = validComposer !== null && !sending;
   const reportingMessage = useMemo(() => messages.find((message) => message.id === reportMessageId) ?? null, [messages, reportMessageId]);
   // The list renders inverted so the newest message is always pinned to the
   // bottom edge, directly above the composer — also while the keyboard is up.
@@ -190,22 +196,39 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     return () => subscription.remove();
   }, [showPartnerProfile, showSafety]);
 
-  async function submitMessage() {
-    if (!canSend) return;
-    const body = trimmedComposer;
-    const clientId = failedAttempt?.body === body ? failedAttempt.clientId : createClientMessageId();
+  async function submitMessage(retry = false) {
+    const body = retry ? localAttempt?.body ?? null : validComposer;
+    if (!body || sending) return;
+    const clientId = retry && localAttempt ? localAttempt.clientId : createClientMessageId();
     setSending(true);
     setSendError('');
+    setLocalAttempt({ clientId, body, status: 'sending' });
+    if (!retry) setComposer('');
     try {
       const confirmed = await sendMessage(match.matchId, clientId, body);
       mergeMessage(confirmed);
-      setComposer('');
-      setFailedAttempt(null);
+      setLocalAttempt(null);
+      listRef.current?.scrollToOffset({ offset: 0, animated: !reduceMotion });
       await haptic('selection');
     } catch (nextError) {
-      setFailedAttempt({ clientId, body });
-      setSendError('Message not sent. Check your connection, then tap Send to retry.');
+      setLocalAttempt({ clientId, body, status: 'failed' });
+      setSendError('Message not sent. Check your connection and retry.');
     } finally { setSending(false); }
+  }
+
+  function openMessageActions(message: Message) {
+    const actions = [
+      { text: 'Copy', onPress: () => Clipboard.setString(message.body) },
+      ...(message.sender_id === currentUserId ? [] : [{ text: 'Report', style: 'destructive' as const, onPress: () => openReport(message.id) }]),
+      { text: 'Cancel', style: 'cancel' as const },
+    ];
+    Alert.alert('Message actions', undefined, actions);
+  }
+
+  function trackScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
+    const nearNewest = event.nativeEvent.contentOffset.y <= theme.spacing.x8;
+    nearNewestRef.current = nearNewest;
+    if (nearNewest) setShowNewMessage(false);
   }
 
   function confirmUnmatch() {
@@ -255,7 +278,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: theme.colors.canvas }} behavior="padding" keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}>
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: theme.colors.canvas }} behavior="padding" keyboardVerticalOffset={Platform.OS === 'ios' ? theme.spacing.x2 : 0}>
       <View style={{ paddingTop: theme.spacing.x3, paddingHorizontal: theme.spacing.x3, paddingBottom: theme.spacing.x3, flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: theme.colors.borderSubtle }}>
         <BinderIconButton name="back" accessibilityLabel="Back to matches" onPress={onClose} />
         <Pressable accessibilityRole="button" accessibilityLabel={`Open ${match.firstName}'s profile`} onPress={() => setShowPartnerProfile(true)} style={{ flex: 1, alignItems: 'center' }}>
@@ -272,7 +295,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
             <View style={{ marginTop: theme.spacing.x4 }}>
               {reportingMessage ? <BinderCard style={{ backgroundColor: theme.colors.surfaceElevated, padding: theme.spacing.x3 }}><BinderText variant="caption" tone="secondary" numberOfLines={4}>{reportingMessage.body}</BinderText></BinderCard> : null}
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2, marginTop: theme.spacing.x3 }}>{REPORT_REASONS.map((reason) => <BinderChip key={reason.value} label={reason.label} selected={reportReason === reason.value} onPress={() => setReportReason(reason.value)} />)}</View>
-              <TextInput accessibilityLabel="Report details" value={reportDetails} onChangeText={setReportDetails} maxLength={1000} multiline placeholder="Optional details for the safety team" placeholderTextColor={theme.colors.textMuted} selectionColor={theme.accent.accent} style={{ minHeight: 88, maxHeight: 150, marginTop: theme.spacing.x3, color: theme.colors.textPrimary, backgroundColor: theme.colors.surfaceElevated, borderWidth: 1, borderColor: theme.colors.borderSubtle, borderRadius: theme.radii.control, padding: theme.spacing.x3, textAlignVertical: 'top' }} />
+              <TextInput accessibilityLabel="Report details" value={reportDetails} onChangeText={setReportDetails} maxLength={1000} multiline placeholder="Optional details for the safety team" placeholderTextColor={theme.colors.textMuted} selectionColor={theme.accent.accent} style={{ minHeight: theme.spacing.x16 + theme.spacing.x6, maxHeight: theme.spacing.x16 * 2 + theme.spacing.x6, marginTop: theme.spacing.x3, color: theme.colors.textPrimary, backgroundColor: theme.colors.surfaceElevated, borderWidth: 1, borderColor: theme.colors.borderSubtle, borderRadius: theme.radii.control, padding: theme.spacing.x3, textAlignVertical: 'top' }} />
               <BinderButton label="Report & block" icon="report" variant="destructive" loading={reporting} onPress={() => void submitReport()} style={{ marginTop: theme.spacing.x3 }} />
               <BinderButton label="Back to safety controls" variant="ghost" disabled={reporting} onPress={() => { setSafetyMode('menu'); setReportMessageId(null); setReportDetails(''); }} style={{ marginTop: theme.spacing.x2 }} />
             </View>
@@ -288,11 +311,14 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
 
       {loading ? <ScreenState kind="loading" message="Opening conversation…" /> : loadError && messages.length === 0 ? <ScreenState kind="error" icon="retry" title="Conversation did not load" message={loadError} actionLabel="Back to matches" onAction={onClose} /> : messages.length === 0 ? <ScreenState kind="empty" icon="matches" title="You matched." message="Normal chat opens only after mutual interest. Say something real." /> : (
         <FlatList
+          ref={listRef}
           data={timeline}
           inverted
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ padding: theme.spacing.x4 }}
           showsVerticalScrollIndicator={false}
+          onScroll={trackScroll}
+          scrollEventThrottle={theme.motion.feedback}
           ListFooterComponent={hasMore ? <BinderButton label="Load earlier messages" variant="ghost" loading={loadingOlder} onPress={() => void loadOlder()} style={{ marginBottom: theme.spacing.x3 }} /> : null}
           renderItem={({ item }) => {
             if (item.type === 'day') {
@@ -309,13 +335,13 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
             const bubbleRadius = theme.radii.control;
             return (
               <Animated.View entering={reduceMotion ? undefined : FadeInDown.duration(theme.motion.feedback)} style={{ marginTop: item.groupedWithPrevious ? theme.spacing.x1 : theme.spacing.x3 }}>
-                <Pressable disabled={mine} onLongPress={() => openReport(message.id)} accessibilityHint={mine ? undefined : 'Hold to report this message'} style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: '82%' }}>
+                <Pressable onLongPress={() => openMessageActions(message)} accessibilityHint={mine ? 'Hold to copy this message' : 'Hold to copy or report this message'} style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: '82%' }}>
                   <View style={{
                     paddingHorizontal: theme.spacing.x4,
                     paddingVertical: theme.spacing.x3,
                     borderRadius: bubbleRadius,
-                    borderTopRightRadius: mine && item.groupedWithPrevious ? theme.radii.small / 2 : bubbleRadius,
-                    borderTopLeftRadius: !mine && item.groupedWithPrevious ? theme.radii.small / 2 : bubbleRadius,
+                    borderBottomRightRadius: mine && item.endsGroup ? theme.radii.small : bubbleRadius,
+                    borderBottomLeftRadius: !mine && item.endsGroup ? theme.radii.small : bubbleRadius,
                     backgroundColor: mine ? theme.accent.accent : theme.colors.surfaceElevated,
                     borderWidth: mine ? 0 : 1,
                     borderColor: theme.colors.borderSubtle,
@@ -324,7 +350,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
                   </View>
                   {item.showsTimestamp ? (
                     <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1, alignSelf: mine ? 'flex-end' : 'flex-start', marginHorizontal: theme.spacing.x2 }}>
-                      {timeLabel(message.created_at)}
+                      {timeLabel(message.created_at)}{mine ? ' · Sent' : ''}
                     </BinderText>
                   ) : null}
                 </Pressable>
@@ -334,12 +360,16 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         />
       )}
 
+      {showNewMessage ? <Pressable accessibilityRole="button" accessibilityLabel="Scroll to new message" onPress={() => { listRef.current?.scrollToOffset({ offset: 0, animated: !reduceMotion }); setShowNewMessage(false); }} style={({ pressed }) => ({ minHeight: theme.spacing.x12, alignSelf: 'center', justifyContent: 'center', paddingHorizontal: theme.spacing.x4, borderRadius: theme.radii.pill, backgroundColor: pressed ? theme.accent.pressed : theme.accent.accent })}><BinderText variant="label" style={{ color: theme.accent.foreground }}>New message</BinderText></Pressable> : null}
+
+      {localAttempt ? <View style={{ alignItems: 'flex-end', paddingHorizontal: theme.spacing.x4, paddingTop: theme.spacing.x2 }}><View style={{ maxWidth: '82%', paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x3, borderRadius: theme.radii.control, borderBottomRightRadius: theme.radii.small, backgroundColor: localAttempt.status === 'failed' ? theme.colors.surfaceElevated : theme.accent.accent, borderWidth: localAttempt.status === 'failed' ? 1 : 0, borderColor: theme.semantic.destructive }}><BinderText variant="body" style={{ color: localAttempt.status === 'failed' ? theme.colors.textPrimary : theme.accent.foreground }}>{localAttempt.body}</BinderText></View><View style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>{localAttempt.status === 'sending' ? <BinderText variant="caption" tone="muted">Sending…</BinderText> : <><BinderText variant="caption" tone="destructive">Not sent</BinderText><Pressable accessibilityRole="button" accessibilityLabel="Retry sending message" onPress={() => void submitMessage(true)} style={({ pressed }) => ({ minHeight: theme.spacing.x12, justifyContent: 'center', paddingHorizontal: theme.spacing.x3, borderRadius: theme.radii.pill, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surfaceElevated })}><BinderText variant="label" tone="accent">Retry</BinderText></Pressable></>}</View></View> : null}
+
       {loadError && messages.length > 0 ? <BinderText variant="caption" tone="destructive" style={{ paddingHorizontal: theme.spacing.x4 }}>{loadError}</BinderText> : null}
-      {sendError ? <BinderText variant="caption" tone="destructive" style={{ paddingHorizontal: theme.spacing.x4 }}>{sendError} Tap Send to retry safely.</BinderText> : null}
+      {sendError ? <BinderText variant="caption" tone="destructive" style={{ paddingHorizontal: theme.spacing.x4 }}>{sendError}</BinderText> : null}
 
       <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: theme.spacing.x2, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x3, borderTopWidth: 1, borderTopColor: theme.colors.borderSubtle, backgroundColor: theme.colors.surface }}>
-        <TextInput accessibilityLabel={`Message ${match.firstName}`} value={composer} onChangeText={(value) => { setComposer(value); setSendError(''); if (failedAttempt && failedAttempt.body !== value.trim()) setFailedAttempt(null); }} maxLength={2000} multiline placeholder={`Message ${match.firstName}`} placeholderTextColor={theme.colors.textMuted} selectionColor={theme.accent.accent} style={{ flex: 1, minHeight: 48, maxHeight: 130, color: theme.colors.textPrimary, backgroundColor: theme.colors.surfaceElevated, borderWidth: 1, borderColor: theme.colors.borderSubtle, borderRadius: theme.radii.control, paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x3, textAlignVertical: 'center' }} />
-        <BinderIconButton name="send" accessibilityLabel={`Send message to ${match.firstName}`} selected={canSend} disabled={!canSend} onPress={() => void submitMessage()} />
+        <TextInput accessibilityLabel={`Message ${match.firstName}`} value={composer} onChangeText={(value) => { setComposer(value); setSendError(''); }} maxLength={2000} multiline scrollEnabled placeholder={`Message ${match.firstName}`} placeholderTextColor={theme.colors.textMuted} selectionColor={theme.accent.accent} style={{ flex: 1, minHeight: theme.spacing.x12, maxHeight: theme.spacing.x16 * 2, color: theme.colors.textPrimary, backgroundColor: theme.colors.surfaceElevated, borderWidth: 1, borderColor: theme.colors.borderSubtle, borderRadius: theme.radii.control, paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x3, textAlignVertical: 'center' }} />
+        <BinderIconButton name={sending ? 'more' : 'send'} accessibilityLabel={sending ? 'Sending message' : `Send message to ${match.firstName}`} selected={canSend || sending} disabled={!canSend} onPress={() => void submitMessage()} />
       </View>
     </KeyboardAvoidingView>
   );

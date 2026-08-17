@@ -32,6 +32,8 @@ const symbols = {
   more: { ios: 'ellipsis', android: 'more_horiz', web: 'more_horiz' },
   logout: { ios: 'rectangle.portrait.and.arrow.right', android: 'logout', web: 'logout' },
   email: { ios: 'envelope.fill', android: 'mail', web: 'mail' },
+  reveal: { ios: 'eye.fill', android: 'visibility', web: 'visibility' },
+  conceal: { ios: 'eye.slash.fill', android: 'visibility_off', web: 'visibility_off' },
 } as const;
 
 export type BinderIconName = keyof typeof symbols;

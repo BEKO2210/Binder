@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BinderBrand, BinderButton, BinderInput, BinderText, SectionHeader } from '../components/ui';
+import { hasAuthErrors, MIN_PASSWORD_LENGTH, validateAuthForm, type AuthFieldErrors } from '../lib/authForm';
 import { supabase } from '../lib/supabase';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
@@ -22,16 +24,30 @@ export default function AuthScreen() {
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [submitted, setSubmitted] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [messageTone, setMessageTone] = useState<'secondary' | 'destructive'>('destructive');
 
+  const errors: AuthFieldErrors = useMemo(
+    () => validateAuthForm(mode, email, password, confirmPassword),
+    [mode, email, password, confirmPassword],
+  );
+  // Errors appear once the user has tried to submit, not while they are still
+  // typing their first character.
+  const visibleErrors: AuthFieldErrors = submitted ? errors : {};
+
+  function switchMode(next: 'signin' | 'signup') {
+    setMode(next);
+    setMessage('');
+    setSubmitted(false);
+    setConfirmPassword('');
+  }
+
   async function submit() {
-    if (!email.trim() || password.length < 8) {
-      setMessageTone('destructive');
-      setMessage('Enter an email and a password with at least 8 characters.');
-      return;
-    }
+    setSubmitted(true);
+    if (hasAuthErrors(errors)) return;
     setBusy(true);
     setMessage('');
     try {
@@ -55,21 +71,62 @@ export default function AuthScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.canvas, justifyContent: 'center', padding: theme.spacing.x6 }}>
+    // The keyboard used to sit on top of the password field. This lifts the form
+    // instead, keeps the focused field and the submit button visible, and still
+    // dismisses on a tap outside.
+    <KeyboardAwareScrollView
+      style={{ flex: 1, backgroundColor: theme.colors.canvas }}
+      contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: theme.spacing.x6 }}
+      bottomOffset={theme.spacing.x8}
+      keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="interactive"
+      showsVerticalScrollIndicator={false}
+    >
       <View style={{ width: '100%', maxWidth: 480, alignSelf: 'center' }}>
         <BinderBrand />
         <View style={{ marginTop: theme.spacing.x8 }}>
           <SectionHeader title={mode === 'signin' ? 'Welcome back.' : 'Start with the real you.'} copy="Dating for adults. Mutual interest before conversation." />
         </View>
         <View style={{ gap: theme.spacing.x4, marginTop: theme.spacing.x8 }}>
-          <BinderInput label="Email" autoCapitalize="none" autoComplete="email" keyboardType="email-address" placeholder="you@example.com" value={email} onChangeText={setEmail} />
-          <BinderInput label="Password" autoCapitalize="none" autoComplete={mode === 'signin' ? 'current-password' : 'new-password'} secureTextEntry placeholder="At least 8 characters" value={password} onChangeText={setPassword} />
+          <BinderInput
+            label="Email"
+            autoCapitalize="none"
+            autoComplete="email"
+            keyboardType="email-address"
+            placeholder="you@example.com"
+            value={email}
+            error={visibleErrors.email}
+            onChangeText={setEmail}
+          />
+          <BinderInput
+            label="Password"
+            autoCapitalize="none"
+            autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
+            revealToggle
+            placeholder={`At least ${MIN_PASSWORD_LENGTH} characters`}
+            value={password}
+            error={visibleErrors.password}
+            onChangeText={setPassword}
+          />
+          {mode === 'signup' ? (
+            <BinderInput
+              label="Repeat password"
+              autoCapitalize="none"
+              autoComplete="new-password"
+              revealToggle
+              placeholder="Type it once more"
+              value={confirmPassword}
+              error={visibleErrors.confirmPassword}
+              helper="Both entries have to match before the account is created."
+              onChangeText={setConfirmPassword}
+            />
+          ) : null}
         </View>
         {message ? <BinderText variant="caption" tone={messageTone} style={{ marginTop: theme.spacing.x4 }}>{message}</BinderText> : null}
         <BinderButton label={mode === 'signin' ? 'Sign in' : 'Create account'} loading={busy} onPress={() => void submit()} style={{ marginTop: theme.spacing.x5 }} />
-        <BinderButton label={mode === 'signin' ? 'New here? Create an account' : 'Already have an account? Sign in'} variant="ghost" disabled={busy} onPress={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setMessage(''); }} style={{ marginTop: theme.spacing.x3 }} />
+        <BinderButton label={mode === 'signin' ? 'New here? Create an account' : 'Already have an account? Sign in'} variant="ghost" disabled={busy} onPress={() => switchMode(mode === 'signin' ? 'signup' : 'signin')} style={{ marginTop: theme.spacing.x3 }} />
         <BinderText variant="caption" tone="muted" align="center" style={{ marginTop: theme.spacing.x3 }}>You must be at least 18 years old to use Binder.</BinderText>
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 }

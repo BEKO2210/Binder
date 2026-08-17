@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { TextInput, View, type TextInputProps } from 'react-native';
+import { Pressable, TextInput, View, type TextInputProps } from 'react-native';
 
 import { useBinderTheme } from '../../theme/ThemeProvider';
+import { BinderIcon } from './BinderIcon';
 import { BinderText } from './BinderText';
 
 type Props = TextInputProps & {
@@ -9,38 +10,71 @@ type Props = TextInputProps & {
   error?: string;
   helper?: string;
   inputRef?: React.Ref<TextInput>;
+  // Password fields get an eye: typing a password blind on a phone keyboard is
+  // how people end up locked out of their own account.
+  revealToggle?: boolean;
 };
 
-export function BinderInput({ label, error, helper, style, editable = true, inputRef, ...props }: Props) {
+const REVEAL_TARGET = 44;
+
+export function BinderInput({ label, error, helper, style, editable = true, inputRef, revealToggle = false, ...props }: Props) {
   const { theme } = useBinderTheme();
   const [focused, setFocused] = useState(false);
+  const [revealed, setRevealed] = useState(false);
   const borderColor = error ? theme.semantic.destructive : focused ? theme.accent.accent : theme.colors.borderSubtle;
+  const secure = revealToggle ? !revealed : props.secureTextEntry;
 
   return (
     <View style={{ gap: theme.spacing.x2 }}>
       <BinderText variant="label" tone={error ? 'destructive' : 'secondary'}>{label}</BinderText>
-      <TextInput
-        {...props}
-        ref={inputRef}
-        editable={editable}
-        onFocus={(event) => { setFocused(true); props.onFocus?.(event); }}
-        onBlur={(event) => { setFocused(false); props.onBlur?.(event); }}
-        placeholderTextColor={theme.colors.textMuted}
-        selectionColor={theme.accent.accent}
-        style={[{
-          minHeight: 52,
-          color: theme.colors.textPrimary,
-          backgroundColor: editable ? theme.colors.surface : theme.colors.surfaceElevated,
-          borderWidth: 1,
-          borderColor,
-          borderRadius: theme.radii.control,
-          paddingHorizontal: theme.spacing.x4,
-          paddingVertical: theme.spacing.x3,
-          fontSize: theme.typography.body.fontSize,
-          lineHeight: theme.typography.body.lineHeight,
-          opacity: editable ? 1 : 0.56,
-        }, style]}
-      />
+      <View style={{ justifyContent: 'center' }}>
+        <TextInput
+          {...props}
+          secureTextEntry={secure}
+          ref={inputRef}
+          editable={editable}
+          onFocus={(event) => { setFocused(true); props.onFocus?.(event); }}
+          onBlur={(event) => { setFocused(false); props.onBlur?.(event); }}
+          placeholderTextColor={theme.colors.textMuted}
+          selectionColor={theme.accent.accent}
+          style={[{
+            minHeight: 52,
+            color: theme.colors.textPrimary,
+            backgroundColor: editable ? theme.colors.surface : theme.colors.surfaceElevated,
+            borderWidth: 1,
+            borderColor,
+            borderRadius: theme.radii.control,
+            paddingHorizontal: theme.spacing.x4,
+            paddingRight: revealToggle ? theme.spacing.x4 + REVEAL_TARGET : theme.spacing.x4,
+            paddingVertical: theme.spacing.x3,
+            fontSize: theme.typography.body.fontSize,
+            lineHeight: theme.typography.body.lineHeight,
+            opacity: editable ? 1 : 0.56,
+          }, style]}
+        />
+        {revealToggle ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ selected: revealed }}
+            accessibilityLabel={revealed ? 'Hide password' : 'Show password'}
+            disabled={!editable}
+            onPress={() => setRevealed((current) => !current)}
+            hitSlop={theme.spacing.x2}
+            style={({ pressed }) => ({
+              position: 'absolute',
+              right: theme.spacing.x1,
+              width: REVEAL_TARGET,
+              height: REVEAL_TARGET,
+              borderRadius: theme.radii.pill,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: pressed ? theme.colors.surfacePressed : 'transparent',
+            })}
+          >
+            <BinderIcon name={revealed ? 'conceal' : 'reveal'} size={20} color={revealed ? theme.accent.accent : theme.colors.textSecondary} />
+          </Pressable>
+        ) : null}
+      </View>
       {error ? <BinderText variant="caption" tone="destructive">{error}</BinderText> : helper ? <BinderText variant="caption" tone="muted">{helper}</BinderText> : null}
     </View>
   );

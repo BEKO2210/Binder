@@ -16,6 +16,8 @@ export type TimelineItem<M extends TimelineMessage> =
       message: M;
       // Grouped bubbles sit tight together and share a flat inner corner.
       groupedWithPrevious: boolean;
+      // A block tail receives the directional corner and shared metadata.
+      endsGroup: boolean;
       // The last bubble of a group carries the time caption.
       showsTimestamp: boolean;
     };
@@ -80,6 +82,7 @@ export function buildChatTimeline<M extends TimelineMessage>(messages: M[], refe
       id: message.id,
       message,
       groupedWithPrevious,
+      endsGroup: !groupedWithNext,
       showsTimestamp: !groupedWithNext,
     });
   }
