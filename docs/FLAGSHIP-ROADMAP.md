@@ -137,3 +137,65 @@ The only sanctioned new dependency: `@shopify/react-native-skia`.
       JS payload) — stated in that document rather than quietly shipped. The
       owner took the cost and raised the two bundle budgets once, with the
       measurement written down beside them.
+
+## M · No logic left to trip over (started 2026-08-17)
+
+An independent review pass (Codex, read-only, against `src/`) produced eleven
+concrete defects. Each one is verified in the code before it is fixed and, where
+the logic is pure, it gets a test that fails without the fix.
+
+- [ ] The deck removes the card that was decided, not whatever sits at index 0.
+      A decision in flight while the deck reloads currently drops the wrong card
+      and can show a decided one again.
+- [ ] Discovery loads are serialized: a newer load always wins, an older
+      response can never overwrite it, and the request is cancelled when the
+      screen goes away.
+- [ ] Nothing that changes the deck is reachable while a decision is pending.
+- [ ] The chat backfill completes before the new realtime subscription is
+      trusted, so a message that lands during a reconnect cannot fall between
+      the two.
+- [ ] A fast flick decides by the direction of the flick, not by a projection
+      that can still point the other way.
+- [ ] Swipe geometry follows the current window size instead of the width read
+      once at module import.
+- [ ] Media removal deletes the storage object before the row, so a failure
+      leaves something that can still be retried.
+- [ ] Settings writes are computed from the latest state, not from the state
+      captured at render.
+- [ ] A failed gallery query is an error, not silently fewer photos.
+- [ ] Foreign-key violations stop being reported as "changed on another device".
+- [ ] Onboarding does not re-upload the same photo when finalisation failed and
+      the app restarted.
+
+## N · Diagnostics land where the operator looks
+
+Diagnostics are collected today — `private.beta_client_events`,
+`private.beta_feedback`, `private.beta_server_events`, with
+`private.beta_daily_summary()` on top — but the only key that may read them is
+`service_role`, so nothing reaches the admin dashboard. Opt-in telemetry that
+nobody can see is a promise the app does not keep.
+
+- [ ] Read-only RPCs in `public`, gated by the existing admin permission model,
+      for the daily summary, the client error stream and the beta feedback list.
+      No new grant to `anon`, no service-role key in a browser.
+- [ ] A "Diagnose" tab in `site/admin`: the daily funnel, discovery p95, client
+      errors with surface and app version, and feedback with category and rating.
+- [ ] The tab says plainly what is *not* collected and how long each table is
+      kept, so the privacy copy in the app and the dashboard cannot drift apart.
+- [ ] A verifier that fails the build if the dashboard queries a table directly
+      instead of going through the gated RPCs.
+
+## O · Tested with real accounts, not with hope
+
+The deck has never been exercised with a real candidate: the two production
+accounts are already matched with each other. The owner asked for test accounts
+on 2026-08-17.
+
+- [ ] Test accounts created through the same paths a real user takes, clearly
+      labelled as test data, with a documented single command that removes them
+      and everything they produced.
+- [ ] The full loop walked on the S23 with those accounts: discovery with a real
+      candidate, bind and pass, a match, the first message, a report, photo
+      moderation, and the reset back to a clean state.
+- [ ] Every step backed by a screenshot or a row from the database, recorded in
+      `docs/PHASE7-DEVICE-MATRIX.md`.
