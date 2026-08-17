@@ -3,7 +3,7 @@
 
 export const MIN_PASSWORD_LENGTH = 8;
 
-export type AuthMode = 'signin' | 'signup';
+export type AuthMode = 'signin' | 'signup' | 'reset';
 
 export type AuthFieldErrors = {
   email?: string;
@@ -21,6 +21,10 @@ export function validateAuthForm(mode: AuthMode, email: string, password: string
 
   if (!trimmedEmail) errors.email = 'Enter your email address.';
   else if (!EMAIL_SHAPE.test(trimmedEmail)) errors.email = 'That does not look like an email address.';
+
+  // A reset only needs somewhere to send the link; asking for the password the
+  // person has just forgotten would be absurd.
+  if (mode === 'reset') return errors;
 
   if (!password) errors.password = 'Enter your password.';
   else if (password.length < MIN_PASSWORD_LENGTH) errors.password = `Use at least ${MIN_PASSWORD_LENGTH} characters.`;

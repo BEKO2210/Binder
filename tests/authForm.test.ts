@@ -24,3 +24,12 @@ test('the confirm field is only a sign-up concern', () => {
   assert.equal(hasAuthErrors(validateAuthForm('signin', 'a@b.de', 'longenough', '')), false);
   assert.equal(hasAuthErrors(validateAuthForm('signup', 'a@b.de', 'longenough', '')), true);
 });
+
+test('a reset only needs an address the person could actually own', () => {
+  assert.deepEqual(validateAuthForm('reset', 'a@b.de', '', ''), {});
+  assert.equal(validateAuthForm('reset', '', '', '').email, 'Enter your email address.');
+  assert.equal(validateAuthForm('reset', 'nope', '', '').email, 'That does not look like an email address.');
+  // Asking for the forgotten password would be absurd, so neither field blocks.
+  assert.equal(validateAuthForm('reset', 'a@b.de', '', '').password, undefined);
+  assert.equal(validateAuthForm('reset', 'a@b.de', '', '').confirmPassword, undefined);
+});

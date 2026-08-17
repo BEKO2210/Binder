@@ -68,6 +68,7 @@ function BinderApp() {
   const { theme, settings, hydrated, updateSettings } = useBinderTheme();
   const haptic = useBinderHaptics();
   const [session, setSession] = useState<Session | null | undefined>(undefined);
+  const [recovering, setRecovering] = useState(false);
   const [legalGate, setLegalGate] = useState<LegalGate | null | undefined>(undefined);
   const [legalRefreshKey, setLegalRefreshKey] = useState(0);
   const [onboardingComplete, setOnboardingComplete] = useState<boolean | undefined>(undefined);
@@ -83,7 +84,10 @@ function BinderApp() {
   useEffect(() => {
     let active = true;
     supabase.auth.getSession().then(({ data, error }) => { if (!active) return; if (error) setLoadError(error.message); setSession(data.session); });
-    const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      // A reset link signs the person in with a recovery session. Until they
+      // have actually chosen a new password, that session may only do that.
+      if (event === 'PASSWORD_RECOVERY') setRecovering(true);
       setSession(nextSession); setLegalGate(undefined); setOnboardingComplete(undefined); setNotificationPreferencesReadyFor(null); setLoadError(''); setActiveMatch(null); setProfileRoute('home'); setTab('discover'); appSessionRecorded.current = false;
     });
     return () => { active = false; data.subscription.unsubscribe(); };
@@ -222,6 +226,7 @@ function BinderApp() {
 
   if (session === undefined) return <ScreenState kind="loading" message={loadError || 'Loading Binder…'} />;
   if (!session) return <AuthScreen />;
+  if (recovering) return <AuthScreen recovery onRecoveryHandled={() => setRecovering(false)} />;
   if (legalGate === undefined) return <ScreenState kind="loading" message="Checking Binder safety rules…" />;
   if (legalGate === null) return <ScreenState kind="error" icon="retry" title="Safety check failed" message={loadError || 'Could not verify Binder safety rules.'} actionLabel="Try again" onAction={() => setLegalRefreshKey((value) => value + 1)} />;
   if (!legalGate.accepted) return <LegalGateScreen gate={legalGate} onAccepted={() => { setLegalGate((current) => current ? { ...current, accepted: true } : current); setLoadError(''); }} />;
