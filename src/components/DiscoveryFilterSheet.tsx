@@ -22,11 +22,16 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
   const [errors, setErrors] = useState<GroupErrors>({});
   const [busy, setBusy] = useState(false);
   const [passingCount, setPassingCount] = useState<number | null>(null);
+  const [countError, setCountError] = useState(false);
   const [countBusy, setCountBusy] = useState(false);
   const countRequest = useRef(0);
+  // A failed load used to leave only "Close": the user had to dismiss the sheet
+  // and open it again to retry the very same request.
+  const [loadAttempt, setLoadAttempt] = useState(0);
 
   useEffect(() => {
     let active = true;
+    setLoadError('');
     async function load() {
       const { data: userData } = await supabase.auth.getUser();
       const uid = userData.user?.id;
@@ -43,7 +48,7 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
     }
     void load().catch((cause: unknown) => { if (active) setLoadError(cause instanceof Error ? cause.message : 'Could not load your discovery settings.'); });
     return () => { active = false; };
-  }, [initialValues]);
+  }, [initialValues, loadAttempt]);
 
   useEffect(() => {
     if (!profile || !viewerId) return;
@@ -51,16 +56,29 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
     const controller = new AbortController();
     setCountBusy(true);
     const timer = setTimeout(() => {
-      void supabase.from('profiles')
-        .select('user_id', { count: 'exact', head: true })
-        .neq('user_id', viewerId)
-        .eq('onboarding_complete', true)
-        .in('gender', values.interestedIn)
+      // The count comes from the server with the same rules discovery applies —
+      // age, distance, blocks, decisions, suspensions and legal state included.
+      // Counting profiles by gender in the client claimed a consequence the
+      // dial did not actually have.
+      void supabase.rpc('count_discovery_candidates', {
+        p_interested_in: values.interestedIn,
+        p_min_age: values.minAge,
+        p_max_age: values.maxAge,
+        p_distance_km: values.distance,
+      })
         .abortSignal(controller.signal)
-        .then(({ count, error }) => {
+        .then(({ data, error }) => {
           if (request !== countRequest.current || controller.signal.aborted) return;
           setCountBusy(false);
-          if (!error) setPassingCount(count ?? 0);
+          if (error) {
+            // A stale number is worse than an honest gap: it would keep
+            // promising a consequence the server never confirmed.
+            setPassingCount(null);
+            setCountError(true);
+            return;
+          }
+          setCountError(false);
+          setPassingCount(typeof data === 'number' ? data : 0);
         });
     }, discoveryCountDebounceMs);
     return () => { clearTimeout(timer); controller.abort(); };
@@ -90,11 +108,11 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
       <BinderCard style={{ height: '94%', padding: 0, borderBottomLeftRadius: 0, borderBottomRightRadius: 0, borderColor: theme.colors.borderStrong, overflow: 'hidden' }}>
         <View style={{ alignItems: 'center', paddingTop: theme.spacing.x2 }}><View style={{ width: theme.spacing.x10, height: theme.spacing.x1, borderRadius: theme.radii.pill, backgroundColor: theme.colors.borderStrong }} /></View>
         <BinderScreenHeader title="Your search" eyebrow="DISCOVERY" trailing={<BinderIconButton name="close" accessibilityLabel="Close discovery filters" onPress={onClose} />} />
-        {loadError ? <ScreenState kind="error" icon="retry" title="Filters did not load" message={loadError} actionLabel="Close" onAction={onClose} /> : !profile ? <ScreenState kind="loading" message="Loading your filters…" /> : (
+        {loadError ? <ScreenState kind="error" icon="retry" title="Filters did not load" message={loadError} actionLabel="Try again" onAction={() => setLoadAttempt((value) => value + 1)} secondaryActionLabel="Close" onSecondaryAction={onClose} /> : !profile ? <ScreenState kind="loading" message="Loading your filters…" /> : (
           <>
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: theme.spacing.x5, paddingTop: theme.spacing.x4, paddingBottom: theme.spacing.x8 }}>
               <DiscoveryPreferences {...values} showPresets onChange={(next) => { setValues(next); setErrors({}); }} errors={errors} />
-              <CountConsequence count={passingCount} loading={countBusy} cause={likelyEmptyFilter(values)} />
+              <CountConsequence count={passingCount} loading={countBusy} failed={countError} cause={likelyEmptyFilter(values)} />
             </ScrollView>
             <View style={{ paddingHorizontal: theme.spacing.x5, paddingTop: theme.spacing.x3, paddingBottom: theme.spacing.x5, borderTopWidth: 1, borderTopColor: theme.colors.borderSubtle, backgroundColor: theme.colors.surface }}>
               <BinderButton label="Apply filters" loading={busy} onPress={() => void apply()} />
@@ -107,11 +125,13 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
   );
 }
 
-function CountConsequence({ count, loading, cause }: { count: number | null; loading: boolean; cause: 'audience' | 'age' | 'distance' }) {
+function CountConsequence({ count, loading, failed, cause }: { count: number | null; loading: boolean; failed: boolean; cause: 'audience' | 'age' | 'distance' }) {
   const { theme } = useBinderTheme();
   const causeCopy = cause === 'audience' ? 'who you want to meet' : cause === 'age' ? 'age range' : 'distance';
   return <View accessibilityLiveRegion="polite" style={{ marginTop: theme.spacing.x8 }}>
-    <BinderText variant="title">{loading || count === null ? 'Checking who fits…' : count === 0 ? 'No one currently fits' : `${count} ${count === 1 ? 'person' : 'people'} currently fit`}</BinderText>
-    {count === 0 && !loading ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x2 }}>Your {causeCopy} is the likely cause. Widen it before applying.</BinderText> : <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>This updates as you shape your search.</BinderText>}
+    <BinderText variant="title">{failed && !loading ? 'Count unavailable' : loading || count === null ? 'Checking who fits…' : count === 0 ? 'No one currently fits' : `${count} ${count === 1 ? 'person' : 'people'} currently fit`}</BinderText>
+    {failed && !loading ? <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>Binder could not check right now. Change a filter to try again — your settings still apply.</BinderText>
+      : count === 0 && !loading ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x2 }}>Your {causeCopy} is the likely cause. Widen it before applying.</BinderText>
+      : <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>This updates as you shape your search.</BinderText>}
   </View>;
 }

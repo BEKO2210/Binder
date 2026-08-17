@@ -26,6 +26,8 @@ const STEP_COPY: Record<OnboardingStep, { eyebrow: string; title: string; copy: 
 export default function OnboardingScreen({ userId, onComplete }: Props) {
   const { theme } = useBinderTheme();
   const [step, setStep] = useState<OnboardingStep>('eligibility');
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const inFlight = useRef(false);
   const [firstName, setFirstName] = useState(''); const [birthDate, setBirthDate] = useState('');
   const [gender, setGender] = useState<Gender | null>(null); const [bio, setBio] = useState('');
   const [interests, setInterests] = useState<string[]>([]); const [preferences, setPreferences] = useState(discoveryDefaults);
@@ -43,10 +45,23 @@ export default function OnboardingScreen({ userId, onComplete }: Props) {
     if (step === 'discovery') { const errors = validateDiscovery(preferences.interestedIn, preferences.minAge, preferences.maxAge, preferences.distance); setDiscoveryErrors(errors); if (hasErrors(errors)) return; }
     const next = ONBOARDING_STEPS[position.index + 1]; if (next) setStep(next);
   }
-  async function choosePhoto() { try { setSubmitError(''); const next = await pickAndPrepareProfileImage(); if (next) setPhoto(next); } catch (error) { setSubmitError(error instanceof Error ? error.message : 'Could not prepare photo.'); } }
+  async function choosePhoto() {
+    if (photoBusy) return;
+    setPhotoBusy(true);
+    setSubmitError('');
+    try {
+      const next = await pickAndPrepareProfileImage();
+      if (next) setPhoto(next);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : 'Could not prepare photo.');
+    } finally { setPhotoBusy(false); }
+  }
   async function finish() {
     if (!photo) return setSubmitError('Add a profile photo to continue.');
     if (!gender) return;
+    // Finishing runs three server calls; a double tap must not start them twice.
+    if (inFlight.current) return;
+    inFlight.current = true;
     setBusy(true); setSubmitError('');
     try {
       const { error } = await supabase.rpc('complete_my_onboarding', { p_first_name: firstName.trim(), p_birth_date: birthDate, p_gender: gender, p_bio: bio.trim(), p_interests: interests, p_interested_in: preferences.interestedIn, p_min_age: preferences.minAge, p_max_age: preferences.maxAge, p_max_distance_km: preferences.distance });
@@ -54,7 +69,7 @@ export default function OnboardingScreen({ userId, onComplete }: Props) {
       if (uploadedPhotoUri !== photo.uri) { await addProfileImage(userId, photo); setUploadedPhotoUri(photo.uri); }
       const { error: finalizeError } = await supabase.rpc('finalize_my_onboarding'); if (finalizeError) throw finalizeError;
       onComplete();
-    } catch (error) { setSubmitError(error instanceof Error ? error.message : 'Onboarding could not be completed.'); } finally { setBusy(false); }
+    } catch (error) { setSubmitError(error instanceof Error ? error.message : 'Onboarding could not be completed.'); } finally { inFlight.current = false; setBusy(false); }
   }
 
   return <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
@@ -68,9 +83,9 @@ export default function OnboardingScreen({ userId, onComplete }: Props) {
         {step === 'identity' ? <View style={{ gap: theme.spacing.x6 }}><BinderInput label="First name" value={firstName} error={identityErrors.firstName} onChangeText={(value) => { setFirstName(value); if (identityErrors.firstName) setIdentityErrors(validateIdentity(value, gender)); }} maxLength={40} autoCapitalize="words" returnKeyType="done" /><Choice label="I am" error={identityErrors.gender}><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{GENDERS.map((item) => <BinderChip key={item.value} label={item.label} selected={gender === item.value} onPress={() => { setGender(item.value); setIdentityErrors(validateIdentity(firstName, item.value)); }} />)}</View></Choice></View> : null}
         {step === 'profile' ? <View style={{ gap: theme.spacing.x6 }}><BinderInput label="Bio · optional" helper={`${bio.length}/500 · You can change this later`} value={bio} onChangeText={setBio} maxLength={500} multiline placeholder="For example: Sunday hikes, live music, and excellent coffee." style={{ minHeight: theme.layout.multilineInputHeight, textAlignVertical: 'top' }} /><Choice label={`Interests · choose up to 12 (${interests.length})`}><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{INTERESTS.map((item) => <BinderChip key={item} label={item} selected={interests.includes(item)} onPress={() => setInterests((current) => current.includes(item) ? current.filter((value) => value !== item) : current.length < 12 ? [...current, item] : current)} />)}</View></Choice></View> : null}
         {step === 'discovery' ? <DiscoveryPreferences {...preferences} errors={discoveryErrors} onChange={(next) => { setPreferences(next); setDiscoveryErrors(validateDiscovery(next.interestedIn, next.minAge, next.maxAge, next.distance)); }} /> : null}
-        {step === 'photo' ? <View><Pressable accessibilityRole="button" accessibilityLabel={photo ? 'Replace primary profile photo' : 'Choose primary profile photo'} onPress={() => void choosePhoto()}>{({ pressed }) => <BinderCard style={{ padding: 0, minHeight: theme.layout.onboardingPhotoHeight, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface }}>{photo ? <Image source={{ uri: photo.uri }} style={{ width: '100%', height: theme.layout.onboardingPhotoHeight }} resizeMode="cover" /> : <View style={{ alignItems: 'center', gap: theme.spacing.x3 }}><BinderIcon name="addPhoto" size={34} color={theme.accent.onSurface} /><BinderText variant="label" tone="accent">Choose photo</BinderText><BinderText variant="caption" tone="muted">Tap to open your photo library</BinderText></View>}</BinderCard>}</Pressable>{submitError ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x3 }}>{submitError}</BinderText> : null}</View> : null}
+        {step === 'photo' ? <View><Pressable accessibilityRole="button" accessibilityState={{ busy: photoBusy, disabled: photoBusy }} disabled={photoBusy} accessibilityLabel={photo ? 'Replace primary profile photo' : 'Choose primary profile photo'} onPress={() => void choosePhoto()}>{({ pressed }) => <BinderCard style={{ padding: 0, minHeight: theme.layout.onboardingPhotoHeight, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface }}>{photo ? <Image source={{ uri: photo.uri }} style={{ width: '100%', height: theme.layout.onboardingPhotoHeight }} resizeMode="cover" /> : <View style={{ alignItems: 'center', gap: theme.spacing.x3 }}><BinderIcon name="addPhoto" size={34} color={theme.accent.onSurface} /><BinderText variant="label" tone="accent">{photoBusy ? 'Preparing photo…' : 'Choose photo'}</BinderText><BinderText variant="caption" tone="muted">{photoBusy ? 'Resizing and compressing before upload' : 'Tap to open your photo library'}</BinderText></View>}</BinderCard>}</Pressable>{submitError ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x3 }}>{submitError}</BinderText> : null}</View> : null}
       </View>
-      <View style={{ flexDirection: 'row', gap: theme.spacing.x3, marginTop: theme.spacing.x8 }}>{position.index > 0 ? <BinderButton label="Back" variant="secondary" disabled={busy} onPress={goBack} style={{ flex: 1 }} /> : null}<BinderButton label={step === 'photo' ? 'Finish profile' : 'Continue'} loading={busy} disabled={step === 'eligibility' && !birthDate} onPress={step === 'photo' ? () => void finish() : advance} style={{ flex: 2 }} /></View>
+      <View style={{ flexDirection: 'row', gap: theme.spacing.x3, marginTop: theme.spacing.x8 }}>{position.index > 0 ? <BinderButton label="Back" variant="secondary" disabled={busy || photoBusy} onPress={goBack} style={{ flex: 1 }} /> : null}<BinderButton label={step === 'photo' ? 'Finish profile' : 'Continue'} loading={busy} disabled={photoBusy || (step === 'eligibility' && !birthDate)} onPress={step === 'photo' ? () => void finish() : advance} style={{ flex: 2 }} /></View>
     </KeyboardAwareScrollView>
   </View>;
 }

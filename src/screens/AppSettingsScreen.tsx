@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useState } from 'react';
-import { Switch, View } from 'react-native';
+import { Alert, Switch, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BinderButton, BinderCard, BinderChip, BinderInput, BinderScreenHeader, BinderText, ScreenState, SectionHeader } from '../components/ui';
@@ -16,6 +16,12 @@ const ACCENT_OPTIONS: { id: AccentThemeId; label: string }[] = [
   { id: 'coral', label: 'Coral' },
   { id: 'ice', label: 'Ice' },
 ];
+
+// A quiet hour is a complete 24-hour time. Anything else is a keystroke on the
+// way to one, not a value worth persisting.
+function isQuietTime(value: string): boolean {
+  return /^([01]\d|2[0-3]):[0-5]\d$/.test(value.trim());
+}
 
 export default function AppSettingsScreen({ onClose }: { onClose: () => void }) {
   const { theme, settings, hydrated, updateSettings, updateNotifications, updateQuietHours, resetSettings } = useBinderTheme();
@@ -37,8 +43,14 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
     finally { setDiagnosticsLoading(false); }
   }, [haptic]);
 
+  const [pushBusy, setPushBusy] = useState(false);
+  const [resetBusy, setResetBusy] = useState(false);
+  const [quietDraft, setQuietDraft] = useState<{ start: string; end: string } | null>(null);
+
   const togglePush = useCallback(async (next: boolean) => {
+    if (pushBusy) return;
     setMessage('');
+    setPushBusy(true);
     try {
       if (!next) {
         await disablePushNotifications();
@@ -63,8 +75,34 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
       }
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Could not update push notifications.');
+    } finally {
+      setPushBusy(false);
     }
-  }, [updateNotifications]);
+  }, [pushBusy, updateNotifications]);
+
+  // A half-typed time ("22:") is not a quiet hour. The draft lives here until
+  // it is complete, so a keystroke never writes an unusable value.
+  const commitQuietHours = useCallback(() => {
+    if (!quietDraft) return;
+    if (!isQuietTime(quietDraft.start) || !isQuietTime(quietDraft.end)) return;
+    void updateQuietHours({ start: quietDraft.start, end: quietDraft.end });
+    setQuietDraft(null);
+  }, [quietDraft, updateQuietHours]);
+
+  const confirmReset = useCallback(() => {
+    if (resetBusy) return;
+    Alert.alert('Reset app settings?', 'Appearance, motion, haptics, accent, notification categories and quiet hours return to their defaults. Your profile and conversations are untouched.', [
+      { text: 'Keep my settings', style: 'cancel' },
+      { text: 'Reset', style: 'destructive', onPress: () => {
+        setResetBusy(true);
+        setMessage('');
+        void resetSettings()
+          .then(() => setMessage('App settings are back to their defaults.'))
+          .catch((error: unknown) => setMessage(error instanceof Error ? error.message : 'Could not reset the settings.'))
+          .finally(() => setResetBusy(false));
+      } },
+    ]);
+  }, [resetBusy, resetSettings]);
 
   const toggleHaptics = useCallback((value: boolean) => void updateSettings({ hapticsEnabled: value }), [updateSettings]);
   const toggleQuietHours = useCallback((value: boolean) => void updateQuietHours({ enabled: value }), [updateQuietHours]);
@@ -99,7 +137,7 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
       </SettingsSection>
 
       <SettingsSection title="Notifications" copy="Permission applies to this installation. Categories, sound and vibration follow your Binder account and are rechecked server-side before every send.">
-        <SwitchRow label="Remote push" value={settings.notifications.enabled} onValueChange={togglePush} />
+        <SwitchRow disabled={pushBusy} label="Remote push" value={settings.notifications.enabled} onValueChange={togglePush} />
         <NotificationSwitchRow field="newMatches" label="New matches" value={settings.notifications.newMatches} disabled={!settings.notifications.enabled} update={updateNotifications} />
         <NotificationSwitchRow field="messages" label="Messages" value={settings.notifications.messages} disabled={!settings.notifications.enabled} update={updateNotifications} />
         <NotificationSwitchRow field="moderation" label="Moderation" value={settings.notifications.moderation} disabled={!settings.notifications.enabled} update={updateNotifications} />
@@ -112,8 +150,8 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
       <SettingsSection title="Quiet hours" copy="Match, message, moderation and product pushes wait until the local end time. Urgent safety alerts remain immediate.">
         <SwitchRow label="Use quiet hours" value={settings.quietHours.enabled} onValueChange={toggleQuietHours} />
         <View style={{ flexDirection: 'row', gap: theme.spacing.x3, marginTop: theme.spacing.x3 }}>
-          <View style={{ flex: 1 }}><BinderInput label="Start" value={settings.quietHours.start} onChangeText={(value) => void updateQuietHours({ start: value })} placeholder="22:00" /></View>
-          <View style={{ flex: 1 }}><BinderInput label="End" value={settings.quietHours.end} onChangeText={(value) => void updateQuietHours({ end: value })} placeholder="08:00" /></View>
+          <View style={{ flex: 1 }}><BinderInput label="Start" keyboardType="numbers-and-punctuation" maxLength={5} value={quietDraft?.start ?? settings.quietHours.start} error={quietDraft && !isQuietTime(quietDraft.start) ? 'Use HH:MM' : undefined} onChangeText={(value) => setQuietDraft({ start: value, end: quietDraft?.end ?? settings.quietHours.end })} onBlur={commitQuietHours} placeholder="22:00" /></View>
+          <View style={{ flex: 1 }}><BinderInput label="End" keyboardType="numbers-and-punctuation" maxLength={5} value={quietDraft?.end ?? settings.quietHours.end} error={quietDraft && !isQuietTime(quietDraft.end) ? 'Use HH:MM' : undefined} onChangeText={(value) => setQuietDraft({ start: quietDraft?.start ?? settings.quietHours.start, end: value })} onBlur={commitQuietHours} placeholder="08:00" /></View>
         </View>
       </SettingsSection>
 
@@ -122,7 +160,7 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
       </SettingsSection>
 
       {message ? <BinderText variant="caption" tone={/are active|are off/.test(message) ? 'accent' : 'destructive'} style={{ marginTop: theme.spacing.x4 }}>{message}</BinderText> : null}
-      <BinderButton label="Reset app settings" variant="secondary" onPress={() => void resetSettings()} style={{ marginTop: theme.spacing.x6 }} />
+      <BinderButton label="Reset app settings" variant="secondary" loading={resetBusy} onPress={confirmReset} style={{ marginTop: theme.spacing.x6 }} />
       </KeyboardAwareScrollView>
     </View>
   );

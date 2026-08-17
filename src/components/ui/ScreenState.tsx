@@ -12,11 +12,14 @@ type Props = {
   message: string;
   actionLabel?: string;
   onAction?: () => void;
+  /** A second, quieter way out — "Close" next to "Try again". */
+  secondaryActionLabel?: string;
+  onSecondaryAction?: () => void;
   icon?: BinderIconName;
   loadingShape?: 'matches' | 'conversation';
 };
 
-export function ScreenState({ kind, title, message, actionLabel, onAction, icon, loadingShape = 'matches' }: Props) {
+export function ScreenState({ kind, title, message, actionLabel, onAction, secondaryActionLabel, onSecondaryAction, icon, loadingShape = 'matches' }: Props) {
   const { theme } = useBinderTheme();
   if (kind === 'loading') {
     const rows = loadingShape === 'conversation' ? 5 : 4;
@@ -42,6 +45,7 @@ export function ScreenState({ kind, title, message, actionLabel, onAction, icon,
       {title ? <BinderText variant="title" align="center" style={{ marginTop: theme.spacing.x4 }}>{title}</BinderText> : null}
       <BinderText variant="body" tone="secondary" align="center" style={{ marginTop: theme.spacing.x3, maxWidth: 360 }}>{message}</BinderText>
       {actionLabel && onAction ? <BinderButton label={actionLabel} variant="secondary" fullWidth={false} onPress={onAction} style={{ marginTop: theme.spacing.x5 }} /> : null}
+      {secondaryActionLabel && onSecondaryAction ? <BinderButton label={secondaryActionLabel} variant="ghost" fullWidth={false} onPress={onSecondaryAction} style={{ marginTop: theme.spacing.x2 }} /> : null}
     </View>
   );
 }

@@ -86,7 +86,7 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas, paddingHorizontal: theme.spacing.screen }}>
-      <BinderScreenHeader title="Your Binds" eyebrow="CONVERSATIONS" style={{ marginHorizontal: -theme.spacing.screen, marginBottom: theme.spacing.x4 }} trailing={<BinderButton label="Refresh" icon="retry" variant="ghost" fullWidth={false} onPress={() => void load()} />} />
+      <BinderScreenHeader title="Your Binds" eyebrow="CONVERSATIONS" style={{ marginHorizontal: -theme.spacing.screen, marginBottom: theme.spacing.x4 }} trailing={<BinderButton label="Refresh" icon="retry" variant="ghost" fullWidth={false} loading={loading} onPress={() => void load()} />} />
 
       <BinderCard style={{ marginBottom: theme.spacing.x3, padding: theme.spacing.x4 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3 }}>

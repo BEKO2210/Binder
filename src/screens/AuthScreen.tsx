@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
@@ -34,6 +34,7 @@ export default function AuthScreen({ recovery = false, onRecoveryHandled }: { re
   const [confirmPassword, setConfirmPassword] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [busy, setBusy] = useState(false);
+  const inFlight = useRef(false);
   const [message, setMessage] = useState('');
   const [messageTone, setMessageTone] = useState<'secondary' | 'destructive'>('destructive');
 
@@ -55,6 +56,10 @@ export default function AuthScreen({ recovery = false, onRecoveryHandled }: { re
   async function submit() {
     setSubmitted(true);
     if (hasAuthErrors(errors)) return;
+    // `busy` only reaches the button after the next render; two fast taps beat
+    // it and started two sign-ups. The ref is checked and set synchronously.
+    if (inFlight.current) return;
+    inFlight.current = true;
     setBusy(true);
     setMessage('');
     try {
@@ -87,6 +92,7 @@ export default function AuthScreen({ recovery = false, onRecoveryHandled }: { re
       setMessageTone('destructive');
       setMessage(mapAuthError(error));
     } finally {
+      inFlight.current = false;
       setBusy(false);
     }
   }

@@ -64,14 +64,13 @@ export function BinderButton({ label, variant = 'primary', loading = false, icon
         opacity: isDisabled ? theme.feedback.disabledOpacity : 1,
       }, style]}
     >
-      {loading ? (
-        <ActivityIndicator color={foreground} />
-      ) : (
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
-          {icon ? <BinderIcon name={icon} size={20} color={foreground} /> : null}
-          <BinderText variant="label" style={{ color: foreground }}>{label}</BinderText>
-        </View>
-      )}
+      {/* The label stays in the layout while the spinner runs: hiding it let a
+          narrow button collapse to spinner width and the row jumped. */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, opacity: loading ? 0 : 1 }}>
+        {icon ? <BinderIcon name={icon} size={20} color={foreground} /> : null}
+        <BinderText variant="label" style={{ color: foreground }}>{label}</BinderText>
+      </View>
+      {loading ? <View pointerEvents="none" style={{ position: 'absolute', inset: 0, alignItems: 'center', justifyContent: 'center' }}><ActivityIndicator color={foreground} /></View> : null}
     </MotionPressable>
   );
 }

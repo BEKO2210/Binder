@@ -445,6 +445,15 @@ export type Database = {
           ranking_retention_days: number
         }[]
       }
+      count_discovery_candidates: {
+        Args: {
+          p_interested_in: string[]
+          p_min_age: number
+          p_max_age: number
+          p_distance_km: number
+        }
+        Returns: number
+      }
       get_discovery_batch: {
         Args: { p_limit?: number }
         Returns: {

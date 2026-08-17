@@ -58,7 +58,11 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   const keyboard = useReanimatedKeyboardAnimation();
   const keyboardShift = useAnimatedStyle(() => ({ transform: [{ translateY: keyboard.height.value }] }));
   const [sending, setSending] = useState(false);
-  const [localAttempt, setLocalAttempt] = useState<LocalAttempt | null>(null);
+  // Every unsent message keeps its own entry. A single slot meant that writing
+  // a new message after a failure silently discarded the failed one — the text
+  // the user had typed, and the only way to retry it, both disappeared.
+  const [attempts, setAttempts] = useState<LocalAttempt[]>([]);
+  const [safetyBusy, setSafetyBusy] = useState<null | 'unmatch' | 'block'>(null);
   const [showNewMessage, setShowNewMessage] = useState(false);
   const listRef = useRef<FlatList<TimelineItem<Message>>>(null);
   const nearNewestRef = useRef(true);
@@ -221,22 +225,33 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     return () => subscription.remove();
   }, [showPartnerProfile, showSafety]);
 
-  async function submitMessage(retry = false) {
-    const body = retry ? localAttempt?.body ?? null : validComposer;
+  function discardAttempt(clientId: string) {
+    setAttempts((current) => current.filter((attempt) => attempt.clientId !== clientId));
+  }
+
+  async function submitMessage(retryClientId?: string) {
+    const retried = retryClientId ? attempts.find((attempt) => attempt.clientId === retryClientId) : null;
+    const body = retried ? retried.body : validComposer;
     if (!body || sending) return;
-    const clientId = retry && localAttempt ? localAttempt.clientId : createClientMessageId();
+    const clientId = retried ? retried.clientId : createClientMessageId();
     setSending(true);
-    setLocalAttempt({ clientId, body, status: 'sending' });
-    if (!retry) setComposer('');
+    setAttempts((current) => {
+      const without = current.filter((attempt) => attempt.clientId !== clientId);
+      return [...without, { clientId, body, status: 'sending' as const }];
+    });
+    if (!retried) setComposer('');
     try {
       const confirmed = await sendMessage(match.matchId, clientId, body, { signal: lifecycleControllerRef.current.signal });
       if (!mountedRef.current) return;
       mergeMessage(confirmed);
-      setLocalAttempt(null);
+      discardAttempt(clientId);
       listRef.current?.scrollToOffset({ offset: 0, animated: !reduceMotion });
       await haptic('selection');
     } catch (nextError) {
-      if (mountedRef.current && !isAbortError(nextError)) setLocalAttempt({ clientId, body, status: 'failed', error: classifyError(nextError) });
+      if (mountedRef.current && !isAbortError(nextError)) {
+        const failure = classifyError(nextError);
+        setAttempts((current) => current.map((attempt) => attempt.clientId === clientId ? { ...attempt, status: 'failed' as const, error: failure } : attempt));
+      }
     } finally { if (mountedRef.current) setSending(false); }
   }
 
@@ -256,16 +271,18 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   }
 
   function confirmUnmatch() {
+    if (safetyBusy) return;
     Alert.alert(`Unmatch ${match.firstName}?`, 'The conversation closes for both of you immediately.', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Unmatch', style: 'destructive', onPress: () => { setSafetyError(null); void unmatch(match.matchId, { signal: lifecycleControllerRef.current.signal }).then(async () => { if (!mountedRef.current) return; await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => { if (mountedRef.current && !isAbortError(error)) setSafetyError(classifyError(error)); }); } },
+      { text: 'Unmatch', style: 'destructive', onPress: () => { if (safetyBusy) return; setSafetyError(null); setSafetyBusy('unmatch'); void unmatch(match.matchId, { signal: lifecycleControllerRef.current.signal }).then(async () => { if (!mountedRef.current) return; await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => { if (mountedRef.current && !isAbortError(error)) setSafetyError(classifyError(error)); }).finally(() => { if (mountedRef.current) setSafetyBusy(null); }); } },
     ]);
   }
 
   function confirmBlock() {
+    if (safetyBusy) return;
     Alert.alert(`Block ${match.firstName}?`, 'You will disappear from each other and the conversation closes immediately.', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Block', style: 'destructive', onPress: () => { setSafetyError(null); void blockUser(match.otherUserId, { signal: lifecycleControllerRef.current.signal }).then(async () => { if (!mountedRef.current) return; await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => { if (mountedRef.current && !isAbortError(error)) setSafetyError(classifyError(error)); }); } },
+      { text: 'Block', style: 'destructive', onPress: () => { if (safetyBusy) return; setSafetyError(null); setSafetyBusy('block'); void blockUser(match.otherUserId, { signal: lifecycleControllerRef.current.signal }).then(async () => { if (!mountedRef.current) return; await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => { if (mountedRef.current && !isAbortError(error)) setSafetyError(classifyError(error)); }).finally(() => { if (mountedRef.current) setSafetyBusy(null); }); } },
     ]);
   }
 
@@ -396,7 +413,22 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
 
       {showNewMessage ? <Pressable accessibilityRole="button" accessibilityLabel="Scroll to new message" onPress={() => { listRef.current?.scrollToOffset({ offset: 0, animated: !reduceMotion }); setShowNewMessage(false); }} style={({ pressed }) => ({ minHeight: theme.spacing.x12, alignSelf: 'center', justifyContent: 'center', paddingHorizontal: theme.spacing.x4, borderRadius: theme.radii.pill, backgroundColor: pressed ? theme.accent.pressed : theme.accent.accent })}><BinderText variant="label" style={{ color: theme.accent.foreground }}>New message</BinderText></Pressable> : null}
 
-      {localAttempt ? <View style={{ alignItems: 'flex-end', paddingHorizontal: theme.spacing.x4, paddingTop: theme.spacing.x2 }}><View style={{ maxWidth: '82%', paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x3, borderRadius: theme.radii.control, borderBottomRightRadius: theme.radii.small, backgroundColor: localAttempt.status === 'failed' ? theme.colors.surfaceElevated : theme.accent.accent, borderWidth: localAttempt.status === 'failed' ? 1 : 0, borderColor: theme.semantic.destructive }}><BinderText variant="body" style={{ color: localAttempt.status === 'failed' ? theme.colors.textPrimary : theme.accent.foreground }}>{localAttempt.body}</BinderText></View><View style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>{localAttempt.status === 'sending' ? <BinderText variant="caption" tone="muted">Sending…</BinderText> : <><BinderText variant="caption" tone="destructive" style={{ flexShrink: 1 }}>{localAttempt.error?.message ?? 'Message not sent.'}</BinderText><Pressable accessibilityRole="button" accessibilityLabel="Retry sending message" onPress={() => void submitMessage(true)} style={({ pressed }) => ({ minHeight: theme.spacing.x12, justifyContent: 'center', paddingHorizontal: theme.spacing.x3, borderRadius: theme.radii.pill, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surfaceElevated })}><BinderText variant="label" tone="accent">Retry</BinderText></Pressable></>}</View></View> : null}
+      {attempts.map((attempt) => (
+        <View key={attempt.clientId} style={{ alignItems: 'flex-end', paddingHorizontal: theme.spacing.x4, paddingTop: theme.spacing.x2 }}>
+          <View style={{ maxWidth: '82%', paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x3, borderRadius: theme.radii.control, borderBottomRightRadius: theme.radii.small, backgroundColor: attempt.status === 'failed' ? theme.colors.surfaceElevated : theme.accent.accent, borderWidth: attempt.status === 'failed' ? 1 : 0, borderColor: theme.semantic.destructive }}>
+            <BinderText variant="body" style={{ color: attempt.status === 'failed' ? theme.colors.textPrimary : theme.accent.foreground }}>{attempt.body}</BinderText>
+          </View>
+          <View style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
+            {attempt.status === 'sending' ? <BinderText variant="caption" tone="muted">Sending…</BinderText> : (
+              <>
+                <BinderText variant="caption" tone="destructive" style={{ flexShrink: 1 }}>{attempt.error?.message ?? 'Message not sent.'}</BinderText>
+                <Pressable accessibilityRole="button" accessibilityLabel={`Retry sending "${attempt.body.slice(0, 24)}"`} disabled={sending} onPress={() => void submitMessage(attempt.clientId)} style={({ pressed }) => ({ minHeight: theme.spacing.x12, justifyContent: 'center', paddingHorizontal: theme.spacing.x3, borderRadius: theme.radii.pill, opacity: sending ? theme.feedback.disabledOpacity : 1, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surfaceElevated })}><BinderText variant="label" tone="accent">Retry</BinderText></Pressable>
+                <Pressable accessibilityRole="button" accessibilityLabel={`Discard unsent message "${attempt.body.slice(0, 24)}"`} onPress={() => discardAttempt(attempt.clientId)} style={({ pressed }) => ({ minHeight: theme.spacing.x12, justifyContent: 'center', paddingHorizontal: theme.spacing.x3, borderRadius: theme.radii.pill, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.transparent })}><BinderText variant="label" tone="muted">Discard</BinderText></Pressable>
+              </>
+            )}
+          </View>
+        </View>
+      ))}
 
       {loadError && messages.length > 0 ? <View style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', paddingHorizontal: theme.spacing.x4 }}><BinderText variant="caption" tone="destructive" style={{ flex: 1 }}>{loadError.message}</BinderText><BinderButton label="Retry" variant="ghost" fullWidth={false} onPress={() => setReloadKey((value) => value + 1)} /></View> : null}
 
