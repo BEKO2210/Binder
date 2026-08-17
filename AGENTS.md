@@ -5,8 +5,13 @@ every agent session must follow. Human owner: Belkis (GitHub `BEKO2210`).
 
 ## Non-negotiable rules
 
-1. **Binder stays one free product.** No Pro/Premium/Boost/paywall/paid feature,
-   ever. Do not add monetization surfaces or copy that hints at them.
+1. **Nothing that costs money may decide who sees whom.** The owner lifted the
+   "free forever" rule on 2026-08-17 and asked for a revenue plan
+   (`docs/MONETIZATION.md`). Revenue is allowed; buying reach is not. A paid
+   feature may be cosmetic, convenient or informational, and it may never
+   re-order or widen who appears in someone else's deck relative to anyone else
+   in the same audience. No paid surface ships before daily matches are
+   consistently non-zero.
 2. **Never weaken a gate.** CI steps, verifiers (`scripts/verify-*.mjs`),
    pgTAP/concurrency suites and `npm test` may become stricter, never removed,
    bypassed or softened to get green. The one way a budget number moves is the
