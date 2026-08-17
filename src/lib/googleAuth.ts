@@ -9,7 +9,11 @@ import { supabase } from './supabase';
 //
 // The button only exists once a web client id is configured. Shipping a button
 // that opens a Google sheet and then fails is worse than not showing it.
-const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ?? '';
+// Public by design — a Google client id ships inside every app that uses it,
+// and Supabase verifies the id token against exactly this value. Same pattern
+// as the Supabase URL and publishable key in `supabase.ts`.
+const DEFAULT_WEB_CLIENT_ID = '1098973922981-qbmvcdi5ser8n2lo4vl5b1cb08vnsi03.apps.googleusercontent.com';
+const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ?? DEFAULT_WEB_CLIENT_ID;
 
 export type GoogleSignInOutcome =
   | { status: 'signed-in' }

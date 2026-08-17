@@ -12,7 +12,20 @@
           "package_name": "de.beko2210.binder"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1098973922981-d6fn35rv190k555nlpu5jc4jkcq7jq0h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "de.beko2210.binder",
+            "certificate_hash": "16dfdf3e283076be74f8a9e6750ec8b82dadd2df"
+          }
+        },
+        {
+          "client_id": "1098973922981-qbmvcdi5ser8n2lo4vl5b1cb08vnsi03.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyA5tUYnfCuvpIftwE27oLwSfnx-AvByygc"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1098973922981-qbmvcdi5ser8n2lo4vl5b1cb08vnsi03.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
