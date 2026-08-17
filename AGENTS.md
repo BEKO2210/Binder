@@ -279,12 +279,24 @@ owner's consoles: the Google provider enabled in Firebase (which creates the
 web and Android OAuth clients), a refreshed `google-services.json`, the Play
 app-signing SHA-1 registered on the Android client, and the web client id both
 in Supabase's Google provider and in `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`.
-**Proven on the S23 on 2026-08-17** (v0.7.2-vc55): the sheet opened, the
-account was chosen, the app landed in Discover, and the owner's account now
-carries both identities (`app_metadata.providers = ['email','google']`) —
-Supabase linked Google to the existing address rather than creating a second
-account. The Play app-signing SHA-1 still has to be added before the store
-build can do the same, because Google re-signs there.
+**Proven twice on the S23**: locally with v0.7.2-vc55, and from a Play install
+with v0.7.5-vc58. The sheet opens, the account is chosen, the app lands in
+Discover, and the owner's account carries both identities
+(`app_metadata.providers = ['email','google']`) — Supabase linked Google to the
+existing address rather than creating a second account.
+
+**Three signing certificates are registered, and that is not one too many.**
+Google matches package name plus signing certificate, so every certificate a
+build can carry needs its own Android OAuth client:
+`16dfdf3e…` (upload key, what a locally built APK carries), `f2bedb75…` (what
+Play actually signs releases with) and `2aaaf1ab…` (the value the Play Console
+displayed). The store build failed with DEVELOPER_ERROR until `f2bedb75…` was
+added — and that value was read off the delivered APK with
+`apksigner verify --print-certs` after pulling it from the phone via
+`adb shell pm path`, not off a console page. **When a store install fails at
+the Google sheet, read the certificate from the artefact, not from the UI.**
+`auth.google.signature` names this failure in all fifteen languages and the
+numeric code is logged, so the next time it is a log line.
 
 ## What the app collects
 
