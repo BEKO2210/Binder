@@ -27,3 +27,7 @@ export function formatDistanceKm(km: number, locale: string): string {
 export function formatCount(n: number, locale: string): string {
   return new Intl.NumberFormat(resolvedLocale(locale)).format(n);
 }
+
+export function formatDate(date: Date, locale: string): string {
+  return new Intl.DateTimeFormat(resolvedLocale(locale), { day: 'numeric', month: 'long', year: 'numeric' }).format(date);
+}

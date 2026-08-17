@@ -68,6 +68,9 @@ leaves the running system intact.
 | 047 | Screenshot set captured from the shipping build (discovery, filters, matches, chat, profile) | `/home/belkis/Binder-Release/screenshots-v0.5.29/` | done |
 | 048 | Onboarding asks the server before uploading, so a failed finalisation cannot duplicate the photo | 90 tests; server state is the truth, no new local cache | done |
 | 049 | Discovery preferences are read once and flow from one place into header and sheet | Preset applied on device, header and sheet agree | done |
+| 050 | Cold start and frame timing tracked per build in the device matrix | v0.5.30: median 336 ms, 1.87 % janky while paging | done |
+| 051-053 | Empty deck tells filtered-empty from genuinely empty; location permission is a calm state; a rejected photo says why and offers a replacement | Device shows "Filters are narrowing your deck" | done |
+| 054 | A warned or suspended account can see it: `get_my_safety_notice()` plus a plain card in the profile | RPC applied to production and probed; 94 tests | done |
 | 017 | Language section in App settings — appears only when a translation exists, endonym plus flag, same chip rhythm as Appearance | Screenshot: Sprache / Wie mein Gerät / 🇬🇧 English / 🇩🇪 Deutsch | done |
 
 ## Backlog
@@ -90,10 +93,10 @@ Ordered by what a user notices first. Each line becomes one run.
 - [x] Offline: every screen and the pre-app safety check.
 - [x] Session expiry as a state (wave G).
 - [x] Photo upload: progress, failure and retry on the profile gallery.
-- [ ] Moderation outcomes visible to the user: rejected photo, warned account.
-- [ ] Empty deck vs. filtered-to-nothing deck read differently and offer the right control.
+- [x] Moderation outcomes visible to the user: rejected photo and warned or suspended account.
+- [x] Empty deck vs. filtered-to-nothing deck read differently.
 - [x] Chat: the other side unmatched while the screen is open.
-- [ ] First run on a fresh install: what the deck shows before location permission.
+- [x] First run without location permission is a calm state with one action.
 
 ### Accessibility
 - [x] TalkBack pass over every screen: labels, states, values, live regions, decorative nodes hidden.

@@ -517,6 +517,16 @@ export type Database = {
           storage_path: string
         }[]
       }
+      get_my_safety_notice: {
+        Args: never
+        Returns: {
+          account_status: "active" | "suspended"
+          suspended_reason: string | null
+          warned: boolean
+          warned_at: string | null
+          warning_reason: string | null
+        }[]
+      }
       get_public_profile: {
         Args: { target_user_id: string }
         Returns: {

@@ -7,8 +7,9 @@ import { recordBetaEvent } from '../lib/beta';
 import { confirmDestructive } from '../lib/confirmDestructive';
 import { listMyProfileMedia } from '../lib/media';
 import { profileCompleteness } from '../lib/profileCompleteness';
-import { classifyError, type ReliabilityError } from '../lib/reliability';
-import { DELETE_ACCOUNT_URL, PRIVACY_URL, TERMS_URL, deleteCurrentAccount, openBinderUrl } from '../lib/safety';
+import { classifyError, isAbortError, type ReliabilityError } from '../lib/reliability';
+import { DELETE_ACCOUNT_URL, PRIVACY_URL, TERMS_URL, deleteCurrentAccount, fetchMySafetyNotice, openBinderUrl } from '../lib/safety';
+import { prepareSafetyNotice, type SafetyNotice } from '../lib/safetyNotice';
 import { supabase } from '../lib/supabase';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
@@ -22,7 +23,7 @@ type Props = {
 };
 
 export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, onOpenBeta, onOpenAbout, onSessionExpired }: Props) {
-  const { theme, t } = useBinderTheme();
+  const { theme, t, locale } = useBinderTheme();
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [firstName, setFirstName] = useState('');
@@ -32,18 +33,24 @@ export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, o
   const [interestCount, setInterestCount] = useState(0);
   const [message, setMessage] = useState('');
   const [loadError, setLoadError] = useState<ReliabilityError | null>(null);
+  const [safetyNotice, setSafetyNotice] = useState<SafetyNotice | null>(null);
 
-  useEffect(() => { void load(); }, [userId]);
+  useEffect(() => {
+    const controller = new AbortController();
+    void load(controller.signal);
+    return () => controller.abort();
+  }, [userId]);
 
-  async function load() {
+  async function load(signal?: AbortSignal) {
     const startedAt = Date.now();
     setLoading(true);
     setMessage('');
     setLoadError(null);
     try {
-      const [profile, media] = await Promise.all([
-        supabase.from('profiles').select('first_name,bio,interests').eq('user_id', userId).single(),
+      const [profile, media, notice] = await Promise.all([
+        supabase.from('profiles').select('first_name,bio,interests').eq('user_id', userId).abortSignal(signal ?? new AbortController().signal).single(),
         listMyProfileMedia(),
+        fetchMySafetyNotice({ signal }),
       ]);
       if (profile.error) throw profile.error;
       setFirstName(profile.data.first_name);
@@ -51,13 +58,17 @@ export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, o
       setPhotoUrl(media[0]?.signedUrl ?? '');
       setPhotoCount(media.length);
       setInterestCount(profile.data.interests?.length ?? 0);
+      setSafetyNotice(notice);
       void recordBetaEvent('profile_load', 'profile', { durationMs: Date.now() - startedAt, outcome: 'ok' });
     } catch (error) {
+      if (isAbortError(error)) return;
       const failure = classifyError(error);
       if (failure.kind === 'permission-denied') onSessionExpired();
       else setLoadError(failure);
       void recordBetaEvent('profile_load', 'profile', { durationMs: Date.now() - startedAt, outcome: 'error' });
-    } finally { setLoading(false); }
+    } finally {
+      if (!signal?.aborted) setLoading(false);
+    }
   }
 
   async function open(url: string) {
@@ -88,11 +99,19 @@ export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, o
   if (loadError) return <ScreenState kind={loadError.kind === 'offline' ? 'offline' : 'error'} icon="retry" title={loadError.kind === 'offline' ? t('profile.states.offlineTitle') : t('profile.states.errorTitle')} message={loadError.kind === 'offline' ? t('profile.states.offlineMessage') : loadError.message} actionLabel={t('profile.actions.tryAgain')} onAction={() => void load()} />;
 
   const completeness = profileCompleteness({ photoCount, bio, interestCount });
+  const notice = safetyNotice ? prepareSafetyNotice(safetyNotice, locale) : null;
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.canvas }} contentContainerStyle={{ paddingBottom: theme.spacing.x16 + theme.spacing.x8 }}>
       <BinderScreenHeader title={t('profile.header.title')} eyebrow={t('profile.header.eyebrow')} />
       <View style={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x5 }}>
+      {notice ? <BinderCard style={{ marginBottom: theme.spacing.x5, borderColor: notice.kind === 'suspended' ? theme.semantic.warning : theme.colors.borderStrong, backgroundColor: theme.colors.surfaceElevated }}>
+        <BinderText variant="micro" tone={notice.kind === 'suspended' ? 'warning' : 'muted'}>{t(notice.kind === 'suspended' ? 'profile.notice.suspendedEyebrow' : 'profile.notice.warningEyebrow')}</BinderText>
+        <BinderText variant="title" style={{ marginTop: theme.spacing.x2 }}>{t(notice.kind === 'suspended' ? 'profile.notice.suspendedTitle' : 'profile.notice.warningTitle')}</BinderText>
+        <BinderText variant="body" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>{notice.reason ?? t('profile.notice.reasonUnavailable')}</BinderText>
+        {notice.kind === 'warning' && notice.date ? <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>{t('profile.notice.warnedOn', { date: notice.date })}</BinderText> : null}
+        {notice.kind === 'suspended' ? <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x3 }}>{t('profile.notice.suspendedEffect')}</BinderText> : null}
+      </BinderCard> : null}
       {photoUrl ? <Image source={{ uri: photoUrl }} accessibilityLabel={t('profile.accessibility.primaryPhoto')} style={{ width: '100%', height: theme.layout.profileHeroHeight, borderRadius: theme.radii.hero }} resizeMode="cover" /> : <BinderCard style={{ minHeight: theme.layout.onboardingPhotoHeight, alignItems: 'center', justifyContent: 'center', gap: theme.spacing.x3 }}><BinderIcon name="addPhoto" size={34} color={theme.accent.onSurface} /><BinderText variant="label" tone="accent">{t('profile.empty.addFirstPhoto')}</BinderText></BinderCard>}
       <BinderText variant="heading" style={{ marginTop: theme.spacing.x5 }}>{firstName || t('profile.header.title')}</BinderText>
       <BinderText variant="body" tone={bio ? 'secondary' : 'muted'} style={{ marginTop: theme.spacing.x2 }}>{bio || t('profile.empty.addBio')}</BinderText>

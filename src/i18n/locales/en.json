@@ -385,6 +385,15 @@
     "accessibility": {
       "primaryPhoto": "Your primary profile photo"
     },
+    "notice": {
+      "warningEyebrow": "ACCOUNT NOTICE",
+      "warningTitle": "A note about your account",
+      "suspendedEyebrow": "ACCOUNT STATUS",
+      "suspendedTitle": "Your account is suspended",
+      "reasonUnavailable": "No additional details are available.",
+      "warnedOn": "Issued on {date}",
+      "suspendedEffect": "Discovery and messages are paused while the suspension is in place."
+    },
     "empty": {
       "addFirstPhoto": "Add your first photo",
       "addBio": "Add a few real lines about yourself so people know what to ask you."

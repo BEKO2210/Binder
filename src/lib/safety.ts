@@ -1,6 +1,11 @@
 import { Linking } from 'react-native';
 
 import { supabase } from './supabase';
+import type { SafetyNotice } from './safetyNotice';
+
+export type { SafetyNotice } from './safetyNotice';
+
+export type RequestOptions = { signal?: AbortSignal };
 
 export const BINDER_PUBLIC_URL = 'https://beko2210.github.io/Binder';
 export const PRIVACY_URL = `${BINDER_PUBLIC_URL}/privacy.html`;
@@ -22,6 +27,15 @@ export type MediaModerationState = {
 export type DiscoveryReportReason = 'spam' | 'harassment' | 'underage' | 'fake' | 'sexual_content' | 'violence' | 'other';
 
 const MEDIA_STATES = new Set<MediaModerationState['moderation_status']>(['pending', 'approved', 'rejected', 'removed']);
+
+export async function fetchMySafetyNotice(options: RequestOptions = {}): Promise<SafetyNotice> {
+  const { data, error } = await supabase.rpc('get_my_safety_notice')
+    .abortSignal(options.signal ?? new AbortController().signal);
+  if (error) throw error;
+  const row = data?.[0];
+  if (!row) throw new Error('Binder safety notice is unavailable.');
+  return row;
+}
 
 export async function getLegalGate(): Promise<LegalGate> {
   const { data, error } = await supabase.rpc('get_legal_gate');
