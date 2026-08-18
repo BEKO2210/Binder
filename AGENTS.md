@@ -237,10 +237,36 @@ plain request now answers
 `PERMISSION_DENIED — Requests from this Android client application <empty> are blocked`.
 The scanning alert is resolved as won't-fix with that reasoning.
 
-Two open follow-ups: the **Browser key (auto created by Firebase)** in the same
-project is unused by this app and should be restricted or deleted, and **push
-has not been re-tested since the restriction** — if the API list is too narrow,
-notifications stop silently. Test that before trusting push again.
+**Push was re-tested under the restriction on 2026-08-18** and it survives it,
+measured on the S23 with the Play install v0.7.5-vc58:
+
+- A fresh registration, not a cached one. `pm clear` wiped the app data, Google
+  sign-in came back, notifications were allowed in the Matches prompt, and
+  `public.device_tokens` gained a new row — `ExponentPushToken[hSigEuMF…]`,
+  created 00:42:33 UTC. The contrast is what makes it proof: a plain app start
+  nine minutes earlier returned the *same* token as the day before, so Play
+  services really did hold a cache and `pm clear` really did invalidate it. The
+  old token then came back from Expo as `DeviceNotRegistered`, which a device
+  keeps only when FCM has issued it a different registration.
+- Two real notifications went the whole way — a row in `private.push_outbox`,
+  the minute cron, the `dispatch-push` function, Expo, FCM, the phone — and both
+  reached `delivered` through Expo receipts (outbox 81 and 82). The second one
+  arrived while the app process was killed, and tapping it cold-started the app
+  onto the `profile` route.
+- Nothing in logcat mentioned `PERMISSION_DENIED`, a blocked API or a Firebase
+  Installations failure.
+
+Probing the key from here separates the two refusals it can give: both
+`firebaseinstallations.googleapis.com` and `fcmregistrations.googleapis.com`
+answer past the API check (the Android-client rule blocks the first, an argument
+check the second), where an API left out of the list answers "Requests to this
+API … are blocked". So the API list is not too narrow.
+
+What that test does **not** cover, and nobody should read into it: a token
+rotation on a running install, a real uninstall/reinstall from Play, other
+Android or Play-services versions. Still open as well: the **Browser key (auto
+created by Firebase)** in the same project is unused by this app and should be
+restricted or deleted.
 
 ## Store screenshots and the promo film
 
@@ -402,7 +428,27 @@ from settings.
 
 ## Open
 
-- One manual tap of a push notification while the app is closed, to close the
-  last row of the device evidence.
+- **Push text is English in all fifteen languages.** `claim_push_deliveries`
+  builds the title and body as English literals and the dispatcher forwards them
+  untouched, so a Turkish or Japanese phone gets "Binder update / Open Binder to
+  see what changed." Notifications are product copy under rule 7, and the site
+  advertises fifteen languages. The recipient's language is not even read in
+  that function, so the fix is a column and a lookup, not a rewording.
+- **Two English strings escape the localisation gate.** `Root.tsx:302`
+  ("Checking Binder safety rules…") and `Root.tsx:314` ("Loading your Binder
+  profile…") never go through `t()`. `verify-i18n-coverage.mjs` scans only
+  `src/screens` and `src/components`, so `src/Root.tsx` is invisible to it —
+  widening the scan is part of that fix, or the next string lands the same way.
+- **A push tap onto a backgrounded app hung on the legal gate.** Seen once, on
+  2026-08-18 at 02:37: the tap raised the app, it rendered "Checking Binder
+  safety rules…" and stayed there for over a minute, no tab bar, no error, no
+  retry. `getLegalGate()` in `Root.tsx:166` has neither a timeout nor an abort,
+  so a request that never settles leaves that screen with no way out. The
+  process had been trimmed in the background beforehand. Not yet reproduced —
+  reproduce it first, then decide between a timeout and an abort.
+- **Failed push registration is silent.** `Root.tsx:231` and the rotation
+  listener in `notifications.ts:151` both swallow every error, so push can stay
+  switched on in settings while no token ever reaches the server. Only the
+  explicit tap in App settings surfaces a failure.
 - German copy for the Play listing.
 - The listing's own screenshots, shot with staged profiles and framed.
