@@ -36,10 +36,16 @@ test('only one place in Root may move the signed-in reference, and a stale read 
   assert.match(source, /const applySession = \(nextSession: Session \| null\) => \{/);
   assert.match(source, /if \(!active \|\| sawAuthEvent\) return;/, 'the stored session yields to a live auth event');
   assert.match(source, /sawAuthEvent = true;/);
-  // Both paths hand their session to the same function, and there is no third.
-  assert.equal(source.match(/applySession\(/g)?.length, 2, 'the stored session and the auth event, nothing else');
+  // Every session that reaches React goes through that one function. Counting
+  // call sites was too brittle — what matters is that nothing sets the session
+  // around it. The one exception is the start-up retry, which deliberately
+  // clears the screen rather than adopting a session.
   assert.match(source, /applySession\(data\.session\)/, 'the stored session');
   assert.match(source, /applySession\(nextSession\)/, 'the auth event');
+  const directWrites = source.match(/setSession\(/g)?.length ?? 0;
+  const insideApplySession = source.match(/setSession\(nextSession\)/g)?.length ?? 0;
+  const startupRetry = source.match(/setSession\(undefined\)/g)?.length ?? 0;
+  assert.equal(directWrites, insideApplySession + startupRetry, 'no path sets the session around applySession');
 });
 
 test('undefined reads the same as no session, so the first event is not a false change', () => {

@@ -5,6 +5,7 @@ import { BinderButton, BinderCard, BinderIcon, BinderScreenHeader, BinderText } 
 import { MotionPressable as Pressable } from '../components/ui';
 import { DELETE_ACCOUNT_URL, PRIVACY_URL, TERMS_URL, deleteCurrentAccount, openBinderUrl } from '../lib/safety';
 import { confirmDestructive } from '../lib/confirmDestructive';
+import { markIntentionalSignOut } from '../lib/sessionEnd';
 import { supabase } from '../lib/supabase';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
@@ -42,6 +43,9 @@ export default function MenuScreen({ onOpenSettings, onOpenBeta, onOpenAbout }: 
 
   async function signOut() {
     setMessage('');
+    // Says "this one was on purpose", so Root does not treat it as a session
+    // that expired on its own.
+    markIntentionalSignOut();
     const { error } = await supabase.auth.signOut();
     if (error) setMessage(error.message);
   }

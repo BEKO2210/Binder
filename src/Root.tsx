@@ -10,6 +10,7 @@ import Animated, { FadeInUp, FadeOutDown, SlideInRight, SlideOutRight, ZoomIn, Z
 import BinderErrorBoundary from './components/BinderErrorBoundary';
 import { BinderIcon, BinderText, MotionPressable, ScreenState, type BinderIconName } from './components/ui';
 import { sessionIdentityChanged } from './lib/authTransition';
+import { consumeIntentionalSignOut, markIntentionalSignOut, sessionEndDecision } from './lib/sessionEnd';
 import { startupPhase } from './lib/startupState';
 import { initializeBetaDiagnostics, recordBetaEvent } from './lib/beta';
 import { parseAuthCallback } from './lib/deepLinks';
@@ -169,18 +170,31 @@ function BinderApp() {
       // A reset link signs the person in with a recovery session. Until they
       // have actually chosen a new password, that session may only do that.
       if (event === 'PASSWORD_RECOVERY') setRecovering(true);
-      // Supabase also emits SIGNED_OUT when a token refresh fails, which happens
-      // every time the phone is offline long enough. Treating that as an expired
-      // session threw a signed-in user back to the sign-in screen for having
-      // been in a tunnel. Only a refusal by the server ends a session; the app
-      // asks for one before it believes it.
+      // Supabase emits SIGNED_OUT for two different things: somebody tapped
+      // sign out, and a token refresh failed because the phone was in a tunnel.
+      // The session used to be dropped immediately either way, while the check
+      // that was supposed to prevent exactly that ran alongside and arrived too
+      // late — so a dead spot logged people out of a valid account, and a
+      // deliberate sign-out was greeted with "your session expired".
       if (event === 'SIGNED_OUT' && hadSessionRef.current) {
-        void supabase.auth.getSession().then(({ data, error }) => {
-          if (!active) return;
-          if (data.session) return;
-          if (error && isLikelyOffline(error)) return;
-          setSessionExpired(true);
-        });
+        if (consumeIntentionalSignOut()) { applySession(null); return; }
+        // Ask the server before believing it, and hold the session until the
+        // answer arrives. The check gets a deadline of its own, because an
+        // unanswered question must not leave this hanging either.
+        void withDeadline(supabase.auth.getSession(), STARTUP_DEADLINE_MS)
+          .then(({ data, error }) => {
+            if (!active) return;
+            const decision = sessionEndDecision({
+              intentional: false,
+              hasServerSession: Boolean(data.session),
+              unreachable: Boolean(error) && isLikelyOffline(error),
+            });
+            if (decision === 'keep') { if (data.session) applySession(data.session); return; }
+            setSessionExpired(true);
+            applySession(null);
+          })
+          .catch(() => undefined); // No answer is not evidence: stay signed in.
+        return;
       }
       applySession(nextSession);
     });
@@ -189,6 +203,7 @@ function BinderApp() {
 
   const handleSessionExpired = useCallback(() => setSessionExpired(true), []);
   const returnToSignIn = useCallback(() => {
+    markIntentionalSignOut();
     void supabase.auth.signOut().finally(() => setSessionExpired(false));
   }, []);
 
