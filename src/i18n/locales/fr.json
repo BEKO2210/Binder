@@ -615,6 +615,14 @@
         "age": "tranche d’âge",
         "distance": "distance"
       }
+    },
+    "attributes": {
+      "title": "Plus de filtres",
+      "any": "Peu importe",
+      "heightMin": "Taille minimale",
+      "heightMax": "Taille maximale",
+      "show": "Afficher plus de filtres",
+      "hide": "Afficher moins"
     }
   },
   "onboarding": {

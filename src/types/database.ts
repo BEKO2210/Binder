@@ -389,6 +389,7 @@ export type Database = {
       }
       user_preferences: {
         Row: {
+          attribute_filters: Json
           interested_in: string[]
           max_age: number
           max_distance_km: number
@@ -397,6 +398,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          attribute_filters?: Json
           interested_in?: string[]
           max_age?: number
           max_distance_km?: number
@@ -405,6 +407,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          attribute_filters?: Json
           interested_in?: string[]
           max_age?: number
           max_distance_km?: number
@@ -478,6 +481,7 @@ export type Database = {
       }
       count_discovery_candidates: {
         Args: {
+          p_attribute_filters?: Json | null
           p_interested_in: string[]
           p_min_age: number
           p_max_age: number
@@ -661,6 +665,7 @@ export type Database = {
         Args: { p_category: string; p_details?: string; p_rating: number }
         Returns: string
       }
+      set_my_attribute_filters: { Args: { p_filters: Json }; Returns: undefined }
       unmatch: { Args: { p_match_id: string }; Returns: boolean }
       unregister_push_token: { Args: { p_token: string }; Returns: undefined }
       unregister_push_installation: { Args: { p_installation_id: string }; Returns: undefined }

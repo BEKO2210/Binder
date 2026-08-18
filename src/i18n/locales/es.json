@@ -615,6 +615,14 @@
         "age": "rango de edad",
         "distance": "distancia"
       }
+    },
+    "attributes": {
+      "title": "Más filtros",
+      "any": "Cualquiera",
+      "heightMin": "Estatura mínima",
+      "heightMax": "Estatura máxima",
+      "show": "Mostrar más filtros",
+      "hide": "Mostrar menos"
     }
   },
   "onboarding": {

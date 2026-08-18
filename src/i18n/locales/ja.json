@@ -615,6 +615,14 @@
         "age": "年齢範囲",
         "distance": "距離"
       }
+    },
+    "attributes": {
+      "title": "その他のフィルター",
+      "any": "こだわらない",
+      "heightMin": "最低身長",
+      "heightMax": "最高身長",
+      "show": "フィルターをもっと見る",
+      "hide": "表示を減らす"
     }
   },
   "onboarding": {

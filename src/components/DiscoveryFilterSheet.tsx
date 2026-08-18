@@ -3,6 +3,8 @@ import { ScrollView, View } from 'react-native';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 
 import { supabase } from '../lib/supabase';
+import { filtersPayload, parseStoredFilters, type AttributeFilters } from '../lib/attributeFilters';
+import { AttributeFilterSection } from './AttributeFilterSection';
 import { announce } from '../lib/announce';
 import { loadDiscoveryPreferences } from '../lib/discovery';
 import { discoveryCountDebounceMs, likelyEmptyFilter } from '../lib/discoveryPreferencesPolicy';
@@ -21,6 +23,7 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
   const [profile, setProfile] = useState<LoadedProfile | null>(null);
   const [viewerId, setViewerId] = useState('');
   const [values, setValues] = useState(initialValues ?? discoveryDefaults);
+  const [attributeFilters, setAttributeFilters] = useState<AttributeFilters>({});
   const [loadError, setLoadError] = useState('');
   const [errors, setErrors] = useState<GroupErrors>({});
   const [busy, setBusy] = useState(false);
@@ -39,14 +42,19 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
       const { data: userData } = await supabase.auth.getUser();
       const uid = userData.user?.id;
       if (!uid) throw new Error(t('discoveryFilterSheet.errors.authentication'));
-      const [profileResult, preferencesResult] = await Promise.all([
+      const [profileResult, storedFilters, preferencesResult] = await Promise.all([
         supabase.from('profiles').select('first_name,gender,bio,interests').eq('user_id', uid).single(),
+        supabase.from('user_preferences').select('attribute_filters').eq('user_id', uid).single(),
         initialValues ? Promise.resolve(null) : loadDiscoveryPreferences(),
       ]);
       if (profileResult.error) throw new Error(t('discoveryFilterSheet.errors.load'));
+      // The sheet's apply replaces the whole filter object, so it must never
+      // start from a guess: a failed read here would quietly erase filters.
+      if (storedFilters.error) throw new Error(t('discoveryFilterSheet.errors.load'));
       if (!active) return;
       setViewerId(uid);
       setProfile(profileResult.data as LoadedProfile);
+      setAttributeFilters(parseStoredFilters(storedFilters.data.attribute_filters));
       if (preferencesResult) setValues(preferencesResult);
     }
     void load().catch((cause: unknown) => { if (active) setLoadError(cause instanceof Error ? cause.message : t('discoveryFilterSheet.errors.load')); });
@@ -68,6 +76,7 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
         p_min_age: values.minAge,
         p_max_age: values.maxAge,
         p_distance_km: values.distance,
+        p_attribute_filters: filtersPayload(attributeFilters),
       })
         .abortSignal(controller.signal)
         .then(({ data, error }) => {
@@ -85,7 +94,7 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
         });
     }, discoveryCountDebounceMs);
     return () => { clearTimeout(timer); controller.abort(); };
-  }, [profile, values, viewerId]);
+  }, [profile, values, attributeFilters, viewerId]);
 
   async function apply() {
     if (!profile || busy) return;
@@ -99,6 +108,8 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
     try {
       const { error } = await supabase.rpc('update_my_profile', { p_first_name: profile.first_name, p_gender: profile.gender, p_bio: profile.bio, p_interests: profile.interests, p_interested_in: values.interestedIn, p_min_age: values.minAge, p_max_age: values.maxAge, p_max_distance_km: values.distance });
       if (error) throw error;
+      const filtersResult = await supabase.rpc('set_my_attribute_filters', { p_filters: filtersPayload(attributeFilters) });
+      if (filtersResult.error) throw filtersResult.error;
       announce(t('discoveryFilterSheet.accessibility.filtersApplied'));
       onApplied(values);
     } catch {
@@ -116,11 +127,12 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
           <>
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: theme.spacing.x5, paddingTop: theme.spacing.x4, paddingBottom: theme.spacing.x8 }}>
               <DiscoveryPreferences {...values} showPresets onChange={(next) => { setValues(next); setErrors({}); }} errors={errors} />
+              <AttributeFilterSection filters={attributeFilters} onChange={setAttributeFilters} />
               <CountConsequence count={passingCount} loading={countBusy} failed={countError} cause={likelyEmptyFilter(values)} />
             </ScrollView>
             <View style={{ paddingHorizontal: theme.spacing.x5, paddingTop: theme.spacing.x3, paddingBottom: theme.spacing.x5, borderTopWidth: 1, borderTopColor: theme.colors.borderSubtle, backgroundColor: theme.colors.surface }}>
               <BinderButton label={t('discoveryFilterSheet.actions.apply')} loading={busy} onPress={() => void apply()} />
-              <BinderButton label={t('discoveryFilterSheet.actions.reset')} variant="ghost" disabled={busy} onPress={() => { setValues(discoveryDefaults); setErrors({}); }} style={{ marginTop: theme.spacing.x2 }} />
+              <BinderButton label={t('discoveryFilterSheet.actions.reset')} variant="ghost" disabled={busy} onPress={() => { setValues(discoveryDefaults); setAttributeFilters({}); setErrors({}); }} style={{ marginTop: theme.spacing.x2 }} />
             </View>
           </>
         )}

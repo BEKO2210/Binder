@@ -615,6 +615,14 @@
         "age": "zakres wieku",
         "distance": "odległość"
       }
+    },
+    "attributes": {
+      "title": "Więcej filtrów",
+      "any": "Obojętne",
+      "heightMin": "Minimalny wzrost",
+      "heightMax": "Maksymalny wzrost",
+      "show": "Pokaż więcej filtrów",
+      "hide": "Pokaż mniej"
     }
   },
   "onboarding": {

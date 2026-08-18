@@ -4,6 +4,8 @@
 // The server enforces the same lists through CHECK constraints, so this file
 // must stay in step with phase10_profile_attributes.sql.
 
+export const ZODIAC_SIGNS = ['aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces'] as const;
+
 export const HEIGHT_MIN_CM = 120;
 export const HEIGHT_MAX_CM = 230;
 

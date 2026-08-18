@@ -615,6 +615,14 @@
         "age": "fascia d'età",
         "distance": "distanza"
       }
+    },
+    "attributes": {
+      "title": "Altri filtri",
+      "any": "Indifferente",
+      "heightMin": "Altezza minima",
+      "heightMax": "Altezza massima",
+      "show": "Mostra altri filtri",
+      "hide": "Mostra meno"
     }
   },
   "onboarding": {

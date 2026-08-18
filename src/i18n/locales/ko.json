@@ -615,6 +615,14 @@
         "age": "연령 범위",
         "distance": "거리"
       }
+    },
+    "attributes": {
+      "title": "필터 더 보기",
+      "any": "상관없음",
+      "heightMin": "최소 키",
+      "heightMax": "최대 키",
+      "show": "필터 더 보기",
+      "hide": "접기"
     }
   },
   "onboarding": {

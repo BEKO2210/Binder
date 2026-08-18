@@ -615,6 +615,14 @@
         "age": "Altersspanne",
         "distance": "Entfernung"
       }
+    },
+    "attributes": {
+      "title": "Mehr Filter",
+      "any": "Egal",
+      "heightMin": "Mindestgröße",
+      "heightMax": "Maximalgröße",
+      "show": "Mehr Filter anzeigen",
+      "hide": "Weniger anzeigen"
     }
   },
   "onboarding": {

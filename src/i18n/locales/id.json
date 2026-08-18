@@ -615,6 +615,14 @@
         "age": "rentang usia",
         "distance": "jarak"
       }
+    },
+    "attributes": {
+      "title": "Filter lainnya",
+      "any": "Bebas",
+      "heightMin": "Tinggi minimum",
+      "heightMax": "Tinggi maksimum",
+      "show": "Tampilkan filter lain",
+      "hide": "Tampilkan lebih sedikit"
     }
   },
   "onboarding": {

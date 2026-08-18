@@ -615,6 +615,14 @@
         "age": "yaş aralığınız",
         "distance": "mesafeniz"
       }
+    },
+    "attributes": {
+      "title": "Daha fazla filtre",
+      "any": "Fark etmez",
+      "heightMin": "En az boy",
+      "heightMax": "En fazla boy",
+      "show": "Daha fazla filtre göster",
+      "hide": "Daha az göster"
     }
   },
   "onboarding": {
