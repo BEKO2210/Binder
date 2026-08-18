@@ -14,6 +14,7 @@ import { MotionPressable } from './MotionPressable';
 
 const symbols = {
   discover: { ios: 'safari', android: 'explore', web: 'explore' },
+  search: { ios: 'magnifyingglass', android: 'search', web: 'search' },
   matches: { ios: 'heart.fill', android: 'favorite', web: 'favorite' },
   profile: { ios: 'person.fill', android: 'person', web: 'person' },
   settings: { ios: 'gearshape.fill', android: 'settings', web: 'settings' },

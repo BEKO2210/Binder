@@ -1,0 +1,116 @@
+import { useMemo, useState } from 'react';
+import { TextInput, View } from 'react-native';
+
+import { INTEREST_CATEGORIES, INTEREST_SELECTION_LIMIT, catalogLabelKey, categoryLabelKey, interestsInCategory, type InterestEntry } from '../lib/interestCatalog';
+import { searchCatalog, toggleInterest } from '../lib/interestPicker';
+import { interestLabel } from '../lib/validation';
+import { useBinderTheme } from '../theme/ThemeProvider';
+import { BinderChip, BinderIcon, BinderText } from './ui';
+
+type Props = {
+  selection: readonly string[];
+  onChange: (selection: readonly string[]) => void;
+};
+
+// The interest picker: search on top, thirteen collapsible categories below, a
+// live counter on the side. While a search is active the categories yield to a
+// flat result list — collapsing sections during a search would hide the very
+// matches that were asked for.
+//
+// Only expanded categories render their chips. Three hundred chips in one
+// mounted tree is exactly the kind of screen that starts dropping frames, and
+// a collapsed section costs one header row.
+export function InterestPicker({ selection, onChange }: Props) {
+  const { theme, t } = useBinderTheme();
+  const [query, setQuery] = useState('');
+  const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set(INTEREST_CATEGORIES.slice(0, 1)));
+
+  const labelOf = useMemo(() => (entry: InterestEntry) => t(catalogLabelKey(entry.id)), [t]);
+  const results = useMemo(() => searchCatalog(query, labelOf), [query, labelOf]);
+  const searching = query.trim().length > 0;
+
+  const toggle = (id: string) => onChange(toggleInterest(selection, id));
+  const counter = t('identity.interestPicker.counter', { count: selection.length, max: INTEREST_SELECTION_LIMIT });
+
+  const chip = (entry: InterestEntry) => (
+    <BinderChip
+      key={entry.id}
+      emoji={entry.emoji}
+      label={labelOf(entry)}
+      selected={selection.includes(entry.id)}
+      onPress={() => toggle(entry.id)}
+    />
+  );
+
+  return (
+    <View style={{ gap: theme.spacing.x4 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <BinderText variant="micro" tone="muted">{t('profileSettings.fields.interests')}</BinderText>
+        <BinderText
+          accessibilityLiveRegion="polite"
+          variant="label"
+          tone={selection.length >= INTEREST_SELECTION_LIMIT ? 'accent' : 'secondary'}
+        >
+          {counter}
+        </BinderText>
+      </View>
+
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3, minHeight: theme.layout.controlHeight, borderRadius: theme.radii.control, borderWidth: 1, borderColor: theme.colors.borderSubtle, backgroundColor: theme.colors.surface, paddingHorizontal: theme.spacing.x4 }}>
+        <BinderIcon name="search" size={20} color={theme.colors.textMuted} />
+        <TextInput
+          value={query}
+          onChangeText={setQuery}
+          placeholder={t('identity.interestPicker.searchPlaceholder')}
+          placeholderTextColor={theme.colors.textMuted}
+          accessibilityLabel={t('identity.interestPicker.searchPlaceholder')}
+          autoCorrect={false}
+          style={{ flex: 1, color: theme.colors.textPrimary, fontFamily: theme.typography.label.fontFamily }}
+        />
+      </View>
+
+      {searching ? (
+        results.length === 0 ? (
+          <BinderText variant="caption" tone="muted">{t('identity.interestPicker.noResults')}</BinderText>
+        ) : (
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{results.map(chip)}</View>
+        )
+      ) : (
+        INTEREST_CATEGORIES.map((categoryId) => {
+          const isOpen = expanded.has(categoryId);
+          return (
+            <View key={categoryId} style={{ gap: theme.spacing.x3 }}>
+              <BinderText variant="title">{t(categoryLabelKey(categoryId))}</BinderText>
+              {isOpen ? (
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>
+                  {interestsInCategory(categoryId).map(chip)}
+                </View>
+              ) : null}
+              <BinderChip
+                label={t(isOpen ? 'identity.interestPicker.showLess' : 'identity.interestPicker.showMore')}
+                onPress={() => setExpanded((current) => {
+                  const next = new Set(current);
+                  if (isOpen) next.delete(categoryId); else next.add(categoryId);
+                  return next;
+                })}
+              />
+            </View>
+          );
+        })
+      )}
+
+      {/* Stored values the catalogue does not know still render and stay
+          removable — they came from an older list and belong to the person. */}
+      {selection.filter((id) => !labelOfKnown(id)).map((id) => (
+        <BinderChip key={id} label={interestLabel(t, id)} selected onPress={() => toggle(id)} />
+      ))}
+    </View>
+  );
+}
+
+const knownIds = new Set<string>();
+function labelOfKnown(id: string): boolean {
+  if (knownIds.size === 0) {
+    for (const category of INTEREST_CATEGORIES) for (const entry of interestsInCategory(category)) knownIds.add(entry.id);
+  }
+  return knownIds.has(id);
+}
