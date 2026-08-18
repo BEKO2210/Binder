@@ -37,9 +37,15 @@ export async function fetchPartnerProfile(userId: string): Promise<PartnerProfil
   if (profileResult.error) throw profileResult.error;
   const row = (profileResult.data as PublicProfileRow[] | null)?.[0];
   if (!row) throw new Error('This profile is not available.');
+  // A gallery that failed to load is not an empty gallery. Swallowing this
+  // showed a real person as somebody with no photos at all, which is both a
+  // lie about them and a reason to pass — the screen has an error state with a
+  // retry, and this is what it is for. The distance is different: it is one
+  // line of context, and a profile without it is still the truth.
+  if (mediaResult.error) throw mediaResult.error;
 
   const photoUrls = await Promise.all(
-    (mediaResult.error ? [] : mediaResult.data ?? []).map((item) => signedProfileImageUrl(item.storage_path)),
+    (mediaResult.data ?? []).map((item) => signedProfileImageUrl(item.storage_path)),
   );
 
   return {

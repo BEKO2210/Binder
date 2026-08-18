@@ -29,3 +29,24 @@ test('the screen deletes only after a confirmed upload', () => {
   // And the order is decided by the tested rule, not by a hand-written check.
   assert.match(source, /replacementOrder\(media\.length\) === 'upload-first'/);
 });
+
+test('the profile viewer never shows one person under another person\'s name', () => {
+  // It kept the previous profile on screen while the next one loaded, so a
+  // route change — a tapped notification, another match — showed somebody
+  // else's photos and bio under the name of the person actually opened.
+  const source = readFileSync(new URL('../src/screens/PartnerProfileScreen.tsx', import.meta.url), 'utf8');
+  assert.match(source, /setProfile\(initialProfile && initialProfile\.id === userId \? asPartnerProfile\(initialProfile\) : null\)/);
+  // The head start from the deck is only kept when it is the same person, and
+  // a stale error must not survive the switch either.
+  assert.match(source, /setProfile\([\s\S]{0,120}\);\s*\n\s*setError\(''\);/);
+});
+
+test('a gallery that failed to load is not reported as an empty gallery', () => {
+  // It showed a real person as somebody with no photos at all — a lie about
+  // them, and on a dating app a reason to pass. The distance stays optional:
+  // one missing line of context is still the truth.
+  const source = readFileSync(new URL('../src/lib/partnerProfile.ts', import.meta.url), 'utf8');
+  assert.match(source, /if \(mediaResult\.error\) throw mediaResult\.error;/);
+  assert.ok(!source.includes('mediaResult.error ? [] :'), 'the failure must not be turned into an empty list');
+  assert.match(source, /distanceKm: distanceResult\.error \? null :/, 'distance may still degrade quietly');
+});

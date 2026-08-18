@@ -39,6 +39,13 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose, in
 
   useEffect(() => {
     let active = true;
+    // A profile belongs to exactly one person. Keeping the previous one on
+    // screen while the next one loads shows somebody else's photos and bio
+    // under the name of the person who was actually opened — on a dating app
+    // that is the wrong face against the wrong conversation. The head start
+    // from the deck only counts when it is the same person.
+    setProfile(initialProfile && initialProfile.id === userId ? asPartnerProfile(initialProfile) : null);
+    setError('');
     fetchPartnerProfile(userId)
       .then((next) => { if (active) setProfile(next); })
       .catch((cause) => { if (active && !initialProfile) setError(cause instanceof Error ? cause.message : t('partnerProfile.errors.load')); });
