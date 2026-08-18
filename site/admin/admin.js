@@ -109,6 +109,16 @@
     selectTab(allowedTabs()[0]);
   }
 
+  // One place decides what is on screen. Four separate spots used to set these
+  // three flags, and a path that missed one left the sign-in card sitting under
+  // a dashboard the person was already signed into.
+  function showSession(signedIn) {
+    document.body.dataset.session = signedIn ? 'in' : 'out';
+    byId('login-view').hidden = signedIn;
+    byId('dashboard-view').hidden = !signedIn;
+    byId('sign-out').hidden = !signedIn;
+  }
+
   let authorizing = false;
 
   async function authorizeSession() {
@@ -117,9 +127,7 @@
     try {
       state.member = firstRow(await rpc('claim_admin_session'));
       if (!state.member) throw new Error('not-authorized');
-      byId('login-view').hidden = true;
-      byId('dashboard-view').hidden = false;
-      byId('sign-out').hidden = false;
+      showSession(true);
       configurePermissions();
       window.scrollTo({ top: 0, behavior: 'instant' in document.documentElement.style ? 'instant' : 'auto' });
       await refreshAll();
@@ -134,9 +142,7 @@
       } else {
         await client.auth.signOut({ scope: 'local' });
         state.member = null;
-        byId('login-view').hidden = false;
-        byId('dashboard-view').hidden = true;
-        byId('sign-out').hidden = true;
+        showSession(false);
         setStatus(byId('login-status'), 'Dieses Konto ist nicht für Binder Admin freigeschaltet.', 'error');
       }
     } finally {
@@ -332,7 +338,21 @@
           await Promise.all([refreshModerators(), refreshSummary()]);
         } catch (error) { toast(error.message, true); }
       });
-      actions.append(save, disable);
+      // Disabling is right for somebody who should stop moderating. It is the
+      // wrong answer for an address that was mistyped and never existed — that
+      // one has to be able to leave the list.
+      const remove = make('button', 'admin-button danger-action', 'Löschen');
+      remove.type = 'button';
+      remove.addEventListener('click', async () => {
+        if (!window.confirm(`${row.moderator_email} endgültig aus der Moderatorenliste entfernen?`)) return;
+        remove.disabled = true;
+        try {
+          await rpc('admin_remove_moderator', { p_email: row.moderator_email });
+          toast('Moderator wurde entfernt.');
+          await Promise.all([refreshModerators(), refreshSummary()]);
+        } catch (error) { toast(error.message, true); remove.disabled = false; }
+      });
+      actions.append(save, disable, remove);
       card.append(identity, media.wrapper, reports.wrapper, suspend.wrapper, actions);
       fragment.append(card);
     });
@@ -574,9 +594,7 @@
       if (event === 'SIGNED_IN' && session && !state.member) void authorizeSession();
       if (event === 'SIGNED_OUT') {
         state.member = null;
-        byId('login-view').hidden = false;
-        byId('dashboard-view').hidden = true;
-        byId('sign-out').hidden = true;
+        showSession(false);
       }
     });
     const { data } = await client.auth.getSession();

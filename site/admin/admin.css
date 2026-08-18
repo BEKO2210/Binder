@@ -18,3 +18,11 @@
 .diagnostics-grid{border-collapse:collapse;width:100%;min-width:640px;font-size:12px}.diagnostics-grid th{position:sticky;top:0;text-align:right;padding:14px 12px;color:var(--muted);font-weight:600;white-space:nowrap;background:rgba(15,17,23,.98)}.diagnostics-grid th:first-child,.diagnostics-grid td:first-child{text-align:left}.diagnostics-grid td{padding:12px;text-align:right;white-space:nowrap;border-top:1px solid var(--line)}.diagnostics-grid tbody tr:hover{background:rgba(199,255,74,.05)}
 .diagnostics-note{margin:26px 0 0;padding:18px 20px;border:1px solid var(--line);border-radius:22px;color:var(--muted);font-size:12px;line-height:1.6}
 @media(max-width:760px){.diagnostics-block{margin-top:20px}.diagnostics-note{font-size:11px}}
+
+
+/* A second lock on the same door. The sign-in card is hidden by a flag in the
+   script, and a path that forgets to set it used to leave it visible under a
+   dashboard somebody was already signed into. This makes the signed-in state
+   itself decide, so forgetting is no longer enough to show it. */
+body[data-session="in"] #login-view { display: none; }
+body[data-session="out"] #dashboard-view { display: none; }
