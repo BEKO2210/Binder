@@ -112,7 +112,7 @@ test('nothing a person reads is hard-coded outside the locale files', () => {
     const source = readFileSync(new URL(`../src/lib/${name}`, import.meta.url), 'utf8');
     for (const match of source.matchAll(/\b(label|name|description|message|title|copy)\s*:\s*'([^']{4,})'/g)) {
       // A key is fine. A sentence is not.
-      if (/^[a-z][A-Za-z]*(\.[A-Za-z]+)+$/.test(match[2])) continue;
+      if (/^[a-z][A-Za-z]*(\.[A-Za-z]+)+$/.test(match[2] ?? '')) continue;
       offenders.push(`src/lib/${name}: ${match[0].slice(0, 60)}`);
     }
   }
