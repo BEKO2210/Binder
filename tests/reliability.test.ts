@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { abortable, backoffDelay, classifyError, isConversationEndedError, isLikelyOffline, withRetry } from '../src/lib/reliability.ts';
+import { abortable, backoffDelay, classifyError, deadlineError, isConversationEndedError, isDeadlineError, isLikelyOffline, withDeadline, withRetry } from '../src/lib/reliability.ts';
 
 test('classifies every reliability family with distinct recovery', () => {
   const cases = [
@@ -69,4 +69,37 @@ test('a request that never reached the server counts as offline', () => {
   assert.equal(isLikelyOffline({ code: '42501', message: 'Admin permission required.' }), false);
   assert.equal(isLikelyOffline({ status: 500, message: 'server exploded' }), false);
   assert.equal(isLikelyOffline({ statusCode: 400, message: 'bad request' }), false);
+});
+
+test('a deadline turns a request that never answers into an error with a way out', async () => {
+  // A fetch on a socket the phone lost does not fail — it waits. The screen
+  // behind it waits with it, and on the first screen after sign-in that leaves
+  // a full-screen loading state with no retry and no message.
+  const started = Date.now();
+  await assert.rejects(
+    withDeadline(new Promise(() => {}), 40),
+    (error: unknown) => classifyError(error).kind === 'timeout',
+  );
+  assert.ok(Date.now() - started >= 40);
+});
+
+test('a deadline passes a result and a failure straight through', async () => {
+  assert.equal(await withDeadline(Promise.resolve('gate'), 1_000), 'gate');
+  await assert.rejects(withDeadline(Promise.reject(new Error('refused')), 1_000), /refused/);
+});
+
+test('only this module\'s own deadline counts as one', () => {
+  // The shared offline rule stays as it was: the SIGNED_OUT check reads "no
+  // server answer" as a tunnel, not as an ended session, and a caller that set
+  // its own deadline must not change that for everybody else.
+  assert.equal(isDeadlineError(deadlineError()), true);
+  assert.equal(isDeadlineError(new Error('request timed out')), false);
+  assert.equal(isDeadlineError({ message: 'timeout' }), false);
+  // Any library may raise a TimeoutError; only this module's own one counts.
+  const impostor = new Error('some other library gave up');
+  impostor.name = 'TimeoutError';
+  assert.equal(isDeadlineError(impostor), false);
+  // And the marker must not accidentally answer the offline question.
+  assert.equal(isLikelyOffline(deadlineError()), true);
+  assert.equal(isLikelyOffline(new Error('Network request failed')), true);
 });

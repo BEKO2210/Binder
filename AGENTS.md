@@ -425,6 +425,21 @@ from settings.
    scale.** `BinderIcon` draws the glyph itself with scaling off, or every icon
    is clipped at 200 %.
 9. **Verify on the device, not in the diff.**
+10. **An auth event is not a sign-in.** Supabase emits `TOKEN_REFRESHED`,
+    `USER_UPDATED`, `INITIAL_SESSION` and `SIGNED_IN` for a session nobody left,
+    and `Root` discarded the legal gate, the open chat, the tab and the profile
+    route on every one of them. An access token lasts an hour, so it threw the
+    person back to Discover roughly hourly — and out of a running photo upload
+    whenever the refresh landed during one, which is how a tester reported it
+    ("two photos at once"). Only the user id behind the session may decide that.
+11. **A request that never answers is worse than one that fails.** A failure
+    reaches the screen; silence keeps a full-screen loading state forever. The
+    legal gate had a retry for a bad answer and nothing at all for no answer,
+    and that is what left "Checking Binder safety rules…" standing with no tab
+    bar and no way out. Anything blocking a full-screen state needs a deadline.
+12. **The diagnostics are evidence.** The proof that the call hung rather than
+    failed was a *missing* `legal_gate_load` row in `private.beta_client_events`
+    — neither `ok` nor `error`. Read that table before theorising.
 
 ## Open
 
@@ -439,16 +454,14 @@ from settings.
   profile…") never go through `t()`. `verify-i18n-coverage.mjs` scans only
   `src/screens` and `src/components`, so `src/Root.tsx` is invisible to it —
   widening the scan is part of that fix, or the next string lands the same way.
-- **A push tap onto a backgrounded app hung on the legal gate.** Seen once, on
-  2026-08-18 at 02:37: the tap raised the app, it rendered "Checking Binder
-  safety rules…" and stayed there for over a minute, no tab bar, no error, no
-  retry. `getLegalGate()` in `Root.tsx:166` has neither a timeout nor an abort,
-  so a request that never settles leaves that screen with no way out. The
-  process had been trimmed in the background beforehand. Not yet reproduced —
-  reproduce it first, then decide between a timeout and an abort.
 - **Failed push registration is silent.** `Root.tsx:231` and the rotation
   listener in `notifications.ts:151` both swallow every error, so push can stay
   switched on in settings while no token ever reaches the server. Only the
   explicit tap in App settings surfaces a failure.
+- **Two more start-up loading states can still wait forever**, both found while
+  fixing the one below and neither reproduced: `supabase.auth.getSession()` at
+  start-up has no deadline, so `session === undefined` keeps "Loading Binder…"
+  on screen; the onboarding lookup has none either. Same shape, same fix, but
+  each needs its own measurement first.
 - German copy for the Play listing.
 - The listing's own screenshots, shot with staged profiles and framed.

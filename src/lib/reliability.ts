@@ -91,6 +91,53 @@ export function abortable<T>(operation: Promise<T>, signal?: AbortSignal): Promi
   });
 }
 
+// An own marker rather than the name alone: any library is free to raise a
+// TimeoutError, and the caller below changes how the error is presented, so it
+// has to recognise its own deadline and nothing else. The property is one this
+// module owns, and it is not `code` or `status` — those two decide whether an
+// error counts as offline, and a marker must not quietly answer that question.
+const DEADLINE_MARKER = '__binderDeadline';
+
+export function deadlineError(): Error {
+  const error = new Error('Binder timed out waiting for an answer.');
+  error.name = 'TimeoutError';
+  return Object.assign(error, { [DEADLINE_MARKER]: true });
+}
+
+/**
+ * Exactly the deadline this module raises — not "anything that reads like a
+ * timeout".
+ *
+ * `isLikelyOffline` deliberately treats an answer that never arrived as
+ * offline, and the SIGNED_OUT check depends on that: no server answer there
+ * means the phone was in a tunnel, not that the session ended. A caller that
+ * set a deadline itself knows better for its own call, and only for its own
+ * call, so it asks this instead of widening that shared rule.
+ */
+export function isDeadlineError(value: unknown): boolean {
+  return value instanceof Error && (value as unknown as Record<string, unknown>)[DEADLINE_MARKER] === true;
+}
+
+/**
+ * A ceiling on how long a request may stay unanswered.
+ *
+ * A failed request rejects and the screen behind it can say so. A request on a
+ * socket the phone quietly lost does neither: it waits, and every loading state
+ * waiting on it waits forever. That is what put "Checking Binder safety rules…"
+ * on the screen with no tab bar, no message and no retry after a notification
+ * was tapped. Only the promise handed in is bounded — the work behind it cannot
+ * be recalled, so this is a ceiling on waiting, not a cancellation.
+ */
+export function withDeadline<T>(operation: Promise<T>, timeoutMs: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(deadlineError()), timeoutMs);
+    operation.then(
+      (value) => { clearTimeout(timer); resolve(value); },
+      (error) => { clearTimeout(timer); reject(error); },
+    );
+  });
+}
+
 export type RetryOptions = {
   attempts?: number;
   baseDelayMs?: number;

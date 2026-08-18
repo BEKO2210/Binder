@@ -1,6 +1,7 @@
 import { Linking } from 'react-native';
 
 import { supabase } from './supabase';
+import { withDeadline } from './reliability';
 import type { SafetyNotice } from './safetyNotice';
 
 export type { SafetyNotice } from './safetyNotice';
@@ -37,7 +38,17 @@ export async function fetchMySafetyNotice(options: RequestOptions = {}): Promise
   return row;
 }
 
-export async function getLegalGate(): Promise<LegalGate> {
+// Measured on the S23, this call answers in 223–716 ms. Fifteen seconds is not
+// a performance budget, it is the point past which waiting is not going to end
+// on its own: the screen it blocks is a full-screen loading state, and the only
+// thing worse than a slow answer there is no answer and no way out.
+const LEGAL_GATE_DEADLINE_MS = 15_000;
+
+export function getLegalGate(): Promise<LegalGate> {
+  return withDeadline(loadLegalGate(), LEGAL_GATE_DEADLINE_MS);
+}
+
+async function loadLegalGate(): Promise<LegalGate> {
   // This is the first authenticated call after any sign-in. On the S23, once,
   // straight after a Google sign-in, it failed and put a red "security check
   // failed" screen in front of a perfectly good account; tapping retry worked

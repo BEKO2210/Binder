@@ -9,6 +9,7 @@ import Animated, { FadeInUp, FadeOutDown, SlideInRight, SlideOutRight, ZoomIn, Z
 
 import BinderErrorBoundary from './components/BinderErrorBoundary';
 import { BinderIcon, BinderText, MotionPressable, ScreenState, type BinderIconName } from './components/ui';
+import { sessionIdentityChanged } from './lib/authTransition';
 import { initializeBetaDiagnostics, recordBetaEvent } from './lib/beta';
 import { parseAuthCallback } from './lib/deepLinks';
 import { fetchMatches, type MatchSummary } from './lib/conversation';
@@ -24,7 +25,7 @@ import {
 } from './lib/notifications';
 import { getLegalGate, type LegalGate } from './lib/safety';
 import { safeLog } from './lib/safeLog';
-import { isLikelyOffline } from './lib/reliability';
+import { isDeadlineError, isLikelyOffline } from './lib/reliability';
 import { supabase } from './lib/supabase';
 import AboutScreen from './screens/AboutScreen';
 import AppSettingsScreen from './screens/AppSettingsScreen';
@@ -93,11 +94,40 @@ function BinderApp() {
   const [notificationPreferencesReadyFor, setNotificationPreferencesReadyFor] = useState<string | null>(null);
   const appSessionRecorded = useRef(false);
   const hadSessionRef = useRef(false);
+  const signedInUserRef = useRef<string | null>(null);
 
   useEffect(() => {
     let active = true;
-    supabase.auth.getSession().then(({ data, error }) => { if (!active) return; if (error) setLoadError(error.message); hadSessionRef.current = Boolean(data.session); setSession(data.session); });
+    // Both paths below hand the session here, and nothing else may move
+    // signedInUserRef. A path that advanced the reference without discarding
+    // the screen would leave one account's open chat, tab and profile route
+    // standing under the next account's identity — the stored session and an
+    // auth event can arrive in either order, so "the first one wins" is not a
+    // property this code gets to assume.
+    const applySession = (nextSession: Session | null) => {
+      // The new token always has to reach the client. What must not follow it
+      // is the reset: Supabase emits TOKEN_REFRESHED, USER_UPDATED and SIGNED_IN
+      // for a session nobody left, and discarding the screen state on those
+      // threw the person back to Discover about once an hour — and out of a
+      // running photo upload whenever the refresh landed during one.
+      const nextUserId = nextSession?.user.id ?? null;
+      const identityChanged = sessionIdentityChanged(signedInUserRef.current, nextUserId);
+      hadSessionRef.current = Boolean(nextSession);
+      signedInUserRef.current = nextUserId;
+      setSession(nextSession);
+      if (!identityChanged) return;
+      setLegalGate(undefined); setOnboardingComplete(undefined); setNotificationPreferencesReadyFor(null); setLoadError(''); setActiveMatch(null); setProfileRoute('home'); setTab('discover'); appSessionRecorded.current = false;
+    };
+
+    // The stored session is read once at start-up and can answer late. A live
+    // auth event that arrived in the meantime is newer by definition, so the
+    // stale read must not win: it would put the previous account's session back
+    // into React while Supabase is already authenticating the new one, and
+    // every screen would render one account's data against the other's token.
+    let sawAuthEvent = false;
+    supabase.auth.getSession().then(({ data, error }) => { if (!active || sawAuthEvent) return; if (error) setLoadError(error.message); applySession(data.session); });
     const { data } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      sawAuthEvent = true;
       // A reset link signs the person in with a recovery session. Until they
       // have actually chosen a new password, that session may only do that.
       if (event === 'PASSWORD_RECOVERY') setRecovering(true);
@@ -114,8 +144,7 @@ function BinderApp() {
           setSessionExpired(true);
         });
       }
-      hadSessionRef.current = Boolean(nextSession);
-      setSession(nextSession); setLegalGate(undefined); setOnboardingComplete(undefined); setNotificationPreferencesReadyFor(null); setLoadError(''); setActiveMatch(null); setProfileRoute('home'); setTab('discover'); appSessionRecorded.current = false;
+      applySession(nextSession);
     });
     return () => { active = false; data.subscription.unsubscribe(); };
   }, []);
@@ -163,7 +192,7 @@ function BinderApp() {
   useEffect(() => {
     if (!session) { setLegalGate(undefined); return; }
     let active = true; const startedAt = Date.now(); setLegalGate(undefined); setLoadError(''); setLoadOffline(false); void initializeBetaDiagnostics();
-    getLegalGate().then((gate) => { if (!active) return; setLegalGate(gate); void recordBetaEvent('legal_gate_load', 'legal', { durationMs: Date.now() - startedAt, outcome: 'ok' }); }).catch((error: unknown) => { if (!active) return; const offline = isLikelyOffline(error); setLoadOffline(offline); setLoadError(offline ? t('root.offline.message') : error instanceof Error ? error.message : t('root.legalGate.failedMessage')); setLegalGate(null); void recordBetaEvent('legal_gate_load', 'legal', { durationMs: Date.now() - startedAt, outcome: 'error' }); });
+    getLegalGate().then((gate) => { if (!active) return; setLegalGate(gate); void recordBetaEvent('legal_gate_load', 'legal', { durationMs: Date.now() - startedAt, outcome: 'ok' }); }).catch((error: unknown) => { if (!active) return; const timedOut = isDeadlineError(error); const offline = !timedOut && isLikelyOffline(error); setLoadOffline(offline); setLoadError(offline ? t('root.offline.message') : timedOut || !(error instanceof Error) ? t('root.legalGate.failedMessage') : error.message); setLegalGate(null); void recordBetaEvent('legal_gate_load', 'legal', { durationMs: Date.now() - startedAt, outcome: 'error' }); });
     return () => { active = false; };
   }, [session?.user.id, legalRefreshKey]);
 

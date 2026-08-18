@@ -26,8 +26,17 @@ test('does not show an active account without a warning', () => {
 
 test('the first authenticated call after sign-in retries once before it accuses the account', () => {
   const source = readFileSync(new URL('../src/lib/safety.ts', import.meta.url), 'utf8');
-  const gate = source.slice(source.indexOf('export async function getLegalGate'));
+  const gate = source.slice(source.indexOf('async function loadLegalGate'));
   assert.match(gate, /for \(let attempt = 0; ; attempt \+= 1\)/);
   assert.match(gate, /if \(attempt >= 1\)/, 'the retry is bounded — one extra attempt, not a loop');
   assert.match(gate, /setTimeout\(resolve, 600\)/);
+});
+
+test('the same call cannot wait forever', () => {
+  // The retry above only helps against an answer. Against no answer at all it
+  // does nothing, and the screen it blocks is a full-screen loading state with
+  // no retry of its own — which is exactly how it was found on the S23.
+  const source = readFileSync(new URL('../src/lib/safety.ts', import.meta.url), 'utf8');
+  assert.match(source, /withDeadline\(loadLegalGate\(\), LEGAL_GATE_DEADLINE_MS\)/);
+  assert.match(source, /LEGAL_GATE_DEADLINE_MS = 15_000/);
 });
