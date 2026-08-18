@@ -11,6 +11,7 @@ import { pickAndPrepareProfileImage, type PreparedImage } from '../lib/images';
 import { addProfileImage, listMyProfileMedia } from '../lib/media';
 import { resolveSpring } from '../lib/motionPolicy';
 import { hasErrors, onboardingPosition, ONBOARDING_STEPS, type OnboardingStep, validateDiscovery, validateIdentity } from '../lib/onboardingFlow';
+import { withDeadline } from '../lib/reliability';
 import { supabase } from '../lib/supabase';
 import { GENDERS, INTERESTS, type Gender } from '../lib/validation';
 import { useBinderTheme } from '../theme/ThemeProvider';
@@ -23,6 +24,8 @@ const STEP_COPY: Record<OnboardingStep, { eyebrow: string; title: string; copy: 
   discovery: { eyebrow: 'onboarding.steps.discovery.eyebrow', title: 'onboarding.steps.discovery.title', copy: 'onboarding.steps.discovery.copy', next: 'onboarding.steps.discovery.next' },
   photo: { eyebrow: 'onboarding.steps.photo.eyebrow', title: 'onboarding.steps.photo.title', copy: 'onboarding.steps.photo.copy', next: 'onboarding.steps.photo.next' },
 };
+
+const ONBOARDING_DEADLINE_MS = 15_000;
 
 export default function OnboardingScreen({ userId, onComplete }: Props) {
   const { theme, reduceMotion, t } = useBinderTheme();
@@ -66,14 +69,20 @@ export default function OnboardingScreen({ userId, onComplete }: Props) {
     inFlight.current = true;
     setBusy(true); setSubmitError('');
     try {
-      const { error } = await supabase.rpc('complete_my_onboarding', { p_first_name: firstName.trim(), p_birth_date: birthDate, p_gender: gender, p_bio: bio.trim(), p_interests: interests, p_interested_in: preferences.interestedIn, p_min_age: preferences.minAge, p_max_age: preferences.maxAge, p_max_distance_km: preferences.distance });
+      // Each of these gets a ceiling. Without one, a request that never answers
+      // leaves the button disabled and the double-tap guard closed, at the exact
+      // moment somebody has filled in everything and is trying to get in — no
+      // error, no way to try again. The photo upload is deliberately left
+      // unbounded: it is a transfer that may legitimately take a while, and it
+      // has its own failure path.
+      const { error } = await withDeadline(supabase.rpc('complete_my_onboarding', { p_first_name: firstName.trim(), p_birth_date: birthDate, p_gender: gender, p_bio: bio.trim(), p_interests: interests, p_interested_in: preferences.interestedIn, p_min_age: preferences.minAge, p_max_age: preferences.maxAge, p_max_distance_km: preferences.distance }), ONBOARDING_DEADLINE_MS);
       if (error) throw error;
       if (uploadedPhotoUri !== photo.uri) {
-        const existingMedia = await listMyProfileMedia();
+        const existingMedia = await withDeadline(listMyProfileMedia(), ONBOARDING_DEADLINE_MS);
         if (existingMedia.length === 0) await addProfileImage(userId, photo);
         setUploadedPhotoUri(photo.uri);
       }
-      const { error: finalizeError } = await supabase.rpc('finalize_my_onboarding'); if (finalizeError) throw finalizeError;
+      const { error: finalizeError } = await withDeadline(supabase.rpc('finalize_my_onboarding'), ONBOARDING_DEADLINE_MS); if (finalizeError) throw finalizeError;
       onComplete();
     } catch (error) { setSubmitError(error instanceof Error ? error.message : t('onboarding.errors.complete')); } finally { inFlight.current = false; setBusy(false); }
   }
