@@ -172,6 +172,12 @@
       "unreadOther": "{count} okunmamış mesaj"
     }
   },
+  "menu": {
+    "header": {
+      "title": "Menü",
+      "eyebrow": "AYARLAR VE HESAP"
+    }
+  },
   "partnerProfile": {
     "errors": {
       "load": "Bu profil yüklenemedi.",
@@ -964,7 +970,8 @@
     "tabs": {
       "discover": "Keşfet",
       "matches": "Binds",
-      "profile": "Profil"
+      "profile": "Profil",
+      "menu": "Menü"
     },
     "loading": {
       "session": "Binder yükleniyor…",

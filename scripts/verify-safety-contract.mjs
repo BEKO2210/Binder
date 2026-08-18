@@ -4,6 +4,12 @@ const failures = [];
 const read = (path) => readFileSync(path, 'utf8');
 const root = read('src/Root.tsx');
 const profile = read('src/screens/ProfileScreen.tsx');
+// Signing out and deleting the account moved to the menu tab, so the profile is
+// the screen a person opens to look at themselves and nothing else. The
+// contract was never about which file holds it — it is that the app offers a
+// real, confirmed deletion with the public explanation next to it, in exactly
+// one place.
+const accountSurface = read('src/screens/MenuScreen.tsx');
 const discovery = read('src/screens/DiscoveryScreen.tsx');
 const safety = read('src/lib/safety.ts');
 
@@ -18,14 +24,18 @@ for (const path of [
 
 if (!root.includes('LegalGateScreen')) failures.push('Root does not render LegalGateScreen');
 if (root.indexOf('if (!legalGate.accepted)') < 0 || root.indexOf('if (!legalGate.accepted)') > root.indexOf('if (!onboardingComplete)')) failures.push('Legal gate is not ahead of onboarding');
-if (!profile.includes('deleteCurrentAccount')) failures.push('Profile has no authenticated deletion action');
-if (!profile.includes('DELETE_ACCOUNT_URL')) failures.push('Profile has no external deletion resource');
+if (!accountSurface.includes('deleteCurrentAccount')) failures.push('The menu has no authenticated deletion action');
+if (!accountSurface.includes('DELETE_ACCOUNT_URL')) failures.push('The menu has no external deletion resource');
 // The confirmation shape moved into src/lib/confirmDestructive.ts, which is
 // now the single place that decides button order and destructive styling. The
 // contract is still that deletion is confirmed destructively — it is just
 // asserted where that decision lives.
 const confirmHelper = `${readFileSync('src/lib/confirmDestructive.ts', 'utf8')}\n${readFileSync('src/lib/destructiveConfirmationPolicy.ts', 'utf8')}`;
-if (!profile.includes('confirmDestructive({')) failures.push('Deletion is not confirmed through the shared destructive confirmation');
+if (!accountSurface.includes('confirmDestructive({')) failures.push('Deletion is not confirmed through the shared destructive confirmation');
+// Stricter than before: exactly one surface may offer it. A second copy on the
+// profile is how it ends up under somebody's own photo again, and two paths
+// into an irreversible action is one too many.
+if (profile.includes('deleteCurrentAccount')) failures.push('Account deletion is back on the profile screen — it belongs in one place only');
 if (!confirmHelper.includes("style: 'destructive'") || !confirmHelper.includes("style: 'cancel'")) failures.push('Deletion confirmation is not marked destructive');
 if (!discovery.includes('reportAndBlockDiscoveryProfile')) failures.push('Discovery has no pre-match report/block action');
 if (!safety.includes('https://beko2210.github.io/Binder')) failures.push('App policy links do not target Binder public site');

@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Alert, Image, ScrollView, View } from 'react-native';
+import { Image, ScrollView, View } from 'react-native';
 
 import { BinderButton, BinderCard, BinderIcon, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import { MotionPressable as Pressable } from '../components/ui';
 import { recordBetaEvent } from '../lib/beta';
-import { confirmDestructive } from '../lib/confirmDestructive';
 import { listMyProfileMedia } from '../lib/media';
 import { profileCompleteness } from '../lib/profileCompleteness';
 import { classifyError, isAbortError, type ReliabilityError } from '../lib/reliability';
-import { DELETE_ACCOUNT_URL, PRIVACY_URL, TERMS_URL, deleteCurrentAccount, fetchMySafetyNotice, openBinderUrl } from '../lib/safety';
+import { fetchMySafetyNotice } from '../lib/safety';
 import { prepareSafetyNotice, type SafetyNotice } from '../lib/safetyNotice';
 import { supabase } from '../lib/supabase';
 import { useBinderTheme } from '../theme/ThemeProvider';
@@ -16,16 +15,12 @@ import { useBinderTheme } from '../theme/ThemeProvider';
 type Props = {
   userId: string;
   onEditProfile: () => void;
-  onOpenSettings: () => void;
-  onOpenBeta: () => void;
-  onOpenAbout: () => void;
   onSessionExpired: () => void;
 };
 
-export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, onOpenBeta, onOpenAbout, onSessionExpired }: Props) {
+export default function ProfileScreen({ userId, onEditProfile, onSessionExpired }: Props) {
   const { theme, t, locale } = useBinderTheme();
   const [loading, setLoading] = useState(true);
-  const [busy, setBusy] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [bio, setBio] = useState('');
   const [photoUrl, setPhotoUrl] = useState('');
@@ -71,30 +66,6 @@ export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, o
     }
   }
 
-  async function open(url: string) {
-    setMessage('');
-    try { await openBinderUrl(url); }
-    catch (error) { setMessage(error instanceof Error ? error.message : t('profile.errors.openInformation')); }
-  }
-
-  function confirmDeletion() {
-    confirmDestructive({ title: t('profile.alerts.deleteTitle'), message: t('profile.alerts.deleteMessage'), cancelText: t('profile.actions.cancel'), destructiveText: t('profile.actions.deleteAccount'), onConfirm: () => void performDeletion() });
-  }
-
-  function confirmSignOut() {
-    Alert.alert(t('profile.alerts.signOutTitle'), t('profile.alerts.signOutMessage'), [
-      { text: t('profile.actions.staySignedIn'), style: 'cancel' },
-      { text: t('profile.actions.signOut'), onPress: () => void supabase.auth.signOut() },
-    ]);
-  }
-
-  async function performDeletion() {
-    setBusy(true);
-    setMessage('');
-    try { await deleteCurrentAccount(); }
-    catch (error) { setMessage(error instanceof Error ? error.message : t('profile.errors.deleteAccount')); setBusy(false); }
-  }
-
   if (loading) return <ScreenState kind="loading" message={t('profile.states.loading')} />;
   if (loadError) return <ScreenState kind={loadError.kind === 'offline' ? 'offline' : 'error'} icon="retry" title={loadError.kind === 'offline' ? t('profile.states.offlineTitle') : t('profile.states.errorTitle')} message={loadError.kind === 'offline' ? t('profile.states.offlineMessage') : loadError.message} actionLabel={t('profile.actions.tryAgain')} onAction={() => void load()} />;
 
@@ -115,34 +86,19 @@ export default function ProfileScreen({ userId, onEditProfile, onOpenSettings, o
       {photoUrl ? <Image source={{ uri: photoUrl }} accessibilityLabel={t('profile.accessibility.primaryPhoto')} style={{ width: '100%', height: theme.layout.profileHeroHeight, borderRadius: theme.radii.hero }} resizeMode="cover" /> : <BinderCard style={{ minHeight: theme.layout.onboardingPhotoHeight, alignItems: 'center', justifyContent: 'center', gap: theme.spacing.x3 }}><BinderIcon name="addPhoto" size={34} color={theme.accent.onSurface} /><BinderText variant="label" tone="accent">{t('profile.empty.addFirstPhoto')}</BinderText></BinderCard>}
       <BinderText variant="heading" style={{ marginTop: theme.spacing.x5 }}>{firstName || t('profile.header.title')}</BinderText>
       <BinderText variant="body" tone={bio ? 'secondary' : 'muted'} style={{ marginTop: theme.spacing.x2 }}>{bio || t('profile.empty.addBio')}</BinderText>
-      <BinderCard style={{ marginTop: theme.spacing.x5 }}>
+      {/* A finished profile has nothing left to nag about. The card used to
+          stay at 100 % with every line ticked — a checklist telling somebody
+          they are done, on the screen they open to look at themselves. */}
+      {completeness.complete ? null : <BinderCard style={{ marginTop: theme.spacing.x5 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}><View><BinderText variant="micro" tone="muted">{t('profile.completeness.eyebrow')}</BinderText><BinderText variant="title" style={{ marginTop: theme.spacing.x1 }}>{t('profile.completeness.percent', { percent: completeness.percent })}</BinderText></View><BinderText variant="label" tone="accent">{completeness.completed}/{completeness.total}</BinderText></View>
         <View accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: 100, now: completeness.percent }} style={{ height: theme.spacing.x2, borderRadius: theme.radii.pill, backgroundColor: theme.colors.borderStrong, overflow: 'hidden', marginTop: theme.spacing.x4 }}><View style={{ width: `${completeness.percent}%`, height: '100%', backgroundColor: theme.accent.accent }} /></View>
         <View style={{ marginTop: theme.spacing.x3, gap: theme.spacing.x2 }}>{completeness.items.map((item) => <View key={item.key} style={{ minHeight: theme.layout.minimumTouchTarget, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3 }}><BinderIcon name={item.complete ? 'check' : 'chevronRight'} size={20} color={item.complete ? theme.semantic.success : theme.colors.textMuted} /><BinderText variant="label" tone={item.complete ? 'muted' : 'secondary'} style={{ flex: 1 }}>{item.complete ? t('profile.completeness.done', { item: t(item.label) }) : t(item.label)}</BinderText></View>)}</View>
-        {!completeness.complete ? <BinderButton label={t('profile.actions.completeProfile')} variant="secondary" icon="edit" onPress={onEditProfile} style={{ marginTop: theme.spacing.x3 }} /> : null}
-      </BinderCard>
+        <BinderButton label={t('profile.actions.completeProfile')} variant="secondary" icon="edit" onPress={onEditProfile} style={{ marginTop: theme.spacing.x3 }} />
+      </BinderCard>}
       <View style={{ gap: theme.spacing.x3, marginTop: theme.spacing.x5 }}>
         <HubRow icon="edit" title={t('profile.hub.profileTitle')} copy={t('profile.hub.profileCopy')} onPress={onEditProfile} />
-        <HubRow icon="settings" title={t('profile.hub.settingsTitle')} copy={t('profile.hub.settingsCopy')} onPress={onOpenSettings} />
-        <HubRow icon="beta" title={t('profile.hub.betaTitle')} copy={t('profile.hub.betaCopy')} onPress={onOpenBeta} />
-        <HubRow icon="info" title={t('profile.hub.aboutTitle')} copy={t('profile.hub.aboutCopy')} onPress={onOpenAbout} />
-      </View>
-      <View style={{ marginTop: theme.spacing.x8 }}>
-        <BinderText variant="micro" tone="muted">{t('profile.safety.eyebrow')}</BinderText>
-        <View style={{ marginTop: theme.spacing.x2 }}>
-          <PolicyRow icon="legal" label={t('profile.safety.terms')} onPress={() => void open(TERMS_URL)} />
-          <PolicyRow icon="privacy" label={t('profile.safety.privacy')} onPress={() => void open(PRIVACY_URL)} />
-          <PolicyRow icon="info" label={t('profile.safety.deletionDetails')} onPress={() => void open(DELETE_ACCOUNT_URL)} />
-        </View>
       </View>
       {message ? <BinderText accessibilityLiveRegion="assertive" variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x4 }}>{message}</BinderText> : null}
-      <View style={{ marginTop: theme.spacing.x10, paddingTop: theme.spacing.x6, borderTopWidth: 1, borderTopColor: theme.colors.borderSubtle }}><BinderText variant="micro" tone="muted">{t('profile.account.eyebrow')}</BinderText><BinderButton label={t('profile.actions.signOut')} icon="logout" variant="secondary" disabled={busy} onPress={confirmSignOut} style={{ marginTop: theme.spacing.x4 }} /></View>
-      <BinderCard style={{ marginTop: theme.spacing.x8, borderColor: theme.semantic.destructive, backgroundColor: theme.mode === 'dark' ? theme.semantic.destructiveSoftDark : theme.semantic.destructiveSoftLight }}>
-        <BinderText variant="micro" tone="destructive">{t('profile.account.irreversible')}</BinderText>
-        <BinderText variant="title" style={{ marginTop: theme.spacing.x2 }}>{t('profile.account.deleteTitle')}</BinderText>
-        <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>{t('profile.account.deleteCopy')}</BinderText>
-        <BinderButton label={t('profile.actions.deleteAccount')} icon="delete" variant="destructive" disabled={busy} onPress={confirmDeletion} style={{ marginTop: theme.spacing.x4 }} />
-      </BinderCard>
       </View>
     </ScrollView>
   );
@@ -159,9 +115,4 @@ function HubRow({ icon, title, copy, onPress }: { icon: 'edit' | 'settings' | 'b
       </BinderCard>}
     </Pressable>
   );
-}
-
-function PolicyRow({ icon, label, onPress }: { icon: 'legal' | 'privacy' | 'info'; label: string; onPress: () => void }) {
-  const { theme } = useBinderTheme();
-  return <Pressable accessibilityRole="link" onPress={onPress} style={({ pressed }) => ({ minHeight: theme.layout.controlHeight, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3, borderBottomWidth: 1, borderBottomColor: theme.colors.borderSubtle, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.transparent })}><BinderIcon name={icon} size={20} color={theme.colors.textSecondary} /><BinderText variant="label" tone="secondary" style={{ flex: 1 }}>{label}</BinderText><BinderIcon name="chevronRight" size={20} color={theme.colors.textMuted} /></Pressable>;
 }

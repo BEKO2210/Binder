@@ -172,6 +172,12 @@
       "unreadOther": "{count} अपठित संदेश"
     }
   },
+  "menu": {
+    "header": {
+      "title": "मेन्यू",
+      "eyebrow": "सेटिंग और खाता"
+    }
+  },
   "partnerProfile": {
     "errors": {
       "load": "यह प्रोफ़ाइल लोड नहीं हो सकी।",
@@ -964,7 +970,8 @@
     "tabs": {
       "discover": "खोजें",
       "matches": "Binds",
-      "profile": "प्रोफ़ाइल"
+      "profile": "प्रोफ़ाइल",
+      "menu": "मेन्यू"
     },
     "loading": {
       "session": "Binder लोड हो रहा है…",

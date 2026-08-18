@@ -172,6 +172,12 @@
       "unreadOther": "{count} messages non lus"
     }
   },
+  "menu": {
+    "header": {
+      "title": "Menu",
+      "eyebrow": "RÉGLAGES ET COMPTE"
+    }
+  },
   "partnerProfile": {
     "errors": {
       "load": "Impossible de charger ce profil.",
@@ -964,7 +970,8 @@
     "tabs": {
       "discover": "Découvrir",
       "matches": "Binds",
-      "profile": "Profil"
+      "profile": "Profil",
+      "menu": "Menu"
     },
     "loading": {
       "session": "Chargement de Binder…",

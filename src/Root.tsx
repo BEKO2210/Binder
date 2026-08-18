@@ -37,6 +37,7 @@ import ChatScreen from './screens/ChatScreen';
 import DiscoveryScreen from './screens/DiscoveryScreen';
 import LegalGateScreen from './screens/LegalGateScreen';
 import MatchesScreen from './screens/MatchesScreen';
+import MenuScreen from './screens/MenuScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ProfileSettingsScreen from './screens/ProfileSettingsScreen';
@@ -48,8 +49,12 @@ import { BinderThemeProvider, useBinderTheme } from './theme/ThemeProvider';
 // full-screen loading state.
 const STARTUP_DEADLINE_MS = 15_000;
 
-type Tab = 'discover' | 'matches' | 'profile';
-type ProfileRoute = 'home' | 'edit' | 'settings' | 'beta' | 'about';
+type Tab = 'discover' | 'matches' | 'profile' | 'menu';
+type ProfileRoute = 'home' | 'edit';
+// Settings, beta and about used to be profile routes, which is why the screen
+// that shows a person their own photo also held the language picker and the
+// delete-account button. They belong to the menu tab now.
+type MenuRoute = 'home' | 'settings' | 'beta' | 'about';
 
 export default function Root() {
   return (
@@ -101,6 +106,7 @@ function BinderApp() {
   const [loadOffline, setLoadOffline] = useState(false);
   const [tab, setTab] = useState<Tab>('discover');
   const [profileRoute, setProfileRoute] = useState<ProfileRoute>('home');
+  const [menuRoute, setMenuRoute] = useState<MenuRoute>('home');
   const [activeMatch, setActiveMatch] = useState<MatchSummary | null>(null);
   const [matchesRefreshKey, setMatchesRefreshKey] = useState(0);
   const [pendingNotificationRoute, setPendingNotificationRoute] = useState<NotificationRoute | null>(null);
@@ -131,7 +137,7 @@ function BinderApp() {
       setStartFailed(false);
       setSession(nextSession);
       if (!identityChanged) return;
-      setLegalGate(undefined); setOnboardingComplete(undefined); setNotificationPreferencesReadyFor(null); setLoadError(''); setActiveMatch(null); setProfileRoute('home'); setTab('discover'); appSessionRecorded.current = false;
+      setLegalGate(undefined); setOnboardingComplete(undefined); setNotificationPreferencesReadyFor(null); setLoadError(''); setActiveMatch(null); setProfileRoute('home'); setMenuRoute('home'); setTab('discover'); appSessionRecorded.current = false;
     };
 
     // The stored session is read once at start-up and can answer late. A live
@@ -341,6 +347,12 @@ function BinderApp() {
         setProfileRoute('home');
         return true;
       }
+      // Without this, back from inside App settings closed Binder instead of
+      // returning to the menu it was opened from.
+      if (menuRoute !== 'home') {
+        setMenuRoute('home');
+        return true;
+      }
       if (tab !== 'discover') {
         setTab('discover');
         return true;
@@ -348,7 +360,7 @@ function BinderApp() {
       return false;
     });
     return () => subscription.remove();
-  }, [activeMatch, profileRoute, tab]);
+  }, [activeMatch, profileRoute, menuRoute, tab]);
 
   useEffect(() => {
     if (!pendingNotificationRoute || !session || legalGate?.accepted !== true || onboardingComplete !== true) return;
@@ -430,9 +442,9 @@ function BinderApp() {
   // column — a conversation stretched across a tablet reads as a wall of text.
   if (activeMatch) return <CenteredColumn wide={wideScreen}><RouteFrame route="expand"><ChatScreen match={activeMatch} currentUserId={session.user.id} onClose={() => { setActiveMatch(null); setMatchesRefreshKey((value) => value + 1); }} onConversationEnded={() => { setActiveMatch(null); setTab('matches'); setMatchesRefreshKey((value) => value + 1); }} onSessionExpired={handleSessionExpired} /></RouteFrame></CenteredColumn>;
   if (profileRoute === 'edit') return <RouteFrame route="lift"><ProfileSettingsScreen userId={session.user.id} onClose={() => setProfileRoute('home')} onSessionExpired={handleSessionExpired} /></RouteFrame>;
-  if (profileRoute === 'settings') return <RouteFrame route="trailing"><AppSettingsScreen onClose={() => setProfileRoute('home')} /></RouteFrame>;
-  if (profileRoute === 'beta') return <RouteFrame route="trailing"><BetaScreen onClose={() => setProfileRoute('home')} /></RouteFrame>;
-  if (profileRoute === 'about') return <RouteFrame route="trailing"><AboutScreen onClose={() => setProfileRoute('home')} /></RouteFrame>;
+  if (menuRoute === 'settings') return <RouteFrame route="trailing"><AppSettingsScreen onClose={() => setMenuRoute('home')} /></RouteFrame>;
+  if (menuRoute === 'beta') return <RouteFrame route="trailing"><BetaScreen onClose={() => setMenuRoute('home')} /></RouteFrame>;
+  if (menuRoute === 'about') return <RouteFrame route="trailing"><AboutScreen onClose={() => setMenuRoute('home')} /></RouteFrame>;
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
@@ -442,7 +454,8 @@ function BinderApp() {
       <View style={{ flex: 1, width: '100%', maxWidth: theme.layout.tabletContentMaxWidth, alignSelf: 'center', borderLeftWidth: wideScreen ? 1 : 0, borderRightWidth: wideScreen ? 1 : 0, borderColor: theme.colors.borderSubtle }}>
         {tab === 'discover' ? <DiscoveryScreen onOpenMatch={(target) => { setActiveMatch(target); setMatchesRefreshKey((value) => value + 1); }} onSessionExpired={handleSessionExpired} /> : null}
         {tab === 'matches' ? <MatchesScreen refreshKey={matchesRefreshKey} onOpenMatch={setActiveMatch} onOpenDiscovery={() => setTab('discover')} onSessionExpired={handleSessionExpired} /> : null}
-        {tab === 'profile' ? <ProfileScreen userId={session.user.id} onEditProfile={() => setProfileRoute('edit')} onOpenSettings={() => setProfileRoute('settings')} onOpenBeta={() => setProfileRoute('beta')} onOpenAbout={() => setProfileRoute('about')} onSessionExpired={handleSessionExpired} /> : null}
+        {tab === 'profile' ? <ProfileScreen userId={session.user.id} onEditProfile={() => setProfileRoute('edit')} onSessionExpired={handleSessionExpired} /> : null}
+        {tab === 'menu' ? <MenuScreen onOpenSettings={() => setMenuRoute('settings')} onOpenBeta={() => setMenuRoute('beta')} onOpenAbout={() => setMenuRoute('about')} /> : null}
       </View>
       {/* Chrome spans the full width, its content stays in the centred column:
           a tab bar that stops at 720 dp leaves a floating bar with visible ends
@@ -452,6 +465,7 @@ function BinderApp() {
         <NavItem icon="discover" label={t('root.tabs.discover')} active={tab === 'discover'} onPress={() => setTab('discover')} />
         <NavItem icon="matches" label={t('root.tabs.matches')} active={tab === 'matches'} onPress={() => { setTab('matches'); setMatchesRefreshKey((value) => value + 1); }} />
         <NavItem icon="profile" label={t('root.tabs.profile')} active={tab === 'profile'} onPress={() => { setTab('profile'); setProfileRoute('home'); }} />
+        <NavItem icon="settings" label={t('root.tabs.menu')} active={tab === 'menu'} onPress={() => { setTab('menu'); setMenuRoute('home'); }} />
       </View>
       </View>
     </View>

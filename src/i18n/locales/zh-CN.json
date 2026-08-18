@@ -172,6 +172,12 @@
       "unreadOther": "{count} 条未读消息"
     }
   },
+  "menu": {
+    "header": {
+      "title": "菜单",
+      "eyebrow": "设置与账号"
+    }
+  },
   "partnerProfile": {
     "errors": {
       "load": "无法加载此个人资料。",
@@ -964,7 +970,8 @@
     "tabs": {
       "discover": "发现",
       "matches": "Binds",
-      "profile": "个人资料"
+      "profile": "个人资料",
+      "menu": "菜单"
     },
     "loading": {
       "session": "正在加载 Binder…",

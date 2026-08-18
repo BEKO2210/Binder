@@ -172,6 +172,12 @@
       "unreadOther": "الرسائل غير المقروءة: {count}"
     }
   },
+  "menu": {
+    "header": {
+      "title": "القائمة",
+      "eyebrow": "الإعدادات والحساب"
+    }
+  },
   "partnerProfile": {
     "errors": {
       "load": "تعذر تحميل هذا الملف الشخصي.",
@@ -964,7 +970,8 @@
     "tabs": {
       "discover": "اكتشف",
       "matches": "Binds",
-      "profile": "الملف الشخصي"
+      "profile": "الملف الشخصي",
+      "menu": "القائمة"
     },
     "loading": {
       "session": "جارٍ تحميل Binder…",

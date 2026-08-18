@@ -172,6 +172,12 @@
       "unreadOther": "읽지 않은 메시지 {count}개"
     }
   },
+  "menu": {
+    "header": {
+      "title": "메뉴",
+      "eyebrow": "설정 및 계정"
+    }
+  },
   "partnerProfile": {
     "errors": {
       "load": "이 프로필을 불러오지 못했습니다.",
@@ -964,7 +970,8 @@
     "tabs": {
       "discover": "탐색",
       "matches": "Binds",
-      "profile": "프로필"
+      "profile": "프로필",
+      "menu": "메뉴"
     },
     "loading": {
       "session": "Binder를 불러오는 중…",

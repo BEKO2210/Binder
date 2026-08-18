@@ -172,6 +172,12 @@
       "unreadOther": "{count} ungelesene Nachrichten"
     }
   },
+  "menu": {
+    "header": {
+      "title": "Menü",
+      "eyebrow": "EINSTELLUNGEN UND KONTO"
+    }
+  },
   "partnerProfile": {
     "errors": {
       "load": "Dieses Profil konnte nicht geladen werden.",
@@ -964,7 +970,8 @@
     "tabs": {
       "discover": "Entdecken",
       "matches": "Binds",
-      "profile": "Profil"
+      "profile": "Profil",
+      "menu": "Menü"
     },
     "loading": {
       "session": "Binder wird geladen…",

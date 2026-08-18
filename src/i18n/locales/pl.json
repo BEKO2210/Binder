@@ -172,6 +172,12 @@
       "unreadOther": "Nieprzeczytane wiadomości: {count}"
     }
   },
+  "menu": {
+    "header": {
+      "title": "Menu",
+      "eyebrow": "USTAWIENIA I KONTO"
+    }
+  },
   "partnerProfile": {
     "errors": {
       "load": "Nie udało się załadować tego profilu.",
@@ -964,7 +970,8 @@
     "tabs": {
       "discover": "Odkrywaj",
       "matches": "Binds",
-      "profile": "Profil"
+      "profile": "Profil",
+      "menu": "Menu"
     },
     "loading": {
       "session": "Ładowanie Bindera…",

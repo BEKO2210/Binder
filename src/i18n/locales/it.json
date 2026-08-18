@@ -172,6 +172,12 @@
       "unreadOther": "{count} messaggi non letti"
     }
   },
+  "menu": {
+    "header": {
+      "title": "Menu",
+      "eyebrow": "IMPOSTAZIONI E ACCOUNT"
+    }
+  },
   "partnerProfile": {
     "errors": {
       "load": "Impossibile caricare questo profilo.",
@@ -964,7 +970,8 @@
     "tabs": {
       "discover": "Scopri",
       "matches": "Binds",
-      "profile": "Profilo"
+      "profile": "Profilo",
+      "menu": "Menu"
     },
     "loading": {
       "session": "Caricamento di Binder…",

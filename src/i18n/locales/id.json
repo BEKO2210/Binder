@@ -172,6 +172,12 @@
       "unreadOther": "{count} pesan belum dibaca"
     }
   },
+  "menu": {
+    "header": {
+      "title": "Menu",
+      "eyebrow": "PENGATURAN DAN AKUN"
+    }
+  },
   "partnerProfile": {
     "errors": {
       "load": "Tidak dapat memuat profil ini.",
@@ -964,7 +970,8 @@
     "tabs": {
       "discover": "Jelajahi",
       "matches": "Binds",
-      "profile": "Profil"
+      "profile": "Profil",
+      "menu": "Menu"
     },
     "loading": {
       "session": "Memuat Binder…",

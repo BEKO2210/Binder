@@ -172,6 +172,12 @@
       "unreadOther": "未読メッセージ {count}件"
     }
   },
+  "menu": {
+    "header": {
+      "title": "メニュー",
+      "eyebrow": "設定とアカウント"
+    }
+  },
   "partnerProfile": {
     "errors": {
       "load": "このプロフィールを読み込めませんでした。",
@@ -964,7 +970,8 @@
     "tabs": {
       "discover": "見つける",
       "matches": "Binds",
-      "profile": "プロフィール"
+      "profile": "プロフィール",
+      "menu": "メニュー"
     },
     "loading": {
       "session": "Binderを読み込んでいます…",

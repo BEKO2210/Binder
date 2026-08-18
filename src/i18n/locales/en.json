@@ -172,6 +172,12 @@
       "unreadOther": "{count} unread messages"
     }
   },
+  "menu": {
+    "header": {
+      "title": "Menu",
+      "eyebrow": "SETTINGS AND ACCOUNT"
+    }
+  },
   "partnerProfile": {
     "errors": {
       "load": "Could not load this profile.",
@@ -964,7 +970,8 @@
     "tabs": {
       "discover": "Discover",
       "matches": "Binds",
-      "profile": "Profile"
+      "profile": "Profile",
+      "menu": "Menu"
     },
     "loading": {
       "session": "Loading Binder…",
