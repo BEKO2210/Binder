@@ -75,6 +75,21 @@ jobs:
       - name: Verify auditable design contract
         run: npm run verify:design-contract
 
+      # These four are documented gates in AGENTS.md and ran only locally until
+      # 2026-08-18 — which is how a crash-causing worklet violation and the
+      # English tab bar could sit on main with a green pipeline.
+      - name: Verify worklet contract
+        run: node scripts/verify-worklet-contract.mjs
+
+      - name: Verify locale registry
+        run: node scripts/verify-i18n.mjs
+
+      - name: Verify localization coverage
+        run: node scripts/verify-i18n-coverage.mjs
+
+      - name: Verify push copy matches the locales
+        run: node scripts/build-push-copy.mjs --check
+
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:

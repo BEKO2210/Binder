@@ -1,0 +1,71 @@
+# Runs the fast half of the gates every hour, so a red state surfaces on its
+# own instead of waiting for the next push. The database tests once sat red for
+# thirteen hours because nothing ran between pushes — this is the answer.
+#
+# Kept deliberately light: no prebuild, no bundle export, no containers. The
+# heavy pipeline still runs on every push. Note: GitHub disables cron triggers
+# on repositories with no pushes for 60 days; any push re-arms it.
+name: Binder Hourly Health
+
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: scheduled-health
+  cancel-in-progress: true
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22.13.1'
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Materialize Binder brand assets
+        run: npm run brand:assets
+
+      - name: Prepare public site assets
+        run: npm run site:prepare
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Typecheck tests
+        run: npm run typecheck:tests
+
+      - name: Tests
+        run: npm test
+
+      - name: Verifiers
+        run: |
+          node scripts/verify-design-contract.mjs
+          node scripts/verify-worklet-contract.mjs
+          node scripts/verify-i18n.mjs
+          node scripts/verify-i18n-coverage.mjs
+          node scripts/verify-safety-contract.mjs
+          node scripts/verify-phase5-contract.mjs
+          node scripts/verify-phase6-design.mjs
+          node scripts/verify-phase6-media.mjs
+          node scripts/verify-phase6-settings.mjs
+          node scripts/verify-phase7-push.mjs
+          node scripts/verify-admin-dashboard.mjs
+          node scripts/verify-brand-assets.mjs
+          node scripts/verify-entrypoint.mjs
+          node scripts/verify-site.mjs
+          node scripts/build-site-languages.mjs --check
+          node scripts/build-push-copy.mjs --check
