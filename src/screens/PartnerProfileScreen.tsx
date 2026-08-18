@@ -53,9 +53,19 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose, in
   }, [initialProfile, userId]);
 
   const heroHeight = Math.min(theme.layout.contentMaxWidth, width + theme.spacing.x12);
+  // Resolved here, not inside the gesture. Calling a plain function from a
+  // worklet kills the process — the spring-back branch did exactly that, which
+  // is why a full swipe closed cleanly and a half one crashed. PhotoPager and
+  // DiscoveryScreen have always resolved it out here; this screen was the
+  // exception.
+  const dismissSpring = resolveSpring(reduceMotion, 'professional');
   const dismissStyle = useAnimatedStyle(() => ({ transform: [{ translateY: reduceMotion ? 0 : dismissY.value }] }));
   const dismissGesture = Gesture.Pan()
-    .activeOffsetY(theme.spacing.x2)
+    // Eight pixels was enough to start closing the screen, so scrolling a
+    // profile kept dismissing it by accident. Closing is a deliberate pull —
+    // there is a back arrow and the hardware back button for the ordinary way
+    // out, and neither of those can be triggered by reading.
+    .activeOffsetY(theme.spacing.x12)
     .failOffsetX([-theme.spacing.x6, theme.spacing.x6])
     .onUpdate((event) => { dismissY.value = Math.max(0, event.translationY); })
     .onEnd((event) => {
@@ -63,7 +73,7 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose, in
       if (projected >= dismissThreshold) {
         runOnJS(haptic)('selection');
         runOnJS(onClose)();
-      } else dismissY.value = withSpring(0, resolveSpring(reduceMotion, 'professional'));
+      } else dismissY.value = withSpring(0, dismissSpring);
     });
 
   return (
