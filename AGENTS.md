@@ -29,7 +29,11 @@ server is the truth for every destructive or social action.
    MiB, total 5.25 → 5.90 MiB, after measuring 3.99 → 4.55 MiB and 4.95 → 5.51
    MiB. Fifteen languages: JS 4.90 → 5.35 MiB, total 5.90 → 6.35 MiB, after
    exporting the same tree with only `en.json` bundled (4.63 MiB JS / 5.59 MiB
-   total) and with all fifteen (5.02 / 5.98) — 28 KiB per language.
+   total) and with all fifteen (5.02 / 5.98) — 28 KiB per language. The interest
+   catalogue (300 entries × 15 languages, 2026-08-18) measured 5.02 → 5.18 MiB
+   JS and 5.98 → 6.14 total: it fits inside the unchanged budgets, which now
+   carry 0.17 / 0.21 MiB of headroom — anyone adding a dependency reads that
+   number first.
 3. **No secrets in the repo, in logs or in chat.** `google-services.json` is the
    only committed credential-like file (public by design). GitHub Actions
    secret: `EXPO_TOKEN`. Edge Function secret: `BINDER_PUSH_DISPATCH_SECRET`.

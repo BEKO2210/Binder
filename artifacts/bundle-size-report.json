@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "totalBytes": 6305329,
-  "jsBytes": 5302218,
+  "totalBytes": 6435804,
+  "jsBytes": 5432693,
   "moduleMetric": "UTF-8 bytes of Metro source input; diagnostic attribution, not emitted bytecode size",
   "topModules": [
     {
@@ -67,8 +67,8 @@
   ],
   "largestFiles": [
     {
-      "path": "_expo/static/js/android/index-c813522a239e0a58c914829d469a31f5.hbc",
-      "bytes": 5302218
+      "path": "_expo/static/js/android/index-000783d961b3c7d6bb9678afd97e9fa8.hbc",
+      "bytes": 5432693
     },
     {
       "path": "assets/96032e7aed600e905412ba2e0281f754",
