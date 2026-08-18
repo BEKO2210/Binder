@@ -70,7 +70,7 @@ function TopInset({ children }: { children: React.ReactNode }) {
 }
 
 function BinderApp() {
-  const { theme, settings, hydrated, updateSettings, t } = useBinderTheme();
+  const { theme, settings, hydrated, updateSettings, locale, t } = useBinderTheme();
   const haptic = useBinderHaptics();
   const [session, setSession] = useState<Session | null | undefined>(undefined);
   const [recovering, setRecovering] = useState(false);
@@ -251,10 +251,10 @@ function BinderApp() {
     const quietTimePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
     if (!quietTimePattern.test(settings.quietHours.start) || !quietTimePattern.test(settings.quietHours.end)) return;
     const timer = setTimeout(() => {
-      void syncNotificationPreferences(settings).catch(() => undefined);
+      void syncNotificationPreferences(settings, locale).catch(() => undefined);
     }, 250);
     return () => clearTimeout(timer);
-  }, [session?.user.id, notificationPreferencesReadyFor, settings]);
+  }, [session?.user.id, notificationPreferencesReadyFor, settings, locale]);
 
   useEffect(() => {
     if (!session || legalGate?.accepted !== true || onboardingComplete !== true || !settings.notifications.enabled) return;

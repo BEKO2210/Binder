@@ -531,6 +531,28 @@
       "copy": "Keşfet listenizde kimlerin görünebileceğini belirler."
     }
   },
+  "push": {
+    "newMatch": {
+      "title": "Bu bir Bind!",
+      "body": "Yeni eşleşmenizi görmek için Binder'ı açın."
+    },
+    "newMessage": {
+      "title": "Yeni mesaj",
+      "body": "Sohbete devam etmek için Binder'ı açın."
+    },
+    "moderationStatus": {
+      "title": "Fotoğraf incelendi",
+      "body": "Profil fotoğrafınızın incelenmesinde yenilik var."
+    },
+    "safetyAlert": {
+      "title": "Güvenlik bildirimi",
+      "body": "Hesabınızla ilgili bir bildirim için Binder'ı açın."
+    },
+    "productNotice": {
+      "title": "Binder'da yenilikler",
+      "body": "Nelerin değiştiğini görmek için Binder'ı açın."
+    }
+  },
   "discoveryFilterSheet": {
     "errors": {
       "authentication": "Kimlik doğrulama gerekli.",

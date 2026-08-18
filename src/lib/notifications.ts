@@ -168,7 +168,11 @@ function systemTimeZone(): string {
   }
 }
 
-export async function syncNotificationPreferences(settings: AppSettings): Promise<void> {
+// The active locale travels with the preferences because the server writes the
+// notification, and it cannot know which of the fifteen languages to write in
+// unless it is told. It is the resolved locale, not the "system" setting, so a
+// phone following its system language still gets the language it is showing.
+export async function syncNotificationPreferences(settings: AppSettings, locale: string): Promise<void> {
   const { notifications, quietHours } = settings;
   const { error } = await supabase.rpc('set_my_notification_preferences', {
     p_enabled: notifications.enabled,
@@ -183,6 +187,7 @@ export async function syncNotificationPreferences(settings: AppSettings): Promis
     p_quiet_start: quietHours.start,
     p_quiet_end: quietHours.end,
     p_timezone: systemTimeZone(),
+    p_language: locale,
   });
   if (error) throw error;
 }

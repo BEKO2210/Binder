@@ -531,6 +531,28 @@
       "copy": "Controlla chi può comparire nella tua selezione Scopri."
     }
   },
+  "push": {
+    "newMatch": {
+      "title": "È un Bind!",
+      "body": "Apri Binder per vedere il tuo nuovo match."
+    },
+    "newMessage": {
+      "title": "Nuovo messaggio",
+      "body": "Apri Binder per continuare la conversazione."
+    },
+    "moderationStatus": {
+      "title": "Foto verificata",
+      "body": "Ci sono novità sulla verifica della tua foto profilo."
+    },
+    "safetyAlert": {
+      "title": "Avviso di sicurezza",
+      "body": "Apri Binder per leggere un avviso sul tuo account."
+    },
+    "productNotice": {
+      "title": "Novità su Binder",
+      "body": "Apri Binder per vedere cosa è cambiato."
+    }
+  },
   "discoveryFilterSheet": {
     "errors": {
       "authentication": "Autenticazione richiesta.",

@@ -1,5 +1,7 @@
 import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
 
+import { pushCopy, type PushKind } from "./copy.ts";
+
 const EXPO_SEND_URL = "https://exp.host/--/api/v2/push/send";
 const EXPO_RECEIPTS_URL = "https://exp.host/--/api/v2/push/getReceipts";
 const MAX_SEND_BATCH = 100;
@@ -8,13 +10,17 @@ const MAX_RECEIPT_BATCH = 300;
 type ClaimedDelivery = {
   delivery_id: number;
   token: string;
-  kind: "new_match" | "new_message" | "moderation_status" | "safety_alert" | "product_notice";
+  kind: PushKind;
   match_id: string | null;
   route: "chat" | "matches" | "profile";
+  // The English wording, kept as the fallback for a recipient whose language
+  // is not known. Never anything a person wrote — the words are generic by
+  // design and identical for everyone who gets this kind of notification.
   title: string;
   body: string;
   sound: boolean;
   vibration: boolean;
+  language: string | null;
 };
 
 type ClaimedReceipt = { delivery_id: number; ticket_id: string };
@@ -59,10 +65,15 @@ function channelId(job: ClaimedDelivery): string {
 }
 
 function expoMessage(job: ClaimedDelivery) {
+  // Fifteen languages are advertised, so a notification is written in the one
+  // the recipient reads. The claim carries the English text for a row with no
+  // language yet, and `pushCopy` falls back to the same English if a locale is
+  // unknown, so there is no path that produces an empty notification.
+  const copy = job.language ? pushCopy(job.language, job.kind) : { title: job.title, body: job.body };
   return {
     to: job.token,
-    title: job.title,
-    body: job.body,
+    title: copy.title,
+    body: copy.body,
     data: {
       category: job.kind,
       route: job.route,

@@ -531,6 +531,28 @@
       "copy": "Discoveryの候補に誰が表示されるかを設定します。"
     }
   },
+  "push": {
+    "newMatch": {
+      "title": "新しいBind！",
+      "body": "Binderを開いて新しいマッチを見てみましょう。"
+    },
+    "newMessage": {
+      "title": "新しいメッセージ",
+      "body": "Binderを開いて会話を続けましょう。"
+    },
+    "moderationStatus": {
+      "title": "写真の確認",
+      "body": "プロフィール写真の確認に進展があります。"
+    },
+    "safetyAlert": {
+      "title": "安全に関するお知らせ",
+      "body": "アカウントに関するお知らせがあります。"
+    },
+    "productNotice": {
+      "title": "Binderの新着",
+      "body": "変更点をBinderで確認してみましょう。"
+    }
+  },
   "discoveryFilterSheet": {
     "errors": {
       "authentication": "認証が必要です。",

@@ -531,6 +531,28 @@
       "copy": "Legt fest, wer in deinem Discovery-Stapel erscheinen kann."
     }
   },
+  "push": {
+    "newMatch": {
+      "title": "Ein Bind!",
+      "body": "Öffne Binder und sieh dir dein neues Match an."
+    },
+    "newMessage": {
+      "title": "Neue Nachricht",
+      "body": "Öffne Binder, um weiterzuschreiben."
+    },
+    "moderationStatus": {
+      "title": "Foto geprüft",
+      "body": "Zur Prüfung deines Profilfotos gibt es Neues."
+    },
+    "safetyAlert": {
+      "title": "Sicherheitshinweis",
+      "body": "Öffne Binder für einen Hinweis zu deinem Konto."
+    },
+    "productNotice": {
+      "title": "Neu in Binder",
+      "body": "Öffne Binder und sieh, was sich geändert hat."
+    }
+  },
   "discoveryFilterSheet": {
     "errors": {
       "authentication": "Anmeldung erforderlich.",

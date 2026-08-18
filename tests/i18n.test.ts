@@ -85,3 +85,17 @@ test('nothing decides anything by matching a translated string', () => {
   }
   assert.deepEqual(offenders, []);
 });
+
+test('every language can write every kind of notification', () => {
+  // These are shown by the phone itself, outside the app, and they used to be
+  // English literals in the database for all fifteen languages.
+  const kinds = ['newMatch', 'newMessage', 'moderationStatus', 'safetyAlert', 'productNotice'];
+  for (const { code } of availableLocales()) {
+    for (const kind of kinds) {
+      for (const part of ['title', 'body']) {
+        const value = translate(code, `push.${kind}.${part}`);
+        assert.ok(value && !value.startsWith('push.'), `${code} is missing push.${kind}.${part}`);
+      }
+    }
+  }
+});

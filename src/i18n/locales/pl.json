@@ -531,6 +531,28 @@
       "copy": "Określa, kto może pojawić się w Twojej talii Odkrywaj."
     }
   },
+  "push": {
+    "newMatch": {
+      "title": "Nowy Bind!",
+      "body": "Otwórz Binder, aby zobaczyć nowe dopasowanie."
+    },
+    "newMessage": {
+      "title": "Nowa wiadomość",
+      "body": "Otwórz Binder, aby kontynuować rozmowę."
+    },
+    "moderationStatus": {
+      "title": "Zdjęcie sprawdzone",
+      "body": "Jest wynik sprawdzenia Twojego zdjęcia profilowego."
+    },
+    "safetyAlert": {
+      "title": "Bezpieczeństwo konta",
+      "body": "Otwórz Binder, aby zobaczyć informację o koncie."
+    },
+    "productNotice": {
+      "title": "Nowości w Binderze",
+      "body": "Otwórz Binder, aby zobaczyć, co się zmieniło."
+    }
+  },
   "discoveryFilterSheet": {
     "errors": {
       "authentication": "Wymagane uwierzytelnienie.",

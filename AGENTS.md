@@ -84,6 +84,7 @@ node scripts/verify-brand-assets.mjs
 node scripts/verify-entrypoint.mjs
 node scripts/verify-site.mjs
 node scripts/build-site-languages.mjs --check  # site/languages.html matches the locales
+node scripts/build-push-copy.mjs --check     # the dispatcher's notification copy matches the locales
 ```
 
 `tests/designTokens.test.ts` walks every semantic colour pairing in both
@@ -156,6 +157,13 @@ what actually ships.
 
 - Missing or empty strings fall back to English: a half-finished translation
   degrades, it does not break a screen.
+- **A notification is product copy too.** The words live under `push.*` in the
+  locale files like everything else. The dispatcher runs on Deno and cannot read
+  them at runtime, so `npm run push:copy` generates them into
+  `supabase/functions/dispatch-push/copy.ts`, and `--check` fails the build if
+  the two drift. The database contributes only the recipient's language, which
+  the client sends with the rest of the notification preferences; the English
+  text stays in the migration as the fallback for a row that has none.
 - Placeholders (`{name}`, `{count}`) are the only substitution; no sentence is
   assembled from fragments.
 - Dates, times, distances and counts go through `src/lib/format.ts` with the

@@ -531,6 +531,28 @@
       "copy": "Bepaalt wie in je Ontdekken-selectie kan verschijnen."
     }
   },
+  "push": {
+    "newMatch": {
+      "title": "Een Bind!",
+      "body": "Open Binder om je nieuwe match te zien."
+    },
+    "newMessage": {
+      "title": "Nieuw bericht",
+      "body": "Open Binder om verder te praten."
+    },
+    "moderationStatus": {
+      "title": "Foto beoordeeld",
+      "body": "Er is nieuws over de beoordeling van je profielfoto."
+    },
+    "safetyAlert": {
+      "title": "Veiligheidsmelding",
+      "body": "Open Binder voor een melding over je account."
+    },
+    "productNotice": {
+      "title": "Nieuw in Binder",
+      "body": "Open Binder om te zien wat er is veranderd."
+    }
+  },
   "discoveryFilterSheet": {
     "errors": {
       "authentication": "Authenticatie vereist.",

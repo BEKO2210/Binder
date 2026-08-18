@@ -531,6 +531,28 @@
       "copy": "控制哪些人可以出现在你的发现卡组中。"
     }
   },
+  "push": {
+    "newMatch": {
+      "title": "配对成功！",
+      "body": "打开 Binder 查看你的新配对。"
+    },
+    "newMessage": {
+      "title": "新消息",
+      "body": "打开 Binder 继续聊天。"
+    },
+    "moderationStatus": {
+      "title": "照片已审核",
+      "body": "你的头像审核有新进展。"
+    },
+    "safetyAlert": {
+      "title": "安全提醒",
+      "body": "打开 Binder 查看与你账号相关的提醒。"
+    },
+    "productNotice": {
+      "title": "Binder 新变化",
+      "body": "打开 Binder 看看有什么变化。"
+    }
+  },
   "discoveryFilterSheet": {
     "errors": {
       "authentication": "需要身份验证。",

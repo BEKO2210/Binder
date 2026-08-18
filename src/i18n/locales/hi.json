@@ -531,6 +531,28 @@
       "copy": "यह तय करता है कि आपकी Discovery सूची में कौन आ सकता है।"
     }
   },
+  "push": {
+    "newMatch": {
+      "title": "यह एक Bind है!",
+      "body": "अपना नया मैच देखने के लिए Binder खोलें।"
+    },
+    "newMessage": {
+      "title": "नया संदेश",
+      "body": "बातचीत जारी रखने के लिए Binder खोलें।"
+    },
+    "moderationStatus": {
+      "title": "फ़ोटो जाँची गई",
+      "body": "आपकी प्रोफ़ाइल फ़ोटो की जाँच पर अपडेट है।"
+    },
+    "safetyAlert": {
+      "title": "सुरक्षा सूचना",
+      "body": "अपने खाते से जुड़ी सूचना देखने के लिए Binder खोलें।"
+    },
+    "productNotice": {
+      "title": "Binder में नया",
+      "body": "क्या बदला है यह देखने के लिए Binder खोलें।"
+    }
+  },
   "discoveryFilterSheet": {
     "errors": {
       "authentication": "प्रमाणीकरण जरूरी है।",

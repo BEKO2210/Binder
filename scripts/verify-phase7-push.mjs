@@ -36,6 +36,11 @@ for (const contract of ['push/send','push/getReceipts','x-binder-dispatch-secret
 }
 if (/message(?:_|\.)body/i.test(worker)) failures.push('Dispatcher references message body/UGC');
 if (!migration.includes('Open Binder to continue the conversation.')) failures.push('Dispatcher generic message copy is not frozen');
+// The notification a phone shows is product copy in fifteen languages. The
+// database only says which language the recipient reads; the words come from
+// the locale files through a generated file, so a sentence has one home.
+if (!worker.includes('pushCopy(')) failures.push('Dispatcher does not translate the notification for the recipient');
+if (!/language/.test(worker)) failures.push('Dispatcher ignores the recipient language');
 
 for (const contract of ['addPushTokenListener','getExpoPushTokenAsync','AndroidNotificationVisibility.PRIVATE','notificationChannelId','parseNotificationRoute','UUID_PATTERN','syncNotificationPreferences','loadNotificationPreferences']) {
   if (!notifications.includes(contract)) failures.push(`Client notification runtime missing: ${contract}`);

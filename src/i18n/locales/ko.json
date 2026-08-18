@@ -531,6 +531,28 @@
       "copy": "Discovery 카드에 누가 표시될 수 있는지 결정합니다."
     }
   },
+  "push": {
+    "newMatch": {
+      "title": "Bind 성사!",
+      "body": "Binder를 열어 새로운 매치를 확인해 보세요."
+    },
+    "newMessage": {
+      "title": "새 메시지",
+      "body": "Binder를 열어 대화를 이어가세요."
+    },
+    "moderationStatus": {
+      "title": "사진 검토",
+      "body": "프로필 사진 검토에 새 소식이 있습니다."
+    },
+    "safetyAlert": {
+      "title": "안전 알림",
+      "body": "계정 관련 알림을 Binder에서 확인하세요."
+    },
+    "productNotice": {
+      "title": "Binder 새 소식",
+      "body": "무엇이 바뀌었는지 Binder에서 확인해 보세요."
+    }
+  },
   "discoveryFilterSheet": {
     "errors": {
       "authentication": "인증이 필요합니다.",

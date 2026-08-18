@@ -35,6 +35,7 @@
     "test:design-contract": "npm run verify:design-contract",
     "verify:worklets": "node scripts/verify-worklet-contract.mjs",
     "i18n:sync": "node scripts/i18n-sync.mjs",
+    "push:copy": "node scripts/build-push-copy.mjs",
     "verify:i18n": "node scripts/verify-i18n.mjs",
     "i18n:coverage": "node scripts/verify-i18n-coverage.mjs",
     "verify:i18n-coverage": "node scripts/verify-i18n-coverage.mjs"
