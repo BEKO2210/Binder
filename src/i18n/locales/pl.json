@@ -137,6 +137,7 @@
       "title": "Alerty wiadomości",
       "unavailableCopy": "Powiadomienia push nie są obsługiwane na tym urządzeniu. Czat nadal działa normalnie.",
       "offlineCopy": "Nie udało się połączyć z usługą push. Sprawdź połączenie i spróbuj ponownie.",
+      "failedCopy": "Binder nie mógł skonfigurować powiadomień na tym telefonie. Możesz spróbować ponownie.",
       "blockedCopy": "Android blokuje powiadomienia Binder. Zezwól na nie w ustawieniach systemu.",
       "enabledCopy": "Kategorie powiadomień możesz zmienić w ustawieniach aplikacji.",
       "copy": "Włącz alerty o nowych Bindach i wiadomościach."
@@ -783,6 +784,7 @@
       "pushOff": "Powiadomienia push są wyłączone w tej instalacji.",
       "pushActive": "Powiadomienia push są aktywne w tej instalacji.",
       "pushDenied": "Uprawnienie Android do powiadomień jest odrzucone. Możesz zezwolić Binder w ustawieniach systemu.",
+      "pushNotAllowedYet": "Binder nie może jeszcze wysyłać powiadomień na tym telefonie. Możesz na to zezwolić w ustawieniach systemu.",
       "missingProject": "Ta kompilacja nie jest jeszcze połączona z projektem EAS.",
       "pushOffline": "Nie udało się połączyć z usługą push. Spróbuj ponownie, gdy będziesz online.",
       "pushUnavailable": "Zdalne powiadomienia push są dostępne tylko w deweloperskiej lub produkcyjnej kompilacji Android/iOS."

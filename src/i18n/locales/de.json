@@ -137,6 +137,7 @@
       "title": "Nachrichtenhinweise",
       "unavailableCopy": "Push-Benachrichtigungen werden auf diesem Gerät nicht unterstützt. Der Chat funktioniert weiterhin.",
       "offlineCopy": "Der Benachrichtigungsdienst ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut.",
+      "failedCopy": "Binder konnte die Benachrichtigungen auf diesem Gerät nicht einrichten. Du kannst es erneut versuchen.",
       "blockedCopy": "Android blockiert Benachrichtigungen von Binder. Erlaube sie in den Systemeinstellungen.",
       "enabledCopy": "Benachrichtigungskategorien kannst du in den App-Einstellungen anpassen.",
       "copy": "Aktiviere Hinweise zu neuen Matches und Nachrichten."
@@ -783,6 +784,7 @@
       "pushOff": "Push-Benachrichtigungen sind in dieser Installation deaktiviert.",
       "pushActive": "Push-Benachrichtigungen sind in dieser Installation aktiv.",
       "pushDenied": "Die Android-Berechtigung für Benachrichtigungen wurde verweigert. Du kannst Binder in den Systemeinstellungen erlauben.",
+      "pushNotAllowedYet": "Binder darf auf diesem Gerät noch keine Benachrichtigungen senden. Du kannst das in den Systemeinstellungen erlauben.",
       "missingProject": "Dieser Build ist noch nicht mit seinem EAS-Projekt verbunden.",
       "pushOffline": "Der Push-Dienst ist nicht erreichbar. Versuche es erneut, wenn du online bist.",
       "pushUnavailable": "Externe Push-Nachrichten sind nur in einem Entwicklungs- oder Veröffentlichungs-Build für Android oder iOS verfügbar."

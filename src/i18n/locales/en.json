@@ -137,6 +137,7 @@
       "title": "Message alerts",
       "unavailableCopy": "Push notifications are not supported on this device. Chat still works normally.",
       "offlineCopy": "Could not reach the push service. Check your connection and try again.",
+      "failedCopy": "Binder could not set up notifications on this phone. You can try again.",
       "blockedCopy": "Android is blocking Binder notifications. Allow them in system settings.",
       "enabledCopy": "Notification categories can be adjusted in App Settings.",
       "copy": "Opt in to alerts for new matches and messages."
@@ -783,6 +784,7 @@
       "pushOff": "Push notifications are off on this installation.",
       "pushActive": "Push notifications are active on this installation.",
       "pushDenied": "Android notification permission is denied. You can allow Binder in system settings.",
+      "pushNotAllowedYet": "Binder is not allowed to send notifications on this phone yet. You can allow it in system settings.",
       "missingProject": "This build is not connected to its EAS project yet.",
       "pushOffline": "Could not reach the push service. Try again when you are online.",
       "pushUnavailable": "Remote push is available only in an Android or iOS development/release build."

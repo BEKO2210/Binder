@@ -6,7 +6,8 @@ import { Linking, Platform } from 'react-native';
 
 import type { AppSettings } from '../theme/ThemeProvider';
 import { supabase } from './supabase';
-import { abortable, throwIfAborted } from './reliability';
+import { classifyError, abortable, throwIfAborted } from './reliability';
+import { safeLog } from './safeLog';
 
 const INSTALLATION_KEY = 'binder:push-installation:v1';
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -137,8 +138,8 @@ export async function openSystemNotificationSettings(): Promise<void> {
   await Linking.openSettings();
 }
 
-export async function refreshPushRegistration(): Promise<PushRegistrationResult> {
-  return registerCurrentToken(false);
+export async function refreshPushRegistration(signal?: AbortSignal): Promise<PushRegistrationResult> {
+  return registerCurrentToken(false, signal);
 }
 
 export async function disablePushNotifications(): Promise<void> {
@@ -148,7 +149,13 @@ export async function disablePushNotifications(): Promise<void> {
 
 export function observePushTokenRotation(onResult?: (result: PushRegistrationResult) => void) {
   const subscription = Notifications.addPushTokenListener(() => {
-    void refreshPushRegistration().then((result) => onResult?.(result)).catch(() => undefined);
+    // A rotation the server never hears about is the quietest way for push to
+    // die: the phone has a new token, Binder still advertises the old one, and
+    // nothing on any screen says so. The caller decides what a refusal means
+    // for the setting; a failure at least has to leave a trace.
+    void refreshPushRegistration()
+      .then((result) => onResult?.(result))
+      .catch((error: unknown) => safeLog('warn', `push_token_rotation_failed_${classifyError(error).kind}`));
   });
   return () => subscription.remove();
 }

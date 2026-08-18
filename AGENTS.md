@@ -39,6 +39,13 @@ server is the truth for every destructive or social action.
    exact candidate commit. Never delete outbox or delivery rows — they are the
    audit trail. Migration bookkeeping is synchronized; plain `supabase db push`
    works, and history is never repaired without checking `supabase migration list`.
+   **Standing GO since 2026-08-18** for the work leading up to the Play release:
+   the owner has approved production changes in advance rather than one at a
+   time. That removes the waiting, not the care — a schema change still gets a
+   dump of what it touches beforehand, a Codex review of the migration, and a
+   measurement afterwards, and anything that destroys data is still asked about
+   first. A blanket approval is not a reason to be quicker; it is a reason to be
+   the one who checks, because nobody else is going to.
 5. **Never claim something passed that was not executed.** A measurement or a
    screenshot from the S23 or the Tab S9, or it did not happen.
 6. **A worklet may only call worklets.** `verify-worklet-contract.mjs` enforces
@@ -440,6 +447,19 @@ from settings.
 12. **The diagnostics are evidence.** The proof that the call hung rather than
     failed was a *missing* `legal_gate_load` row in `private.beta_client_events`
     — neither `ok` nor `error`. Read that table before theorising.
+13. **A per-account preference and a per-device permission are two claims.**
+    `notifications.enabled` is stored per account and reaches every device; the
+    Android permission belongs to one installation. Answering a refused
+    permission by writing the preference would switch push off on the person's
+    other phone. The screens read the device and say what they find; only a tap
+    writes the preference.
+14. **Most of the ways push dies are returned, not thrown.** A refused
+    permission and a dead network come back as ordinary values from
+    `refreshPushRegistration`, so catching exceptions alone leaves the quietest
+    failures quiet. And a granted permission proves nothing on its own — a
+    registration that never reached the server looks identical from outside,
+    which is why both screens now re-register while they are open. That call is
+    an upsert on the installation id, so asking again is free and repairs it.
 
 ## Open
 
@@ -454,10 +474,6 @@ from settings.
   profile…") never go through `t()`. `verify-i18n-coverage.mjs` scans only
   `src/screens` and `src/components`, so `src/Root.tsx` is invisible to it —
   widening the scan is part of that fix, or the next string lands the same way.
-- **Failed push registration is silent.** `Root.tsx:231` and the rotation
-  listener in `notifications.ts:151` both swallow every error, so push can stay
-  switched on in settings while no token ever reaches the server. Only the
-  explicit tap in App settings surfaces a failure.
 - **Two more start-up loading states can still wait forever**, both found while
   fixing the one below and neither reproduced: `supabase.auth.getSession()` at
   start-up has no deadline, so `session === undefined` keeps "Loading Binder…"

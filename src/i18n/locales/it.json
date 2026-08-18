@@ -137,6 +137,7 @@
       "title": "Avvisi dei messaggi",
       "unavailableCopy": "Le notifiche push non sono supportate su questo dispositivo. La chat continua a funzionare normalmente.",
       "offlineCopy": "Impossibile raggiungere il servizio push. Controlla la connessione e riprova.",
+      "failedCopy": "Binder non è riuscito a configurare le notifiche su questo telefono. Puoi riprovare.",
       "blockedCopy": "Android sta bloccando le notifiche di Binder. Consentile nelle impostazioni di sistema.",
       "enabledCopy": "Le categorie di notifica possono essere modificate nelle Impostazioni dell'app.",
       "copy": "Attiva gli avvisi per nuovi Binds e messaggi."
@@ -783,6 +784,7 @@
       "pushOff": "Le notifiche push sono disattivate su questa installazione.",
       "pushActive": "Le notifiche push sono attive su questa installazione.",
       "pushDenied": "L'autorizzazione alle notifiche Android è stata negata. Puoi consentire Binder nelle impostazioni di sistema.",
+      "pushNotAllowedYet": "Binder non può ancora inviare notifiche su questo telefono. Puoi consentirlo nelle impostazioni di sistema.",
       "missingProject": "Questa build non è ancora collegata al relativo progetto EAS.",
       "pushOffline": "Impossibile raggiungere il servizio push. Riprova quando sei online.",
       "pushUnavailable": "Le notifiche push remote sono disponibili solo in una build Android o iOS di sviluppo/release."

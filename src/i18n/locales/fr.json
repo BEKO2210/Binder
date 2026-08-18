@@ -137,6 +137,7 @@
       "title": "Alertes de messages",
       "unavailableCopy": "Les notifications push ne sont pas prises en charge sur cet appareil. Le chat fonctionne toujours normalement.",
       "offlineCopy": "Impossible de contacter le service de notifications. Vérifiez votre connexion et réessayez.",
+      "failedCopy": "Binder n'a pas pu configurer les notifications sur ce téléphone. Vous pouvez réessayer.",
       "blockedCopy": "Android bloque les notifications de Binder. Autorisez-les dans les paramètres système.",
       "enabledCopy": "Les catégories de notifications peuvent être modifiées dans les paramètres de l’application.",
       "copy": "Activez les alertes pour les nouveaux Binds et les nouveaux messages."
@@ -783,6 +784,7 @@
       "pushOff": "Les notifications push sont désactivées sur cette installation.",
       "pushActive": "Les notifications push sont actives sur cette installation.",
       "pushDenied": "L’autorisation de notifications Android est refusée. Vous pouvez autoriser Binder dans les paramètres système.",
+      "pushNotAllowedYet": "Binder n'est pas encore autorisé à envoyer des notifications sur ce téléphone. Vous pouvez l'autoriser dans les réglages système.",
       "missingProject": "Cette version n’est pas encore connectée à son projet EAS.",
       "pushOffline": "Impossible de contacter le service de notifications. Réessayez lorsque vous serez en ligne.",
       "pushUnavailable": "Les notifications push à distance sont disponibles uniquement dans une version Android ou iOS de développement ou de production."

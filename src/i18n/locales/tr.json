@@ -137,6 +137,7 @@
       "title": "Mesaj uyarıları",
       "unavailableCopy": "Anlık bildirimler bu cihazda desteklenmiyor. Sohbet normal şekilde çalışmaya devam eder.",
       "offlineCopy": "Anlık bildirim hizmetine ulaşılamadı. Bağlantınızı kontrol edip tekrar deneyin.",
+      "failedCopy": "Binder bu telefonda bildirimleri ayarlayamadı. Tekrar deneyebilirsiniz.",
       "blockedCopy": "Android, Binder bildirimlerini engelliyor. Sistem ayarlarından izin verin.",
       "enabledCopy": "Bildirim kategorileri Uygulama Ayarları'ndan değiştirilebilir.",
       "copy": "Yeni Bind'ler ve mesajlar için uyarıları etkinleştirin."
@@ -783,6 +784,7 @@
       "pushOff": "Bu kurulumda anlık bildirimler kapalı.",
       "pushActive": "Bu kurulumda anlık bildirimler etkin.",
       "pushDenied": "Android bildirim izni reddedildi. Binder'a sistem ayarlarından izin verebilirsiniz.",
+      "pushNotAllowedYet": "Binder bu telefonda henüz bildirim gönderemiyor. Sistem ayarlarından izin verebilirsiniz.",
       "missingProject": "Bu derleme henüz EAS projesine bağlı değil.",
       "pushOffline": "Anlık bildirim hizmetine ulaşılamadı. Çevrimiçi olduğunuzda tekrar deneyin.",
       "pushUnavailable": "Uzak anlık bildirim yalnızca Android veya iOS geliştirme/yayın derlemesinde kullanılabilir."

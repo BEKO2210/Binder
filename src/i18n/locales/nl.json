@@ -137,6 +137,7 @@
       "title": "Berichtmeldingen",
       "unavailableCopy": "Pushmeldingen worden niet ondersteund op dit apparaat. Chat blijft normaal werken.",
       "offlineCopy": "De pushservice kon niet worden bereikt. Controleer je verbinding en probeer het opnieuw.",
+      "failedCopy": "Binder kon meldingen op deze telefoon niet instellen. Je kunt het opnieuw proberen.",
       "blockedCopy": "Android blokkeert Binder-meldingen. Sta ze toe in de systeeminstellingen.",
       "enabledCopy": "Meldingscategorieën kun je aanpassen in App-instellingen.",
       "copy": "Schakel meldingen in voor nieuwe Binds en berichten."
@@ -783,6 +784,7 @@
       "pushOff": "Pushmeldingen staan uit op deze installatie.",
       "pushActive": "Pushmeldingen zijn actief op deze installatie.",
       "pushDenied": "Android-meldingstoestemming is geweigerd. Je kunt Binder toestaan in de systeeminstellingen.",
+      "pushNotAllowedYet": "Binder mag op deze telefoon nog geen meldingen sturen. Je kunt dit toestaan in de systeeminstellingen.",
       "missingProject": "Deze build is nog niet gekoppeld aan het EAS-project.",
       "pushOffline": "De pushservice kon niet worden bereikt. Probeer opnieuw wanneer je online bent.",
       "pushUnavailable": "Externe push is alleen beschikbaar in een Android- of iOS-ontwikkel-/releasebuild."

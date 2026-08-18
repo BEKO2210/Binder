@@ -137,6 +137,7 @@
       "title": "Peringatan pesan",
       "unavailableCopy": "Notifikasi push tidak didukung di perangkat ini. Chat tetap berfungsi seperti biasa.",
       "offlineCopy": "Tidak dapat menghubungi layanan push. Periksa koneksi Anda dan coba lagi.",
+      "failedCopy": "Binder tidak dapat menyiapkan notifikasi di ponsel ini. Kamu bisa mencoba lagi.",
       "blockedCopy": "Android memblokir notifikasi Binder. Izinkan di pengaturan sistem.",
       "enabledCopy": "Kategori notifikasi dapat disesuaikan di Pengaturan Aplikasi.",
       "copy": "Aktifkan peringatan untuk Bind dan pesan baru."
@@ -783,6 +784,7 @@
       "pushOff": "Notifikasi push dinonaktifkan pada instalasi ini.",
       "pushActive": "Notifikasi push aktif pada instalasi ini.",
       "pushDenied": "Izin notifikasi Android ditolak. Anda dapat mengizinkan Binder di pengaturan sistem.",
+      "pushNotAllowedYet": "Binder belum boleh mengirim notifikasi di ponsel ini. Kamu bisa mengizinkannya di pengaturan sistem.",
       "missingProject": "Build ini belum terhubung ke proyek EAS-nya.",
       "pushOffline": "Tidak dapat menghubungi layanan push. Coba lagi saat Anda online.",
       "pushUnavailable": "Push jarak jauh hanya tersedia di build pengembangan/rilis Android atau iOS."

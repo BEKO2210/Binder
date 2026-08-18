@@ -1,12 +1,13 @@
 import { memo, useCallback, useEffect, useState } from 'react';
-import { BackHandler, Switch, View } from 'react-native';
+import { AppState, BackHandler, Switch, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderInput, BinderScreenHeader, BinderText, MotionPressable as Pressable, ScreenState, SectionHeader } from '../components/ui';
 import { availableLocales } from '../i18n';
 import { getBetaSettings, setBetaDiagnostics } from '../lib/beta';
 import { confirmDestructive } from '../lib/confirmDestructive';
-import { disablePushNotifications, enablePushNotifications } from '../lib/notifications';
+import { disablePushNotifications, enablePushNotifications, getNotificationPermissionStatus, openSystemNotificationSettings, refreshPushRegistration } from '../lib/notifications';
+import { pushBlockedOnThisDevice, pushSettingsWarning, type PushPermissionStatus, type PushRegistrationStatus } from '../lib/pushBanner';
 import { useBinderHaptics } from '../theme/haptics';
 import type { AccentThemeId, MotionPreference } from '../theme/tokens';
 import { useBinderTheme } from '../theme/ThemeProvider';
@@ -60,7 +61,40 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
 
   const [pushBusy, setPushBusy] = useState(false);
   const [resetBusy, setResetBusy] = useState(false);
+  const [pushPermission, setPushPermission] = useState<PushPermissionStatus | null>(null);
+  const [pushHealth, setPushHealth] = useState<PushRegistrationStatus | null>(null);
   const [quietDraft, setQuietDraft] = useState<{ start: string; end: string } | null>(null);
+
+  // Whether this phone allows a notification is decided outside Binder and can
+  // change while the screen is open — the button below sends people to exactly
+  // that switch, and Android does not re-mount the screen when they come back.
+  //
+  // The permission alone does not prove push works, though. A granted
+  // permission with a registration that never reached the server looks
+  // identical to a healthy one from the outside, and that is the state nobody
+  // would ever notice. So this re-registers while it is here: the call is
+  // idempotent, it repairs that case by itself, and what it returns is the
+  // honest answer to put on the screen.
+  useEffect(() => {
+    let active = true;
+    // Two reads can overlap when the screen is foregrounded twice in quick
+    // succession, and the slower one may be the older one. Only the newest
+    // read is allowed to land, or the row could settle on a stale answer.
+    let newestRead = 0;
+    const read = () => {
+      const ticket = (newestRead += 1);
+      void getNotificationPermissionStatus()
+        .then((status) => { if (active && ticket === newestRead) setPushPermission(status); })
+        .catch(() => undefined);
+      if (!settings.notifications.enabled) { setPushHealth(null); return; }
+      void refreshPushRegistration()
+        .then((result) => { if (active && ticket === newestRead) setPushHealth(result.status); })
+        .catch(() => { if (active && ticket === newestRead) setPushHealth('unsupported'); });
+    };
+    read();
+    const subscription = AppState.addEventListener('change', (state) => { if (state === 'active') read(); });
+    return () => { active = false; subscription.remove(); };
+  }, [settings.notifications.enabled]);
 
   const togglePush = useCallback(async (next: boolean) => {
     if (pushBusy) return;
@@ -118,6 +152,8 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
 
   const toggleHaptics = useCallback((value: boolean) => void updateSettings({ hapticsEnabled: value }), [updateSettings]);
   const toggleQuietHours = useCallback((value: boolean) => void updateQuietHours({ enabled: value }), [updateQuietHours]);
+
+  const pushWarningKey = pushSettingsWarning(settings.notifications.enabled, pushPermission, pushHealth);
 
   if (!hydrated) return <ScreenState kind="loading" message={t('appSettings.states.loading')} />;
 
@@ -209,6 +245,14 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
 
       <SettingsSection title={t('appSettings.notifications.title')} copy={t('appSettings.notifications.copy')}>
         <SwitchRow disabled={pushBusy} label={t('appSettings.notifications.remotePush')} value={settings.notifications.enabled} onValueChange={togglePush} />
+        {pushWarningKey ? (
+          <View style={{ gap: theme.spacing.x2, marginBottom: theme.spacing.x3 }}>
+            <BinderText variant="caption" tone="destructive">{t(pushWarningKey)}</BinderText>
+            {pushPermission && pushBlockedOnThisDevice(settings.notifications.enabled, pushPermission) ? (
+              <BinderButton label={t('matches.actions.openSettings')} icon="settings" variant="ghost" fullWidth={false} onPress={() => void openSystemNotificationSettings().catch(() => setMessage(t('appSettings.errors.updatePush')))} />
+            ) : null}
+          </View>
+        ) : null}
         <NotificationSwitchRow field="newMatches" label={t('appSettings.notifications.newMatches')} value={settings.notifications.newMatches} disabled={!settings.notifications.enabled} update={updateNotifications} />
         <NotificationSwitchRow field="messages" label={t('appSettings.notifications.messages')} value={settings.notifications.messages} disabled={!settings.notifications.enabled} update={updateNotifications} />
         <NotificationSwitchRow field="moderation" label={t('appSettings.notifications.moderation')} value={settings.notifications.moderation} disabled={!settings.notifications.enabled} update={updateNotifications} />

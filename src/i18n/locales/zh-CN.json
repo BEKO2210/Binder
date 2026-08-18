@@ -137,6 +137,7 @@
       "title": "消息提醒",
       "unavailableCopy": "此设备不支持推送通知。聊天仍可正常使用。",
       "offlineCopy": "无法连接推送服务。请检查网络后重试。",
+      "failedCopy": "Binder 无法在此手机上设置通知。你可以重试。",
       "blockedCopy": "Android 正在阻止 Binder 通知。请在系统设置中允许。",
       "enabledCopy": "可在应用设置中调整通知类别。",
       "copy": "选择接收新 Bind 和新消息提醒。"
@@ -783,6 +784,7 @@
       "pushOff": "此安装中的推送通知已关闭。",
       "pushActive": "此安装中的推送通知已启用。",
       "pushDenied": "Android 通知权限已被拒绝。你可以在系统设置中允许 Binder。",
+      "pushNotAllowedYet": "Binder 尚未获得在此手机上发送通知的权限。你可以在系统设置中允许。",
       "missingProject": "此构建尚未连接到其 EAS 项目。",
       "pushOffline": "无法连接推送服务。请在联网后重试。",
       "pushUnavailable": "远程推送仅适用于 Android 或 iOS 的开发/发布构建。"

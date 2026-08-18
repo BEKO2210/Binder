@@ -22,10 +22,11 @@ import {
   setNotificationForegroundContext,
   syncNotificationPreferences,
   type NotificationRoute,
+  type PushRegistrationResult,
 } from './lib/notifications';
 import { getLegalGate, type LegalGate } from './lib/safety';
 import { safeLog } from './lib/safeLog';
-import { isDeadlineError, isLikelyOffline } from './lib/reliability';
+import { classifyError, isDeadlineError, isLikelyOffline } from './lib/reliability';
 import { supabase } from './lib/supabase';
 import AboutScreen from './screens/AboutScreen';
 import AppSettingsScreen from './screens/AppSettingsScreen';
@@ -257,8 +258,32 @@ function BinderApp() {
 
   useEffect(() => {
     if (!session || legalGate?.accepted !== true || onboardingComplete !== true || !settings.notifications.enabled) return;
-    void refreshPushRegistration().catch(() => undefined);
-    return observePushTokenRotation();
+    // Both silent attempts — this one and every token rotation — used to throw
+    // their failures away, which is how push can be dead while the app still
+    // says it is on. What they must NOT do is switch the setting off by
+    // themselves: `notifications.enabled` is an account-wide preference, the
+    // permission behind it is per device, and a fresh install on the tablet
+    // that has not been granted it yet would otherwise turn push off on the
+    // phone too. The screens read the device permission and say so instead.
+    const reportSilentFailure = (error: unknown) => {
+      // The kind goes in the event name on purpose: safeLog redacts every
+      // string it is handed as context. It is also compiled out of a release
+      // build, so this helps while developing and the honest switch below is
+      // what a real user gets. Recording it as a diagnostics row would survive
+      // a release build, but the event name is constrained in the database and
+      // that needs a migration.
+      safeLog('warn', `push_refresh_failed_${classifyError(error).kind}`);
+    };
+    // Most ways this goes wrong are not thrown at all — a refused permission
+    // and a dead network both come back as an ordinary return value, so
+    // catching exceptions alone would have kept the quietest cases quiet.
+    const reportSilentOutcome = (result: PushRegistrationResult) => {
+      if (result.status === 'registered') return;
+      safeLog('warn', `push_refresh_${result.status}`);
+    };
+
+    void refreshPushRegistration().then(reportSilentOutcome).catch(reportSilentFailure);
+    return observePushTokenRotation(reportSilentOutcome);
   }, [session?.user.id, legalGate?.accepted, onboardingComplete, settings.notifications.enabled]);
 
   useEffect(() => {

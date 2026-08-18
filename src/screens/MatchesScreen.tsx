@@ -8,7 +8,7 @@ import { fetchMatches, type MatchSummary } from '../lib/conversation';
 import { previewTimeLabel, splitConversationPreviews } from '../lib/conversationPresentation';
 import { formatCount } from '../lib/format';
 import { resolveStaggerDelay } from '../lib/motionPolicy';
-import { enablePushNotifications, getNotificationPermissionStatus, openSystemNotificationSettings } from '../lib/notifications';
+import { enablePushNotifications, getNotificationPermissionStatus, openSystemNotificationSettings, refreshPushRegistration } from '../lib/notifications';
 import { bannerOffersEnable, bannerStateAfterRegistration, initialBannerState, type PushBannerState } from '../lib/pushBanner';
 import { classifyError, isAbortError, withRetry, type ReliabilityError } from '../lib/reliability';
 import { useBinderHaptics } from '../theme/haptics';
@@ -60,9 +60,30 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
 
   useEffect(() => {
     const controller = new AbortController();
+    const settle = (state: PushBannerState) => {
+      if (mountedRef.current && !controller.signal.aborted) setPushState((current) => current === 'busy' ? current : state);
+    };
     getNotificationPermissionStatus(controller.signal)
-      .then((permission) => { if (mountedRef.current && !controller.signal.aborted) setPushState((current) => current === 'busy' ? current : initialBannerState(settings.notifications.enabled, permission)); })
-      .catch(() => undefined);
+      .then(async (permission) => {
+        const state = initialBannerState(settings.notifications.enabled, permission);
+        settle(state);
+        // A granted permission is not proof that anything can be delivered: the
+        // registration behind it may never have reached the server, and this
+        // banner would happily say "enabled" over a dead installation. Asking
+        // again is idempotent and repairs that case on its own.
+        if (state !== 'enabled') return;
+        const result = await refreshPushRegistration(controller.signal);
+        settle(bannerStateAfterRegistration(result.status));
+      })
+      .catch((nextError: unknown) => {
+        // Leaving the banner on "enabled" after a thrown registration error is
+        // the exact silence this is meant to end. A cancelled check is not a
+        // failure — everything else has to show, and it has to show as
+        // something with a retry on it: 'unavailable' is for the permanent
+        // cases and offers no way back, while whatever threw here may well
+        // work on the next tap.
+        if (!isAbortError(nextError)) settle('failed');
+      });
     return () => controller.abort();
   }, [settings.notifications.enabled]);
 
@@ -83,8 +104,11 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
       await haptic(next === 'enabled' ? 'selection' : 'warning');
     } catch (nextError) {
       if (mountedRef.current && !isAbortError(nextError)) {
+        // 'idle' would put "Enable" back on the button as if nothing had been
+        // tried. The banner says what happened, the classified error says why,
+        // and the button offers another go.
         setPushError(classifyError(nextError));
-        setPushState('idle');
+        setPushState('failed');
       }
     }
   }
@@ -102,6 +126,7 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
             <BinderText variant="label">{pushState === 'enabled' ? t('matches.notifications.enabledTitle') : pushState === 'busy' ? t('matches.notifications.enablingTitle') : pushState === 'denied' ? t('matches.notifications.blockedTitle') : t('matches.notifications.title')}</BinderText>
             <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1 }}>
               {pushState === 'unavailable' ? t('matches.notifications.unavailableCopy')
+                : pushState === 'failed' ? t('matches.notifications.failedCopy')
                 : pushState === 'offline' ? t('matches.notifications.offlineCopy')
                 : pushState === 'denied' ? t('matches.notifications.blockedCopy')
                 : pushState === 'enabled' ? t('matches.notifications.enabledCopy')
@@ -109,7 +134,7 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
             </BinderText>
             {pushError ? <BinderText accessibilityLiveRegion="assertive" variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x2 }}>{pushError.message}</BinderText> : null}
           </View>
-          {bannerOffersEnable(pushState) ? <BinderButton label={pushState === 'offline' ? t('matches.actions.retry') : t('matches.actions.enable')} variant="secondary" fullWidth={false} loading={pushState === 'busy'} onPress={() => void enablePush()} /> : null}
+          {bannerOffersEnable(pushState) ? <BinderButton label={pushState === 'offline' || pushState === 'failed' ? t('matches.actions.retry') : t('matches.actions.enable')} variant="secondary" fullWidth={false} loading={pushState === 'busy'} onPress={() => void enablePush()} /> : null}
           {pushState === 'denied' ? <BinderButton label={t('matches.actions.openSettings')} variant="secondary" fullWidth={false} onPress={() => void openSystemNotificationSettings().catch(() => undefined)} /> : null}
         </View>
       </BinderCard>
