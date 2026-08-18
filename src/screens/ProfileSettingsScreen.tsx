@@ -10,6 +10,7 @@ import { MotionPressable as Pressable } from '../components/ui';
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderInput, BinderScreenHeader, BinderText, ScreenState, SectionHeader } from '../components/ui';
 import { pickAndPrepareProfileImage, type PreparedImage } from '../lib/images';
 import { addProfileImage, listMyProfileMedia, removeProfileMedia, reorderProfileMedia, setPrimaryProfileMedia, type GalleryMedia } from '../lib/media';
+import { replacementOrder } from '../lib/photoReplacement';
 import { hasErrors, validateDiscovery, validateIdentity } from '../lib/onboardingFlow';
 import { classifyError } from '../lib/reliability';
 import { supabase } from '../lib/supabase';
@@ -97,7 +98,11 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
     } finally { uploadLockedRef.current = false; }
   }
 
-  async function uploadPhoto(image: PreparedImage) {
+  // Returns whether the photo actually reached the server. It handles its own
+  // error state, so without this a caller could not tell a finished upload from
+  // a failed one — and a replacement that cannot tell would delete the old
+  // photo after the new one never arrived.
+  async function uploadPhoto(image: PreparedImage): Promise<boolean> {
     try {
       await addProfileImage(userId, image, () => setUpload({ phase: 'uploading', image }));
       await haptic('selection');
@@ -105,8 +110,10 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
       setUpload(null);
       setMessage(t('profileSettings.messages.photoAdded')); setMessageKind('success');
       announce(t('profileSettings.accessibility.photoUploaded'));
+      return true;
     } catch (error) {
       setUpload({ phase: 'error', image, error: errorMessage(error, t('profileSettings.errors.addPhoto')) });
+      return false;
     }
   }
 
@@ -125,9 +132,21 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
       const image = await pickAndPrepareProfileImage();
       if (!image) return;
       setBusy(true);
-      await removeProfileMedia(item.id);
-      setBusy(false);
-      await uploadPhoto(image);
+      // The old photo is only given up once the new one is on the server. A
+      // full gallery is the one case where there is no free slot to hold both,
+      // so it still has to make room first — and if that upload then fails, the
+      // prepared image stays in the error state with its retry.
+      if (replacementOrder(media.length) === 'upload-first') {
+        setBusy(false);
+        if (!await uploadPhoto(image)) return;
+        setBusy(true);
+        await removeProfileMedia(item.id);
+        setMedia(await listMyProfileMedia());
+      } else {
+        await removeProfileMedia(item.id);
+        setBusy(false);
+        await uploadPhoto(image);
+      }
     } catch (error) {
       setMessageKind('error');
       setMessage(errorMessage(error, t('profileSettings.errors.replacePhoto')));
