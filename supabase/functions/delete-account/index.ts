@@ -54,6 +54,14 @@ Deno.serve(async (req: Request) => {
     if (voiceRemoveError) return Response.json({ error: "Could not remove account media" }, { status: 500 });
   }
 
+  const { data: introObjects, error: introListError } = await admin.storage.from("profile-voice").list(userId, { limit: 1000 });
+  if (introListError) return Response.json({ error: "Could not remove account media" }, { status: 500 });
+  const introPaths = (introObjects ?? []).filter((object) => object.name).map((object) => `${userId}/${object.name}`);
+  if (introPaths.length > 0) {
+    const { error: introRemoveError } = await admin.storage.from("profile-voice").remove(introPaths);
+    if (introRemoveError) return Response.json({ error: "Could not remove account media" }, { status: 500 });
+  }
+
   const { error: deleteError } = await admin.auth.admin.deleteUser(userId, false);
   if (deleteError) return Response.json({ error: "Account deletion failed" }, { status: 500 });
 
