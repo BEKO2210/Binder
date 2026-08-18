@@ -73,7 +73,8 @@ for _ in $(seq 1 90); do
     "${API_URL}/functions/v1/delete-account" || true)"
   case "${READY_CODE}" in
     ''|000|502|503|504) ;;
-    *) FUNCTION_READY='yes'; break ;;
+    404) ;;  # Kong answers before `functions serve` has registered the route.
+    *) FUNCTION_READY="${READY_CODE}"; break ;;
   esac
   if ! kill -0 "${FUNCTION_PID}" 2>/dev/null; then
     cat "${FUNCTION_LOG}" >&2
@@ -82,6 +83,8 @@ for _ in $(seq 1 90); do
   fi
   sleep 1
 done
+
+echo "delete-account readiness probe settled on HTTP ${FUNCTION_READY:-none}" >&2
 
 if [[ -z "${FUNCTION_READY}" ]]; then
   cat "${FUNCTION_LOG}" >&2
@@ -100,7 +103,9 @@ HTTP_CODE="$(curl --silent --show-error \
 
 if [[ "${HTTP_CODE}" != '200' ]]; then
   cat /tmp/binder-delete-response.json >&2
-  cat "${FUNCTION_LOG}" >&2
+  echo "--- function log (${FUNCTION_LOG}) ---" >&2
+  cat "${FUNCTION_LOG}" >&2 || true
+  echo "--- end of function log ---" >&2
   echo "delete-account returned HTTP ${HTTP_CODE}" >&2
   exit 1
 fi
