@@ -42,6 +42,10 @@ const symbols = {
   email: { ios: 'envelope.fill', android: 'mail', web: 'mail' },
   reveal: { ios: 'eye.fill', android: 'visibility', web: 'visibility' },
   increase: { ios: 'plus', android: 'add', web: 'add' },
+  mic: { ios: 'mic.fill', android: 'mic', web: 'mic' },
+  play: { ios: 'play.fill', android: 'play_arrow', web: 'play_arrow' },
+  pause: { ios: 'pause.fill', android: 'pause', web: 'pause' },
+  stop: { ios: 'stop.fill', android: 'stop', web: 'stop' },
   decrease: { ios: 'minus', android: 'remove', web: 'remove' },
   conceal: { ios: 'eye.slash.fill', android: 'visibility_off', web: 'visibility_off' },
 } as const;

@@ -385,7 +385,14 @@ numeric code is logged, so the next time it is a log line.
 
 One balanced-accuracy location point, overwritten on every refresh — never a
 track, never a history. First name, email, date of birth (the age is shown, the
-date is not), gender and preferences, photos, messages. Optional diagnostics are
+date is not), gender and preferences, photos, messages. Since 2026-08-18 also
+ten optional self-disclosed profile attributes (height, smoking, drinking,
+drugs, exercise, diet, beliefs, children, wish for children, car — beliefs is
+a GDPR Art. 9 category) and the filters a person sets over them. The audio
+waves add voice recordings: RECORD_AUDIO is in the manifest as of vc75
+(expo-audio; the image picker's remove-override is gone) — recordings ship
+with waves 7/8 and the store's data-safety form must name attributes AND
+voice before the next Play upload. Optional diagnostics are
 off by default and carry screen, duration, outcome, platform, app version and a
 random session id — no message content, no photos, no coordinates, no stack
 traces, which `verify-phase7-push.mjs` and `verify-phase5-contract.mjs` enforce.
