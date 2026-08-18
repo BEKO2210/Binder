@@ -939,6 +939,16 @@
     }
   },
   "root": {
+    "tabs": {
+      "discover": "Ontdekken",
+      "matches": "Binds",
+      "profile": "Profiel"
+    },
+    "loading": {
+      "session": "Binder wordt geladen…",
+      "safetyRules": "Veiligheidsregels van Binder controleren…",
+      "profile": "Je Binder-profiel wordt geladen…"
+    },
     "offline": {
       "title": "Je bent offline",
       "message": "Binder heeft verbinding nodig om de huidige veiligheidsregels te controleren. Zodra je weer online bent, werkt het weer."

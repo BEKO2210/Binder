@@ -9,7 +9,11 @@ import { readFileSync, readdirSync, statSync, writeFileSync, existsSync } from '
 import { join, relative, resolve } from 'node:path';
 
 const root = process.cwd();
-const scanRoots = ['src/screens', 'src/components'];
+// Everything under src/ that renders, not just the two screen folders. The
+// narrow scan is how the tab bar shipped reading "Discover / Matches / Profile"
+// in all fifteen languages, and how three full-screen loading messages stayed
+// English: Root.tsx renders more than most screens and was invisible here.
+const scanRoots = ['src'];
 const budgetPath = 'artifacts/i18n-coverage.json';
 
 // Props whose string value is shown or read out.

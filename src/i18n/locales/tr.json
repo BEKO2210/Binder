@@ -939,6 +939,16 @@
     }
   },
   "root": {
+    "tabs": {
+      "discover": "Keşfet",
+      "matches": "Binds",
+      "profile": "Profil"
+    },
+    "loading": {
+      "session": "Binder yükleniyor…",
+      "safetyRules": "Binder güvenlik kuralları denetleniyor…",
+      "profile": "Binder profiliniz yükleniyor…"
+    },
     "offline": {
       "title": "Çevrimdışısınız",
       "message": "Binder'ın mevcut güvenlik kurallarını kontrol etmesi için bağlantı gerekir. Tekrar çevrimiçi olduğunuzda çalışacaktır."

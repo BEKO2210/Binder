@@ -939,6 +939,16 @@
     }
   },
   "root": {
+    "tabs": {
+      "discover": "खोजें",
+      "matches": "Binds",
+      "profile": "प्रोफ़ाइल"
+    },
+    "loading": {
+      "session": "Binder लोड हो रहा है…",
+      "safetyRules": "Binder के सुरक्षा नियम जाँचे जा रहे हैं…",
+      "profile": "आपकी Binder प्रोफ़ाइल लोड हो रही है…"
+    },
     "offline": {
       "title": "आप ऑफ़लाइन हैं",
       "message": "Binder को मौजूदा सुरक्षा नियम जाँचने के लिए कनेक्शन चाहिए। ऑनलाइन होते ही यह काम करेगा।"

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readdirSync, readFileSync } from 'node:fs';
 import { test } from 'node:test';
 
 import { availableLocales, resolveLocale, SOURCE_LOCALE, translate } from '../src/i18n/index.ts';
@@ -46,4 +47,41 @@ test('a regional file serves the whole language', () => {
   assert.equal(resolveLocale('system', 'pt-PT'), 'pt-BR');
   assert.equal(resolveLocale('system', 'pt'), 'pt-BR');
   assert.equal(resolveLocale('system', 'de_DE'), 'de', 'an underscore tag still resolves');
+});
+
+test('nothing decides anything by matching a translated string', () => {
+  // App settings picked the tone of its status line with /are active|are off/.
+  // In English a success read as a success; in the other fourteen languages it
+  // read as a failure and was painted in the destructive colour. Whatever
+  // happened is known at the place it happens — it must not be recovered by
+  // looking at words that change with the locale.
+  const offenders: string[] = [];
+  // Root.tsx renders too, and leaving it out here is how the tab bar shipped
+  // in English: a gate that skips a file cannot protect it.
+  const roots = ['src/screens', 'src/components', 'src'];
+  const seen = new Set<string>();
+  for (const dir of roots) {
+    for (const entry of readdirSync(new URL(`../${dir}`, import.meta.url), { recursive: true })) {
+      const name = String(entry);
+      if (!name.endsWith('.tsx')) continue;
+      const path = `${dir}/${name}`;
+      if (seen.has(path)) continue;
+      seen.add(path);
+      const source = readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
+      // A literal regex, or a string comparison, applied to a value the
+      // translator owns. The name has to BE one of these words, so that
+      // messageId, labelKey and textInput stay out of it.
+      const owned = /^(message|copy|label|title|text|body|caption)$/i;
+      const patterns = [
+        /\/[^/\n]*\p{L}{3}[^/\n]*\/[a-z]*\.test\(\s*([A-Za-z_$][\w$]*)/gu,
+        /\b([A-Za-z_$][\w$]*)\.(?:includes|startsWith|endsWith|match)\(\s*['"`]\p{L}{3}/gu,
+      ];
+      for (const pattern of patterns) {
+        for (const match of source.matchAll(pattern)) {
+          if (owned.test(match[1] ?? '')) offenders.push(`${path}: ${match[0]}`);
+        }
+      }
+    }
+  }
+  assert.deepEqual(offenders, []);
 });

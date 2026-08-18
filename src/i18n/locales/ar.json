@@ -939,6 +939,16 @@
     }
   },
   "root": {
+    "tabs": {
+      "discover": "اكتشف",
+      "matches": "Binds",
+      "profile": "الملف الشخصي"
+    },
+    "loading": {
+      "session": "جارٍ تحميل Binder…",
+      "safetyRules": "جارٍ التحقق من قواعد أمان Binder…",
+      "profile": "جارٍ تحميل ملفك الشخصي على Binder…"
+    },
     "offline": {
       "title": "أنت غير متصل",
       "message": "يحتاج Binder إلى اتصال للتحقق من قواعد السلامة الحالية. سيعمل بمجرد عودتك إلى الاتصال."

@@ -939,6 +939,16 @@
     }
   },
   "root": {
+    "tabs": {
+      "discover": "发现",
+      "matches": "Binds",
+      "profile": "个人资料"
+    },
+    "loading": {
+      "session": "正在加载 Binder…",
+      "safetyRules": "正在检查 Binder 安全规则…",
+      "profile": "正在加载你的 Binder 资料…"
+    },
     "offline": {
       "title": "你已离线",
       "message": "Binder 需要联网才能检查当前安全规则。恢复网络后即可继续使用。"

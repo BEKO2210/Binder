@@ -45,17 +45,26 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
   const [diagnostics, setDiagnostics] = useState(false);
   const [diagnosticsLoading, setDiagnosticsLoading] = useState(true);
   const [message, setMessage] = useState('');
+  // The tone used to be guessed by matching the message against English words,
+  // so on every other language a success read as a failure. What happened is
+  // known where it happens; it does not need to be recovered from the text.
+  const [messageKind, setMessageKind] = useState<'success' | 'error'>('error');
+  // One way in, so the tone can never be left behind on the previous outcome:
+  // a failure after a success would otherwise still be painted as a success.
+  const showMessage = useCallback((text: string, kind: 'success' | 'error' = 'error') => {
+    setMessage(text); setMessageKind(kind);
+  }, []);
 
   useEffect(() => {
     let active = true;
-    getBetaSettings().then((value) => { if (active) setDiagnostics(value.diagnostics_enabled); }).catch(() => { if (active) setMessage(t('appSettings.errors.loadDiagnostics')); }).finally(() => { if (active) setDiagnosticsLoading(false); });
+    getBetaSettings().then((value) => { if (active) setDiagnostics(value.diagnostics_enabled); }).catch(() => { if (active) showMessage(t('appSettings.errors.loadDiagnostics')); }).finally(() => { if (active) setDiagnosticsLoading(false); });
     return () => { active = false; };
   }, [t]);
 
   const toggleDiagnostics = useCallback(async (next: boolean) => {
-    setDiagnosticsLoading(true); setMessage('');
+    setDiagnosticsLoading(true); showMessage('');
     try { setDiagnostics(await setBetaDiagnostics(next)); await haptic('selection'); }
-    catch (error) { setMessage(error instanceof Error ? error.message : t('appSettings.errors.updateDiagnostics')); }
+    catch (error) { showMessage(error instanceof Error ? error.message : t('appSettings.errors.updateDiagnostics')); }
     finally { setDiagnosticsLoading(false); }
   }, [haptic, t]);
 
@@ -98,32 +107,32 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
 
   const togglePush = useCallback(async (next: boolean) => {
     if (pushBusy) return;
-    setMessage('');
+    showMessage('');
     setPushBusy(true);
     try {
       if (!next) {
         await disablePushNotifications();
         await updateNotifications({ enabled: false });
-        setMessage(t('appSettings.messages.pushOff'));
+        showMessage(t('appSettings.messages.pushOff'), 'success');
         return;
       }
       const result = await enablePushNotifications();
       if (result.status === 'registered') {
         await updateNotifications({ enabled: true });
-        setMessage(t('appSettings.messages.pushActive'));
+        showMessage(t('appSettings.messages.pushActive'), 'success');
       } else if (result.status === 'denied') {
         await updateNotifications({ enabled: false });
-        setMessage(t('appSettings.messages.pushDenied'));
+        showMessage(t('appSettings.messages.pushDenied'));
       } else if (result.status === 'missing-project-id') {
         await updateNotifications({ enabled: false });
-        setMessage(t('appSettings.messages.missingProject'));
+        showMessage(t('appSettings.messages.missingProject'));
       } else if (result.status === 'offline') {
-        setMessage(t('appSettings.messages.pushOffline'));
+        showMessage(t('appSettings.messages.pushOffline'));
       } else {
-        setMessage(t('appSettings.messages.pushUnavailable'));
+        showMessage(t('appSettings.messages.pushUnavailable'));
       }
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : t('appSettings.errors.updatePush'));
+      showMessage(error instanceof Error ? error.message : t('appSettings.errors.updatePush'));
     } finally {
       setPushBusy(false);
     }
@@ -142,10 +151,10 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
     if (resetBusy) return;
     confirmDestructive({ title: t('appSettings.reset.confirmTitle'), message: t('appSettings.reset.confirmCopy'), cancelText: t('appSettings.reset.cancel'), destructiveText: t('appSettings.reset.confirm'), onConfirm: () => {
         setResetBusy(true);
-        setMessage('');
+        showMessage('');
         void resetSettings()
-          .then(() => setMessage(t('appSettings.reset.done')))
-          .catch((error: unknown) => setMessage(error instanceof Error ? error.message : t('appSettings.reset.failed')))
+          .then(() => showMessage(t('appSettings.reset.done'), 'success'))
+          .catch((error: unknown) => showMessage(error instanceof Error ? error.message : t('appSettings.reset.failed')))
           .finally(() => setResetBusy(false));
       } });
   }, [resetBusy, resetSettings, t]);
@@ -249,7 +258,7 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
           <View style={{ gap: theme.spacing.x2, marginBottom: theme.spacing.x3 }}>
             <BinderText variant="caption" tone="destructive">{t(pushWarningKey)}</BinderText>
             {pushPermission && pushBlockedOnThisDevice(settings.notifications.enabled, pushPermission) ? (
-              <BinderButton label={t('matches.actions.openSettings')} icon="settings" variant="ghost" fullWidth={false} onPress={() => void openSystemNotificationSettings().catch(() => setMessage(t('appSettings.errors.updatePush')))} />
+              <BinderButton label={t('matches.actions.openSettings')} icon="settings" variant="ghost" fullWidth={false} onPress={() => void openSystemNotificationSettings().catch(() => showMessage(t('appSettings.errors.updatePush')))} />
             ) : null}
           </View>
         ) : null}
@@ -274,7 +283,7 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
         {diagnosticsLoading ? <ScreenState kind="loading" message={t('appSettings.diagnostics.checking')} /> : <SwitchRow label={t('appSettings.diagnostics.share')} value={diagnostics} onValueChange={toggleDiagnostics} />}
       </SettingsSection>
 
-      {message ? <BinderText accessibilityLiveRegion="assertive" variant="caption" tone={/are active|are off/.test(message) ? 'accent' : 'destructive'} style={{ marginTop: theme.spacing.x4 }}>{message}</BinderText> : null}
+      {message ? <BinderText accessibilityLiveRegion={messageKind === 'success' ? 'polite' : 'assertive'} variant="caption" tone={messageKind === 'success' ? 'accent' : 'destructive'} style={{ marginTop: theme.spacing.x4 }}>{message}</BinderText> : null}
       <BinderButton label={t('appSettings.reset.action')} variant="secondary" loading={resetBusy} onPress={confirmReset} style={{ marginTop: theme.spacing.x6 }} />
       </KeyboardAwareScrollView>
     </View>

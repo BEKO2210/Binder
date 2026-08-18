@@ -939,6 +939,16 @@
     }
   },
   "root": {
+    "tabs": {
+      "discover": "Jelajahi",
+      "matches": "Binds",
+      "profile": "Profil"
+    },
+    "loading": {
+      "session": "Memuat Binder…",
+      "safetyRules": "Memeriksa aturan keamanan Binder…",
+      "profile": "Memuat profil Binder kamu…"
+    },
     "offline": {
       "title": "Anda sedang offline",
       "message": "Binder memerlukan koneksi untuk memeriksa aturan keselamatan saat ini. Binder akan berfungsi segera setelah Anda kembali online."

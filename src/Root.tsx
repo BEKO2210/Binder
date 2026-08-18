@@ -350,10 +350,10 @@ function BinderApp() {
   }, [pendingNotificationRoute, session?.user.id, legalGate?.accepted, onboardingComplete]);
 
   if (sessionExpired) return <ScreenState kind="permission" icon="profile" title={t('sessionExpired.title')} message={t('sessionExpired.message')} actionLabel={t('sessionExpired.action')} onAction={returnToSignIn} />;
-  if (session === undefined) return <ScreenState kind="loading" message={loadError || 'Loading Binder…'} />;
+  if (session === undefined) return <ScreenState kind="loading" message={loadError || t('root.loading.session')} />;
   if (!session) return <AuthScreen />;
   if (recovering) return <AuthScreen recovery onRecoveryHandled={() => setRecovering(false)} />;
-  if (legalGate === undefined) return <ScreenState kind="loading" message="Checking Binder safety rules…" />;
+  if (legalGate === undefined) return <ScreenState kind="loading" message={t('root.loading.safetyRules')} />;
   if (legalGate === null) return (
     <ScreenState
       kind={loadOffline ? 'offline' : 'error'}
@@ -365,7 +365,7 @@ function BinderApp() {
     />
   );
   if (!legalGate.accepted) return <LegalGateScreen gate={legalGate} onAccepted={() => { setLegalGate((current) => current ? { ...current, accepted: true } : current); setLoadError(''); }} />;
-  if (onboardingComplete === undefined) return <ScreenState kind="loading" message={loadError || 'Loading your Binder profile…'} />;
+  if (onboardingComplete === undefined) return <ScreenState kind="loading" message={loadError || t('root.loading.profile')} />;
   if (!onboardingComplete) return <OnboardingScreen userId={session.user.id} onComplete={() => { setOnboardingComplete(true); setTab('discover'); }} />;
   // Full-screen routes live outside the tab shell, so they need the same centred
   // column — a conversation stretched across a tablet reads as a wall of text.
@@ -390,9 +390,9 @@ function BinderApp() {
           on a tablet. */}
       <View style={{ width: '100%', backgroundColor: theme.colors.surface, borderTopColor: theme.colors.borderSubtle, borderTopWidth: 1 }}>
       <View style={{ minHeight: theme.layout.screenHeaderHeight + theme.spacing.x1, width: '100%', maxWidth: theme.layout.tabletContentMaxWidth, alignSelf: 'center', flexDirection: 'row', paddingHorizontal: theme.spacing.x3, paddingTop: theme.spacing.x2, paddingBottom: theme.spacing.x2 }}>
-        <NavItem icon="discover" label="Discover" active={tab === 'discover'} onPress={() => setTab('discover')} />
-        <NavItem icon="matches" label="Matches" active={tab === 'matches'} onPress={() => { setTab('matches'); setMatchesRefreshKey((value) => value + 1); }} />
-        <NavItem icon="profile" label="Profile" active={tab === 'profile'} onPress={() => { setTab('profile'); setProfileRoute('home'); }} />
+        <NavItem icon="discover" label={t('root.tabs.discover')} active={tab === 'discover'} onPress={() => setTab('discover')} />
+        <NavItem icon="matches" label={t('root.tabs.matches')} active={tab === 'matches'} onPress={() => { setTab('matches'); setMatchesRefreshKey((value) => value + 1); }} />
+        <NavItem icon="profile" label={t('root.tabs.profile')} active={tab === 'profile'} onPress={() => { setTab('profile'); setProfileRoute('home'); }} />
       </View>
       </View>
     </View>

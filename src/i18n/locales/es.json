@@ -939,6 +939,16 @@
     }
   },
   "root": {
+    "tabs": {
+      "discover": "Descubrir",
+      "matches": "Binds",
+      "profile": "Perfil"
+    },
+    "loading": {
+      "session": "Cargando Binder…",
+      "safetyRules": "Comprobando las reglas de seguridad de Binder…",
+      "profile": "Cargando tu perfil de Binder…"
+    },
     "offline": {
       "title": "Estás sin conexión",
       "message": "Binder necesita conexión para comprobar las reglas de seguridad vigentes. Funcionará en cuanto vuelvas a estar conectado."

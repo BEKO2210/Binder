@@ -939,6 +939,16 @@
     }
   },
   "root": {
+    "tabs": {
+      "discover": "Scopri",
+      "matches": "Binds",
+      "profile": "Profilo"
+    },
+    "loading": {
+      "session": "Caricamento di Binder…",
+      "safetyRules": "Verifica delle regole di sicurezza di Binder…",
+      "profile": "Caricamento del tuo profilo Binder…"
+    },
     "offline": {
       "title": "Sei offline",
       "message": "Binder ha bisogno di una connessione per verificare le regole di sicurezza attuali. Tornerà a funzionare non appena sarai di nuovo online."

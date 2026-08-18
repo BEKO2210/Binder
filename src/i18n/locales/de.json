@@ -939,6 +939,16 @@
     }
   },
   "root": {
+    "tabs": {
+      "discover": "Entdecken",
+      "matches": "Binds",
+      "profile": "Profil"
+    },
+    "loading": {
+      "session": "Binder wird geladen…",
+      "safetyRules": "Binder prüft die Sicherheitsregeln…",
+      "profile": "Dein Binder-Profil wird geladen…"
+    },
     "offline": {
       "title": "Du bist offline",
       "message": "Binder benötigt eine Verbindung, um die aktuellen Sicherheitsregeln zu prüfen. Sobald du wieder online bist, geht es weiter."
