@@ -8,7 +8,7 @@
 //        npm run release -- --minor   → minor bump
 //        npm run release -- --keep-version
 import { execFileSync } from 'node:child_process';
-import { copyFileSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const root = process.cwd();
@@ -51,6 +51,19 @@ if (!keepVersion) {
   console.log(`Version ${currentVersion} (code ${currentCode}) → ${version} (code ${versionCode})`);
 } else console.log(`Keeping version ${version} (code ${versionCode})`);
 
+// android/app/build.gradle falls back to the *debug* key when
+// android/keystore.properties is missing — which is exactly what happens after
+// `expo prebuild --clean` wipes the folder. A debug-signed "release" looks
+// finished, installs fine, and is rejected by Play; worse, it would be a
+// different certificate than the one Google matches for sign-in. So the build
+// refuses to start rather than producing that artefact.
+const keystoreProperties = join(root, 'android/keystore.properties');
+if (!existsSync(keystoreProperties)) {
+  console.error(`${keystoreProperties} is missing — the build would silently sign with the debug key.`);
+  console.error('Restore it (and the .jks it points at) before building a release.');
+  process.exit(1);
+}
+
 const tasks = withBundle ? ['assembleRelease', 'bundleRelease'] : ['assembleRelease'];
 console.log(`Gradle: ${tasks.join(' ')}`);
 execFileSync('./gradlew', tasks, {
@@ -63,6 +76,26 @@ mkdirSync(releaseDir, { recursive: true });
 const staged = [];
 stage(join(root, 'android/app/build/outputs/apk/release/app-release.apk'), `Binder-v${version}-vc${versionCode}.apk`);
 if (withBundle) stage(join(root, 'android/app/build/outputs/bundle/release/app-release.aab'), `Binder-v${version}-vc${versionCode}.aab`);
+
+// Trust the artefact, not the configuration: read the certificate out of the
+// APK that was just produced and compare it with the upload key. This is the
+// same check that found the Play signing mismatch — the answer lives in the
+// file, not in a settings screen.
+const uploadKeySha1 = '16dfdf3e283076be74f8a9e6750ec8b82dadd2df';
+const apkPath = join(releaseDir, `Binder-v${version}-vc${versionCode}.apk`);
+const apksigner = `${androidHome}/build-tools/36.0.0/apksigner`;
+if (existsSync(apksigner)) {
+  const certs = execFileSync(apksigner, ['verify', '--print-certs', apkPath], {
+    encoding: 'utf8',
+    env: { ...process.env, JAVA_HOME: javaHome, PATH: `${javaHome}/bin:${process.env.PATH}` },
+  });
+  const sha1 = certs.match(/Signer #1 certificate SHA-1 digest:\s*([0-9a-f]+)/)?.[1];
+  if (sha1 !== uploadKeySha1) {
+    console.error(`The APK is signed with ${sha1 ?? 'an unreadable certificate'}, not the upload key ${uploadKeySha1}.`);
+    process.exit(1);
+  }
+  console.log(`Signature verified against the upload key (${sha1.slice(0, 12)}…).`);
+} else console.warn(`apksigner not found at ${apksigner} — signature not verified.`);
 
 console.log('\nStaged in the release folder:');
 for (const line of staged) console.log(`  ${line}`);

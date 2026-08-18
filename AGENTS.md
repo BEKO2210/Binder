@@ -200,6 +200,48 @@ app whose database is half test accounts cannot answer "how many real people
 signed up" — and every fake profile in discovery is a real person's wasted
 swipe.
 
+## The signing key — the one thing GitHub cannot replace
+
+`BEKO2210/Binder` holds everything needed to rebuild the app **except** the
+upload key, and `android/` is generated and gitignored, so
+`android/keystore.properties` disappears with any `expo prebuild --clean`.
+Without that key the app on Play can never be updated again by us.
+
+It is backed up in the vault, base64-encoded: `BINDER_UPLOAD_KEYSTORE_B64` and
+`BINDER_KEYSTORE_PROPERTIES_B64`. Restoring was tested, not assumed — the
+restored keystore opens with the stored password and its certificate is
+`58:CF:B5:C8…`, the same one the shipped APKs carry. **The key never goes into
+a repository**, public or private.
+
+Two guards now sit in `scripts/release-build.mjs`, because
+`android/app/build.gradle` silently falls back to the *debug* key when
+`keystore.properties` is missing — a "release" that installs fine, is rejected
+by Play, and carries a certificate Google does not know for sign-in:
+
+- the build refuses to start if `android/keystore.properties` is missing;
+- after the build, the APK's certificate is read with `apksigner` and compared
+  with the upload key's SHA-1, and a mismatch fails the run.
+
+## The Firebase API key in google-services.json
+
+GitHub's secret scanner flags it, and it is right that the string is public —
+it ships inside every APK and anyone can unzip the app and read it. It is an
+identifier, not a password, and what it actually permits was measured rather
+than assumed: anonymous sign-up `ADMIN_ONLY_OPERATION`, email sign-up
+`OPERATION_NOT_ALLOWED`, and Firestore, Storage and Remote Config are not
+provisioned in this project at all (404). Binder's data lives in Supabase.
+
+It is nevertheless restricted in Google Cloud to the Android package plus the
+three signing certificates, and to the messaging APIs. Verified from here: a
+plain request now answers
+`PERMISSION_DENIED — Requests from this Android client application <empty> are blocked`.
+The scanning alert is resolved as won't-fix with that reasoning.
+
+Two open follow-ups: the **Browser key (auto created by Firebase)** in the same
+project is unused by this app and should be restricted or deleted, and **push
+has not been re-tested since the restriction** — if the API list is too narrow,
+notifications stop silently. Test that before trusting push again.
+
 ## Store screenshots and the promo film
 
 `scripts/stage-demo-profiles.mjs create|remove docs/demo-profiles.json` stages
