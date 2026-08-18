@@ -481,16 +481,12 @@ from settings.
 
 ## Open
 
-- **Push text is English in all fifteen languages.** `claim_push_deliveries`
-  builds the title and body as English literals and the dispatcher forwards them
-  untouched, so a Turkish or Japanese phone gets "Binder update / Open Binder to
-  see what changed." Notifications are product copy under rule 7, and the site
-  advertises fifteen languages. The recipient's language is not even read in
-  that function, so the fix is a column and a lookup, not a rewording.
-- **Two English strings escape the localisation gate.** `Root.tsx:302`
-  ("Checking Binder safety rules…") and `Root.tsx:314` ("Loading your Binder
-  profile…") never go through `t()`. `verify-i18n-coverage.mjs` scans only
-  `src/screens` and `src/components`, so `src/Root.tsx` is invisible to it —
-  widening the scan is part of that fix, or the next string lands the same way.
+- **The privacy policy and the Play data-safety form do not yet name the ten
+  profile attributes.** Since 2026-08-18 the app stores height, smoking,
+  drinking, drugs, exercise, diet, beliefs, children, wish for children and
+  car — all optional self-disclosures, but beliefs is a GDPR Art. 9 category
+  and every one of them must be listed before the next store build ships.
+  Voice recordings join that list with the audio waves.
 - German copy for the Play listing.
-- The listing's own screenshots, shot with staged profiles and framed.
+- The listing's own screenshots, shot with staged profiles and framed —
+  after the profile waves, since the profile looks different now.
