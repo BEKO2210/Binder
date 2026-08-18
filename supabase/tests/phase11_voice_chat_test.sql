@@ -14,7 +14,7 @@ exception when others then
 end;
 $$;
 
-select plan(18);
+select plan(20);
 
 insert into auth.users (id, aud, role, email, raw_app_meta_data, raw_user_meta_data, created_at, updated_at)
 values
@@ -168,6 +168,21 @@ select ok(
   pg_temp.did_error($sql$insert into storage.objects (bucket_id, name, owner, owner_id, metadata) values ('voice-media', 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1/11111111-1111-4111-8111-111111111111/y.m4a', '33333333-3333-4333-8333-333333333333', '33333333-3333-4333-8333-333333333333', '{}'::jsonb)$sql$),
   'Nobody can upload under somebody else''s folder'
 );
+
+-- The deletion helper is a door for service_role alone.
+select ok(
+  pg_temp.did_error($sql$select public.deletion_voice_paths('11111111-1111-4111-8111-111111111111')$sql$),
+  'authenticated cannot list deletion voice paths'
+);
+reset role;
+select set_config('request.jwt.claims', '{"role":"service_role"}', true);
+set local role service_role;
+select is(
+  (select count(*) from public.deletion_voice_paths('11111111-1111-4111-8111-111111111111')),
+  1::bigint,
+  'service_role sees exactly the sender''s voice paths'
+);
+reset role;
 
 select * from finish();
 rollback;

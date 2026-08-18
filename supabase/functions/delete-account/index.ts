@@ -44,15 +44,11 @@ Deno.serve(async (req: Request) => {
   // Voice recordings do not live under a user folder — their path starts with
   // the match id — so the rows point the way. The rows themselves cascade
   // with the account; the objects would stay behind without this.
-  const { data: voiceRows, error: voiceListError } = await admin
-    .from("messages")
-    .select("audio_path")
-    .eq("sender_id", userId)
-    .eq("kind", "voice")
-    .not("audio_path", "is", null)
-    .limit(5000);
+  // service_role holds no table grants by design; this definer RPC is the one
+  // door, and only service_role may open it.
+  const { data: voiceRows, error: voiceListError } = await admin.rpc("deletion_voice_paths", { p_user_id: userId });
   if (voiceListError) return Response.json({ error: "Could not remove account media" }, { status: 500 });
-  const voicePaths = (voiceRows ?? []).map((row) => row.audio_path as string).filter(Boolean);
+  const voicePaths = ((voiceRows ?? []) as string[]).filter(Boolean);
   for (let start = 0; start < voicePaths.length; start += 100) {
     const { error: voiceRemoveError } = await admin.storage.from("voice-media").remove(voicePaths.slice(start, start + 100));
     if (voiceRemoveError) return Response.json({ error: "Could not remove account media" }, { status: 500 });
