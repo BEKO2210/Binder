@@ -41,6 +41,8 @@ const symbols = {
   logout: { ios: 'rectangle.portrait.and.arrow.right', android: 'logout', web: 'logout' },
   email: { ios: 'envelope.fill', android: 'mail', web: 'mail' },
   reveal: { ios: 'eye.fill', android: 'visibility', web: 'visibility' },
+  increase: { ios: 'plus', android: 'add', web: 'add' },
+  decrease: { ios: 'minus', android: 'remove', web: 'remove' },
   conceal: { ios: 'eye.slash.fill', android: 'visibility_off', web: 'visibility_off' },
 } as const;
 

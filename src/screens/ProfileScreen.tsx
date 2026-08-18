@@ -7,6 +7,8 @@ import { MotionPressable as Pressable } from '../components/ui';
 import { recordBetaEvent } from '../lib/beta';
 import { listMyProfileMedia } from '../lib/media';
 import { discoveryVisibility, type MediaState } from '../lib/discoveryVisibility';
+import { ProfileAttributeList } from '../components/ProfileAttributeList';
+import { EMPTY_ATTRIBUTES, rowsFromProfile, type ProfileAttributes } from '../lib/profileAttributes';
 import { profileCompleteness } from '../lib/profileCompleteness';
 import { classifyError, isAbortError, type ReliabilityError } from '../lib/reliability';
 import { fetchMySafetyNotice } from '../lib/safety';
@@ -26,6 +28,7 @@ export default function ProfileScreen({ userId, onEditProfile, onPreviewProfile,
   const [loading, setLoading] = useState(true);
   const [firstName, setFirstName] = useState('');
   const [bio, setBio] = useState('');
+  const [attributes, setAttributes] = useState<ProfileAttributes>(EMPTY_ATTRIBUTES);
   const [photoUrls, setPhotoUrls] = useState<readonly string[]>([]);
   const [media, setMedia] = useState<readonly MediaState[]>([]);
   const [photoCount, setPhotoCount] = useState(0);
@@ -47,13 +50,14 @@ export default function ProfileScreen({ userId, onEditProfile, onPreviewProfile,
     setLoadError(null);
     try {
       const [profile, media, notice] = await Promise.all([
-        supabase.from('profiles').select('first_name,bio,interests').eq('user_id', userId).abortSignal(signal ?? new AbortController().signal).single(),
+        supabase.from('profiles').select('first_name,bio,interests,height_cm,smoking,drinking,drugs,activity,diet,spirituality,children_has,children_wants,car').eq('user_id', userId).abortSignal(signal ?? new AbortController().signal).single(),
         listMyProfileMedia(),
         fetchMySafetyNotice({ signal }),
       ]);
       if (profile.error) throw profile.error;
       setFirstName(profile.data.first_name);
       setBio(profile.data.bio);
+      setAttributes(rowsFromProfile(profile.data));
       setPhotoUrls(media.map((item) => item.signedUrl).filter(Boolean));
       setMedia(media.map((item) => ({ position: item.position, moderationStatus: item.moderationStatus })));
       setPhotoCount(media.length);
@@ -110,6 +114,11 @@ export default function ProfileScreen({ userId, onEditProfile, onPreviewProfile,
       ) : <BinderCard style={{ minHeight: theme.layout.onboardingPhotoHeight, alignItems: 'center', justifyContent: 'center', gap: theme.spacing.x3 }}><BinderIcon name="addPhoto" size={34} color={theme.accent.onSurface} /><BinderText variant="label" tone="accent">{t('profile.empty.addFirstPhoto')}</BinderText></BinderCard>}
       <BinderText variant="heading" style={{ marginTop: theme.spacing.x5 }}>{firstName || t('profile.header.title')}</BinderText>
       <BinderText variant="body" tone={bio ? 'secondary' : 'muted'} style={{ marginTop: theme.spacing.x2 }}>{bio || t('profile.empty.addBio')}</BinderText>
+      {/* The zodiac stays null here on purpose: it is computed by the server
+          for the public projection, and the preview shows exactly that. */}
+      <View style={{ marginTop: theme.spacing.x4 }}>
+        <ProfileAttributeList attributes={attributes} zodiac={null} />
+      </View>
       {/* A finished profile has nothing left to nag about. The card used to
           stay at 100 % with every line ticked — a checklist telling somebody
           they are done, on the screen they open to look at themselves. */}

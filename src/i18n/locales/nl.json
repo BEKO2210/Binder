@@ -1135,6 +1135,113 @@
       "showMore": "Meer tonen",
       "showLess": "Minder tonen",
       "noResults": "Niets komt overeen met deze zoekopdracht."
+    },
+    "attributes": {
+      "sectionTitle": "Meer over mij",
+      "notSet": "Niet opgegeven",
+      "height": {
+        "label": "Lengte",
+        "format": "{height} cm",
+        "increase": "Lengte verhogen",
+        "decrease": "Lengte verlagen"
+      },
+      "zodiac": {
+        "label": "Sterrenbeeld",
+        "values": {
+          "aries": "Ram",
+          "taurus": "Stier",
+          "gemini": "Tweelingen",
+          "cancer": "Kreeft",
+          "leo": "Leeuw",
+          "virgo": "Maagd",
+          "libra": "Weegschaal",
+          "scorpio": "Schorpioen",
+          "sagittarius": "Boogschutter",
+          "capricorn": "Steenbok",
+          "aquarius": "Waterman",
+          "pisces": "Vissen"
+        }
+      },
+      "smoking": {
+        "label": "Roken",
+        "values": {
+          "never": "Nooit",
+          "sometimes": "Soms",
+          "regularly": "Regelmatig"
+        }
+      },
+      "drinking": {
+        "label": "Alcohol",
+        "values": {
+          "never": "Nooit",
+          "sometimes": "Soms",
+          "regularly": "Regelmatig"
+        }
+      },
+      "drugs": {
+        "label": "Drugs",
+        "values": {
+          "never": "Nooit",
+          "sometimes": "Soms",
+          "regularly": "Regelmatig"
+        }
+      },
+      "activity": {
+        "label": "Sport",
+        "values": {
+          "rarely": "Zelden",
+          "sometimes": "Soms",
+          "often": "Vaak",
+          "daily": "Dagelijks"
+        }
+      },
+      "diet": {
+        "label": "Voeding",
+        "values": {
+          "omnivore": "Eet alles",
+          "flexitarian": "Flexitariër",
+          "pescetarian": "Pescotariër",
+          "vegetarian": "Vegetariër",
+          "vegan": "Veganist",
+          "halal": "Halal",
+          "kosher": "Koosjer"
+        }
+      },
+      "spirituality": {
+        "label": "Geloof",
+        "values": {
+          "none": "Niet religieus",
+          "spiritual": "Spiritueel",
+          "christian": "Christelijk",
+          "muslim": "Moslim",
+          "jewish": "Joods",
+          "buddhist": "Boeddhistisch",
+          "hindu": "Hindoeïstisch",
+          "other": "Anders"
+        }
+      },
+      "childrenHas": {
+        "label": "Kinderen",
+        "values": {
+          "no": "Geen kinderen",
+          "yes": "Heeft kinderen"
+        }
+      },
+      "childrenWants": {
+        "label": "Kinderwens",
+        "values": {
+          "no": "Nee",
+          "maybe": "Misschien",
+          "yes": "Ja"
+        }
+      },
+      "car": {
+        "label": "Auto",
+        "values": {
+          "no": "Geen auto",
+          "yes": "Heeft een auto"
+        }
+      }
     }
   },
   "about": {

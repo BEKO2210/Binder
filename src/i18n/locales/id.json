@@ -1135,6 +1135,113 @@
       "showMore": "Tampilkan lebih banyak",
       "showLess": "Tampilkan lebih sedikit",
       "noResults": "Tidak ada yang cocok dengan pencarian itu."
+    },
+    "attributes": {
+      "sectionTitle": "Lainnya tentang saya",
+      "notSet": "Tidak diisi",
+      "height": {
+        "label": "Tinggi badan",
+        "format": "{height} cm",
+        "increase": "Tambah tinggi",
+        "decrease": "Kurangi tinggi"
+      },
+      "zodiac": {
+        "label": "Zodiak",
+        "values": {
+          "aries": "Aries",
+          "taurus": "Taurus",
+          "gemini": "Gemini",
+          "cancer": "Cancer",
+          "leo": "Leo",
+          "virgo": "Virgo",
+          "libra": "Libra",
+          "scorpio": "Scorpio",
+          "sagittarius": "Sagitarius",
+          "capricorn": "Capricorn",
+          "aquarius": "Aquarius",
+          "pisces": "Pisces"
+        }
+      },
+      "smoking": {
+        "label": "Merokok",
+        "values": {
+          "never": "Tidak pernah",
+          "sometimes": "Kadang-kadang",
+          "regularly": "Rutin"
+        }
+      },
+      "drinking": {
+        "label": "Alkohol",
+        "values": {
+          "never": "Tidak pernah",
+          "sometimes": "Kadang-kadang",
+          "regularly": "Rutin"
+        }
+      },
+      "drugs": {
+        "label": "Narkoba",
+        "values": {
+          "never": "Tidak pernah",
+          "sometimes": "Kadang-kadang",
+          "regularly": "Rutin"
+        }
+      },
+      "activity": {
+        "label": "Olahraga",
+        "values": {
+          "rarely": "Jarang",
+          "sometimes": "Kadang-kadang",
+          "often": "Sering",
+          "daily": "Setiap hari"
+        }
+      },
+      "diet": {
+        "label": "Pola makan",
+        "values": {
+          "omnivore": "Makan semua",
+          "flexitarian": "Fleksitarian",
+          "pescetarian": "Peskatarian",
+          "vegetarian": "Vegetarian",
+          "vegan": "Vegan",
+          "halal": "Halal",
+          "kosher": "Kosher"
+        }
+      },
+      "spirituality": {
+        "label": "Keyakinan",
+        "values": {
+          "none": "Tidak religius",
+          "spiritual": "Spiritual",
+          "christian": "Kristen",
+          "muslim": "Muslim",
+          "jewish": "Yahudi",
+          "buddhist": "Buddha",
+          "hindu": "Hindu",
+          "other": "Lainnya"
+        }
+      },
+      "childrenHas": {
+        "label": "Anak",
+        "values": {
+          "no": "Belum punya anak",
+          "yes": "Punya anak"
+        }
+      },
+      "childrenWants": {
+        "label": "Keinginan punya anak",
+        "values": {
+          "no": "Tidak",
+          "maybe": "Mungkin",
+          "yes": "Ya"
+        }
+      },
+      "car": {
+        "label": "Mobil",
+        "values": {
+          "no": "Tidak punya mobil",
+          "yes": "Punya mobil"
+        }
+      }
     }
   },
   "about": {

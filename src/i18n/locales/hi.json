@@ -1135,6 +1135,113 @@
       "showMore": "और दिखाएँ",
       "showLess": "कम दिखाएँ",
       "noResults": "इस खोज से कुछ मेल नहीं खाता।"
+    },
+    "attributes": {
+      "sectionTitle": "मेरे बारे में और",
+      "notSet": "नहीं बताया",
+      "height": {
+        "label": "लंबाई",
+        "format": "{height} सेमी",
+        "increase": "लंबाई बढ़ाएँ",
+        "decrease": "लंबाई घटाएँ"
+      },
+      "zodiac": {
+        "label": "राशि",
+        "values": {
+          "aries": "मेष",
+          "taurus": "वृषभ",
+          "gemini": "मिथुन",
+          "cancer": "कर्क",
+          "leo": "सिंह",
+          "virgo": "कन्या",
+          "libra": "तुला",
+          "scorpio": "वृश्चिक",
+          "sagittarius": "धनु",
+          "capricorn": "मकर",
+          "aquarius": "कुंभ",
+          "pisces": "मीन"
+        }
+      },
+      "smoking": {
+        "label": "धूम्रपान",
+        "values": {
+          "never": "कभी नहीं",
+          "sometimes": "कभी-कभी",
+          "regularly": "नियमित"
+        }
+      },
+      "drinking": {
+        "label": "शराब",
+        "values": {
+          "never": "कभी नहीं",
+          "sometimes": "कभी-कभी",
+          "regularly": "नियमित"
+        }
+      },
+      "drugs": {
+        "label": "नशीले पदार्थ",
+        "values": {
+          "never": "कभी नहीं",
+          "sometimes": "कभी-कभी",
+          "regularly": "नियमित"
+        }
+      },
+      "activity": {
+        "label": "व्यायाम",
+        "values": {
+          "rarely": "कभी-कभार",
+          "sometimes": "कभी-कभी",
+          "often": "अक्सर",
+          "daily": "रोज़"
+        }
+      },
+      "diet": {
+        "label": "खान-पान",
+        "values": {
+          "omnivore": "सब कुछ खाते हैं",
+          "flexitarian": "फ्लेक्सिटेरियन",
+          "pescetarian": "पेस्केटेरियन",
+          "vegetarian": "शाकाहारी",
+          "vegan": "वीगन",
+          "halal": "हलाल",
+          "kosher": "कोशर"
+        }
+      },
+      "spirituality": {
+        "label": "आस्था",
+        "values": {
+          "none": "धार्मिक नहीं",
+          "spiritual": "आध्यात्मिक",
+          "christian": "ईसाई",
+          "muslim": "मुस्लिम",
+          "jewish": "यहूदी",
+          "buddhist": "बौद्ध",
+          "hindu": "हिंदू",
+          "other": "अन्य"
+        }
+      },
+      "childrenHas": {
+        "label": "बच्चे",
+        "values": {
+          "no": "कोई बच्चे नहीं",
+          "yes": "बच्चे हैं"
+        }
+      },
+      "childrenWants": {
+        "label": "बच्चों की चाह",
+        "values": {
+          "no": "नहीं",
+          "maybe": "शायद",
+          "yes": "हाँ"
+        }
+      },
+      "car": {
+        "label": "गाड़ी",
+        "values": {
+          "no": "गाड़ी नहीं है",
+          "yes": "गाड़ी है"
+        }
+      }
     }
   },
   "about": {

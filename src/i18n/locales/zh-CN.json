@@ -1135,6 +1135,113 @@
       "showMore": "显示更多",
       "showLess": "收起",
       "noResults": "没有符合该搜索的内容。"
+    },
+    "attributes": {
+      "sectionTitle": "更多关于我",
+      "notSet": "未填写",
+      "height": {
+        "label": "身高",
+        "format": "{height} 厘米",
+        "increase": "增加身高",
+        "decrease": "减少身高"
+      },
+      "zodiac": {
+        "label": "星座",
+        "values": {
+          "aries": "白羊座",
+          "taurus": "金牛座",
+          "gemini": "双子座",
+          "cancer": "巨蟹座",
+          "leo": "狮子座",
+          "virgo": "处女座",
+          "libra": "天秤座",
+          "scorpio": "天蝎座",
+          "sagittarius": "射手座",
+          "capricorn": "摩羯座",
+          "aquarius": "水瓶座",
+          "pisces": "双鱼座"
+        }
+      },
+      "smoking": {
+        "label": "吸烟",
+        "values": {
+          "never": "从不",
+          "sometimes": "偶尔",
+          "regularly": "经常"
+        }
+      },
+      "drinking": {
+        "label": "饮酒",
+        "values": {
+          "never": "从不",
+          "sometimes": "偶尔",
+          "regularly": "经常"
+        }
+      },
+      "drugs": {
+        "label": "毒品",
+        "values": {
+          "never": "从不",
+          "sometimes": "偶尔",
+          "regularly": "经常"
+        }
+      },
+      "activity": {
+        "label": "运动",
+        "values": {
+          "rarely": "很少",
+          "sometimes": "偶尔",
+          "often": "经常",
+          "daily": "每天"
+        }
+      },
+      "diet": {
+        "label": "饮食",
+        "values": {
+          "omnivore": "什么都吃",
+          "flexitarian": "弹性素食",
+          "pescetarian": "鱼素",
+          "vegetarian": "素食",
+          "vegan": "纯素",
+          "halal": "清真",
+          "kosher": "犹太洁食"
+        }
+      },
+      "spirituality": {
+        "label": "信仰",
+        "values": {
+          "none": "无宗教信仰",
+          "spiritual": "灵性",
+          "christian": "基督教",
+          "muslim": "伊斯兰教",
+          "jewish": "犹太教",
+          "buddhist": "佛教",
+          "hindu": "印度教",
+          "other": "其他"
+        }
+      },
+      "childrenHas": {
+        "label": "孩子",
+        "values": {
+          "no": "没有孩子",
+          "yes": "有孩子"
+        }
+      },
+      "childrenWants": {
+        "label": "生育意愿",
+        "values": {
+          "no": "不想",
+          "maybe": "也许",
+          "yes": "想"
+        }
+      },
+      "car": {
+        "label": "汽车",
+        "values": {
+          "no": "没有车",
+          "yes": "有车"
+        }
+      }
     }
   },
   "about": {

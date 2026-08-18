@@ -1135,6 +1135,113 @@
       "showMore": "Pokaż więcej",
       "showLess": "Pokaż mniej",
       "noResults": "Nic nie pasuje do tego wyszukiwania."
+    },
+    "attributes": {
+      "sectionTitle": "Więcej o mnie",
+      "notSet": "Nie podano",
+      "height": {
+        "label": "Wzrost",
+        "format": "{height} cm",
+        "increase": "Zwiększ wzrost",
+        "decrease": "Zmniejsz wzrost"
+      },
+      "zodiac": {
+        "label": "Znak zodiaku",
+        "values": {
+          "aries": "Baran",
+          "taurus": "Byk",
+          "gemini": "Bliźnięta",
+          "cancer": "Rak",
+          "leo": "Lew",
+          "virgo": "Panna",
+          "libra": "Waga",
+          "scorpio": "Skorpion",
+          "sagittarius": "Strzelec",
+          "capricorn": "Koziorożec",
+          "aquarius": "Wodnik",
+          "pisces": "Ryby"
+        }
+      },
+      "smoking": {
+        "label": "Palenie",
+        "values": {
+          "never": "Nigdy",
+          "sometimes": "Czasami",
+          "regularly": "Regularnie"
+        }
+      },
+      "drinking": {
+        "label": "Alkohol",
+        "values": {
+          "never": "Nigdy",
+          "sometimes": "Czasami",
+          "regularly": "Regularnie"
+        }
+      },
+      "drugs": {
+        "label": "Narkotyki",
+        "values": {
+          "never": "Nigdy",
+          "sometimes": "Czasami",
+          "regularly": "Regularnie"
+        }
+      },
+      "activity": {
+        "label": "Sport",
+        "values": {
+          "rarely": "Rzadko",
+          "sometimes": "Czasami",
+          "often": "Często",
+          "daily": "Codziennie"
+        }
+      },
+      "diet": {
+        "label": "Dieta",
+        "values": {
+          "omnivore": "Je wszystko",
+          "flexitarian": "Fleksitariańska",
+          "pescetarian": "Peskatariańska",
+          "vegetarian": "Wegetariańska",
+          "vegan": "Wegańska",
+          "halal": "Halal",
+          "kosher": "Koszerna"
+        }
+      },
+      "spirituality": {
+        "label": "Wyznanie",
+        "values": {
+          "none": "Niereligijny/a",
+          "spiritual": "Duchowy/a",
+          "christian": "Chrześcijaństwo",
+          "muslim": "Islam",
+          "jewish": "Judaizm",
+          "buddhist": "Buddyzm",
+          "hindu": "Hinduizm",
+          "other": "Inne"
+        }
+      },
+      "childrenHas": {
+        "label": "Dzieci",
+        "values": {
+          "no": "Brak dzieci",
+          "yes": "Ma dzieci"
+        }
+      },
+      "childrenWants": {
+        "label": "Chęć posiadania dzieci",
+        "values": {
+          "no": "Nie",
+          "maybe": "Może",
+          "yes": "Tak"
+        }
+      },
+      "car": {
+        "label": "Samochód",
+        "values": {
+          "no": "Brak samochodu",
+          "yes": "Ma samochód"
+        }
+      }
     }
   },
   "about": {

@@ -1135,6 +1135,113 @@
       "showMore": "더 보기",
       "showLess": "접기",
       "noResults": "검색과 일치하는 항목이 없습니다."
+    },
+    "attributes": {
+      "sectionTitle": "나에 대해 더",
+      "notSet": "미입력",
+      "height": {
+        "label": "키",
+        "format": "{height} cm",
+        "increase": "키 늘리기",
+        "decrease": "키 줄이기"
+      },
+      "zodiac": {
+        "label": "별자리",
+        "values": {
+          "aries": "양자리",
+          "taurus": "황소자리",
+          "gemini": "쌍둥이자리",
+          "cancer": "게자리",
+          "leo": "사자자리",
+          "virgo": "처녀자리",
+          "libra": "천칭자리",
+          "scorpio": "전갈자리",
+          "sagittarius": "궁수자리",
+          "capricorn": "염소자리",
+          "aquarius": "물병자리",
+          "pisces": "물고기자리"
+        }
+      },
+      "smoking": {
+        "label": "흡연",
+        "values": {
+          "never": "안 함",
+          "sometimes": "가끔",
+          "regularly": "자주"
+        }
+      },
+      "drinking": {
+        "label": "음주",
+        "values": {
+          "never": "안 함",
+          "sometimes": "가끔",
+          "regularly": "자주"
+        }
+      },
+      "drugs": {
+        "label": "약물",
+        "values": {
+          "never": "안 함",
+          "sometimes": "가끔",
+          "regularly": "자주"
+        }
+      },
+      "activity": {
+        "label": "운동",
+        "values": {
+          "rarely": "거의 안 함",
+          "sometimes": "가끔",
+          "often": "자주",
+          "daily": "매일"
+        }
+      },
+      "diet": {
+        "label": "식습관",
+        "values": {
+          "omnivore": "다 먹어요",
+          "flexitarian": "플렉시테리언",
+          "pescetarian": "페스코 채식",
+          "vegetarian": "채식",
+          "vegan": "비건",
+          "halal": "할랄",
+          "kosher": "코셔"
+        }
+      },
+      "spirituality": {
+        "label": "종교",
+        "values": {
+          "none": "무교",
+          "spiritual": "영적인 편",
+          "christian": "기독교",
+          "muslim": "이슬람교",
+          "jewish": "유대교",
+          "buddhist": "불교",
+          "hindu": "힌두교",
+          "other": "기타"
+        }
+      },
+      "childrenHas": {
+        "label": "자녀",
+        "values": {
+          "no": "자녀 없음",
+          "yes": "자녀 있음"
+        }
+      },
+      "childrenWants": {
+        "label": "자녀 계획",
+        "values": {
+          "no": "아니요",
+          "maybe": "아마도",
+          "yes": "네"
+        }
+      },
+      "car": {
+        "label": "자동차",
+        "values": {
+          "no": "차 없음",
+          "yes": "차 있음"
+        }
+      }
     }
   },
   "about": {

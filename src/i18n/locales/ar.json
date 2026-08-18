@@ -1135,6 +1135,113 @@
       "showMore": "عرض المزيد",
       "showLess": "عرض أقل",
       "noResults": "لا شيء يطابق هذا البحث."
+    },
+    "attributes": {
+      "sectionTitle": "المزيد عني",
+      "notSet": "غير محدد",
+      "height": {
+        "label": "الطول",
+        "format": "{height} سم",
+        "increase": "زيادة الطول",
+        "decrease": "تقليل الطول"
+      },
+      "zodiac": {
+        "label": "البرج",
+        "values": {
+          "aries": "الحمل",
+          "taurus": "الثور",
+          "gemini": "الجوزاء",
+          "cancer": "السرطان",
+          "leo": "الأسد",
+          "virgo": "العذراء",
+          "libra": "الميزان",
+          "scorpio": "العقرب",
+          "sagittarius": "القوس",
+          "capricorn": "الجدي",
+          "aquarius": "الدلو",
+          "pisces": "الحوت"
+        }
+      },
+      "smoking": {
+        "label": "التدخين",
+        "values": {
+          "never": "أبدًا",
+          "sometimes": "أحيانًا",
+          "regularly": "بانتظام"
+        }
+      },
+      "drinking": {
+        "label": "الكحول",
+        "values": {
+          "never": "أبدًا",
+          "sometimes": "أحيانًا",
+          "regularly": "بانتظام"
+        }
+      },
+      "drugs": {
+        "label": "المخدرات",
+        "values": {
+          "never": "أبدًا",
+          "sometimes": "أحيانًا",
+          "regularly": "بانتظام"
+        }
+      },
+      "activity": {
+        "label": "الرياضة",
+        "values": {
+          "rarely": "نادرًا",
+          "sometimes": "أحيانًا",
+          "often": "كثيرًا",
+          "daily": "يوميًا"
+        }
+      },
+      "diet": {
+        "label": "النظام الغذائي",
+        "values": {
+          "omnivore": "يأكل كل شيء",
+          "flexitarian": "فليكسيتاري",
+          "pescetarian": "بيسكاتاري",
+          "vegetarian": "نباتي",
+          "vegan": "نباتي صرف",
+          "halal": "حلال",
+          "kosher": "كوشر"
+        }
+      },
+      "spirituality": {
+        "label": "المعتقد",
+        "values": {
+          "none": "غير متدين",
+          "spiritual": "روحاني",
+          "christian": "مسيحي",
+          "muslim": "مسلم",
+          "jewish": "يهودي",
+          "buddhist": "بوذي",
+          "hindu": "هندوسي",
+          "other": "أخرى"
+        }
+      },
+      "childrenHas": {
+        "label": "الأطفال",
+        "values": {
+          "no": "بلا أطفال",
+          "yes": "لديه أطفال"
+        }
+      },
+      "childrenWants": {
+        "label": "الرغبة في الإنجاب",
+        "values": {
+          "no": "لا",
+          "maybe": "ربما",
+          "yes": "نعم"
+        }
+      },
+      "car": {
+        "label": "السيارة",
+        "values": {
+          "no": "بلا سيارة",
+          "yes": "لديه سيارة"
+        }
+      }
     }
   },
   "about": {

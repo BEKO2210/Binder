@@ -1,4 +1,5 @@
 import { signedProfileImageUrl } from './media';
+import { rowsFromProfile, type ProfileAttributes } from './profileAttributes';
 import { supabase } from './supabase';
 
 export type PartnerProfile = {
@@ -9,6 +10,9 @@ export type PartnerProfile = {
   interests: string[];
   distanceKm: number | null;
   photoUrls: string[];
+  attributes: ProfileAttributes;
+  // Computed by the server from the birth date; never stored, so it cannot lie.
+  zodiac: string | null;
 };
 
 type PublicProfileRow = {
@@ -18,6 +22,17 @@ type PublicProfileRow = {
   bio: string;
   gender: string;
   interests: string[];
+  height_cm: number | null;
+  zodiac: string | null;
+  smoking: string | null;
+  drinking: string | null;
+  drugs: string | null;
+  activity: string | null;
+  diet: string | null;
+  spirituality: string | null;
+  children_has: string | null;
+  children_wants: string | null;
+  car: string | null;
 };
 
 // Everything here rides on the server's visibility rules: get_public_profile
@@ -56,5 +71,7 @@ export async function fetchPartnerProfile(userId: string): Promise<PartnerProfil
     interests: row.interests ?? [],
     distanceKm: distanceResult.error ? null : (distanceResult.data as number | null),
     photoUrls,
+    attributes: rowsFromProfile(row),
+    zodiac: row.zodiac,
   };
 }

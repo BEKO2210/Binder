@@ -16,6 +16,8 @@ import { classifyError } from '../lib/reliability';
 import { supabase } from '../lib/supabase';
 import { GENDERS, type Gender } from '../lib/validation';
 import { InterestPicker } from '../components/InterestPicker';
+import { AttributeEditor } from '../components/AttributeEditor';
+import { attributesPayload, EMPTY_ATTRIBUTES, rowsFromProfile, type ProfileAttributes } from '../lib/profileAttributes';
 import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
@@ -36,6 +38,10 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
   const [maxAge, setMaxAge] = useState(45);
   const [distance, setDistance] = useState(50);
   const [media, setMedia] = useState<GalleryMedia[]>([]);
+  const [attributes, setAttributes] = useState<ProfileAttributes>(EMPTY_ATTRIBUTES);
+  // The delta baseline: what the server currently holds. Sending only what
+  // changed means this screen can never wipe an attribute it never touched.
+  const [savedAttributes, setSavedAttributes] = useState<ProfileAttributes>(EMPTY_ATTRIBUTES);
   const [upload, setUpload] = useState<{ phase: 'preparing' | 'uploading' | 'error'; image: PreparedImage | null; error?: string } | null>(null);
   const uploadLockedRef = useRef(false);
   const [profileErrors, setProfileErrors] = useState<ReturnType<typeof validateIdentity>>({ firstName: undefined, gender: undefined });
@@ -54,7 +60,7 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
     setMessage('');
     try {
       const [profile, preferences, gallery] = await Promise.all([
-        supabase.from('profiles').select('first_name,bio,gender,interests').eq('user_id', userId).single(),
+        supabase.from('profiles').select('first_name,bio,gender,interests,height_cm,smoking,drinking,drugs,activity,diet,spirituality,children_has,children_wants,car').eq('user_id', userId).single(),
         supabase.from('user_preferences').select('interested_in,min_age,max_age,max_distance_km').eq('user_id', userId).single(),
         listMyProfileMedia(),
       ]);
@@ -64,6 +70,9 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
       setBio(profile.data.bio);
       setGender(profile.data.gender as Gender);
       setInterests(profile.data.interests);
+      const loadedAttributes = rowsFromProfile(profile.data);
+      setAttributes(loadedAttributes);
+      setSavedAttributes(loadedAttributes);
       setInterestedIn(preferences.data.interested_in as Gender[]);
       setMinAge(preferences.data.min_age);
       setMaxAge(preferences.data.max_age);
@@ -210,8 +219,10 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
     const min = minAge; const max = maxAge; const maxDistance = distance;
     setBusy(true); setMessage('');
     try {
-      const { error } = await supabase.rpc('update_my_profile', { p_first_name: firstName.trim(), p_gender: gender, p_bio: bio.trim(), p_interests: interests, p_interested_in: interestedIn, p_min_age: min, p_max_age: max, p_max_distance_km: maxDistance });
+      const attributeDelta = attributesPayload(savedAttributes, attributes);
+      const { error } = await supabase.rpc('update_my_profile', { p_first_name: firstName.trim(), p_gender: gender, p_bio: bio.trim(), p_interests: interests, p_interested_in: interestedIn, p_min_age: min, p_max_age: max, p_max_distance_km: maxDistance, ...(attributeDelta ? { p_attributes: attributeDelta } : {}) });
       if (error) throw error;
+      setSavedAttributes(attributes);
       await haptic('selection');
       setMessageKind('success'); setMessage(t('profileSettings.messages.saved'));
     } catch (error) { setMessageKind('error'); setMessage(errorMessage(error, t('profileSettings.errors.save'))); }
@@ -268,6 +279,9 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
         <BinderInput label={t('profileSettings.fields.bio')} helper={t('profileSettings.fields.bioCount', { count: bio.length })} value={bio} onChangeText={setBio} maxLength={500} multiline style={{ minHeight: theme.layout.multilineInputHeight, textAlignVertical: 'top' }} />
         <Choice label={t('profileSettings.fields.gender')} error={profileErrors.gender}><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{GENDERS.map((item) => <BinderChip key={item.value} label={t(item.labelKey)} selected={gender === item.value} onPress={() => { setGender(item.value); setProfileErrors(validateIdentity(firstName, item.value)); }} />)}</View></Choice>
         <InterestPicker selection={interests} onChange={(next) => setInterests([...next])} />
+      </BinderCard>
+      <BinderCard style={{ marginTop: theme.spacing.x5 }}>
+        <AttributeEditor value={attributes} onChange={setAttributes} />
       </BinderCard>
       <BinderCard style={{ marginTop: theme.spacing.x5 }}><View><BinderText variant="micro" tone="muted">{t('profileSettings.discovery.eyebrow')}</BinderText><BinderText variant="title" style={{ marginTop: theme.spacing.x2 }}>{t('profileSettings.discovery.title')}</BinderText><BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2, marginBottom: theme.spacing.x6 }}>{t('profileSettings.discovery.copy')}</BinderText></View>
           <DiscoveryPreferences interestedIn={interestedIn} minAge={minAge} maxAge={maxAge} distance={distance} errors={discoveryErrors} onChange={(next) => { setInterestedIn(next.interestedIn); setMinAge(next.minAge); setMaxAge(next.maxAge); setDistance(next.distance); setDiscoveryErrors(validateDiscovery(next.interestedIn, next.minAge, next.maxAge, next.distance)); }} />

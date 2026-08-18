@@ -1135,6 +1135,113 @@
       "showMore": "Mostrar mais",
       "showLess": "Mostrar menos",
       "noResults": "Nada corresponde a essa busca."
+    },
+    "attributes": {
+      "sectionTitle": "Mais sobre mim",
+      "notSet": "Não informado",
+      "height": {
+        "label": "Altura",
+        "format": "{height} cm",
+        "increase": "Aumentar altura",
+        "decrease": "Diminuir altura"
+      },
+      "zodiac": {
+        "label": "Signo",
+        "values": {
+          "aries": "Áries",
+          "taurus": "Touro",
+          "gemini": "Gêmeos",
+          "cancer": "Câncer",
+          "leo": "Leão",
+          "virgo": "Virgem",
+          "libra": "Libra",
+          "scorpio": "Escorpião",
+          "sagittarius": "Sagitário",
+          "capricorn": "Capricórnio",
+          "aquarius": "Aquário",
+          "pisces": "Peixes"
+        }
+      },
+      "smoking": {
+        "label": "Fumo",
+        "values": {
+          "never": "Nunca",
+          "sometimes": "Às vezes",
+          "regularly": "Com frequência"
+        }
+      },
+      "drinking": {
+        "label": "Álcool",
+        "values": {
+          "never": "Nunca",
+          "sometimes": "Às vezes",
+          "regularly": "Com frequência"
+        }
+      },
+      "drugs": {
+        "label": "Drogas",
+        "values": {
+          "never": "Nunca",
+          "sometimes": "Às vezes",
+          "regularly": "Com frequência"
+        }
+      },
+      "activity": {
+        "label": "Exercício",
+        "values": {
+          "rarely": "Raramente",
+          "sometimes": "Às vezes",
+          "often": "Frequentemente",
+          "daily": "Todos os dias"
+        }
+      },
+      "diet": {
+        "label": "Alimentação",
+        "values": {
+          "omnivore": "Come de tudo",
+          "flexitarian": "Flexitariano",
+          "pescetarian": "Pescetariano",
+          "vegetarian": "Vegetariano",
+          "vegan": "Vegano",
+          "halal": "Halal",
+          "kosher": "Kosher"
+        }
+      },
+      "spirituality": {
+        "label": "Crenças",
+        "values": {
+          "none": "Não religioso",
+          "spiritual": "Espiritual",
+          "christian": "Cristão",
+          "muslim": "Muçulmano",
+          "jewish": "Judeu",
+          "buddhist": "Budista",
+          "hindu": "Hindu",
+          "other": "Outra"
+        }
+      },
+      "childrenHas": {
+        "label": "Filhos",
+        "values": {
+          "no": "Sem filhos",
+          "yes": "Tem filhos"
+        }
+      },
+      "childrenWants": {
+        "label": "Desejo de ter filhos",
+        "values": {
+          "no": "Não",
+          "maybe": "Talvez",
+          "yes": "Sim"
+        }
+      },
+      "car": {
+        "label": "Carro",
+        "values": {
+          "no": "Sem carro",
+          "yes": "Tem carro"
+        }
+      }
     }
   },
   "about": {

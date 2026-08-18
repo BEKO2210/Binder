@@ -1135,6 +1135,113 @@
       "showMore": "Daha fazla göster",
       "showLess": "Daha az göster",
       "noResults": "Bu aramayla eşleşen bir şey yok."
+    },
+    "attributes": {
+      "sectionTitle": "Hakkımda daha fazla",
+      "notSet": "Belirtilmemiş",
+      "height": {
+        "label": "Boy",
+        "format": "{height} cm",
+        "increase": "Boyu artır",
+        "decrease": "Boyu azalt"
+      },
+      "zodiac": {
+        "label": "Burç",
+        "values": {
+          "aries": "Koç",
+          "taurus": "Boğa",
+          "gemini": "İkizler",
+          "cancer": "Yengeç",
+          "leo": "Aslan",
+          "virgo": "Başak",
+          "libra": "Terazi",
+          "scorpio": "Akrep",
+          "sagittarius": "Yay",
+          "capricorn": "Oğlak",
+          "aquarius": "Kova",
+          "pisces": "Balık"
+        }
+      },
+      "smoking": {
+        "label": "Sigara",
+        "values": {
+          "never": "Hiç",
+          "sometimes": "Bazen",
+          "regularly": "Düzenli"
+        }
+      },
+      "drinking": {
+        "label": "Alkol",
+        "values": {
+          "never": "Hiç",
+          "sometimes": "Bazen",
+          "regularly": "Düzenli"
+        }
+      },
+      "drugs": {
+        "label": "Uyuşturucu",
+        "values": {
+          "never": "Hiç",
+          "sometimes": "Bazen",
+          "regularly": "Düzenli"
+        }
+      },
+      "activity": {
+        "label": "Spor",
+        "values": {
+          "rarely": "Nadiren",
+          "sometimes": "Bazen",
+          "often": "Sık sık",
+          "daily": "Her gün"
+        }
+      },
+      "diet": {
+        "label": "Beslenme",
+        "values": {
+          "omnivore": "Her şeyi yer",
+          "flexitarian": "Fleksitaryen",
+          "pescetarian": "Pesketaryen",
+          "vegetarian": "Vejetaryen",
+          "vegan": "Vegan",
+          "halal": "Helal",
+          "kosher": "Koşer"
+        }
+      },
+      "spirituality": {
+        "label": "İnanç",
+        "values": {
+          "none": "Dindar değil",
+          "spiritual": "Spiritüel",
+          "christian": "Hristiyan",
+          "muslim": "Müslüman",
+          "jewish": "Yahudi",
+          "buddhist": "Budist",
+          "hindu": "Hindu",
+          "other": "Diğer"
+        }
+      },
+      "childrenHas": {
+        "label": "Çocuk",
+        "values": {
+          "no": "Çocuğu yok",
+          "yes": "Çocuğu var"
+        }
+      },
+      "childrenWants": {
+        "label": "Çocuk isteği",
+        "values": {
+          "no": "Hayır",
+          "maybe": "Belki",
+          "yes": "Evet"
+        }
+      },
+      "car": {
+        "label": "Araba",
+        "values": {
+          "no": "Arabası yok",
+          "yes": "Arabası var"
+        }
+      }
     }
   },
   "about": {

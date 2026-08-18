@@ -1135,6 +1135,113 @@
       "showMore": "もっと見る",
       "showLess": "表示を減らす",
       "noResults": "この検索に一致するものはありません。"
+    },
+    "attributes": {
+      "sectionTitle": "もっと詳しく",
+      "notSet": "未設定",
+      "height": {
+        "label": "身長",
+        "format": "{height} cm",
+        "increase": "身長を増やす",
+        "decrease": "身長を減らす"
+      },
+      "zodiac": {
+        "label": "星座",
+        "values": {
+          "aries": "おひつじ座",
+          "taurus": "おうし座",
+          "gemini": "ふたご座",
+          "cancer": "かに座",
+          "leo": "しし座",
+          "virgo": "おとめ座",
+          "libra": "てんびん座",
+          "scorpio": "さそり座",
+          "sagittarius": "いて座",
+          "capricorn": "やぎ座",
+          "aquarius": "みずがめ座",
+          "pisces": "うお座"
+        }
+      },
+      "smoking": {
+        "label": "喫煙",
+        "values": {
+          "never": "しない",
+          "sometimes": "ときどき",
+          "regularly": "習慣的に"
+        }
+      },
+      "drinking": {
+        "label": "飲酒",
+        "values": {
+          "never": "しない",
+          "sometimes": "ときどき",
+          "regularly": "習慣的に"
+        }
+      },
+      "drugs": {
+        "label": "ドラッグ",
+        "values": {
+          "never": "しない",
+          "sometimes": "ときどき",
+          "regularly": "習慣的に"
+        }
+      },
+      "activity": {
+        "label": "運動",
+        "values": {
+          "rarely": "ほとんどしない",
+          "sometimes": "ときどき",
+          "often": "よくする",
+          "daily": "毎日"
+        }
+      },
+      "diet": {
+        "label": "食生活",
+        "values": {
+          "omnivore": "何でも食べる",
+          "flexitarian": "フレキシタリアン",
+          "pescetarian": "ペスカタリアン",
+          "vegetarian": "ベジタリアン",
+          "vegan": "ヴィーガン",
+          "halal": "ハラール",
+          "kosher": "コーシャ"
+        }
+      },
+      "spirituality": {
+        "label": "宗教観",
+        "values": {
+          "none": "無宗教",
+          "spiritual": "スピリチュアル",
+          "christian": "キリスト教",
+          "muslim": "イスラム教",
+          "jewish": "ユダヤ教",
+          "buddhist": "仏教",
+          "hindu": "ヒンドゥー教",
+          "other": "その他"
+        }
+      },
+      "childrenHas": {
+        "label": "子ども",
+        "values": {
+          "no": "子どもなし",
+          "yes": "子どもあり"
+        }
+      },
+      "childrenWants": {
+        "label": "子どもの希望",
+        "values": {
+          "no": "いいえ",
+          "maybe": "たぶん",
+          "yes": "はい"
+        }
+      },
+      "car": {
+        "label": "車",
+        "values": {
+          "no": "車なし",
+          "yes": "車あり"
+        }
+      }
     }
   },
   "about": {

@@ -299,6 +299,16 @@ export type Database = {
       }
       profiles: {
         Row: {
+          activity: string | null
+          car: string | null
+          children_has: string | null
+          children_wants: string | null
+          diet: string | null
+          drinking: string | null
+          drugs: string | null
+          height_cm: number | null
+          smoking: string | null
+          spirituality: string | null
           bio: string
           created_at: string
           first_name: string
@@ -309,6 +319,16 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          activity?: string | null
+          car?: string | null
+          children_has?: string | null
+          children_wants?: string | null
+          diet?: string | null
+          drinking?: string | null
+          drugs?: string | null
+          height_cm?: number | null
+          smoking?: string | null
+          spirituality?: string | null
           bio?: string
           created_at?: string
           first_name: string
@@ -319,6 +339,16 @@ export type Database = {
           user_id: string
         }
         Update: {
+          activity?: string | null
+          car?: string | null
+          children_has?: string | null
+          children_wants?: string | null
+          diet?: string | null
+          drinking?: string | null
+          drugs?: string | null
+          height_cm?: number | null
+          smoking?: string | null
+          spirituality?: string | null
           bio?: string
           created_at?: string
           first_name?: string
@@ -422,6 +452,7 @@ export type Database = {
       }
       complete_my_onboarding: {
         Args: {
+          p_attributes?: Json | null
           p_bio: string
           p_birth_date: string
           p_first_name: string
@@ -530,12 +561,23 @@ export type Database = {
       get_public_profile: {
         Args: { target_user_id: string }
         Returns: {
+          activity: string | null
           age: number
           bio: string
+          car: string | null
+          children_has: string | null
+          children_wants: string | null
+          diet: string | null
+          drinking: string | null
+          drugs: string | null
           first_name: string
           gender: string
+          height_cm: number | null
           interests: string[]
+          smoking: string | null
+          spirituality: string | null
           user_id: string
+          zodiac: string | null
         }[]
       }
       mark_match_read: { Args: { p_match_id: string }; Returns: undefined }
@@ -624,6 +666,7 @@ export type Database = {
       unregister_push_installation: { Args: { p_installation_id: string }; Returns: undefined }
       update_my_profile: {
         Args: {
+          p_attributes?: Json | null
           p_bio: string
           p_first_name: string
           p_gender: string
