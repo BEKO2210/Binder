@@ -170,7 +170,8 @@
       "openConversation": "{name} ile konuşmayı aç",
       "unreadOne": "{count} okunmamış mesaj",
       "unreadOther": "{count} okunmamış mesaj"
-    }
+    },
+    "voiceMessage": "Sesli mesaj"
   },
   "menu": {
     "header": {
@@ -369,6 +370,22 @@
       "messagePerson": "{name} kişisine mesaj gönder",
       "sendingMessage": "Mesaj gönderiliyor",
       "sendMessageTo": "{name} kişisine mesaj gönder"
+    },
+    "voice": {
+      "recording": "Kayıt {time}",
+      "preparing": "Hazırlanıyor…",
+      "pending": "Sesli mesaj · {time}",
+      "uploading": "Sesli mesaj gönderiliyor…",
+      "loadFailed": "Yüklenemedi",
+      "permissionTitle": "Mikrofon gerekli",
+      "permissionBody": "Sesli mesaj kaydetmek için sistem ayarlarından mikrofona izin ver.",
+      "accessibility": {
+        "record": "Sesli mesaj kaydet",
+        "finish": "Sesli mesajı gönder",
+        "discard": "Kaydı sil",
+        "play": "Sesli mesajı oynat",
+        "pause": "Sesli mesajı duraklat"
+      }
     }
   },
   "profile": {

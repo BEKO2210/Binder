@@ -170,7 +170,8 @@
       "openConversation": "{name}との会話を開く",
       "unreadOne": "未読メッセージ {count}件",
       "unreadOther": "未読メッセージ {count}件"
-    }
+    },
+    "voiceMessage": "ボイスメッセージ"
   },
   "menu": {
     "header": {
@@ -369,6 +370,22 @@
       "messagePerson": "{name}にメッセージ",
       "sendingMessage": "メッセージを送信中",
       "sendMessageTo": "{name}にメッセージを送信"
+    },
+    "voice": {
+      "recording": "録音中 {time}",
+      "preparing": "準備中…",
+      "pending": "ボイスメッセージ · {time}",
+      "uploading": "ボイスメッセージを送信中…",
+      "loadFailed": "読み込めませんでした",
+      "permissionTitle": "マイクが必要です",
+      "permissionBody": "ボイスメッセージを録音するには、システム設定でマイクを許可してください。",
+      "accessibility": {
+        "record": "ボイスメッセージを録音",
+        "finish": "ボイスメッセージを送信",
+        "discard": "録音を破棄",
+        "play": "ボイスメッセージを再生",
+        "pause": "ボイスメッセージを一時停止"
+      }
     }
   },
   "profile": {

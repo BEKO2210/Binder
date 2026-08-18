@@ -170,7 +170,8 @@
       "openConversation": "Open conversation with {name}",
       "unreadOne": "{count} unread message",
       "unreadOther": "{count} unread messages"
-    }
+    },
+    "voiceMessage": "Voice message"
   },
   "menu": {
     "header": {
@@ -369,6 +370,22 @@
       "messagePerson": "Message {name}",
       "sendingMessage": "Sending message",
       "sendMessageTo": "Send message to {name}"
+    },
+    "voice": {
+      "recording": "Recording {time}",
+      "preparing": "Getting ready…",
+      "pending": "Voice message · {time}",
+      "uploading": "Sending voice message…",
+      "loadFailed": "Could not load",
+      "permissionTitle": "Microphone needed",
+      "permissionBody": "Allow the microphone in the system settings to record voice messages.",
+      "accessibility": {
+        "record": "Record a voice message",
+        "finish": "Send voice message",
+        "discard": "Discard recording",
+        "play": "Play voice message",
+        "pause": "Pause voice message"
+      }
     }
   },
   "profile": {

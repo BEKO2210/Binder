@@ -170,7 +170,8 @@
       "openConversation": "Buka percakapan dengan {name}",
       "unreadOne": "{count} pesan belum dibaca",
       "unreadOther": "{count} pesan belum dibaca"
-    }
+    },
+    "voiceMessage": "Pesan suara"
   },
   "menu": {
     "header": {
@@ -369,6 +370,22 @@
       "messagePerson": "Kirim pesan kepada {name}",
       "sendingMessage": "Mengirim pesan",
       "sendMessageTo": "Kirim pesan kepada {name}"
+    },
+    "voice": {
+      "recording": "Merekam {time}",
+      "preparing": "Menyiapkan…",
+      "pending": "Pesan suara · {time}",
+      "uploading": "Mengirim pesan suara…",
+      "loadFailed": "Gagal memuat",
+      "permissionTitle": "Perlu mikrofon",
+      "permissionBody": "Izinkan mikrofon di pengaturan sistem untuk merekam pesan suara.",
+      "accessibility": {
+        "record": "Rekam pesan suara",
+        "finish": "Kirim pesan suara",
+        "discard": "Buang rekaman",
+        "play": "Putar pesan suara",
+        "pause": "Jeda pesan suara"
+      }
     }
   },
   "profile": {

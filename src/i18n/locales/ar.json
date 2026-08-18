@@ -170,7 +170,8 @@
       "openConversation": "فتح المحادثة مع {name}",
       "unreadOne": "الرسائل غير المقروءة: {count}",
       "unreadOther": "الرسائل غير المقروءة: {count}"
-    }
+    },
+    "voiceMessage": "رسالة صوتية"
   },
   "menu": {
     "header": {
@@ -369,6 +370,22 @@
       "messagePerson": "إرسال رسالة إلى {name}",
       "sendingMessage": "جارٍ إرسال الرسالة",
       "sendMessageTo": "إرسال رسالة إلى {name}"
+    },
+    "voice": {
+      "recording": "جارٍ التسجيل {time}",
+      "preparing": "جارٍ التحضير…",
+      "pending": "رسالة صوتية · {time}",
+      "uploading": "جارٍ إرسال الرسالة الصوتية…",
+      "loadFailed": "تعذر التحميل",
+      "permissionTitle": "الميكروفون مطلوب",
+      "permissionBody": "اسمح بالميكروفون في إعدادات النظام لتسجيل الرسائل الصوتية.",
+      "accessibility": {
+        "record": "تسجيل رسالة صوتية",
+        "finish": "إرسال الرسالة الصوتية",
+        "discard": "حذف التسجيل",
+        "play": "تشغيل الرسالة الصوتية",
+        "pause": "إيقاف الرسالة الصوتية مؤقتًا"
+      }
     }
   },
   "profile": {

@@ -4,7 +4,10 @@ import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller
 import Animated, { FadeInDown, FadeInUp, FadeOutDown, useAnimatedStyle } from 'react-native-reanimated';
 
 import { buildChatTimeline, type TimelineItem } from '../lib/chatTimeline';
+import { VoiceMessageBubble } from '../components/VoiceMessageBubble';
+import { VoiceRecorderBar } from '../components/VoiceRecorderBar';
 import { formatCount, formatTime } from '../lib/format';
+import { formatVoiceDuration } from '../lib/voiceMessage';
 import { announce } from '../lib/announce';
 import { confirmDestructive } from '../lib/confirmDestructive';
 import { composerBody } from '../lib/conversationPresentation';
@@ -14,6 +17,8 @@ import { classifyError, isAbortError, isConversationEndedError, withRetry, type 
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import { MotionPressable as Pressable } from '../components/ui';
 import {
+  sendVoiceMessage,
+  uploadVoiceRecording,
   blockUser,
   createClientMessageId,
   fetchMessagesPage,
@@ -40,7 +45,7 @@ const REPORT_REASONS: { value: ReportReason; labelKey: string }[] = [
   { value: 'other', labelKey: 'chat.safety.reasons.other' },
 ];
 
-type LocalAttempt = { clientId: string; body: string; status: 'sending' | 'failed'; error?: ReliabilityError };
+type LocalAttempt = { clientId: string; body: string; voice?: { audioPath: string; durationMs: number }; status: 'sending' | 'failed'; error?: ReliabilityError };
 type SafetyMode = 'menu' | 'report';
 
 type MessageRowProps = {
@@ -48,6 +53,7 @@ type MessageRowProps = {
   label?: string;
   messageId?: string;
   body?: string;
+  voice?: { audioPath: string; durationMs: number } | null;
   createdAt?: string;
   mine?: boolean;
   groupedWithPrevious?: boolean;
@@ -57,7 +63,7 @@ type MessageRowProps = {
   onOpenActions: (messageId: string, body: string, mine: boolean, longPress: boolean) => void;
 };
 
-const ChatMessageRow = memo(function ChatMessageRow({ type, label, messageId, body, createdAt, mine = false, groupedWithPrevious = false, endsGroup = false, showsTimestamp = false, index, onOpenActions }: MessageRowProps) {
+const ChatMessageRow = memo(function ChatMessageRow({ type, label, messageId, body, voice, createdAt, mine = false, groupedWithPrevious = false, endsGroup = false, showsTimestamp = false, index, onOpenActions }: MessageRowProps) {
   const { theme, reduceMotion, locale, t } = useBinderTheme();
   const longPressHandled = useRef(false);
   if (type === 'day') {
@@ -99,7 +105,9 @@ const ChatMessageRow = memo(function ChatMessageRow({ type, label, messageId, bo
           borderWidth: mine ? 0 : 1,
           borderColor: theme.colors.borderSubtle,
         }}>
-          <BinderText variant="body" style={{ color: mine ? theme.accent.foreground : theme.colors.textPrimary }}>{body}</BinderText>
+          {voice
+            ? <VoiceMessageBubble messageId={messageId} audioPath={voice.audioPath} durationMs={voice.durationMs} mine={mine} />
+            : <BinderText variant="body" style={{ color: mine ? theme.accent.foreground : theme.colors.textPrimary }}>{body}</BinderText>}
         </View>
         {showsTimestamp ? (
           <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1, alignSelf: mine ? 'flex-end' : 'flex-start', marginHorizontal: theme.spacing.x2 }}>
@@ -137,6 +145,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   // a new message after a failure silently discarded the failed one — the text
   // the user had typed, and the only way to retry it, both disappeared.
   const [attempts, setAttempts] = useState<LocalAttempt[]>([]);
+  const [recordingVoice, setRecordingVoice] = useState(false);
   const [safetyBusy, setSafetyBusy] = useState<null | 'unmatch' | 'block'>(null);
   const [showNewMessage, setShowNewMessage] = useState(false);
   const listRef = useRef<FlatList<TimelineItem<Message>>>(null);
@@ -371,6 +380,51 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     } finally { if (mountedRef.current) setSending(false); }
   }
 
+  async function submitVoice(localUri: string, durationMs: number) {
+    setRecordingVoice(false);
+    const clientId = createClientMessageId();
+    setAttempts((current) => [...current, { clientId, body: '', status: 'sending' as const }]);
+    setSending(true);
+    try {
+      const audioPath = await uploadVoiceRecording(match.matchId, currentUserId, localUri, { signal: lifecycleControllerRef.current.signal });
+      setAttempts((current) => current.map((attempt) => attempt.clientId === clientId ? { ...attempt, voice: { audioPath, durationMs } } : attempt));
+      const confirmed = await sendVoiceMessage(match.matchId, clientId, audioPath, durationMs, { signal: lifecycleControllerRef.current.signal });
+      if (!mountedRef.current) return;
+      mergeMessage(confirmed);
+      discardAttempt(clientId);
+      listRef.current?.scrollToOffset({ offset: 0, animated: !reduceMotion });
+      announce(t('chat.accessibility.messageSent'));
+      await haptic('selection');
+    } catch (nextError) {
+      if (mountedRef.current && !isAbortError(nextError)) {
+        announce(t('chat.accessibility.messageFailed'));
+        if (isConversationEndedError(nextError)) { setConversationEnded(true); discardAttempt(clientId); return; }
+        const failure = classifyError(nextError);
+        if (failure.kind === 'permission-denied') { discardAttempt(clientId); onSessionExpired(); return; }
+        setAttempts((current) => current.map((attempt) => attempt.clientId === clientId ? { ...attempt, status: 'failed' as const, error: failure } : attempt));
+      }
+    } finally { if (mountedRef.current) setSending(false); }
+  }
+
+  async function retryVoice(attempt: LocalAttempt) {
+    if (!attempt.voice || sending) return;
+    setSending(true);
+    setAttempts((current) => current.map((entry) => entry.clientId === attempt.clientId ? { ...entry, status: 'sending' as const } : entry));
+    try {
+      // The object is already uploaded; the same client id and path converge
+      // on the one message the first try meant.
+      const confirmed = await sendVoiceMessage(match.matchId, attempt.clientId, attempt.voice.audioPath, attempt.voice.durationMs, { signal: lifecycleControllerRef.current.signal });
+      if (!mountedRef.current) return;
+      mergeMessage(confirmed);
+      discardAttempt(attempt.clientId);
+    } catch (nextError) {
+      if (mountedRef.current && !isAbortError(nextError)) {
+        const failure = classifyError(nextError);
+        setAttempts((current) => current.map((entry) => entry.clientId === attempt.clientId ? { ...entry, status: 'failed' as const, error: failure } : entry));
+      }
+    } finally { if (mountedRef.current) setSending(false); }
+  }
+
   const openMessageActions = useCallback((messageId: string, body: string, mine: boolean, longPress: boolean) => {
     if (longPress) void haptic('selection');
     const actions = [
@@ -384,7 +438,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   const renderTimelineItem = useCallback(({ item, index }: { item: TimelineItem<Message>; index: number }) => {
     if (item.type === 'day') return <ChatMessageRow type="day" label={item.label} index={index} onOpenActions={openMessageActions} />;
     const message = item.message;
-    return <ChatMessageRow type="message" messageId={message.id} body={message.body} createdAt={message.created_at} mine={message.sender_id === currentUserId} groupedWithPrevious={item.groupedWithPrevious} endsGroup={item.endsGroup} showsTimestamp={item.showsTimestamp} index={index} onOpenActions={openMessageActions} />;
+    return <ChatMessageRow type="message" messageId={message.id} body={message.body} voice={message.kind === 'voice' && message.audio_path ? { audioPath: message.audio_path, durationMs: message.audio_duration_ms ?? 0 } : null} createdAt={message.created_at} mine={message.sender_id === currentUserId} groupedWithPrevious={item.groupedWithPrevious} endsGroup={item.endsGroup} showsTimestamp={item.showsTimestamp} index={index} onOpenActions={openMessageActions} />;
   }, [currentUserId, openMessageActions]);
 
   function trackScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
@@ -492,13 +546,13 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
       {attempts.map((attempt) => (
         <View key={attempt.clientId} style={{ alignItems: 'flex-end', paddingHorizontal: theme.spacing.x4, paddingTop: theme.spacing.x2 }}>
           <View style={{ maxWidth: '82%', paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x3, borderRadius: theme.radii.control, borderBottomRightRadius: theme.radii.small, backgroundColor: attempt.status === 'failed' ? theme.colors.surfaceElevated : theme.accent.accent, borderWidth: attempt.status === 'failed' ? 1 : 0, borderColor: theme.semantic.destructive }}>
-            <BinderText variant="body" style={{ color: attempt.status === 'failed' ? theme.colors.textPrimary : theme.accent.foreground }}>{attempt.body}</BinderText>
+            <BinderText variant="body" style={{ color: attempt.status === 'failed' ? theme.colors.textPrimary : theme.accent.foreground }}>{attempt.body || (attempt.voice ? t('chat.voice.pending', { time: formatVoiceDuration(attempt.voice.durationMs) }) : t('chat.voice.uploading'))}</BinderText>
           </View>
           <View style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
             {attempt.status === 'sending' ? <BinderText variant="caption" tone="muted">{t('chat.message.sending')}</BinderText> : (
               <>
                 <BinderText variant="caption" tone="destructive" style={{ flexShrink: 1 }}>{attempt.error ? t(attempt.error.messageKey) : t('chat.errors.messageNotSent')}</BinderText>
-                <Pressable accessibilityRole="button" accessibilityLabel={t('chat.accessibility.retrySending', { message: attempt.body.slice(0, 24) })} disabled={sending} onPress={() => void submitMessage(attempt.clientId)} style={({ pressed }) => ({ minHeight: theme.spacing.x12, justifyContent: 'center', paddingHorizontal: theme.spacing.x3, borderRadius: theme.radii.pill, opacity: sending ? theme.feedback.disabledOpacity : 1, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surfaceElevated })}><BinderText variant="label" tone="accent">{t('chat.actions.retry')}</BinderText></Pressable>
+                <Pressable accessibilityRole="button" accessibilityLabel={t('chat.accessibility.retrySending', { message: attempt.body.slice(0, 24) })} disabled={sending} onPress={() => attempt.voice ? void retryVoice(attempt) : attempt.body ? void submitMessage(attempt.clientId) : discardAttempt(attempt.clientId)} style={({ pressed }) => ({ minHeight: theme.spacing.x12, justifyContent: 'center', paddingHorizontal: theme.spacing.x3, borderRadius: theme.radii.pill, opacity: sending ? theme.feedback.disabledOpacity : 1, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surfaceElevated })}><BinderText variant="label" tone="accent">{t('chat.actions.retry')}</BinderText></Pressable>
                 <Pressable accessibilityRole="button" accessibilityLabel={t('chat.accessibility.discardUnsent', { message: attempt.body.slice(0, 24) })} onPress={() => discardAttempt(attempt.clientId)} style={({ pressed }) => ({ minHeight: theme.spacing.x12, justifyContent: 'center', paddingHorizontal: theme.spacing.x3, borderRadius: theme.radii.pill, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.transparent })}><BinderText variant="label" tone="muted">{t('chat.actions.discard')}</BinderText></Pressable>
               </>
             )}
@@ -509,8 +563,14 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
       {loadError && messages.length > 0 ? <View accessibilityLiveRegion="assertive" style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', paddingHorizontal: theme.spacing.x4 }}><BinderText variant="caption" tone="destructive" style={{ flex: 1 }}>{t(loadError.messageKey)}</BinderText><BinderButton label={t('chat.actions.retry')} variant="ghost" fullWidth={false} onPress={() => setReloadKey((value) => value + 1)} /></View> : null}
 
       <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: theme.spacing.x2, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x3, borderTopWidth: 1, borderTopColor: theme.colors.borderSubtle, backgroundColor: theme.colors.surface }}>
-        <TextInput accessibilityLabel={t('chat.accessibility.messagePerson', { name: match.firstName })} value={composer} onChangeText={setComposer} maxLength={2000} multiline scrollEnabled placeholder={t('chat.message.placeholder', { name: match.firstName })} placeholderTextColor={theme.colors.textMuted} selectionColor={theme.accent.accent} style={{ flex: 1, minHeight: theme.spacing.x12, maxHeight: theme.spacing.x16 * 2, color: theme.colors.textPrimary, backgroundColor: theme.colors.surfaceElevated, borderWidth: 1, borderColor: theme.colors.borderSubtle, borderRadius: theme.radii.control, paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x3, textAlignVertical: 'center' }} />
-        <BinderIconButton name={sending ? 'more' : 'send'} accessibilityLabel={sending ? t('chat.accessibility.sendingMessage') : t('chat.accessibility.sendMessageTo', { name: match.firstName })} selected={canSend || sending} disabled={!canSend} onPress={() => void submitMessage()} />
+        {recordingVoice ? <VoiceRecorderBar
+          onFinished={(uri, durationMs) => void submitVoice(uri, durationMs)}
+          onCancel={() => setRecordingVoice(false)}
+          onPermissionDenied={() => { setRecordingVoice(false); Alert.alert(t('chat.voice.permissionTitle'), t('chat.voice.permissionBody')); }}
+        /> : <TextInput accessibilityLabel={t('chat.accessibility.messagePerson', { name: match.firstName })} value={composer} onChangeText={setComposer} maxLength={2000} multiline scrollEnabled placeholder={t('chat.message.placeholder', { name: match.firstName })} placeholderTextColor={theme.colors.textMuted} selectionColor={theme.accent.accent} style={{ flex: 1, minHeight: theme.spacing.x12, maxHeight: theme.spacing.x16 * 2, color: theme.colors.textPrimary, backgroundColor: theme.colors.surfaceElevated, borderWidth: 1, borderColor: theme.colors.borderSubtle, borderRadius: theme.radii.control, paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x3, textAlignVertical: 'center' }} />}
+        {recordingVoice ? null : validComposer === null && !sending
+          ? <BinderIconButton name="mic" accessibilityLabel={t('chat.voice.accessibility.record')} onPress={() => setRecordingVoice(true)} />
+          : <BinderIconButton name={sending ? 'more' : 'send'} accessibilityLabel={sending ? t('chat.accessibility.sendingMessage') : t('chat.accessibility.sendMessageTo', { name: match.firstName })} selected={canSend || sending} disabled={!canSend} onPress={() => void submitMessage()} />}
       </View>
     </Animated.View>
   );

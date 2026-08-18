@@ -170,7 +170,8 @@
       "openConversation": "Open gesprek met {name}",
       "unreadOne": "{count} ongelezen bericht",
       "unreadOther": "{count} ongelezen berichten"
-    }
+    },
+    "voiceMessage": "Spraakbericht"
   },
   "menu": {
     "header": {
@@ -369,6 +370,22 @@
       "messagePerson": "Bericht sturen naar {name}",
       "sendingMessage": "Bericht verzenden",
       "sendMessageTo": "Bericht sturen naar {name}"
+    },
+    "voice": {
+      "recording": "Opname {time}",
+      "preparing": "Voorbereiden…",
+      "pending": "Spraakbericht · {time}",
+      "uploading": "Spraakbericht wordt verzonden…",
+      "loadFailed": "Laden mislukt",
+      "permissionTitle": "Microfoon nodig",
+      "permissionBody": "Sta de microfoon toe in de systeeminstellingen om spraakberichten op te nemen.",
+      "accessibility": {
+        "record": "Spraakbericht opnemen",
+        "finish": "Spraakbericht verzenden",
+        "discard": "Opname verwijderen",
+        "play": "Spraakbericht afspelen",
+        "pause": "Spraakbericht pauzeren"
+      }
     }
   },
   "profile": {

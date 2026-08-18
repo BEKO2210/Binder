@@ -170,7 +170,8 @@
       "openConversation": "Otwórz rozmowę z {name}",
       "unreadOne": "Nieprzeczytane wiadomości: {count}",
       "unreadOther": "Nieprzeczytane wiadomości: {count}"
-    }
+    },
+    "voiceMessage": "Wiadomość głosowa"
   },
   "menu": {
     "header": {
@@ -369,6 +370,22 @@
       "messagePerson": "Napisz do {name}",
       "sendingMessage": "Wysyłanie wiadomości",
       "sendMessageTo": "Wyślij wiadomość do {name}"
+    },
+    "voice": {
+      "recording": "Nagrywanie {time}",
+      "preparing": "Przygotowywanie…",
+      "pending": "Wiadomość głosowa · {time}",
+      "uploading": "Wysyłanie wiadomości głosowej…",
+      "loadFailed": "Nie udało się wczytać",
+      "permissionTitle": "Potrzebny mikrofon",
+      "permissionBody": "Zezwól na mikrofon w ustawieniach systemu, aby nagrywać wiadomości głosowe.",
+      "accessibility": {
+        "record": "Nagraj wiadomość głosową",
+        "finish": "Wyślij wiadomość głosową",
+        "discard": "Odrzuć nagranie",
+        "play": "Odtwórz wiadomość głosową",
+        "pause": "Wstrzymaj wiadomość głosową"
+      }
     }
   },
   "profile": {

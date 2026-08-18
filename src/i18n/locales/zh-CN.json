@@ -170,7 +170,8 @@
       "openConversation": "打开与 {name} 的聊天",
       "unreadOne": "{count} 条未读消息",
       "unreadOther": "{count} 条未读消息"
-    }
+    },
+    "voiceMessage": "语音消息"
   },
   "menu": {
     "header": {
@@ -369,6 +370,22 @@
       "messagePerson": "给 {name} 发消息",
       "sendingMessage": "正在发送消息",
       "sendMessageTo": "向 {name} 发送消息"
+    },
+    "voice": {
+      "recording": "录音中 {time}",
+      "preparing": "准备中…",
+      "pending": "语音消息 · {time}",
+      "uploading": "正在发送语音消息…",
+      "loadFailed": "无法加载",
+      "permissionTitle": "需要麦克风",
+      "permissionBody": "请在系统设置中允许使用麦克风，以录制语音消息。",
+      "accessibility": {
+        "record": "录制语音消息",
+        "finish": "发送语音消息",
+        "discard": "放弃录音",
+        "play": "播放语音消息",
+        "pause": "暂停语音消息"
+      }
     }
   },
   "profile": {

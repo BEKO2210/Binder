@@ -219,6 +219,9 @@ export type Database = {
       }
       messages: {
         Row: {
+          audio_duration_ms: number | null
+          audio_path: string | null
+          kind: string
           body: string
           client_message_id: string
           created_at: string
@@ -227,6 +230,9 @@ export type Database = {
           sender_id: string
         }
         Insert: {
+          audio_duration_ms?: number | null
+          audio_path?: string | null
+          kind?: string
           body: string
           client_message_id: string
           created_at?: string
@@ -235,6 +241,9 @@ export type Database = {
           sender_id: string
         }
         Update: {
+          audio_duration_ms?: number | null
+          audio_path?: string | null
+          kind?: string
           body?: string
           client_message_id?: string
           created_at?: string
@@ -517,6 +526,7 @@ export type Database = {
           first_name: string
           last_message_at: string
           last_message_body: string
+          last_message_kind: string | null
           match_id: string
           matched_at: string
           other_user_id: string
@@ -532,9 +542,12 @@ export type Database = {
           p_match_id: string
         }
         Returns: {
+          audio_duration_ms: number | null
+          audio_path: string | null
           body: string
           client_message_id: string
           created_at: string
+          kind: string
           id: string
           match_id: string
           sender_id: string
@@ -627,13 +640,19 @@ export type Database = {
       }
       send_message: {
         Args: {
-          p_body: string
+          p_audio_duration_ms?: number | null
+          p_audio_path?: string | null
+          p_body?: string | null
           p_client_message_id: string
+          p_kind?: string
           p_match_id: string
         }
         Returns: {
+          audio_duration_ms: number | null
+          audio_path: string | null
           body: string
           created_at: string
+          kind: string
           id: string
           match_id: string
           sender_id: string

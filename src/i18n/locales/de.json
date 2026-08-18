@@ -170,7 +170,8 @@
       "openConversation": "Unterhaltung mit {name} öffnen",
       "unreadOne": "{count} ungelesene Nachricht",
       "unreadOther": "{count} ungelesene Nachrichten"
-    }
+    },
+    "voiceMessage": "Sprachnachricht"
   },
   "menu": {
     "header": {
@@ -369,6 +370,22 @@
       "messagePerson": "Nachricht an {name}",
       "sendingMessage": "Nachricht wird gesendet",
       "sendMessageTo": "Nachricht an {name} senden"
+    },
+    "voice": {
+      "recording": "Aufnahme {time}",
+      "preparing": "Wird vorbereitet…",
+      "pending": "Sprachnachricht · {time}",
+      "uploading": "Sprachnachricht wird gesendet…",
+      "loadFailed": "Laden fehlgeschlagen",
+      "permissionTitle": "Mikrofon benötigt",
+      "permissionBody": "Erlaube das Mikrofon in den Systemeinstellungen, um Sprachnachrichten aufzunehmen.",
+      "accessibility": {
+        "record": "Sprachnachricht aufnehmen",
+        "finish": "Sprachnachricht senden",
+        "discard": "Aufnahme verwerfen",
+        "play": "Sprachnachricht abspielen",
+        "pause": "Sprachnachricht pausieren"
+      }
     }
   },
   "profile": {

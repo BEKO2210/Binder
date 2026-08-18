@@ -170,7 +170,8 @@
       "openConversation": "{name} के साथ बातचीत खोलें",
       "unreadOne": "{count} अपठित संदेश",
       "unreadOther": "{count} अपठित संदेश"
-    }
+    },
+    "voiceMessage": "वॉइस मैसेज"
   },
   "menu": {
     "header": {
@@ -369,6 +370,22 @@
       "messagePerson": "{name} को संदेश भेजें",
       "sendingMessage": "संदेश भेजा जा रहा है",
       "sendMessageTo": "{name} को संदेश भेजें"
+    },
+    "voice": {
+      "recording": "रिकॉर्डिंग {time}",
+      "preparing": "तैयार हो रहा है…",
+      "pending": "वॉइस मैसेज · {time}",
+      "uploading": "वॉइस मैसेज भेजा जा रहा है…",
+      "loadFailed": "लोड नहीं हो सका",
+      "permissionTitle": "माइक्रोफ़ोन चाहिए",
+      "permissionBody": "वॉइस मैसेज रिकॉर्ड करने के लिए सिस्टम सेटिंग्स में माइक्रोफ़ोन की अनुमति दें।",
+      "accessibility": {
+        "record": "वॉइस मैसेज रिकॉर्ड करें",
+        "finish": "वॉइस मैसेज भेजें",
+        "discard": "रिकॉर्डिंग हटाएँ",
+        "play": "वॉइस मैसेज चलाएँ",
+        "pause": "वॉइस मैसेज रोकें"
+      }
     }
   },
   "profile": {

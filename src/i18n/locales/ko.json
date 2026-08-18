@@ -170,7 +170,8 @@
       "openConversation": "{name}님과의 대화 열기",
       "unreadOne": "읽지 않은 메시지 {count}개",
       "unreadOther": "읽지 않은 메시지 {count}개"
-    }
+    },
+    "voiceMessage": "음성 메시지"
   },
   "menu": {
     "header": {
@@ -369,6 +370,22 @@
       "messagePerson": "{name}님에게 메시지",
       "sendingMessage": "메시지 전송 중",
       "sendMessageTo": "{name}님에게 메시지 보내기"
+    },
+    "voice": {
+      "recording": "녹음 중 {time}",
+      "preparing": "준비 중…",
+      "pending": "음성 메시지 · {time}",
+      "uploading": "음성 메시지 전송 중…",
+      "loadFailed": "불러오지 못했어요",
+      "permissionTitle": "마이크 필요",
+      "permissionBody": "음성 메시지를 녹음하려면 시스템 설정에서 마이크를 허용하세요.",
+      "accessibility": {
+        "record": "음성 메시지 녹음",
+        "finish": "음성 메시지 보내기",
+        "discard": "녹음 삭제",
+        "play": "음성 메시지 재생",
+        "pause": "음성 메시지 일시정지"
+      }
     }
   },
   "profile": {

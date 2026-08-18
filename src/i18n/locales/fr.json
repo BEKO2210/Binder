@@ -170,7 +170,8 @@
       "openConversation": "Ouvrir la conversation avec {name}",
       "unreadOne": "{count} message non lu",
       "unreadOther": "{count} messages non lus"
-    }
+    },
+    "voiceMessage": "Message vocal"
   },
   "menu": {
     "header": {
@@ -369,6 +370,22 @@
       "messagePerson": "Envoyer un message à {name}",
       "sendingMessage": "Envoi du message",
       "sendMessageTo": "Envoyer le message à {name}"
+    },
+    "voice": {
+      "recording": "Enregistrement {time}",
+      "preparing": "Préparation…",
+      "pending": "Message vocal · {time}",
+      "uploading": "Envoi du message vocal…",
+      "loadFailed": "Chargement impossible",
+      "permissionTitle": "Micro requis",
+      "permissionBody": "Autorise le micro dans les réglages du système pour enregistrer des messages vocaux.",
+      "accessibility": {
+        "record": "Enregistrer un message vocal",
+        "finish": "Envoyer le message vocal",
+        "discard": "Supprimer l'enregistrement",
+        "play": "Lire le message vocal",
+        "pause": "Mettre le message vocal en pause"
+      }
     }
   },
   "profile": {

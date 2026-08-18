@@ -170,7 +170,8 @@
       "openConversation": "Abrir conversa com {name}",
       "unreadOne": "{count} mensagem não lida",
       "unreadOther": "{count} mensagens não lidas"
-    }
+    },
+    "voiceMessage": "Mensagem de voz"
   },
   "menu": {
     "header": {
@@ -369,6 +370,22 @@
       "messagePerson": "Enviar mensagem para {name}",
       "sendingMessage": "Enviando mensagem",
       "sendMessageTo": "Enviar mensagem para {name}"
+    },
+    "voice": {
+      "recording": "Gravando {time}",
+      "preparing": "Preparando…",
+      "pending": "Mensagem de voz · {time}",
+      "uploading": "Enviando mensagem de voz…",
+      "loadFailed": "Falha ao carregar",
+      "permissionTitle": "Microfone necessário",
+      "permissionBody": "Permita o microfone nas configurações do sistema para gravar mensagens de voz.",
+      "accessibility": {
+        "record": "Gravar mensagem de voz",
+        "finish": "Enviar mensagem de voz",
+        "discard": "Descartar gravação",
+        "play": "Reproduzir mensagem de voz",
+        "pause": "Pausar mensagem de voz"
+      }
     }
   },
   "profile": {

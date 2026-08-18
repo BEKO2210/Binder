@@ -3,6 +3,7 @@ import * as Crypto from 'expo-crypto';
 import { recordBetaEvent } from './beta';
 import { abortable, throwIfAborted } from './reliability';
 import { supabase } from './supabase';
+import { voiceObjectPath } from './voiceMessage.ts';
 import type { Database } from '../types/database';
 
 export type Message = Database['public']['Tables']['messages']['Row'];
@@ -17,6 +18,7 @@ export type MatchSummary = {
   matchedAt: string;
   lastMessageBody: string | null;
   lastMessageAt: string | null;
+  lastMessageKind: 'text' | 'voice' | null;
   unreadCount: number;
 };
 
@@ -59,6 +61,7 @@ export async function fetchMatches(options: RequestOptions = {}): Promise<MatchS
         matchedAt: match.matched_at,
         lastMessageBody: match.last_message_body ?? null,
         lastMessageAt: match.last_message_at ?? null,
+        lastMessageKind: match.last_message_kind === 'voice' ? 'voice' as const : match.last_message_kind === 'text' ? 'text' as const : null,
         unreadCount: Number(match.unread_count ?? 0),
       })),
     );
@@ -133,6 +136,58 @@ export async function sendMessage(
     ...message,
     client_message_id: clientMessageId,
   };
+}
+
+/**
+ * Upload a finished recording and send the message that references it.
+ *
+ * Upload first, row second — the reference guard refuses a message whose
+ * object does not exist, so the order is not a choice. A failed send after a
+ * successful upload leaves an orphan object; retrying with the same client id
+ * and the same path converges on one message, and an orphan nobody references
+ * is unreadable to everyone but its match.
+ */
+export async function uploadVoiceRecording(
+  matchId: string,
+  senderId: string,
+  localUri: string,
+  options: RequestOptions = {},
+): Promise<string> {
+  const response = await abortable(fetch(localUri), options.signal);
+  const payload = await abortable(response.arrayBuffer(), options.signal);
+  throwIfAborted(options.signal);
+  const path = voiceObjectPath(matchId, senderId, Crypto.randomUUID());
+  const { error } = await supabase.storage.from('voice-media').upload(path, payload, { contentType: 'audio/mp4', upsert: false });
+  if (error) throw error;
+  return path;
+}
+
+export async function sendVoiceMessage(
+  matchId: string,
+  clientMessageId: string,
+  audioPath: string,
+  durationMs: number,
+  options: RequestOptions = {},
+): Promise<Message> {
+  const { data, error } = await supabase.rpc('send_message', {
+    p_match_id: matchId,
+    p_client_message_id: clientMessageId,
+    p_kind: 'voice',
+    p_audio_path: audioPath,
+    p_audio_duration_ms: Math.round(durationMs),
+  }).abortSignal(options.signal ?? new AbortController().signal);
+
+  if (error) throw error;
+  const message = data?.[0];
+  if (!message) throw new Error('Message send did not return a server result.');
+  return { ...message, client_message_id: clientMessageId };
+}
+
+/** A short-lived playback URL; the bubble fetches it on first play. */
+export async function signedVoiceUrl(audioPath: string, options: RequestOptions = {}): Promise<string> {
+  const { data, error } = await abortable(supabase.storage.from('voice-media').createSignedUrl(audioPath, 60 * 60), options.signal);
+  if (error) throw error;
+  return data.signedUrl;
 }
 
 export async function markMatchRead(matchId: string, options: RequestOptions = {}): Promise<void> {
