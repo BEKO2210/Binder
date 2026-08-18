@@ -33,8 +33,17 @@ export default function MenuScreen({ onOpenSettings, onOpenBeta, onOpenAbout }: 
   function confirmSignOut() {
     Alert.alert(t('profile.alerts.signOutTitle'), t('profile.alerts.signOutMessage'), [
       { text: t('profile.actions.staySignedIn'), style: 'cancel' },
-      { text: t('profile.actions.signOut'), onPress: () => void supabase.auth.signOut() },
+      // Signing out can fail, and a sign-out that silently did not happen is
+      // worse than one that says so — on a shared phone the next person would
+      // still be signed in as somebody else.
+      { text: t('profile.actions.signOut'), onPress: () => void signOut() },
     ]);
+  }
+
+  async function signOut() {
+    setMessage('');
+    const { error } = await supabase.auth.signOut();
+    if (error) setMessage(error.message);
   }
 
   function confirmDeletion() {

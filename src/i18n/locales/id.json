@@ -449,6 +449,12 @@
       "irreversible": "TIDAK DAPAT DIBATALKAN",
       "deleteTitle": "Hapus akun Binder",
       "deleteCopy": "Menghentikan Discovery dan percakapan, menghapus media profil, dan menghapus identitas autentikasi Anda."
+    },
+    "visibility": {
+      "pendingTitle": "Fotomu masih ditinjau",
+      "pendingCopy": "Sampai foto pertamamu disetujui, kamu tidak muncul di Discovery. Biasanya butuh beberapa jam.",
+      "blockedTitle": "Foto pertamamu tidak disetujui",
+      "blockedCopy": "Pilih foto lain sebagai yang pertama agar kamu muncul di Discovery."
     }
   },
   "profileSettings": {

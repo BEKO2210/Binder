@@ -449,6 +449,12 @@
       "irreversible": "되돌릴 수 없음",
       "deleteTitle": "Binder 계정 삭제",
       "deleteCopy": "Discovery와 대화를 중지하고 프로필 미디어를 제거하며 인증 ID를 삭제합니다."
+    },
+    "visibility": {
+      "pendingTitle": "사진을 아직 검토하고 있습니다",
+      "pendingCopy": "첫 번째 사진이 승인되기 전까지는 Discovery에 표시되지 않습니다. 보통 몇 시간이 걸립니다.",
+      "blockedTitle": "첫 번째 사진이 승인되지 않았습니다",
+      "blockedCopy": "Discovery에 표시되도록 다른 사진을 첫 번째로 선택하세요."
     }
   },
   "profileSettings": {

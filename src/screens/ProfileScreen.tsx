@@ -6,6 +6,7 @@ import { BinderButton, BinderCard, BinderIcon, BinderScreenHeader, BinderText, S
 import { MotionPressable as Pressable } from '../components/ui';
 import { recordBetaEvent } from '../lib/beta';
 import { listMyProfileMedia } from '../lib/media';
+import { discoveryVisibility, type MediaState } from '../lib/discoveryVisibility';
 import { profileCompleteness } from '../lib/profileCompleteness';
 import { classifyError, isAbortError, type ReliabilityError } from '../lib/reliability';
 import { fetchMySafetyNotice } from '../lib/safety';
@@ -26,6 +27,7 @@ export default function ProfileScreen({ userId, onEditProfile, onPreviewProfile,
   const [firstName, setFirstName] = useState('');
   const [bio, setBio] = useState('');
   const [photoUrls, setPhotoUrls] = useState<readonly string[]>([]);
+  const [media, setMedia] = useState<readonly MediaState[]>([]);
   const [photoCount, setPhotoCount] = useState(0);
   const [interestCount, setInterestCount] = useState(0);
   const [message, setMessage] = useState('');
@@ -53,6 +55,7 @@ export default function ProfileScreen({ userId, onEditProfile, onPreviewProfile,
       setFirstName(profile.data.first_name);
       setBio(profile.data.bio);
       setPhotoUrls(media.map((item) => item.signedUrl).filter(Boolean));
+      setMedia(media.map((item) => ({ position: item.position, moderationStatus: item.moderationStatus })));
       setPhotoCount(media.length);
       setInterestCount(profile.data.interests?.length ?? 0);
       setSafetyNotice(notice);
@@ -72,6 +75,11 @@ export default function ProfileScreen({ userId, onEditProfile, onPreviewProfile,
   if (loadError) return <ScreenState kind={loadError.kind === 'offline' ? 'offline' : 'error'} icon="retry" title={loadError.kind === 'offline' ? t('profile.states.offlineTitle') : t('profile.states.errorTitle')} message={loadError.kind === 'offline' ? t('profile.states.offlineMessage') : loadError.message} actionLabel={t('profile.actions.tryAgain')} onAction={() => void load()} />;
 
   const completeness = profileCompleteness({ photoCount, bio, interestCount });
+  // "3 of 3" is true and still not the whole truth: a photo is invisible until
+  // it is reviewed, and the server only puts a profile into a deck once the
+  // first one is approved. Somebody could otherwise finish their profile, see
+  // an empty deck and never learn why.
+  const visibility = discoveryVisibility(media);
   const notice = safetyNotice ? prepareSafetyNotice(safetyNotice, locale) : null;
 
   return (
@@ -85,6 +93,12 @@ export default function ProfileScreen({ userId, onEditProfile, onPreviewProfile,
         {notice.kind === 'warning' && notice.date ? <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>{t('profile.notice.warnedOn', { date: notice.date })}</BinderText> : null}
         {notice.kind === 'suspended' ? <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x3 }}>{t('profile.notice.suspendedEffect')}</BinderText> : null}
       </BinderCard> : null}
+      {visibility === 'awaitingReview' || visibility === 'blocked' ? (
+        <BinderCard style={{ marginBottom: theme.spacing.x5, borderColor: visibility === 'blocked' ? theme.semantic.destructive : theme.semantic.warning }}>
+          <BinderText variant="micro" tone={visibility === 'blocked' ? 'destructive' : 'warning'}>{t(visibility === 'blocked' ? 'profile.visibility.blockedTitle' : 'profile.visibility.pendingTitle')}</BinderText>
+          <BinderText variant="body" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>{t(visibility === 'blocked' ? 'profile.visibility.blockedCopy' : 'profile.visibility.pendingCopy')}</BinderText>
+        </BinderCard>
+      ) : null}
       {/* The same pager a match swipes through, so the overview shows every
           photo rather than only the first one. It is the component that already
           knows how to page a photo safely — the profile must not grow a second

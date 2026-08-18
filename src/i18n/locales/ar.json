@@ -449,6 +449,12 @@
       "irreversible": "غير قابل للتراجع",
       "deleteTitle": "حذف حساب Binder",
       "deleteCopy": "يوقف Discovery والمحادثات، ويزيل وسائط الملف الشخصي، ويحذف هوية المصادقة الخاصة بك."
+    },
+    "visibility": {
+      "pendingTitle": "لا تزال صورك قيد المراجعة",
+      "pendingCopy": "لن تظهر في Discovery حتى تتم الموافقة على صورتك الأولى. يستغرق ذلك عادةً بضع ساعات.",
+      "blockedTitle": "لم تتم الموافقة على صورتك الأولى",
+      "blockedCopy": "اختر صورة أخرى لتكون الأولى حتى تظهر في Discovery."
     }
   },
   "profileSettings": {

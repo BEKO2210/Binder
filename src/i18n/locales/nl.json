@@ -449,6 +449,12 @@
       "irreversible": "ONOMKEERBAAR",
       "deleteTitle": "Binder-account verwijderen",
       "deleteCopy": "Stopt Ontdekken en gesprekken, verwijdert profielmedia en wist je authenticatie-identiteit."
+    },
+    "visibility": {
+      "pendingTitle": "Je foto’s worden nog beoordeeld",
+      "pendingCopy": "Zolang je eerste foto niet is goedgekeurd, verschijn je niet in Discovery. Dat duurt meestal een paar uur.",
+      "blockedTitle": "Je eerste foto is niet goedgekeurd",
+      "blockedCopy": "Kies een andere foto als eerste, zodat je in Discovery verschijnt."
     }
   },
   "profileSettings": {

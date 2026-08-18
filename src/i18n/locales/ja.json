@@ -449,6 +449,12 @@
       "irreversible": "取り消し不可",
       "deleteTitle": "Binderアカウントを削除",
       "deleteCopy": "Discoveryと会話を停止し、プロフィールメディアと認証IDを削除します。"
+    },
+    "visibility": {
+      "pendingTitle": "写真はまだ確認中です",
+      "pendingCopy": "最初の写真が承認されるまでDiscoveryには表示されません。通常は数時間ほどかかります。",
+      "blockedTitle": "最初の写真は承認されませんでした",
+      "blockedCopy": "Discoveryに表示されるよう、別の写真を1枚目に選んでください。"
     }
   },
   "profileSettings": {

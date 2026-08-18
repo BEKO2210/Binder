@@ -449,6 +449,12 @@
       "irreversible": "不可撤销",
       "deleteTitle": "删除 Binder 账户",
       "deleteCopy": "停止发现和聊天、移除个人资料媒体并删除你的身份验证账户。"
+    },
+    "visibility": {
+      "pendingTitle": "你的照片仍在审核中",
+      "pendingCopy": "在第一张照片通过审核前，你不会出现在 Discovery 中。通常需要几个小时。",
+      "blockedTitle": "你的第一张照片未通过审核",
+      "blockedCopy": "请选择另一张照片作为第一张，这样你才能出现在 Discovery 中。"
     }
   },
   "profileSettings": {

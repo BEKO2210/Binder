@@ -449,6 +449,12 @@
       "irreversible": "GERİ ALINAMAZ",
       "deleteTitle": "Binder hesabını sil",
       "deleteCopy": "Keşfet'i ve konuşmaları durdurur, profil medyasını kaldırır ve kimlik doğrulama kimliğinizi siler."
+    },
+    "visibility": {
+      "pendingTitle": "Fotoğraflarınız hâlâ inceleniyor",
+      "pendingCopy": "İlk fotoğrafınız onaylanana kadar Discovery’de görünmezsiniz. Bu genelde birkaç saat sürer.",
+      "blockedTitle": "İlk fotoğrafınız onaylanmadı",
+      "blockedCopy": "Discovery’de görünmek için ilk sıraya başka bir fotoğraf seçin."
     }
   },
   "profileSettings": {

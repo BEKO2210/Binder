@@ -449,6 +449,12 @@
       "irreversible": "NIEODWRACALNE",
       "deleteTitle": "Usuń konto Binder",
       "deleteCopy": "Wyłącza Odkrywaj i rozmowy, usuwa multimedia profilu oraz tożsamość uwierzytelniania."
+    },
+    "visibility": {
+      "pendingTitle": "Twoje zdjęcia są jeszcze sprawdzane",
+      "pendingCopy": "Dopóki pierwsze zdjęcie nie zostanie zatwierdzone, nie pojawiasz się w Discovery. Zwykle trwa to kilka godzin.",
+      "blockedTitle": "Twoje pierwsze zdjęcie nie zostało zatwierdzone",
+      "blockedCopy": "Wybierz inne zdjęcie jako pierwsze, aby pojawić się w Discovery."
     }
   },
   "profileSettings": {

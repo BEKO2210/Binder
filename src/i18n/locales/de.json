@@ -449,6 +449,12 @@
       "irreversible": "UNWIDERRUFLICH",
       "deleteTitle": "Binder-Konto löschen",
       "deleteCopy": "Beendet Discovery und Unterhaltungen, entfernt Profilmedien und löscht deine Anmeldeidentität."
+    },
+    "visibility": {
+      "pendingTitle": "Deine Fotos werden noch geprüft",
+      "pendingCopy": "Bis dein erstes Foto freigegeben ist, erscheinst du nicht in Discovery. Das dauert meist ein paar Stunden.",
+      "blockedTitle": "Dein erstes Foto wurde nicht freigegeben",
+      "blockedCopy": "Wähle ein anderes Foto als erstes, damit du in Discovery erscheinst."
     }
   },
   "profileSettings": {

@@ -449,6 +449,12 @@
       "irreversible": "IRRÉVERSIBLE",
       "deleteTitle": "Supprimer le compte Binder",
       "deleteCopy": "Arrête Découvrir et les conversations, supprime les médias du profil et efface votre identité d’authentification."
+    },
+    "visibility": {
+      "pendingTitle": "Vos photos sont en cours de vérification",
+      "pendingCopy": "Tant que votre première photo n'est pas approuvée, vous n'apparaissez pas dans Discovery. Cela prend en général quelques heures.",
+      "blockedTitle": "Votre première photo n'a pas été approuvée",
+      "blockedCopy": "Choisissez une autre photo en première position pour apparaître dans Discovery."
     }
   },
   "profileSettings": {
