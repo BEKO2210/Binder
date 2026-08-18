@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Image, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
+import { PhotoPager } from '../components/PhotoPager';
 import { BinderButton, BinderCard, BinderIcon, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import { MotionPressable as Pressable } from '../components/ui';
 import { recordBetaEvent } from '../lib/beta';
@@ -24,7 +25,7 @@ export default function ProfileScreen({ userId, onEditProfile, onPreviewProfile,
   const [loading, setLoading] = useState(true);
   const [firstName, setFirstName] = useState('');
   const [bio, setBio] = useState('');
-  const [photoUrl, setPhotoUrl] = useState('');
+  const [photoUrls, setPhotoUrls] = useState<readonly string[]>([]);
   const [photoCount, setPhotoCount] = useState(0);
   const [interestCount, setInterestCount] = useState(0);
   const [message, setMessage] = useState('');
@@ -51,7 +52,7 @@ export default function ProfileScreen({ userId, onEditProfile, onPreviewProfile,
       if (profile.error) throw profile.error;
       setFirstName(profile.data.first_name);
       setBio(profile.data.bio);
-      setPhotoUrl(media[0]?.signedUrl ?? '');
+      setPhotoUrls(media.map((item) => item.signedUrl).filter(Boolean));
       setPhotoCount(media.length);
       setInterestCount(profile.data.interests?.length ?? 0);
       setSafetyNotice(notice);
@@ -84,7 +85,15 @@ export default function ProfileScreen({ userId, onEditProfile, onPreviewProfile,
         {notice.kind === 'warning' && notice.date ? <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>{t('profile.notice.warnedOn', { date: notice.date })}</BinderText> : null}
         {notice.kind === 'suspended' ? <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x3 }}>{t('profile.notice.suspendedEffect')}</BinderText> : null}
       </BinderCard> : null}
-      {photoUrl ? <Image source={{ uri: photoUrl }} accessibilityLabel={t('profile.accessibility.primaryPhoto')} style={{ width: '100%', height: theme.layout.profileHeroHeight, borderRadius: theme.radii.hero }} resizeMode="cover" /> : <BinderCard style={{ minHeight: theme.layout.onboardingPhotoHeight, alignItems: 'center', justifyContent: 'center', gap: theme.spacing.x3 }}><BinderIcon name="addPhoto" size={34} color={theme.accent.onSurface} /><BinderText variant="label" tone="accent">{t('profile.empty.addFirstPhoto')}</BinderText></BinderCard>}
+      {/* The same pager a match swipes through, so the overview shows every
+          photo rather than only the first one. It is the component that already
+          knows how to page a photo safely — the profile must not grow a second
+          one of those. */}
+      {photoUrls.length > 0 ? (
+        <View style={{ height: theme.layout.profileHeroHeight, borderRadius: theme.radii.hero, overflow: 'hidden' }}>
+          <PhotoPager photos={photoUrls} name={firstName || t('profile.header.title')} swipeable />
+        </View>
+      ) : <BinderCard style={{ minHeight: theme.layout.onboardingPhotoHeight, alignItems: 'center', justifyContent: 'center', gap: theme.spacing.x3 }}><BinderIcon name="addPhoto" size={34} color={theme.accent.onSurface} /><BinderText variant="label" tone="accent">{t('profile.empty.addFirstPhoto')}</BinderText></BinderCard>}
       <BinderText variant="heading" style={{ marginTop: theme.spacing.x5 }}>{firstName || t('profile.header.title')}</BinderText>
       <BinderText variant="body" tone={bio ? 'secondary' : 'muted'} style={{ marginTop: theme.spacing.x2 }}>{bio || t('profile.empty.addBio')}</BinderText>
       {/* A finished profile has nothing left to nag about. The card used to
