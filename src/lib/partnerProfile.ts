@@ -13,6 +13,7 @@ export type PartnerProfile = {
   attributes: ProfileAttributes;
   // Computed by the server from the birth date; never stored, so it cannot lie.
   zodiac: string | null;
+  voiceIntro: { path: string; durationMs: number } | null;
 };
 
 type PublicProfileRow = {
@@ -33,6 +34,8 @@ type PublicProfileRow = {
   children_has: string | null;
   children_wants: string | null;
   car: string | null;
+  voice_path: string | null;
+  voice_duration_ms: number | null;
 };
 
 // Everything here rides on the server's visibility rules: get_public_profile
@@ -73,5 +76,6 @@ export async function fetchPartnerProfile(userId: string): Promise<PartnerProfil
     photoUrls,
     attributes: rowsFromProfile(row),
     zodiac: row.zodiac,
+    voiceIntro: row.voice_path ? { path: row.voice_path, durationMs: row.voice_duration_ms ?? 0 } : null,
   };
 }

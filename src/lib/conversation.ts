@@ -183,9 +183,10 @@ export async function sendVoiceMessage(
   return { ...message, client_message_id: clientMessageId };
 }
 
-/** A short-lived playback URL; the bubble fetches it on first play. */
-export async function signedVoiceUrl(audioPath: string, options: RequestOptions = {}): Promise<string> {
-  const { data, error } = await abortable(supabase.storage.from('voice-media').createSignedUrl(audioPath, 60 * 60), options.signal);
+/** A short-lived playback URL; players fetch it on first play. The intro
+ * lives in its own bucket, so the bucket travels with the call. */
+export async function signedVoiceUrl(audioPath: string, options: RequestOptions & { bucket?: 'voice-media' | 'profile-voice' } = {}): Promise<string> {
+  const { data, error } = await abortable(supabase.storage.from(options.bucket ?? 'voice-media').createSignedUrl(audioPath, 60 * 60), options.signal);
   if (error) throw error;
   return data.signedUrl;
 }

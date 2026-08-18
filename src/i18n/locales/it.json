@@ -1267,6 +1267,15 @@
           "yes": "Ha un'auto"
         }
       }
+    },
+    "voiceIntro": {
+      "title": "Intro vocale",
+      "copy": "Saluta con la tua voce. La tua intro è pubblica sul profilo dal momento in cui la salvi — segnalazioni e moderazione valgono come ovunque.",
+      "record": "Registra intro vocale",
+      "replace": "Sostituisci",
+      "delete": "Elimina",
+      "saveFailed": "Impossibile salvare l’intro.",
+      "deleteFailed": "Impossibile eliminare l’intro."
     }
   },
   "about": {

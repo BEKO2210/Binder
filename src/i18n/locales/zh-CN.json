@@ -1267,6 +1267,15 @@
           "yes": "有车"
         }
       }
+    },
+    "voiceIntro": {
+      "title": "语音介绍",
+      "copy": "用自己的声音打个招呼。保存后即在资料页公开 — 举报与审核规则同样适用。",
+      "record": "录制语音介绍",
+      "replace": "替换",
+      "delete": "删除",
+      "saveFailed": "无法保存语音介绍。",
+      "deleteFailed": "无法删除语音介绍。"
     }
   },
   "about": {

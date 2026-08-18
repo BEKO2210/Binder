@@ -1267,6 +1267,15 @@
           "yes": "Has a car"
         }
       }
+    },
+    "voiceIntro": {
+      "title": "Voice intro",
+      "copy": "Say hello in your own voice. Your intro is public on your profile the moment you save it — report and moderation apply like everywhere else.",
+      "record": "Record voice intro",
+      "replace": "Replace",
+      "delete": "Delete",
+      "saveFailed": "Could not save the intro.",
+      "deleteFailed": "Could not delete the intro."
     }
   },
   "about": {

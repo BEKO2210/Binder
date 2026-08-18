@@ -306,6 +306,30 @@ export type Database = {
         }
         Relationships: []
       }
+      profile_audio: {
+        Row: {
+          created_at: string
+          duration_ms: number
+          storage_path: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_ms: number
+          storage_path: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number
+          storage_path?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           activity: string | null
@@ -594,6 +618,8 @@ export type Database = {
           smoking: string | null
           spirituality: string | null
           user_id: string
+          voice_duration_ms: number | null
+          voice_path: string | null
           zodiac: string | null
         }[]
       }
@@ -685,6 +711,9 @@ export type Database = {
         Returns: string
       }
       set_my_attribute_filters: { Args: { p_filters: Json }; Returns: undefined }
+      set_my_voice_intro: { Args: { p_duration_ms: number; p_storage_path: string }; Returns: undefined }
+      clear_my_voice_intro: { Args: never; Returns: undefined }
+      admin_remove_voice_intro: { Args: { p_case_id: number; p_notes?: string | null }; Returns: undefined }
       unmatch: { Args: { p_match_id: string }; Returns: boolean }
       unregister_push_token: { Args: { p_token: string }; Returns: undefined }
       unregister_push_installation: { Args: { p_installation_id: string }; Returns: undefined }

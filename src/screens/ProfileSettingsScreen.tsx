@@ -17,6 +17,7 @@ import { supabase } from '../lib/supabase';
 import { GENDERS, type Gender } from '../lib/validation';
 import { InterestPicker } from '../components/InterestPicker';
 import { AttributeEditor } from '../components/AttributeEditor';
+import { VoiceIntroEditor } from '../components/VoiceIntroEditor';
 import { attributesPayload, EMPTY_ATTRIBUTES, rowsFromProfile, type ProfileAttributes } from '../lib/profileAttributes';
 import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
@@ -282,6 +283,9 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
       </BinderCard>
       <BinderCard style={{ marginTop: theme.spacing.x5 }}>
         <AttributeEditor value={attributes} onChange={setAttributes} />
+      </BinderCard>
+      <BinderCard style={{ marginTop: theme.spacing.x5 }}>
+        <VoiceIntroEditor userId={userId} />
       </BinderCard>
       <BinderCard style={{ marginTop: theme.spacing.x5 }}><View><BinderText variant="micro" tone="muted">{t('profileSettings.discovery.eyebrow')}</BinderText><BinderText variant="title" style={{ marginTop: theme.spacing.x2 }}>{t('profileSettings.discovery.title')}</BinderText><BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2, marginBottom: theme.spacing.x6 }}>{t('profileSettings.discovery.copy')}</BinderText></View>
           <DiscoveryPreferences interestedIn={interestedIn} minAge={minAge} maxAge={maxAge} distance={distance} errors={discoveryErrors} onChange={(next) => { setInterestedIn(next.interestedIn); setMinAge(next.minAge); setMaxAge(next.maxAge); setDistance(next.distance); setDiscoveryErrors(validateDiscovery(next.interestedIn, next.minAge, next.maxAge, next.distance)); }} />

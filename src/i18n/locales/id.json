@@ -1267,6 +1267,15 @@
           "yes": "Punya mobil"
         }
       }
+    },
+    "voiceIntro": {
+      "title": "Intro suara",
+      "copy": "Sapa dengan suaramu sendiri. Intro langsung publik di profil begitu disimpan — pelaporan dan moderasi berlaku seperti di mana pun.",
+      "record": "Rekam intro suara",
+      "replace": "Ganti",
+      "delete": "Hapus",
+      "saveFailed": "Intro tidak dapat disimpan.",
+      "deleteFailed": "Intro tidak dapat dihapus."
     }
   },
   "about": {

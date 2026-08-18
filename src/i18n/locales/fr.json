@@ -1267,6 +1267,15 @@
           "yes": "A une voiture"
         }
       }
+    },
+    "voiceIntro": {
+      "title": "Intro vocale",
+      "copy": "Dis bonjour avec ta propre voix. Ton intro est publique sur ton profil dès son enregistrement — signalement et modération s’appliquent comme partout.",
+      "record": "Enregistrer une intro vocale",
+      "replace": "Remplacer",
+      "delete": "Supprimer",
+      "saveFailed": "Impossible d’enregistrer l’intro.",
+      "deleteFailed": "Impossible de supprimer l’intro."
     }
   },
   "about": {

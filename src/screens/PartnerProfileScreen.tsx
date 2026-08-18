@@ -10,6 +10,7 @@ import { discoveryDeckPhysics } from '../lib/discoveryDeck';
 import { fetchPartnerProfile, type PartnerProfile } from '../lib/partnerProfile';
 import { EMPTY_ATTRIBUTES } from '../lib/profileAttributes';
 import { ProfileAttributeList } from '../components/ProfileAttributeList';
+import { VoiceMessageBubble } from '../components/VoiceMessageBubble';
 import { formatCount, formatDistanceKm } from '../lib/format';
 import { interestEntry } from '../lib/interestCatalog';
 import { interestLabel } from '../lib/validation';
@@ -26,7 +27,7 @@ type Props = { userId: string; fallbackName: string; onClose: () => void; initia
 function asPartnerProfile(profile: DiscoveryProfile): PartnerProfile {
   // The deck row carries no attributes; the full fetch that follows fills them
   // in, and until then the screen simply shows none rather than wrong ones.
-  return { userId: profile.id, name: profile.name, age: profile.age, bio: profile.bio, interests: profile.tags, distanceKm: profile.distanceKm, photoUrls: profile.photoUrls, attributes: EMPTY_ATTRIBUTES, zodiac: null };
+  return { userId: profile.id, name: profile.name, age: profile.age, bio: profile.bio, interests: profile.tags, distanceKm: profile.distanceKm, photoUrls: profile.photoUrls, attributes: EMPTY_ATTRIBUTES, zodiac: null, voiceIntro: null };
 }
 
 export default function PartnerProfileScreen({ userId, fallbackName, onClose, initialProfile, viewingSelf = false }: Props) {
@@ -100,6 +101,12 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose, in
                 {profile.distanceKm !== null && !viewingSelf ? <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>{t('partnerProfile.away', { distance: formatDistanceKm(profile.distanceKm, locale) })}</BinderText> : null}
                 {profile.bio ? <BinderText variant="bodyL" tone="secondary" style={{ marginTop: theme.spacing.x4 }}>{profile.bio}</BinderText> : null}
                 {profile.interests.length > 0 ? <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2, marginTop: theme.spacing.x5 }}>{profile.interests.map((interest) => <View key={interest} accessibilityRole="text" style={{ minHeight: theme.layout.minimumTouchTarget, maxWidth: '100%', flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, paddingHorizontal: theme.spacing.x4, borderRadius: theme.radii.pill, borderWidth: 1, borderColor: theme.colors.borderSubtle, backgroundColor: theme.colors.surface }}>{interestEntry(interest)?.emoji ? <BinderText variant="label" maxFontSizeMultiplier={1} importantForAccessibility="no" accessibilityElementsHidden>{interestEntry(interest)?.emoji}</BinderText> : null}<BinderText variant="label" tone="secondary" numberOfLines={1} ellipsizeMode="tail" style={{ flexShrink: 1 }}>{interestLabel(t, interest)}</BinderText></View>)}</View> : null}
+                {profile.voiceIntro ? (
+                  <View style={{ marginTop: theme.spacing.x5, padding: theme.spacing.x3, borderRadius: theme.radii.control, borderWidth: 1, borderColor: theme.colors.borderSubtle, backgroundColor: theme.colors.surface }}>
+                    <BinderText variant="micro" tone="muted" style={{ marginBottom: theme.spacing.x2 }}>{t('identity.voiceIntro.title')}</BinderText>
+                    <VoiceMessageBubble messageId={`intro-${profile.userId}`} audioPath={profile.voiceIntro.path} durationMs={profile.voiceIntro.durationMs} mine={false} bucket="profile-voice" />
+                  </View>
+                ) : null}
                 <View style={{ marginTop: theme.spacing.x5 }}>
                   <ProfileAttributeList attributes={profile.attributes} zodiac={profile.zodiac} />
                 </View>

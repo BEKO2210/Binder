@@ -1267,6 +1267,15 @@
           "yes": "Hat ein Auto"
         }
       }
+    },
+    "voiceIntro": {
+      "title": "Sprachintro",
+      "copy": "Sag Hallo mit deiner eigenen Stimme. Dein Intro ist ab dem Speichern öffentlich auf deinem Profil — Melden und Moderation gelten wie überall.",
+      "record": "Sprachintro aufnehmen",
+      "replace": "Ersetzen",
+      "delete": "Löschen",
+      "saveFailed": "Intro konnte nicht gespeichert werden.",
+      "deleteFailed": "Intro konnte nicht gelöscht werden."
     }
   },
   "about": {

@@ -13,6 +13,7 @@ type Props = {
   audioPath: string;
   durationMs: number;
   mine: boolean;
+  bucket?: 'voice-media' | 'profile-voice';
 };
 
 const BAR_COUNT = 24;
@@ -24,7 +25,7 @@ const BAR_COUNT = 24;
  * thirty voice messages must not fire thirty storage requests for bubbles
  * nobody taps. Progress fills the bars from the left while playing.
  */
-export function VoiceMessageBubble({ messageId, audioPath, durationMs, mine }: Props) {
+export function VoiceMessageBubble({ messageId, audioPath, durationMs, mine, bucket }: Props) {
   const { theme, t } = useBinderTheme();
   const player = useAudioPlayer(null);
   const status = useAudioPlayerStatus(player);
@@ -44,7 +45,7 @@ export function VoiceMessageBubble({ messageId, audioPath, durationMs, mine }: P
     try {
       if (!loadedRef.current) {
         setLoading(true);
-        player.replace({ uri: await signedVoiceUrl(audioPath) });
+        player.replace({ uri: await signedVoiceUrl(audioPath, { bucket }) });
         loadedRef.current = true;
       }
       // A finished clip starts over; anything else resumes where it stopped.

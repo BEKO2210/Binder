@@ -1267,6 +1267,15 @@
           "yes": "Tem carro"
         }
       }
+    },
+    "voiceIntro": {
+      "title": "Intro de voz",
+      "copy": "Diga olá com a sua própria voz. Sua intro fica pública no perfil assim que você salva — denúncias e moderação valem como em todo lugar.",
+      "record": "Gravar intro de voz",
+      "replace": "Substituir",
+      "delete": "Excluir",
+      "saveFailed": "Não foi possível salvar a intro.",
+      "deleteFailed": "Não foi possível excluir a intro."
     }
   },
   "about": {

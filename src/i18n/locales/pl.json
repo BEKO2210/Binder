@@ -1267,6 +1267,15 @@
           "yes": "Ma samochód"
         }
       }
+    },
+    "voiceIntro": {
+      "title": "Intro głosowe",
+      "copy": "Przywitaj się własnym głosem. Twoje intro jest publiczne na profilu od chwili zapisania — zgłoszenia i moderacja działają jak wszędzie.",
+      "record": "Nagraj intro głosowe",
+      "replace": "Zastąp",
+      "delete": "Usuń",
+      "saveFailed": "Nie udało się zapisać intro.",
+      "deleteFailed": "Nie udało się usunąć intro."
     }
   },
   "about": {

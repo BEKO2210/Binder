@@ -46,6 +46,9 @@ test('every voice string exists in every language', () => {
     'chat.voice.accessibility.record', 'chat.voice.accessibility.finish', 'chat.voice.accessibility.discard',
     'chat.voice.accessibility.play', 'chat.voice.accessibility.pause',
     'matches.voiceMessage',
+    'identity.voiceIntro.title', 'identity.voiceIntro.copy', 'identity.voiceIntro.record',
+    'identity.voiceIntro.replace', 'identity.voiceIntro.delete',
+    'identity.voiceIntro.saveFailed', 'identity.voiceIntro.deleteFailed',
   ];
   for (const { code } of availableLocales()) {
     for (const key of keys) {

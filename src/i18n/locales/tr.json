@@ -1267,6 +1267,15 @@
           "yes": "Arabası var"
         }
       }
+    },
+    "voiceIntro": {
+      "title": "Sesli tanıtım",
+      "copy": "Kendi sesinle merhaba de. Tanıtımın kaydettiğin anda profilinde herkese açık olur — bildirme ve moderasyon her yerde olduğu gibi geçerli.",
+      "record": "Sesli tanıtım kaydet",
+      "replace": "Değiştir",
+      "delete": "Sil",
+      "saveFailed": "Tanıtım kaydedilemedi.",
+      "deleteFailed": "Tanıtım silinemedi."
     }
   },
   "about": {

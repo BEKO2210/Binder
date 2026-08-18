@@ -1267,6 +1267,15 @@
           "yes": "Tiene coche"
         }
       }
+    },
+    "voiceIntro": {
+      "title": "Intro de voz",
+      "copy": "Saluda con tu propia voz. Tu intro es pública en tu perfil desde que la guardas: denuncias y moderación aplican como en todo lo demás.",
+      "record": "Grabar intro de voz",
+      "replace": "Reemplazar",
+      "delete": "Eliminar",
+      "saveFailed": "No se pudo guardar la intro.",
+      "deleteFailed": "No se pudo eliminar la intro."
     }
   },
   "about": {

@@ -1267,6 +1267,15 @@
           "yes": "Heeft een auto"
         }
       }
+    },
+    "voiceIntro": {
+      "title": "Spraakintro",
+      "copy": "Zeg hallo met je eigen stem. Je intro is openbaar op je profiel zodra je opslaat — melden en moderatie gelden zoals overal.",
+      "record": "Spraakintro opnemen",
+      "replace": "Vervangen",
+      "delete": "Verwijderen",
+      "saveFailed": "Intro kon niet worden opgeslagen.",
+      "deleteFailed": "Intro kon niet worden verwijderd."
     }
   },
   "about": {
