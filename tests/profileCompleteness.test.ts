@@ -38,3 +38,14 @@ test('the profile screen no longer carries the settings, the policies or account
     assert.ok(menu.includes(moved), `${moved} did not arrive in the menu`);
   }
 });
+
+test('the profile preview is the same screen a match sees', () => {
+  // Rendering a second version of the profile would let the preview drift from
+  // the real thing, which is precisely what a preview must not do. The one
+  // difference is the distance: the server answers 0 km to yourself, and
+  // "0 km away" under your own name reads like a bug.
+  const root = readFileSync(new URL('../src/Root.tsx', import.meta.url), 'utf8');
+  assert.match(root, /profileRoute === 'preview'[\s\S]*?<PartnerProfileScreen userId=\{session\.user\.id\}[^>]*viewingSelf/);
+  const viewer = readFileSync(new URL('../src/screens/PartnerProfileScreen.tsx', import.meta.url), 'utf8');
+  assert.match(viewer, /profile\.distanceKm !== null && !viewingSelf/);
+});

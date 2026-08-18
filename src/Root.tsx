@@ -39,6 +39,7 @@ import LegalGateScreen from './screens/LegalGateScreen';
 import MatchesScreen from './screens/MatchesScreen';
 import MenuScreen from './screens/MenuScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
+import PartnerProfileScreen from './screens/PartnerProfileScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ProfileSettingsScreen from './screens/ProfileSettingsScreen';
 import { useBinderHaptics } from './theme/haptics';
@@ -50,7 +51,7 @@ import { BinderThemeProvider, useBinderTheme } from './theme/ThemeProvider';
 const STARTUP_DEADLINE_MS = 15_000;
 
 type Tab = 'discover' | 'matches' | 'profile' | 'menu';
-type ProfileRoute = 'home' | 'edit';
+type ProfileRoute = 'home' | 'edit' | 'preview';
 // Settings, beta and about used to be profile routes, which is why the screen
 // that shows a person their own photo also held the language picker and the
 // delete-account button. They belong to the menu tab now.
@@ -441,6 +442,10 @@ function BinderApp() {
   // Full-screen routes live outside the tab shell, so they need the same centred
   // column — a conversation stretched across a tablet reads as a wall of text.
   if (activeMatch) return <CenteredColumn wide={wideScreen}><RouteFrame route="expand"><ChatScreen match={activeMatch} currentUserId={session.user.id} onClose={() => { setActiveMatch(null); setMatchesRefreshKey((value) => value + 1); }} onConversationEnded={() => { setActiveMatch(null); setTab('matches'); setMatchesRefreshKey((value) => value + 1); }} onSessionExpired={handleSessionExpired} /></RouteFrame></CenteredColumn>;
+  // The same screen a match sees, pointed at the signed-in person. Anything
+  // else would be a second rendering of a profile that could drift from the
+  // real one, which is the opposite of what a preview is for.
+  if (profileRoute === 'preview') return <RouteFrame route="lift"><PartnerProfileScreen userId={session.user.id} fallbackName="" viewingSelf onClose={() => setProfileRoute('home')} /></RouteFrame>;
   if (profileRoute === 'edit') return <RouteFrame route="lift"><ProfileSettingsScreen userId={session.user.id} onClose={() => setProfileRoute('home')} onSessionExpired={handleSessionExpired} /></RouteFrame>;
   if (menuRoute === 'settings') return <RouteFrame route="trailing"><AppSettingsScreen onClose={() => setMenuRoute('home')} /></RouteFrame>;
   if (menuRoute === 'beta') return <RouteFrame route="trailing"><BetaScreen onClose={() => setMenuRoute('home')} /></RouteFrame>;
@@ -454,7 +459,7 @@ function BinderApp() {
       <View style={{ flex: 1, width: '100%', maxWidth: theme.layout.tabletContentMaxWidth, alignSelf: 'center', borderLeftWidth: wideScreen ? 1 : 0, borderRightWidth: wideScreen ? 1 : 0, borderColor: theme.colors.borderSubtle }}>
         {tab === 'discover' ? <DiscoveryScreen onOpenMatch={(target) => { setActiveMatch(target); setMatchesRefreshKey((value) => value + 1); }} onSessionExpired={handleSessionExpired} /> : null}
         {tab === 'matches' ? <MatchesScreen refreshKey={matchesRefreshKey} onOpenMatch={setActiveMatch} onOpenDiscovery={() => setTab('discover')} onSessionExpired={handleSessionExpired} /> : null}
-        {tab === 'profile' ? <ProfileScreen userId={session.user.id} onEditProfile={() => setProfileRoute('edit')} onSessionExpired={handleSessionExpired} /> : null}
+        {tab === 'profile' ? <ProfileScreen userId={session.user.id} onEditProfile={() => setProfileRoute('edit')} onPreviewProfile={() => setProfileRoute('preview')} onSessionExpired={handleSessionExpired} /> : null}
         {tab === 'menu' ? <MenuScreen onOpenSettings={() => setMenuRoute('settings')} onOpenBeta={() => setMenuRoute('beta')} onOpenAbout={() => setMenuRoute('about')} /> : null}
       </View>
       {/* Chrome spans the full width, its content stays in the centred column:

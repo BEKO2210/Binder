@@ -389,6 +389,7 @@
       "staySignedIn": "Seguir con la sesión iniciada",
       "signOut": "Cerrar sesión",
       "completeProfile": "Completar perfil",
+      "preview": "Ver tu perfil como lo ven los demás",
       "tryAgain": "Intentar de nuevo"
     },
     "states": {

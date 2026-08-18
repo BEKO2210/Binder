@@ -389,6 +389,7 @@
       "staySignedIn": "로그인 유지",
       "signOut": "로그아웃",
       "completeProfile": "프로필 완성",
+      "preview": "다른 사람에게 보이는 프로필 보기",
       "tryAgain": "다시 시도"
     },
     "states": {

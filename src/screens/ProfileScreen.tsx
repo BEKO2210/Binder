@@ -15,10 +15,11 @@ import { useBinderTheme } from '../theme/ThemeProvider';
 type Props = {
   userId: string;
   onEditProfile: () => void;
+  onPreviewProfile: () => void;
   onSessionExpired: () => void;
 };
 
-export default function ProfileScreen({ userId, onEditProfile, onSessionExpired }: Props) {
+export default function ProfileScreen({ userId, onEditProfile, onPreviewProfile, onSessionExpired }: Props) {
   const { theme, t, locale } = useBinderTheme();
   const [loading, setLoading] = useState(true);
   const [firstName, setFirstName] = useState('');
@@ -98,6 +99,7 @@ export default function ProfileScreen({ userId, onEditProfile, onSessionExpired 
       <View style={{ gap: theme.spacing.x3, marginTop: theme.spacing.x5 }}>
         <HubRow icon="edit" title={t('profile.hub.profileTitle')} copy={t('profile.hub.profileCopy')} onPress={onEditProfile} />
       </View>
+      <BinderButton label={t('profile.actions.preview')} icon="discover" variant="secondary" onPress={onPreviewProfile} style={{ marginTop: theme.spacing.x3 }} />
       {message ? <BinderText accessibilityLiveRegion="assertive" variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x4 }}>{message}</BinderText> : null}
       </View>
     </ScrollView>

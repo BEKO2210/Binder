@@ -13,13 +13,17 @@ import { resolveSpring } from '../lib/motionPolicy';
 import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
-type Props = { userId: string; fallbackName: string; onClose: () => void; initialProfile?: DiscoveryProfile };
+// `viewingSelf` is what the profile tab passes when somebody previews their own
+// profile through this same screen. The only thing that has to change is the
+// distance: the server answers 0 km to yourself, and "0 km away" under your own
+// name reads like a bug.
+type Props = { userId: string; fallbackName: string; onClose: () => void; initialProfile?: DiscoveryProfile; viewingSelf?: boolean };
 
 function asPartnerProfile(profile: DiscoveryProfile): PartnerProfile {
   return { userId: profile.id, name: profile.name, age: profile.age, bio: profile.bio, interests: profile.tags, distanceKm: profile.distanceKm, photoUrls: profile.photoUrls };
 }
 
-export default function PartnerProfileScreen({ userId, fallbackName, onClose, initialProfile }: Props) {
+export default function PartnerProfileScreen({ userId, fallbackName, onClose, initialProfile, viewingSelf = false }: Props) {
   const { theme, reduceMotion, locale, t } = useBinderTheme();
   const haptic = useBinderHaptics();
   const { width, height } = useWindowDimensions();
@@ -70,7 +74,7 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose, in
                   <BinderText variant="displayL">{profile.name} <BinderText variant="heading">{formatCount(profile.age, locale)}</BinderText></BinderText>
                   <View accessibilityLabel={t('partnerProfile.accessibility.photosReviewed')} style={{ minHeight: theme.layout.minimumTouchTarget, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, paddingHorizontal: theme.spacing.x3, borderRadius: theme.radii.pill, backgroundColor: theme.colors.surfaceElevated }}><BinderIcon name="check" color={theme.accent.onSurface} /><BinderText variant="caption" tone="secondary">{t('partnerProfile.photosReviewed')}</BinderText></View>
                 </View>
-                {profile.distanceKm !== null ? <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>{t('partnerProfile.away', { distance: formatDistanceKm(profile.distanceKm, locale) })}</BinderText> : null}
+                {profile.distanceKm !== null && !viewingSelf ? <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>{t('partnerProfile.away', { distance: formatDistanceKm(profile.distanceKm, locale) })}</BinderText> : null}
                 {profile.bio ? <BinderText variant="bodyL" tone="secondary" style={{ marginTop: theme.spacing.x4 }}>{profile.bio}</BinderText> : null}
                 {profile.interests.length > 0 ? <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2, marginTop: theme.spacing.x5 }}>{profile.interests.map((interest) => <View key={interest} accessibilityRole="text" style={{ minHeight: theme.layout.minimumTouchTarget, maxWidth: '100%', justifyContent: 'center', paddingHorizontal: theme.spacing.x4, borderRadius: theme.radii.pill, borderWidth: 1, borderColor: theme.colors.borderSubtle, backgroundColor: theme.colors.surface }}><BinderText variant="label" tone="secondary" numberOfLines={1} ellipsizeMode="tail">{interest}</BinderText></View>)}</View> : null}
               </View>
