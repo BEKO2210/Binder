@@ -9,6 +9,7 @@ import type { DiscoveryProfile } from '../lib/discovery';
 import { discoveryDeckPhysics } from '../lib/discoveryDeck';
 import { fetchPartnerProfile, type PartnerProfile } from '../lib/partnerProfile';
 import { formatCount, formatDistanceKm } from '../lib/format';
+import { interestLabel } from '../lib/validation';
 import { resolveSpring } from '../lib/motionPolicy';
 import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
@@ -93,7 +94,7 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose, in
                 </View>
                 {profile.distanceKm !== null && !viewingSelf ? <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>{t('partnerProfile.away', { distance: formatDistanceKm(profile.distanceKm, locale) })}</BinderText> : null}
                 {profile.bio ? <BinderText variant="bodyL" tone="secondary" style={{ marginTop: theme.spacing.x4 }}>{profile.bio}</BinderText> : null}
-                {profile.interests.length > 0 ? <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2, marginTop: theme.spacing.x5 }}>{profile.interests.map((interest) => <View key={interest} accessibilityRole="text" style={{ minHeight: theme.layout.minimumTouchTarget, maxWidth: '100%', justifyContent: 'center', paddingHorizontal: theme.spacing.x4, borderRadius: theme.radii.pill, borderWidth: 1, borderColor: theme.colors.borderSubtle, backgroundColor: theme.colors.surface }}><BinderText variant="label" tone="secondary" numberOfLines={1} ellipsizeMode="tail">{interest}</BinderText></View>)}</View> : null}
+                {profile.interests.length > 0 ? <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2, marginTop: theme.spacing.x5 }}>{profile.interests.map((interest) => <View key={interest} accessibilityRole="text" style={{ minHeight: theme.layout.minimumTouchTarget, maxWidth: '100%', justifyContent: 'center', paddingHorizontal: theme.spacing.x4, borderRadius: theme.radii.pill, borderWidth: 1, borderColor: theme.colors.borderSubtle, backgroundColor: theme.colors.surface }}><BinderText variant="label" tone="secondary" numberOfLines={1} ellipsizeMode="tail">{interestLabel(t, interest)}</BinderText></View>)}</View> : null}
               </View>
             </ScrollView>
           </Animated.View>

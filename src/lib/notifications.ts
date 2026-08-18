@@ -38,12 +38,16 @@ Notifications.setNotificationHandler({
   },
 });
 
-const categories: { id: NotificationCategory; name: string; importance: Notifications.AndroidImportance }[] = [
-  { id: 'new_match', name: 'New matches', importance: Notifications.AndroidImportance.HIGH },
-  { id: 'new_message', name: 'Messages', importance: Notifications.AndroidImportance.HIGH },
-  { id: 'moderation_status', name: 'Photo review updates', importance: Notifications.AndroidImportance.DEFAULT },
-  { id: 'safety_alert', name: 'Safety and account alerts', importance: Notifications.AndroidImportance.HIGH },
-  { id: 'product_notice', name: 'Binder updates', importance: Notifications.AndroidImportance.LOW },
+// These names appear in Android's own settings, outside the app, so they are
+// product copy like everything else. Android will not rename a channel that
+// already exists — the id carries a version for exactly that reason, and it is
+// raised whenever the names change.
+const categories: { id: NotificationCategory; nameKey: string; importance: Notifications.AndroidImportance }[] = [
+  { id: 'new_match', nameKey: 'notifications.channels.newMatch', importance: Notifications.AndroidImportance.HIGH },
+  { id: 'new_message', nameKey: 'notifications.channels.newMessage', importance: Notifications.AndroidImportance.HIGH },
+  { id: 'moderation_status', nameKey: 'notifications.channels.moderationStatus', importance: Notifications.AndroidImportance.DEFAULT },
+  { id: 'safety_alert', nameKey: 'notifications.channels.safetyAlert', importance: Notifications.AndroidImportance.HIGH },
+  { id: 'product_notice', nameKey: 'notifications.channels.productNotice', importance: Notifications.AndroidImportance.LOW },
 ];
 
 function getProjectId(): string | null {
@@ -66,19 +70,32 @@ function behaviorName(sound: boolean, vibration: boolean) {
 }
 
 export function notificationChannelId(category: NotificationCategory, sound: boolean, vibration: boolean) {
-  return `binder_${category}_${behaviorName(sound, vibration)}_v1`;
+  return `binder_${category}_${behaviorName(sound, vibration)}_v2`;
 }
 
-export async function ensureAndroidNotificationChannels(signal?: AbortSignal): Promise<void> {
+export async function ensureAndroidNotificationChannels(translate: (key: string) => string, signal?: AbortSignal): Promise<void> {
   if (Platform.OS !== 'android') return;
+
+  // The v1 channels carry the old English names and Android keeps them until
+  // they are deleted. Leaving them behind would show every category twice in
+  // the system settings, once in each language.
+  for (const category of categories) {
+    for (const sound of [true, false]) {
+      for (const vibration of [true, false]) {
+        await abortable(
+          Notifications.deleteNotificationChannelAsync(`binder_${category.id}_${behaviorName(sound, vibration)}_v1`),
+          signal,
+        ).catch(() => undefined);
+      }
+    }
+  }
 
   for (const category of categories) {
     for (const sound of [true, false]) {
       for (const vibration of [true, false]) {
         const behavior = behaviorName(sound, vibration);
         await abortable(Notifications.setNotificationChannelAsync(notificationChannelId(category.id, sound, vibration), {
-          name: `${category.name} — ${behavior.replace('_', ', ')}`,
-          description: `${category.name} with ${sound ? 'sound' : 'no sound'} and ${vibration ? 'vibration' : 'no vibration'}.`,
+          name: `${translate(category.nameKey)} — ${translate(sound ? 'notifications.behavior.sound' : 'notifications.behavior.silent')}, ${translate(vibration ? 'notifications.behavior.vibrate' : 'notifications.behavior.steady')}`,
           importance: category.importance,
           sound: sound ? 'default' : null,
           enableVibrate: vibration,
@@ -93,12 +110,12 @@ export async function ensureAndroidNotificationChannels(signal?: AbortSignal): P
   }
 }
 
-async function registerCurrentToken(requestPermission: boolean, signal?: AbortSignal): Promise<PushRegistrationResult> {
+async function registerCurrentToken(translate: (key: string) => string, requestPermission: boolean, signal?: AbortSignal): Promise<PushRegistrationResult> {
   if (Platform.OS !== 'android' && Platform.OS !== 'ios') return { status: 'unsupported' };
   const projectId = getProjectId();
   if (!projectId) return { status: 'missing-project-id' };
 
-  await ensureAndroidNotificationChannels(signal);
+  await ensureAndroidNotificationChannels(translate, signal);
   const existing = await abortable(Notifications.getPermissionsAsync(), signal);
   let status = existing.status;
   if (status !== 'granted' && requestPermission) status = (await abortable(Notifications.requestPermissionsAsync(), signal)).status;
@@ -122,8 +139,8 @@ async function registerCurrentToken(requestPermission: boolean, signal?: AbortSi
   }
 }
 
-export async function enablePushNotifications(signal?: AbortSignal): Promise<PushRegistrationResult> {
-  return registerCurrentToken(true, signal);
+export async function enablePushNotifications(translate: (key: string) => string, signal?: AbortSignal): Promise<PushRegistrationResult> {
+  return registerCurrentToken(translate, true, signal);
 }
 
 export async function getNotificationPermissionStatus(signal?: AbortSignal): Promise<'granted' | 'denied' | 'undetermined'> {
@@ -138,8 +155,8 @@ export async function openSystemNotificationSettings(): Promise<void> {
   await Linking.openSettings();
 }
 
-export async function refreshPushRegistration(signal?: AbortSignal): Promise<PushRegistrationResult> {
-  return registerCurrentToken(false, signal);
+export async function refreshPushRegistration(translate: (key: string) => string, signal?: AbortSignal): Promise<PushRegistrationResult> {
+  return registerCurrentToken(translate, false, signal);
 }
 
 export async function disablePushNotifications(): Promise<void> {
@@ -147,13 +164,13 @@ export async function disablePushNotifications(): Promise<void> {
   if (error) throw error;
 }
 
-export function observePushTokenRotation(onResult?: (result: PushRegistrationResult) => void) {
+export function observePushTokenRotation(translate: (key: string) => string, onResult?: (result: PushRegistrationResult) => void) {
   const subscription = Notifications.addPushTokenListener(() => {
     // A rotation the server never hears about is the quietest way for push to
     // die: the phone has a new token, Binder still advertises the old one, and
     // nothing on any screen says so. The caller decides what a refusal means
     // for the setting; a failure at least has to leave a trace.
-    void refreshPushRegistration()
+    void refreshPushRegistration(translate)
       .then((result) => onResult?.(result))
       .catch((error: unknown) => safeLog('warn', `push_token_rotation_failed_${classifyError(error).kind}`));
   });

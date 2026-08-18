@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { availableLocales, translate } from '../src/i18n/index.ts';
 import { abortable, backoffDelay, classifyError, deadlineError, isConversationEndedError, isDeadlineError, isLikelyOffline, withDeadline, withRetry } from '../src/lib/reliability.ts';
 
 test('classifies every reliability family with distinct recovery', () => {
@@ -16,9 +17,9 @@ test('classifies every reliability family with distinct recovery', () => {
     const result = classifyError(input);
     assert.equal(result.kind, kind);
     assert.equal(result.recovery, recovery);
-    assert.ok(result.message.length > 0);
+    assert.ok(result.messageKey.startsWith('reliability.'));
   }
-  assert.equal(new Set(cases.map(([input]) => classifyError(input).message)).size, cases.length);
+  assert.equal(new Set(cases.map(([input]) => classifyError(input).messageKey)).size, cases.length);
   assert.equal(new Set(cases.map(([input]) => classifyError(input).recovery)).size, cases.length);
 });
 
@@ -102,4 +103,26 @@ test('only this module\'s own deadline counts as one', () => {
   // And the marker must not accidentally answer the offline question.
   assert.equal(isLikelyOffline(deadlineError()), true);
   assert.equal(isLikelyOffline(new Error('Network request failed')), true);
+});
+
+
+test('every reliability message exists in every language', () => {
+  // These are the sentences a person sees whenever the network or the server
+  // misbehaves, which is often enough that they were the most visible English
+  // left in the app. A key without a translation renders as the key itself.
+  const kinds = ['offline', 'timeout', 'server-refusal', 'permission-denied', 'conflict', 'unknown'] as const;
+  for (const { code } of availableLocales()) {
+    for (const kind of kinds) {
+      const key = classifyError({ code: 'x', message: kind }).messageKey;
+      const text = translate(code, key);
+      assert.ok(text && text !== key, `${code} is missing ${key}`);
+    }
+  }
+  for (const kind of kinds) {
+    const key = `reliability.${kind.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase())}`;
+    for (const { code } of availableLocales()) {
+      const text = translate(code, key);
+      assert.ok(text && text !== key, `${code} is missing ${key}`);
+    }
+  }
 });

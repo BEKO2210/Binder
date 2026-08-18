@@ -96,7 +96,7 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
         .then((status) => { if (active && ticket === newestRead) setPushPermission(status); })
         .catch(() => undefined);
       if (!settings.notifications.enabled) { setPushHealth(null); return; }
-      void refreshPushRegistration()
+      void refreshPushRegistration(t)
         .then((result) => { if (active && ticket === newestRead) setPushHealth(result.status); })
         .catch(() => { if (active && ticket === newestRead) setPushHealth('unsupported'); });
     };
@@ -116,7 +116,7 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
         showMessage(t('appSettings.messages.pushOff'), 'success');
         return;
       }
-      const result = await enablePushNotifications();
+      const result = await enablePushNotifications(t);
       if (result.status === 'registered') {
         await updateNotifications({ enabled: true });
         showMessage(t('appSettings.messages.pushActive'), 'success');

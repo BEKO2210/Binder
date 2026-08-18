@@ -544,6 +544,14 @@
       "copy": "Bepaalt wie in je Ontdekken-selectie kan verschijnen."
     }
   },
+  "reliability": {
+    "offline": "Binder kan het netwerk niet bereiken. De verbinding wordt automatisch hersteld.",
+    "timeout": "Binder deed er te lang over. Probeer het opnieuw.",
+    "serverRefusal": "Binder kon dat niet afronden. Controleer de gegevens en probeer het opnieuw.",
+    "permissionDenied": "Je sessie staat dat niet toe. Meld je opnieuw aan en probeer het nog eens.",
+    "conflict": "Dit is op een ander apparaat gewijzigd. Ververs om de nieuwste versie te zien.",
+    "unknown": "Er ging iets onverwachts mis. Probeer het opnieuw en meld het als het blijft."
+  },
   "push": {
     "newMatch": {
       "title": "Een Bind!",
@@ -782,6 +790,41 @@
     "units": {
       "years": "jaar",
       "km": "km"
+    },
+    "presets": {
+      "nearby": {
+        "label": "Dichtbij",
+        "description": "Tot 10 km · 22–36 jaar"
+      },
+      "city": {
+        "label": "Mijn stad",
+        "description": "Tot 30 km · 20–45 jaar"
+      },
+      "wide": {
+        "label": "Ruim",
+        "description": "Tot 100 km · 18–60 jaar"
+      }
+    }
+  },
+  "identity": {
+    "gender": {
+      "woman": "Vrouw",
+      "man": "Man",
+      "nonbinary": "Non-binair"
+    },
+    "interests": {
+      "travel": "Reizen",
+      "music": "Muziek",
+      "fitness": "Fitness",
+      "food": "Eten",
+      "design": "Design",
+      "tech": "Techniek",
+      "photography": "Fotografie",
+      "hiking": "Wandelen",
+      "coffee": "Koffie",
+      "books": "Boeken",
+      "gaming": "Gamen",
+      "dogs": "Honden"
     }
   },
   "about": {
@@ -1002,6 +1045,21 @@
       "resetFailed": "Deze herstellink kon niet worden geopend. Probeer het opnieuw.",
       "confirmInvalid": "Deze bevestigingslink is ongeldig of verlopen. Meld je opnieuw aan voor een nieuwe.",
       "confirmFailed": "Deze bevestigingslink kon niet worden geopend. Probeer het opnieuw."
+    }
+  },
+  "notifications": {
+    "channels": {
+      "newMatch": "Nieuwe matches",
+      "newMessage": "Berichten",
+      "moderationStatus": "Fotobeoordeling",
+      "safetyAlert": "Beveiliging en account",
+      "productNotice": "Binder-nieuws"
+    },
+    "behavior": {
+      "sound": "geluid",
+      "silent": "stil",
+      "vibrate": "trillen",
+      "steady": "niet trillen"
     }
   }
 }

@@ -72,7 +72,7 @@ export default function ProfileScreen({ userId, onEditProfile, onPreviewProfile,
   }
 
   if (loading) return <ScreenState kind="loading" message={t('profile.states.loading')} />;
-  if (loadError) return <ScreenState kind={loadError.kind === 'offline' ? 'offline' : 'error'} icon="retry" title={loadError.kind === 'offline' ? t('profile.states.offlineTitle') : t('profile.states.errorTitle')} message={loadError.kind === 'offline' ? t('profile.states.offlineMessage') : loadError.message} actionLabel={t('profile.actions.tryAgain')} onAction={() => void load()} />;
+  if (loadError) return <ScreenState kind={loadError.kind === 'offline' ? 'offline' : 'error'} icon="retry" title={loadError.kind === 'offline' ? t('profile.states.offlineTitle') : t('profile.states.errorTitle')} message={loadError.kind === 'offline' ? t('profile.states.offlineMessage') : t(loadError.messageKey)} actionLabel={t('profile.actions.tryAgain')} onAction={() => void load()} />;
 
   const completeness = profileCompleteness({ photoCount, bio, interestCount });
   // "3 of 3" is true and still not the whole truth: a photo is invisible until

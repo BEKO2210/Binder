@@ -2,18 +2,22 @@ export type ReliabilityErrorKind = 'offline' | 'timeout' | 'server-refusal' | 'p
 
 export type ReliabilityError = {
   kind: ReliabilityErrorKind;
-  message: string;
+  // A translation key, not a sentence. These end up on screen in Matches, Chat
+  // and Discovery, and this module cannot translate anything itself — it is
+  // imported by plain node tests and must stay free of React. The screen that
+  // shows it resolves the key.
+  messageKey: string;
   recovery: 'retry-automatically' | 'retry' | 'review-and-retry' | 'sign-in-again' | 'refresh' | 'report-problem';
   retryable: boolean;
 };
 
 const DEFINITIONS: Record<ReliabilityErrorKind, Omit<ReliabilityError, 'kind'>> = {
-  offline: { message: 'Binder cannot reach the network. It will reconnect automatically.', recovery: 'retry-automatically', retryable: true },
-  timeout: { message: 'Binder took too long to respond. Try again.', recovery: 'retry', retryable: true },
-  'server-refusal': { message: 'Binder could not complete that request. Check the details and try again.', recovery: 'review-and-retry', retryable: false },
-  'permission-denied': { message: 'Your session does not allow that action. Sign in again and retry.', recovery: 'sign-in-again', retryable: false },
-  conflict: { message: 'That changed on another device. Refresh to see the latest version.', recovery: 'refresh', retryable: false },
-  unknown: { message: 'Something unexpected happened. Try again, then report the problem if it continues.', recovery: 'report-problem', retryable: true },
+  offline: { messageKey: 'reliability.offline', recovery: 'retry-automatically', retryable: true },
+  timeout: { messageKey: 'reliability.timeout', recovery: 'retry', retryable: true },
+  'server-refusal': { messageKey: 'reliability.serverRefusal', recovery: 'review-and-retry', retryable: false },
+  'permission-denied': { messageKey: 'reliability.permissionDenied', recovery: 'sign-in-again', retryable: false },
+  conflict: { messageKey: 'reliability.conflict', recovery: 'refresh', retryable: false },
+  unknown: { messageKey: 'reliability.unknown', recovery: 'report-problem', retryable: true },
 };
 
 function errorText(value: unknown): string {

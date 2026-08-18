@@ -61,7 +61,10 @@ function retryableExpoError(code: string | null, httpStatus?: number): boolean {
 
 function channelId(job: ClaimedDelivery): string {
   const behavior = `${job.sound ? "sound" : "silent"}_${job.vibration ? "vibrate" : "steady"}`;
-  return `binder_${job.kind}_${behavior}_v1`;
+  // Must match notificationChannelId in src/lib/notifications.ts exactly. A
+  // notification addressed to a channel the phone does not have falls back to
+  // the default one, quietly losing the sound and vibration the person chose.
+  return `binder_${job.kind}_${behavior}_v2`;
 }
 
 function expoMessage(job: ClaimedDelivery) {

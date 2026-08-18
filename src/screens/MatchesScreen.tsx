@@ -72,7 +72,7 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
         // banner would happily say "enabled" over a dead installation. Asking
         // again is idempotent and repairs that case on its own.
         if (state !== 'enabled') return;
-        const result = await refreshPushRegistration(controller.signal);
+        const result = await refreshPushRegistration(t, controller.signal);
         settle(bannerStateAfterRegistration(result.status));
       })
       .catch((nextError: unknown) => {
@@ -95,7 +95,7 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
     setPushState('busy');
     setPushError(null);
     try {
-      const result = await enablePushNotifications(controller.signal);
+      const result = await enablePushNotifications(t, controller.signal);
       if (!mountedRef.current || controller.signal.aborted) return;
       const next = bannerStateAfterRegistration(result.status);
       setPushState(next);
@@ -132,14 +132,14 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
                 : pushState === 'enabled' ? t('matches.notifications.enabledCopy')
                 : t('matches.notifications.copy')}
             </BinderText>
-            {pushError ? <BinderText accessibilityLiveRegion="assertive" variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x2 }}>{pushError.message}</BinderText> : null}
+            {pushError ? <BinderText accessibilityLiveRegion="assertive" variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x2 }}>{t(pushError.messageKey)}</BinderText> : null}
           </View>
           {bannerOffersEnable(pushState) ? <BinderButton label={pushState === 'offline' || pushState === 'failed' ? t('matches.actions.retry') : t('matches.actions.enable')} variant="secondary" fullWidth={false} loading={pushState === 'busy'} onPress={() => void enablePush()} /> : null}
           {pushState === 'denied' ? <BinderButton label={t('matches.actions.openSettings')} variant="secondary" fullWidth={false} onPress={() => void openSystemNotificationSettings().catch(() => undefined)} /> : null}
         </View>
       </BinderCard>
 
-      {loading && matches.length === 0 ? <ScreenState kind="loading" loadingShape="matches" message={t('matches.states.loading')} /> : error && matches.length === 0 ? <ScreenState kind={error.kind === 'offline' ? 'offline' : 'error'} icon="retry" title={error.kind === 'offline' ? t('matches.states.offlineTitle') : t('matches.states.errorTitle')} message={error.kind === 'offline' ? t('matches.states.offlineMessage') : error.message} actionLabel={t('matches.actions.tryAgain')} onAction={() => void load()} /> : matches.length === 0 ? <ScreenState kind="empty" icon="matches" title={t('matches.empty.title')} message={t('matches.empty.message')} actionLabel={t('matches.actions.goToDiscovery')} onAction={onOpenDiscovery} /> : (
+      {loading && matches.length === 0 ? <ScreenState kind="loading" loadingShape="matches" message={t('matches.states.loading')} /> : error && matches.length === 0 ? <ScreenState kind={error.kind === 'offline' ? 'offline' : 'error'} icon="retry" title={error.kind === 'offline' ? t('matches.states.offlineTitle') : t('matches.states.errorTitle')} message={error.kind === 'offline' ? t('matches.states.offlineMessage') : t(error.messageKey)} actionLabel={t('matches.actions.tryAgain')} onAction={() => void load()} /> : matches.length === 0 ? <ScreenState kind="empty" icon="matches" title={t('matches.empty.title')} message={t('matches.empty.message')} actionLabel={t('matches.actions.goToDiscovery')} onAction={onOpenDiscovery} /> : (
         <FlatList
           data={conversations}
           keyExtractor={(item) => item.matchId}
@@ -168,7 +168,7 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
           )}
         />
       )}
-      {error && matches.length > 0 ? <View accessibilityLiveRegion="assertive" style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, paddingBottom: theme.spacing.x3 }}><BinderText variant="caption" tone="destructive" style={{ flex: 1 }}>{error.message}</BinderText><BinderButton label={error.recovery === 'refresh' ? t('matches.actions.refresh') : t('matches.actions.retry')} variant="ghost" fullWidth={false} onPress={() => void load()} /></View> : null}
+      {error && matches.length > 0 ? <View accessibilityLiveRegion="assertive" style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, paddingBottom: theme.spacing.x3 }}><BinderText variant="caption" tone="destructive" style={{ flex: 1 }}>{t(error.messageKey)}</BinderText><BinderButton label={error.recovery === 'refresh' ? t('matches.actions.refresh') : t('matches.actions.retry')} variant="ghost" fullWidth={false} onPress={() => void load()} /></View> : null}
     </View>
   );
 }

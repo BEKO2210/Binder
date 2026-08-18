@@ -345,8 +345,8 @@ function BinderApp() {
       safeLog('warn', `push_refresh_${result.status}`);
     };
 
-    void refreshPushRegistration().then(reportSilentOutcome).catch(reportSilentFailure);
-    return observePushTokenRotation(reportSilentOutcome);
+    void refreshPushRegistration(t).then(reportSilentOutcome).catch(reportSilentFailure);
+    return observePushTokenRotation(t, reportSilentOutcome);
   }, [session?.user.id, legalGate?.accepted, onboardingComplete, settings.notifications.enabled]);
 
   useEffect(() => {

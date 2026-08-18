@@ -14,7 +14,7 @@ import { replacementOrder } from '../lib/photoReplacement';
 import { hasErrors, validateDiscovery, validateIdentity } from '../lib/onboardingFlow';
 import { classifyError } from '../lib/reliability';
 import { supabase } from '../lib/supabase';
-import { GENDERS, INTERESTS, type Gender } from '../lib/validation';
+import { GENDERS, INTERESTS, type Gender, interestLabel } from '../lib/validation';
 import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
@@ -265,8 +265,8 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
         <View><BinderText variant="micro" tone="muted">{t('profileSettings.details.eyebrow')}</BinderText><BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>{t('profileSettings.details.copy')}</BinderText></View>
         <BinderInput label={t('profileSettings.fields.firstName')} error={profileErrors.firstName} value={firstName} onChangeText={(value) => { setFirstName(value); if (profileErrors.firstName) setProfileErrors(validateIdentity(value, gender)); }} maxLength={40} />
         <BinderInput label={t('profileSettings.fields.bio')} helper={t('profileSettings.fields.bioCount', { count: bio.length })} value={bio} onChangeText={setBio} maxLength={500} multiline style={{ minHeight: theme.layout.multilineInputHeight, textAlignVertical: 'top' }} />
-        <Choice label={t('profileSettings.fields.gender')} error={profileErrors.gender}><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{GENDERS.map((item) => <BinderChip key={item.value} label={item.label} selected={gender === item.value} onPress={() => { setGender(item.value); setProfileErrors(validateIdentity(firstName, item.value)); }} />)}</View></Choice>
-        <Choice label={t('profileSettings.fields.interests')}><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{INTERESTS.map((item) => <BinderChip key={item} label={item} selected={interests.includes(item)} onPress={() => setInterests((current) => current.includes(item) ? current.filter((value) => value !== item) : current.length < 12 ? [...current, item] : current)} />)}</View></Choice>
+        <Choice label={t('profileSettings.fields.gender')} error={profileErrors.gender}><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{GENDERS.map((item) => <BinderChip key={item.value} label={t(item.labelKey)} selected={gender === item.value} onPress={() => { setGender(item.value); setProfileErrors(validateIdentity(firstName, item.value)); }} />)}</View></Choice>
+        <Choice label={t('profileSettings.fields.interests')}><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{INTERESTS.map((item) => <BinderChip key={item} label={interestLabel(t, item)} selected={interests.includes(item)} onPress={() => setInterests((current) => current.includes(item) ? current.filter((value) => value !== item) : current.length < 12 ? [...current, item] : current)} />)}</View></Choice>
       </BinderCard>
       <BinderCard style={{ marginTop: theme.spacing.x5 }}><View><BinderText variant="micro" tone="muted">{t('profileSettings.discovery.eyebrow')}</BinderText><BinderText variant="title" style={{ marginTop: theme.spacing.x2 }}>{t('profileSettings.discovery.title')}</BinderText><BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2, marginBottom: theme.spacing.x6 }}>{t('profileSettings.discovery.copy')}</BinderText></View>
           <DiscoveryPreferences interestedIn={interestedIn} minAge={minAge} maxAge={maxAge} distance={distance} errors={discoveryErrors} onChange={(next) => { setInterestedIn(next.interestedIn); setMinAge(next.minAge); setMaxAge(next.maxAge); setDistance(next.distance); setDiscoveryErrors(validateDiscovery(next.interestedIn, next.minAge, next.maxAge, next.distance)); }} />

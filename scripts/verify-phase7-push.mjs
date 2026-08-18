@@ -40,6 +40,13 @@ if (!migration.includes('Open Binder to continue the conversation.')) failures.p
 // database only says which language the recipient reads; the words come from
 // the locale files through a generated file, so a sentence has one home.
 if (!worker.includes('pushCopy(')) failures.push('Dispatcher does not translate the notification for the recipient');
+// The client creates the channels and the dispatcher addresses them. If those
+// two versions drift, every notification lands on Android's default channel and
+// silently loses the sound and vibration the person chose.
+const clientChannel = /_\$\{behaviorName\(sound, vibration\)\}_(v\d+)`/.exec(notifications)?.[1];
+const workerChannel = /_\$\{behavior\}_(v\d+)`/.exec(worker)?.[1];
+if (!clientChannel || !workerChannel) failures.push('Cannot determine the notification channel version on both sides');
+else if (clientChannel !== workerChannel) failures.push(`Channel version mismatch: client ${clientChannel}, dispatcher ${workerChannel}`);
 if (!/language/.test(worker)) failures.push('Dispatcher ignores the recipient language');
 
 for (const contract of ['addPushTokenListener','getExpoPushTokenAsync','AndroidNotificationVisibility.PRIVATE','notificationChannelId','parseNotificationRoute','UUID_PATTERN','syncNotificationPreferences','loadNotificationPreferences']) {

@@ -544,6 +544,14 @@
       "copy": "Controla quién puede aparecer en tu selección de Descubrir."
     }
   },
+  "reliability": {
+    "offline": "Binder no puede conectarse a la red. La conexión se restablecerá automáticamente.",
+    "timeout": "Binder tardó demasiado en responder. Inténtalo de nuevo.",
+    "serverRefusal": "Binder no pudo completar esa acción. Revisa los datos e inténtalo de nuevo.",
+    "permissionDenied": "Tu sesión no permite esa acción. Inicia sesión de nuevo e inténtalo otra vez.",
+    "conflict": "Esto cambió en otro dispositivo. Actualiza para ver la versión más reciente.",
+    "unknown": "Ha ocurrido algo inesperado. Inténtalo de nuevo y avisa si sigue pasando."
+  },
   "push": {
     "newMatch": {
       "title": "¡Es un Bind!",
@@ -782,6 +790,41 @@
     "units": {
       "years": "años",
       "km": "km"
+    },
+    "presets": {
+      "nearby": {
+        "label": "Cerca",
+        "description": "Hasta 10 km · 22–36 años"
+      },
+      "city": {
+        "label": "Mi ciudad",
+        "description": "Hasta 30 km · 20–45 años"
+      },
+      "wide": {
+        "label": "Amplio",
+        "description": "Hasta 100 km · 18–60 años"
+      }
+    }
+  },
+  "identity": {
+    "gender": {
+      "woman": "Mujer",
+      "man": "Hombre",
+      "nonbinary": "No binario"
+    },
+    "interests": {
+      "travel": "Viajes",
+      "music": "Música",
+      "fitness": "Fitness",
+      "food": "Comida",
+      "design": "Diseño",
+      "tech": "Tecnología",
+      "photography": "Fotografía",
+      "hiking": "Senderismo",
+      "coffee": "Café",
+      "books": "Libros",
+      "gaming": "Videojuegos",
+      "dogs": "Perros"
     }
   },
   "about": {
@@ -1002,6 +1045,21 @@
       "resetFailed": "No se pudo abrir este enlace para restablecer. Inténtalo de nuevo.",
       "confirmInvalid": "Este enlace de confirmación no es válido o ha caducado. Regístrate otra vez para recibir uno nuevo.",
       "confirmFailed": "No se pudo abrir este enlace de confirmación. Inténtalo de nuevo."
+    }
+  },
+  "notifications": {
+    "channels": {
+      "newMatch": "Nuevos matches",
+      "newMessage": "Mensajes",
+      "moderationStatus": "Revisión de fotos",
+      "safetyAlert": "Seguridad y cuenta",
+      "productNotice": "Novedades de Binder"
+    },
+    "behavior": {
+      "sound": "sonido",
+      "silent": "silencio",
+      "vibrate": "vibración",
+      "steady": "sin vibración"
     }
   }
 }

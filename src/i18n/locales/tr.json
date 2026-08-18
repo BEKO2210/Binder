@@ -544,6 +544,14 @@
       "copy": "Keşfet listenizde kimlerin görünebileceğini belirler."
     }
   },
+  "reliability": {
+    "offline": "Binder ağa ulaşamıyor. Bağlantı otomatik olarak yeniden kurulacak.",
+    "timeout": "Binder yanıt vermek için çok uzun sürdü. Tekrar deneyin.",
+    "serverRefusal": "Binder bunu tamamlayamadı. Bilgileri kontrol edip tekrar deneyin.",
+    "permissionDenied": "Oturumunuz bu işleme izin vermiyor. Yeniden giriş yapıp tekrar deneyin.",
+    "conflict": "Bu başka bir cihazda değişti. En son sürümü görmek için yenileyin.",
+    "unknown": "Beklenmedik bir şey oldu. Tekrar deneyin, sorun sürerse bildirin."
+  },
   "push": {
     "newMatch": {
       "title": "Bu bir Bind!",
@@ -782,6 +790,41 @@
     "units": {
       "years": "yıl",
       "km": "km"
+    },
+    "presets": {
+      "nearby": {
+        "label": "Yakında",
+        "description": "10 km’ye kadar · 22–36 yaş"
+      },
+      "city": {
+        "label": "Şehrim",
+        "description": "30 km’ye kadar · 20–45 yaş"
+      },
+      "wide": {
+        "label": "Geniş",
+        "description": "100 km’ye kadar · 18–60 yaş"
+      }
+    }
+  },
+  "identity": {
+    "gender": {
+      "woman": "Kadın",
+      "man": "Erkek",
+      "nonbinary": "İkili olmayan"
+    },
+    "interests": {
+      "travel": "Seyahat",
+      "music": "Müzik",
+      "fitness": "Fitness",
+      "food": "Yemek",
+      "design": "Tasarım",
+      "tech": "Teknoloji",
+      "photography": "Fotoğrafçılık",
+      "hiking": "Doğa yürüyüşü",
+      "coffee": "Kahve",
+      "books": "Kitaplar",
+      "gaming": "Oyun",
+      "dogs": "Köpekler"
     }
   },
   "about": {
@@ -1002,6 +1045,21 @@
       "resetFailed": "Bu sıfırlama bağlantısı açılamadı. Tekrar dene.",
       "confirmInvalid": "Bu onay bağlantısı geçersiz veya süresi dolmuş. Yeni bir tane için tekrar kaydol.",
       "confirmFailed": "Bu onay bağlantısı açılamadı. Tekrar dene."
+    }
+  },
+  "notifications": {
+    "channels": {
+      "newMatch": "Yeni eşleşmeler",
+      "newMessage": "Mesajlar",
+      "moderationStatus": "Fotoğraf incelemesi",
+      "safetyAlert": "Güvenlik ve hesap",
+      "productNotice": "Binder yenilikleri"
+    },
+    "behavior": {
+      "sound": "ses",
+      "silent": "sessiz",
+      "vibrate": "titreşim",
+      "steady": "titreşimsiz"
     }
   }
 }

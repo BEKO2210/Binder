@@ -544,6 +544,14 @@
       "copy": "Mengatur siapa yang dapat muncul di pilihan Discovery Anda."
     }
   },
+  "reliability": {
+    "offline": "Binder tidak dapat menjangkau jaringan. Koneksi akan pulih otomatis.",
+    "timeout": "Binder terlalu lama merespons. Coba lagi.",
+    "serverRefusal": "Binder tidak dapat menyelesaikan permintaan itu. Periksa datanya dan coba lagi.",
+    "permissionDenied": "Sesimu tidak mengizinkan tindakan itu. Masuk lagi dan coba sekali lagi.",
+    "conflict": "Ini berubah di perangkat lain. Muat ulang untuk melihat versi terbaru.",
+    "unknown": "Terjadi sesuatu yang tidak terduga. Coba lagi, dan laporkan jika terus terjadi."
+  },
   "push": {
     "newMatch": {
       "title": "Ini Bind!",
@@ -782,6 +790,41 @@
     "units": {
       "years": "tahun",
       "km": "km"
+    },
+    "presets": {
+      "nearby": {
+        "label": "Di dekatku",
+        "description": "Hingga 10 km · 22–36 tahun"
+      },
+      "city": {
+        "label": "Kotaku",
+        "description": "Hingga 30 km · 20–45 tahun"
+      },
+      "wide": {
+        "label": "Luas",
+        "description": "Hingga 100 km · 18–60 tahun"
+      }
+    }
+  },
+  "identity": {
+    "gender": {
+      "woman": "Perempuan",
+      "man": "Laki-laki",
+      "nonbinary": "Non-biner"
+    },
+    "interests": {
+      "travel": "Traveling",
+      "music": "Musik",
+      "fitness": "Kebugaran",
+      "food": "Kuliner",
+      "design": "Desain",
+      "tech": "Teknologi",
+      "photography": "Fotografi",
+      "hiking": "Mendaki",
+      "coffee": "Kopi",
+      "books": "Buku",
+      "gaming": "Gaming",
+      "dogs": "Anjing"
     }
   },
   "about": {
@@ -1002,6 +1045,21 @@
       "resetFailed": "Tautan atur ulang ini tidak bisa dibuka. Coba lagi.",
       "confirmInvalid": "Tautan konfirmasi ini tidak valid atau sudah kedaluwarsa. Daftar lagi untuk mendapat yang baru.",
       "confirmFailed": "Tautan konfirmasi ini tidak bisa dibuka. Coba lagi."
+    }
+  },
+  "notifications": {
+    "channels": {
+      "newMatch": "Match baru",
+      "newMessage": "Pesan",
+      "moderationStatus": "Peninjauan foto",
+      "safetyAlert": "Keamanan dan akun",
+      "productNotice": "Kabar Binder"
+    },
+    "behavior": {
+      "sound": "suara",
+      "silent": "senyap",
+      "vibrate": "getar",
+      "steady": "tanpa getar"
     }
   }
 }

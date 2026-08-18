@@ -544,6 +544,14 @@
       "copy": "控制哪些人可以出现在你的发现卡组中。"
     }
   },
+  "reliability": {
+    "offline": "Binder 无法连接网络，连接会自动恢复。",
+    "timeout": "Binder 响应时间过长，请重试。",
+    "serverRefusal": "Binder 无法完成该操作，请检查信息后重试。",
+    "permissionDenied": "当前登录状态不允许该操作，请重新登录后重试。",
+    "conflict": "该内容已在其他设备上更改，请刷新查看最新版本。",
+    "unknown": "出现了意外问题，请重试；如果持续出现请反馈。"
+  },
   "push": {
     "newMatch": {
       "title": "配对成功！",
@@ -782,6 +790,41 @@
     "units": {
       "years": "岁",
       "km": "公里"
+    },
+    "presets": {
+      "nearby": {
+        "label": "附近",
+        "description": "10 公里内 · 22–36 岁"
+      },
+      "city": {
+        "label": "我的城市",
+        "description": "30 公里内 · 20–45 岁"
+      },
+      "wide": {
+        "label": "更广",
+        "description": "100 公里内 · 18–60 岁"
+      }
+    }
+  },
+  "identity": {
+    "gender": {
+      "woman": "女性",
+      "man": "男性",
+      "nonbinary": "非二元"
+    },
+    "interests": {
+      "travel": "旅行",
+      "music": "音乐",
+      "fitness": "健身",
+      "food": "美食",
+      "design": "设计",
+      "tech": "科技",
+      "photography": "摄影",
+      "hiking": "徒步",
+      "coffee": "咖啡",
+      "books": "阅读",
+      "gaming": "游戏",
+      "dogs": "狗狗"
     }
   },
   "about": {
@@ -1002,6 +1045,21 @@
       "resetFailed": "无法打开此重置链接。请重试。",
       "confirmInvalid": "此确认链接无效或已过期。请重新注册以获取新链接。",
       "confirmFailed": "无法打开此确认链接。请重试。"
+    }
+  },
+  "notifications": {
+    "channels": {
+      "newMatch": "新配对",
+      "newMessage": "消息",
+      "moderationStatus": "照片审核",
+      "safetyAlert": "安全与账号",
+      "productNotice": "Binder 动态"
+    },
+    "behavior": {
+      "sound": "有声",
+      "silent": "静音",
+      "vibrate": "振动",
+      "steady": "无振动"
     }
   }
 }

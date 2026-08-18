@@ -467,11 +467,11 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
               <BinderButton label={t('chat.actions.reportAndBlock')} icon="report" variant="destructive" onPress={() => openReport()} />
             </View>
           )}
-          {safetyError ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x3 }}>{safetyError.message}</BinderText> : null}
+          {safetyError ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x3 }}>{t(safetyError.messageKey)}</BinderText> : null}
         </BinderCard>
       ) : null}
 
-      {loading ? <ScreenState kind="loading" loadingShape="conversation" message={t('chat.states.opening')} /> : loadError && messages.length === 0 ? <ScreenState kind={loadError.kind === 'offline' ? 'offline' : loadError.kind === 'permission-denied' ? 'permission' : 'error'} icon="retry" title={loadError.kind === 'offline' ? t('chat.states.offlineTitle') : t('chat.states.loadErrorTitle')} message={loadError.message} actionLabel={loadError.recovery === 'refresh' ? t('chat.actions.refresh') : t('chat.actions.tryAgain')} onAction={() => setReloadKey((value) => value + 1)} /> : messages.length === 0 ? <ScreenState kind="empty" icon="matches" title={t('chat.empty.title')} message={t('chat.empty.message')} /> : (
+      {loading ? <ScreenState kind="loading" loadingShape="conversation" message={t('chat.states.opening')} /> : loadError && messages.length === 0 ? <ScreenState kind={loadError.kind === 'offline' ? 'offline' : loadError.kind === 'permission-denied' ? 'permission' : 'error'} icon="retry" title={loadError.kind === 'offline' ? t('chat.states.offlineTitle') : t('chat.states.loadErrorTitle')} message={t(loadError.messageKey)} actionLabel={loadError.recovery === 'refresh' ? t('chat.actions.refresh') : t('chat.actions.tryAgain')} onAction={() => setReloadKey((value) => value + 1)} /> : messages.length === 0 ? <ScreenState kind="empty" icon="matches" title={t('chat.empty.title')} message={t('chat.empty.message')} /> : (
         <FlatList
           ref={listRef}
           data={timeline}
@@ -497,7 +497,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
           <View style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
             {attempt.status === 'sending' ? <BinderText variant="caption" tone="muted">{t('chat.message.sending')}</BinderText> : (
               <>
-                <BinderText variant="caption" tone="destructive" style={{ flexShrink: 1 }}>{attempt.error?.message ?? t('chat.errors.messageNotSent')}</BinderText>
+                <BinderText variant="caption" tone="destructive" style={{ flexShrink: 1 }}>{attempt.error ? t(attempt.error.messageKey) : t('chat.errors.messageNotSent')}</BinderText>
                 <Pressable accessibilityRole="button" accessibilityLabel={t('chat.accessibility.retrySending', { message: attempt.body.slice(0, 24) })} disabled={sending} onPress={() => void submitMessage(attempt.clientId)} style={({ pressed }) => ({ minHeight: theme.spacing.x12, justifyContent: 'center', paddingHorizontal: theme.spacing.x3, borderRadius: theme.radii.pill, opacity: sending ? theme.feedback.disabledOpacity : 1, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surfaceElevated })}><BinderText variant="label" tone="accent">{t('chat.actions.retry')}</BinderText></Pressable>
                 <Pressable accessibilityRole="button" accessibilityLabel={t('chat.accessibility.discardUnsent', { message: attempt.body.slice(0, 24) })} onPress={() => discardAttempt(attempt.clientId)} style={({ pressed }) => ({ minHeight: theme.spacing.x12, justifyContent: 'center', paddingHorizontal: theme.spacing.x3, borderRadius: theme.radii.pill, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.transparent })}><BinderText variant="label" tone="muted">{t('chat.actions.discard')}</BinderText></Pressable>
               </>
@@ -506,7 +506,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         </View>
       ))}
 
-      {loadError && messages.length > 0 ? <View accessibilityLiveRegion="assertive" style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', paddingHorizontal: theme.spacing.x4 }}><BinderText variant="caption" tone="destructive" style={{ flex: 1 }}>{loadError.message}</BinderText><BinderButton label={t('chat.actions.retry')} variant="ghost" fullWidth={false} onPress={() => setReloadKey((value) => value + 1)} /></View> : null}
+      {loadError && messages.length > 0 ? <View accessibilityLiveRegion="assertive" style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', paddingHorizontal: theme.spacing.x4 }}><BinderText variant="caption" tone="destructive" style={{ flex: 1 }}>{t(loadError.messageKey)}</BinderText><BinderButton label={t('chat.actions.retry')} variant="ghost" fullWidth={false} onPress={() => setReloadKey((value) => value + 1)} /></View> : null}
 
       <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: theme.spacing.x2, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x3, borderTopWidth: 1, borderTopColor: theme.colors.borderSubtle, backgroundColor: theme.colors.surface }}>
         <TextInput accessibilityLabel={t('chat.accessibility.messagePerson', { name: match.firstName })} value={composer} onChangeText={setComposer} maxLength={2000} multiline scrollEnabled placeholder={t('chat.message.placeholder', { name: match.firstName })} placeholderTextColor={theme.colors.textMuted} selectionColor={theme.accent.accent} style={{ flex: 1, minHeight: theme.spacing.x12, maxHeight: theme.spacing.x16 * 2, color: theme.colors.textPrimary, backgroundColor: theme.colors.surfaceElevated, borderWidth: 1, borderColor: theme.colors.borderSubtle, borderRadius: theme.radii.control, paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x3, textAlignVertical: 'center' }} />

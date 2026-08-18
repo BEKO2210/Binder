@@ -544,6 +544,14 @@
       "copy": "Controls who can appear in your Discovery deck."
     }
   },
+  "reliability": {
+    "offline": "Binder cannot reach the network. It will reconnect automatically.",
+    "timeout": "Binder took too long to respond. Try again.",
+    "serverRefusal": "Binder could not complete that request. Check the details and try again.",
+    "permissionDenied": "Your session does not allow that action. Sign in again and retry.",
+    "conflict": "That changed on another device. Refresh to see the latest version.",
+    "unknown": "Something unexpected happened. Try again, then report the problem if it continues."
+  },
   "push": {
     "newMatch": {
       "title": "It's a Bind",
@@ -782,6 +790,41 @@
     "units": {
       "years": "years",
       "km": "km"
+    },
+    "presets": {
+      "nearby": {
+        "label": "Nearby",
+        "description": "Up to 10 km · ages 22–36"
+      },
+      "city": {
+        "label": "My city",
+        "description": "Up to 30 km · ages 20–45"
+      },
+      "wide": {
+        "label": "Wide",
+        "description": "Up to 100 km · ages 18–60"
+      }
+    }
+  },
+  "identity": {
+    "gender": {
+      "woman": "Woman",
+      "man": "Man",
+      "nonbinary": "Non-binary"
+    },
+    "interests": {
+      "travel": "Travel",
+      "music": "Music",
+      "fitness": "Fitness",
+      "food": "Food",
+      "design": "Design",
+      "tech": "Tech",
+      "photography": "Photography",
+      "hiking": "Hiking",
+      "coffee": "Coffee",
+      "books": "Books",
+      "gaming": "Gaming",
+      "dogs": "Dogs"
     }
   },
   "about": {
@@ -1002,6 +1045,21 @@
       "resetFailed": "This password reset link could not be opened. Try again.",
       "confirmInvalid": "This confirmation link is invalid or has expired. Sign up again to get a new one.",
       "confirmFailed": "This confirmation link could not be opened. Try again."
+    }
+  },
+  "notifications": {
+    "channels": {
+      "newMatch": "New matches",
+      "newMessage": "Messages",
+      "moderationStatus": "Photo review updates",
+      "safetyAlert": "Safety and account alerts",
+      "productNotice": "Binder updates"
+    },
+    "behavior": {
+      "sound": "sound",
+      "silent": "silent",
+      "vibrate": "vibration",
+      "steady": "no vibration"
     }
   }
 }

@@ -544,6 +544,14 @@
       "copy": "Discoveryの候補に誰が表示されるかを設定します。"
     }
   },
+  "reliability": {
+    "offline": "Binderがネットワークに接続できません。接続は自動的に回復します。",
+    "timeout": "Binderの応答に時間がかかりすぎました。もう一度お試しください。",
+    "serverRefusal": "Binderはこの操作を完了できませんでした。内容を確認してもう一度お試しください。",
+    "permissionDenied": "このセッションではその操作はできません。もう一度サインインしてお試しください。",
+    "conflict": "別の端末で変更されました。最新の内容を見るには更新してください。",
+    "unknown": "予期しない問題が発生しました。もう一度お試しいただき、続く場合はご報告ください。"
+  },
   "push": {
     "newMatch": {
       "title": "新しいBind！",
@@ -782,6 +790,41 @@
     "units": {
       "years": "歳",
       "km": "km"
+    },
+    "presets": {
+      "nearby": {
+        "label": "近く",
+        "description": "10 km以内 · 22〜36歳"
+      },
+      "city": {
+        "label": "自分の街",
+        "description": "30 km以内 · 20〜45歳"
+      },
+      "wide": {
+        "label": "広め",
+        "description": "100 km以内 · 18〜60歳"
+      }
+    }
+  },
+  "identity": {
+    "gender": {
+      "woman": "女性",
+      "man": "男性",
+      "nonbinary": "ノンバイナリー"
+    },
+    "interests": {
+      "travel": "旅行",
+      "music": "音楽",
+      "fitness": "フィットネス",
+      "food": "グルメ",
+      "design": "デザイン",
+      "tech": "テック",
+      "photography": "写真",
+      "hiking": "ハイキング",
+      "coffee": "コーヒー",
+      "books": "読書",
+      "gaming": "ゲーム",
+      "dogs": "犬"
     }
   },
   "about": {
@@ -1002,6 +1045,21 @@
       "resetFailed": "このパスワード再設定リンクを開けませんでした。もう一度お試しください。",
       "confirmInvalid": "この確認リンクは無効か期限切れです。もう一度登録して新しいリンクを受け取ってください。",
       "confirmFailed": "この確認リンクを開けませんでした。もう一度お試しください。"
+    }
+  },
+  "notifications": {
+    "channels": {
+      "newMatch": "新しいマッチ",
+      "newMessage": "メッセージ",
+      "moderationStatus": "写真の確認",
+      "safetyAlert": "安全とアカウント",
+      "productNotice": "Binderの新着"
+    },
+    "behavior": {
+      "sound": "音あり",
+      "silent": "マナー",
+      "vibrate": "バイブあり",
+      "steady": "バイブなし"
     }
   }
 }

@@ -19,6 +19,7 @@ import { advanceDeck, decideSwipe, discoveryDeckPhysics, resistedTranslation, ty
 import { formatCount, formatDistanceKm } from '../lib/format';
 import { listMyProfileMedia } from '../lib/media';
 import { matchCelebrationPhotoUrls } from '../lib/matchCelebrationAssets';
+import { interestLabel } from '../lib/validation';
 import { resolveSpring } from '../lib/motionPolicy';
 import { reportAndBlockDiscoveryProfile, type DiscoveryReportReason } from '../lib/safety';
 import { supabase } from '../lib/supabase';
@@ -363,7 +364,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
   if (locationPermissionDenied) return <ScreenState kind="permission" icon="discover" title={t('discovery.location.title')} message={t('discovery.location.message')} actionLabel={t('discovery.actions.allowLocation')} onAction={() => void loadDiscovery(true)} />;
 
   if (error && profiles.length === 0) {
-    return <ScreenState kind={error.kind === 'offline' ? 'offline' : 'error'} icon="retry" title={error.kind === 'offline' ? t('discovery.states.offlineTitle') : t('discovery.states.loadErrorTitle')} message={error.kind === 'offline' ? t('discovery.states.offlineMessage') : error.message} actionLabel={t('discovery.actions.tryAgain')} onAction={() => void loadDiscovery(true)} />;
+    return <ScreenState kind={error.kind === 'offline' ? 'offline' : 'error'} icon="retry" title={error.kind === 'offline' ? t('discovery.states.offlineTitle') : t('discovery.states.loadErrorTitle')} message={error.kind === 'offline' ? t('discovery.states.offlineMessage') : t(error.messageKey)} actionLabel={t('discovery.actions.tryAgain')} onAction={() => void loadDiscovery(true)} />;
   }
 
   return (
@@ -401,7 +402,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
         )}
       </View>
 
-      {error ? <BinderText accessibilityLiveRegion="assertive" variant="caption" tone="destructive" align="center" style={{ paddingHorizontal: theme.spacing.x5, paddingBottom: theme.spacing.x1 }}>{error.message}</BinderText> : null}
+      {error ? <BinderText accessibilityLiveRegion="assertive" variant="caption" tone="destructive" align="center" style={{ paddingHorizontal: theme.spacing.x5, paddingBottom: theme.spacing.x1 }}>{t(error.messageKey)}</BinderText> : null}
       <View style={{ minHeight: theme.layout.discoveryActionBarHeight, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: theme.spacing.x3, paddingBottom: theme.spacing.x3 }}>
         {/* Two buttons, one axis: a trailing spacer used to sit here and pushed
             the pair off the screen's centre line by half a button. */}
@@ -484,7 +485,7 @@ function ProfileCard({ profile, back = false, onOpenProfile }: { profile: Discov
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, marginTop: theme.spacing.x2 }}><BinderText variant="caption" style={{ color: onMedia.textSecondary }}>{t('discovery.profile.away', { distance: formatDistanceKm(profile.distanceKm, locale) })}</BinderText><BinderText variant="caption" style={{ color: onMedia.textMuted }}>{t('discovery.profile.photosReviewed')}</BinderText></View>
         {profile.bio ? <BinderText variant="body" style={{ color: onMedia.textPrimary, marginTop: theme.spacing.x2 }} numberOfLines={2}>{profile.bio}</BinderText> : null}
         <View style={{ flexDirection: 'row', gap: theme.spacing.x2, marginTop: theme.spacing.x3, overflow: 'hidden' }}>
-          {profile.tags.slice(0, 3).map((tag) => <View key={tag} style={{ maxWidth: '32%', backgroundColor: theme.colors.overlay, borderWidth: 1, borderColor: theme.colors.borderStrong, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x1 }}><BinderText variant="caption" style={{ color: onMedia.textPrimary }} numberOfLines={1} ellipsizeMode="tail">{tag}</BinderText></View>)}
+          {profile.tags.slice(0, 3).map((tag) => <View key={tag} style={{ maxWidth: '32%', backgroundColor: theme.colors.overlay, borderWidth: 1, borderColor: theme.colors.borderStrong, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x1 }}><BinderText variant="caption" style={{ color: onMedia.textPrimary }} numberOfLines={1} ellipsizeMode="tail">{interestLabel(t, tag)}</BinderText></View>)}
         </View>
       </View>
     </View>

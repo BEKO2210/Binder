@@ -30,12 +30,12 @@ export function DiscoveryPreferences({ interestedIn, minAge, maxAge, distance, o
     <View style={{ gap: theme.spacing.x10 }}>
       {showPresets ? <PreferenceGroup title={t('discoveryPreferences.groups.preset')}>
         <View style={{ gap: theme.spacing.x2 }}>
-          {discoveryPresets.map((preset) => <BinderChip key={preset.id} label={`${preset.label} · ${preset.description}`} selected={matchingDiscoveryPreset(current) === preset.id} onPress={() => onChange({ ...current, minAge: preset.minAge, maxAge: preset.maxAge, distance: preset.distance })} />)}
+          {discoveryPresets.map((preset) => <BinderChip key={preset.id} label={`${t(preset.labelKey)} · ${t(preset.descriptionKey)}`} selected={matchingDiscoveryPreset(current) === preset.id} onPress={() => onChange({ ...current, minAge: preset.minAge, maxAge: preset.maxAge, distance: preset.distance })} />)}
         </View>
       </PreferenceGroup> : null}
       <PreferenceGroup title={t('discoveryPreferences.groups.audience')} error={errors.audience}>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>
-          {GENDERS.map((item) => <BinderChip key={item.value} label={item.label} selected={interestedIn.includes(item.value)} onPress={() => onChange({ ...current, interestedIn: interestedIn.includes(item.value) ? interestedIn.filter((value) => value !== item.value) : [...interestedIn, item.value] })} />)}
+          {GENDERS.map((item) => <BinderChip key={item.value} label={t(item.labelKey)} selected={interestedIn.includes(item.value)} onPress={() => onChange({ ...current, interestedIn: interestedIn.includes(item.value) ? interestedIn.filter((value) => value !== item.value) : [...interestedIn, item.value] })} />)}
         </View>
       </PreferenceGroup>
       <PreferenceGroup title={t('discoveryPreferences.groups.age')} error={errors.age}>

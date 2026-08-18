@@ -544,6 +544,14 @@
       "copy": "Legt fest, wer in deinem Discovery-Stapel erscheinen kann."
     }
   },
+  "reliability": {
+    "offline": "Binder erreicht das Netzwerk nicht. Die Verbindung wird automatisch wiederhergestellt.",
+    "timeout": "Binder hat zu lange gebraucht. Versuche es erneut.",
+    "serverRefusal": "Binder konnte das nicht abschließen. Prüfe deine Angaben und versuche es erneut.",
+    "permissionDenied": "Deine Sitzung erlaubt das nicht. Melde dich erneut an und versuche es noch einmal.",
+    "conflict": "Das wurde auf einem anderen Gerät geändert. Lade neu, um den aktuellen Stand zu sehen.",
+    "unknown": "Etwas Unerwartetes ist passiert. Versuche es erneut und melde das Problem, wenn es bleibt."
+  },
   "push": {
     "newMatch": {
       "title": "Ein Bind!",
@@ -782,6 +790,41 @@
     "units": {
       "years": "Jahre",
       "km": "km"
+    },
+    "presets": {
+      "nearby": {
+        "label": "In der Nähe",
+        "description": "Bis 10 km · 22–36 Jahre"
+      },
+      "city": {
+        "label": "Meine Stadt",
+        "description": "Bis 30 km · 20–45 Jahre"
+      },
+      "wide": {
+        "label": "Weit",
+        "description": "Bis 100 km · 18–60 Jahre"
+      }
+    }
+  },
+  "identity": {
+    "gender": {
+      "woman": "Frau",
+      "man": "Mann",
+      "nonbinary": "Nicht-binär"
+    },
+    "interests": {
+      "travel": "Reisen",
+      "music": "Musik",
+      "fitness": "Fitness",
+      "food": "Essen",
+      "design": "Design",
+      "tech": "Technik",
+      "photography": "Fotografie",
+      "hiking": "Wandern",
+      "coffee": "Kaffee",
+      "books": "Bücher",
+      "gaming": "Gaming",
+      "dogs": "Hunde"
     }
   },
   "about": {
@@ -1002,6 +1045,21 @@
       "resetFailed": "Dieser Link zum Zurücksetzen ließ sich nicht öffnen. Versuche es erneut.",
       "confirmInvalid": "Dieser Bestätigungslink ist ungültig oder abgelaufen. Melde dich erneut an, um einen neuen zu bekommen.",
       "confirmFailed": "Dieser Bestätigungslink ließ sich nicht öffnen. Versuche es erneut."
+    }
+  },
+  "notifications": {
+    "channels": {
+      "newMatch": "Neue Matches",
+      "newMessage": "Nachrichten",
+      "moderationStatus": "Foto-Prüfung",
+      "safetyAlert": "Sicherheit und Konto",
+      "productNotice": "Binder-Neuigkeiten"
+    },
+    "behavior": {
+      "sound": "Ton",
+      "silent": "stumm",
+      "vibrate": "Vibration",
+      "steady": "ohne Vibration"
     }
   }
 }

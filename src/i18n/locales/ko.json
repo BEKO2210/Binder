@@ -544,6 +544,14 @@
       "copy": "Discovery 카드에 누가 표시될 수 있는지 결정합니다."
     }
   },
+  "reliability": {
+    "offline": "Binder가 네트워크에 연결할 수 없습니다. 연결은 자동으로 복구됩니다.",
+    "timeout": "Binder의 응답이 너무 오래 걸렸습니다. 다시 시도하세요.",
+    "serverRefusal": "Binder가 요청을 완료하지 못했습니다. 내용을 확인하고 다시 시도하세요.",
+    "permissionDenied": "현재 세션에서는 할 수 없는 작업입니다. 다시 로그인한 뒤 시도하세요.",
+    "conflict": "다른 기기에서 변경되었습니다. 새로고침하면 최신 내용을 볼 수 있습니다.",
+    "unknown": "예상치 못한 문제가 발생했습니다. 다시 시도하고 계속되면 알려주세요."
+  },
   "push": {
     "newMatch": {
       "title": "Bind 성사!",
@@ -782,6 +790,41 @@
     "units": {
       "years": "세",
       "km": "km"
+    },
+    "presets": {
+      "nearby": {
+        "label": "가까운 곳",
+        "description": "10 km 이내 · 22–36세"
+      },
+      "city": {
+        "label": "내 도시",
+        "description": "30 km 이내 · 20–45세"
+      },
+      "wide": {
+        "label": "넓게",
+        "description": "100 km 이내 · 18–60세"
+      }
+    }
+  },
+  "identity": {
+    "gender": {
+      "woman": "여성",
+      "man": "남성",
+      "nonbinary": "논바이너리"
+    },
+    "interests": {
+      "travel": "여행",
+      "music": "음악",
+      "fitness": "운동",
+      "food": "음식",
+      "design": "디자인",
+      "tech": "테크",
+      "photography": "사진",
+      "hiking": "등산",
+      "coffee": "커피",
+      "books": "독서",
+      "gaming": "게임",
+      "dogs": "반려견"
     }
   },
   "about": {
@@ -1002,6 +1045,21 @@
       "resetFailed": "이 비밀번호 재설정 링크를 열 수 없습니다. 다시 시도해 주세요.",
       "confirmInvalid": "이 확인 링크는 유효하지 않거나 만료되었습니다. 새 링크를 받으려면 다시 가입하세요.",
       "confirmFailed": "이 확인 링크를 열 수 없습니다. 다시 시도해 주세요."
+    }
+  },
+  "notifications": {
+    "channels": {
+      "newMatch": "새 매치",
+      "newMessage": "메시지",
+      "moderationStatus": "사진 검토",
+      "safetyAlert": "안전 및 계정",
+      "productNotice": "Binder 소식"
+    },
+    "behavior": {
+      "sound": "소리",
+      "silent": "무음",
+      "vibrate": "진동",
+      "steady": "진동 없음"
     }
   }
 }

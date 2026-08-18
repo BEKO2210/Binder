@@ -99,3 +99,22 @@ test('every language can write every kind of notification', () => {
     }
   }
 });
+
+test('nothing a person reads is hard-coded outside the locale files', () => {
+  // The localisation gate scans .tsx, so English sitting in a .ts module was
+  // invisible to it — that is how the interests, the genders, the discovery
+  // presets, the notification channels and every network error message stayed
+  // English in all fifteen languages. These are the modules that feed labels to
+  // a screen; they may hold keys, not sentences.
+  const offenders: string[] = [];
+  const modules = ['validation.ts', 'discoveryPreferencesPolicy.ts', 'reliability.ts', 'notifications.ts'];
+  for (const name of modules) {
+    const source = readFileSync(new URL(`../src/lib/${name}`, import.meta.url), 'utf8');
+    for (const match of source.matchAll(/\b(label|name|description|message|title|copy)\s*:\s*'([^']{4,})'/g)) {
+      // A key is fine. A sentence is not.
+      if (/^[a-z][A-Za-z]*(\.[A-Za-z]+)+$/.test(match[2])) continue;
+      offenders.push(`src/lib/${name}: ${match[0].slice(0, 60)}`);
+    }
+  }
+  assert.deepEqual(offenders, []);
+});
