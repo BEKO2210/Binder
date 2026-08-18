@@ -41,6 +41,23 @@ Deno.serve(async (req: Request) => {
     if (removeError) return Response.json({ error: "Could not remove account media" }, { status: 500 });
   }
 
+  // Voice recordings do not live under a user folder — their path starts with
+  // the match id — so the rows point the way. The rows themselves cascade
+  // with the account; the objects would stay behind without this.
+  const { data: voiceRows, error: voiceListError } = await admin
+    .from("messages")
+    .select("audio_path")
+    .eq("sender_id", userId)
+    .eq("kind", "voice")
+    .not("audio_path", "is", null)
+    .limit(5000);
+  if (voiceListError) return Response.json({ error: "Could not remove account media" }, { status: 500 });
+  const voicePaths = (voiceRows ?? []).map((row) => row.audio_path as string).filter(Boolean);
+  for (let start = 0; start < voicePaths.length; start += 100) {
+    const { error: voiceRemoveError } = await admin.storage.from("voice-media").remove(voicePaths.slice(start, start + 100));
+    if (voiceRemoveError) return Response.json({ error: "Could not remove account media" }, { status: 500 });
+  }
+
   const { error: deleteError } = await admin.auth.admin.deleteUser(userId, false);
   if (deleteError) return Response.json({ error: "Account deletion failed" }, { status: 500 });
 
