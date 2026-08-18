@@ -30,9 +30,10 @@ test('somebody over the limit can always deselect', () => {
   // Legacy profiles may hold twelve; the picker offers ten. The way down must
   // always be open, or the limit becomes a trap.
   const twelve = INTEREST_CATALOG.slice(0, 12).map((entry) => entry.id);
-  const reduced = toggleInterest(twelve, twelve[0]);
+  const first = twelve[0] ?? '';
+  const reduced = toggleInterest(twelve, first);
   assert.equal(reduced.length, 11);
-  assert.ok(!reduced.includes(twelve[0]));
+  assert.ok(!reduced.includes(first));
 });
 
 test('unknown stored values are surfaced, not lost', () => {
