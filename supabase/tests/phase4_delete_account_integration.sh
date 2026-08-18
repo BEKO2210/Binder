@@ -62,14 +62,32 @@ fi
 
 supabase functions serve delete-account >"${FUNCTION_LOG}" 2>&1 &
 FUNCTION_PID=$!
-for _ in $(seq 1 60); do
-  if curl --silent --output /dev/null "${API_URL}/functions/v1/delete-account"; then break; fi
+# `curl --output /dev/null URL` succeeds on any HTTP answer, including the 502
+# the gateway returns while the function is still booting — so this loop used to
+# fall through on the first try and the test raced the runtime. It waits for a
+# status the function itself produced: a 401 means it is up and asking for a
+# token, which is exactly what "ready" looks like here.
+FUNCTION_READY=''
+for _ in $(seq 1 90); do
+  READY_CODE="$(curl --silent --output /dev/null --write-out '%{http_code}' \
+    "${API_URL}/functions/v1/delete-account" || true)"
+  case "${READY_CODE}" in
+    ''|000|502|503|504) ;;
+    *) FUNCTION_READY='yes'; break ;;
+  esac
   if ! kill -0 "${FUNCTION_PID}" 2>/dev/null; then
     cat "${FUNCTION_LOG}" >&2
+    echo "delete-account function exited before it became ready" >&2
     exit 1
   fi
   sleep 1
 done
+
+if [[ -z "${FUNCTION_READY}" ]]; then
+  cat "${FUNCTION_LOG}" >&2
+  echo "delete-account did not become ready in 90s (last status ${READY_CODE:-none})" >&2
+  exit 1
+fi
 
 HTTP_CODE="$(curl --silent --show-error \
   --output /tmp/binder-delete-response.json \
