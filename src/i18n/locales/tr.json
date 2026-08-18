@@ -971,6 +971,10 @@
       "safetyRules": "Binder güvenlik kuralları denetleniyor…",
       "profile": "Binder profiliniz yükleniyor…"
     },
+    "startFailed": {
+      "title": "Binder başlatılamadı",
+      "message": "Binder yanıt alamadı. Bağlantınızı kontrol edip tekrar deneyin."
+    },
     "offline": {
       "title": "Çevrimdışısınız",
       "message": "Binder'ın mevcut güvenlik kurallarını kontrol etmesi için bağlantı gerekir. Tekrar çevrimiçi olduğunuzda çalışacaktır."

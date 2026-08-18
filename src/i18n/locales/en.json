@@ -971,6 +971,10 @@
       "safetyRules": "Checking Binder safety rules…",
       "profile": "Loading your Binder profile…"
     },
+    "startFailed": {
+      "title": "Binder could not start",
+      "message": "Binder did not receive a response. Check your connection and try again."
+    },
     "offline": {
       "title": "You are offline",
       "message": "Binder needs a connection to check the current safety rules. It will work as soon as you are back online."

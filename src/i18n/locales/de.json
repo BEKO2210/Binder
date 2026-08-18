@@ -971,6 +971,10 @@
       "safetyRules": "Binder prüft die Sicherheitsregeln…",
       "profile": "Dein Binder-Profil wird geladen…"
     },
+    "startFailed": {
+      "title": "Binder konnte nicht starten",
+      "message": "Binder hat keine Antwort bekommen. Prüfe deine Verbindung und versuche es erneut."
+    },
     "offline": {
       "title": "Du bist offline",
       "message": "Binder benötigt eine Verbindung, um die aktuellen Sicherheitsregeln zu prüfen. Sobald du wieder online bist, geht es weiter."

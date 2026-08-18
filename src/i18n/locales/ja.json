@@ -971,6 +971,10 @@
       "safetyRules": "Binderの安全ルールを確認しています…",
       "profile": "Binderのプロフィールを読み込んでいます…"
     },
+    "startFailed": {
+      "title": "Binderを起動できませんでした",
+      "message": "応答がありませんでした。接続を確認してもう一度お試しください。"
+    },
     "offline": {
       "title": "オフラインです",
       "message": "Binderは現在の安全ルールを確認するために接続が必要です。オンラインに戻るとすぐに利用できます。"

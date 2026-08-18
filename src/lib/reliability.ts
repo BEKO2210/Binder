@@ -127,8 +127,12 @@ export function isDeadlineError(value: unknown): boolean {
  * on the screen with no tab bar, no message and no retry after a notification
  * was tapped. Only the promise handed in is bounded — the work behind it cannot
  * be recalled, so this is a ceiling on waiting, not a cancellation.
+ *
+ * It takes a PromiseLike rather than a Promise because Supabase's query builder
+ * is a thenable, not a promise, and the whole point is to be able to put a
+ * ceiling on exactly those calls.
  */
-export function withDeadline<T>(operation: Promise<T>, timeoutMs: number): Promise<T> {
+export function withDeadline<T>(operation: PromiseLike<T>, timeoutMs: number): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const timer = setTimeout(() => reject(deadlineError()), timeoutMs);
     operation.then(

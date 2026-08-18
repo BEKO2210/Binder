@@ -461,7 +461,13 @@ from settings.
     permission by writing the preference would switch push off on the person's
     other phone. The screens read the device and say what they find; only a tap
     writes the preference.
-14. **Most of the ways push dies are returned, not thrown.** A refused
+14. **A deadline that has rejected can never resolve.** Wrapping a request and
+    then waiting only on the wrapper throws away an answer that arrives a second
+    late — the person keeps an error screen while the app holds the data. The
+    request keeps its own handler; the deadline only decides when to stop
+    waiting. And a Supabase query builder is lazy, so two watchers on the
+    builder itself send the query twice: `Promise.resolve` it once first.
+15. **Most of the ways push dies are returned, not thrown.** A refused
     permission and a dead network come back as ordinary values from
     `refreshPushRegistration`, so catching exceptions alone leaves the quietest
     failures quiet. And a granted permission proves nothing on its own — a
@@ -482,10 +488,5 @@ from settings.
   profile…") never go through `t()`. `verify-i18n-coverage.mjs` scans only
   `src/screens` and `src/components`, so `src/Root.tsx` is invisible to it —
   widening the scan is part of that fix, or the next string lands the same way.
-- **Two more start-up loading states can still wait forever**, both found while
-  fixing the one below and neither reproduced: `supabase.auth.getSession()` at
-  start-up has no deadline, so `session === undefined` keeps "Loading Binder…"
-  on screen; the onboarding lookup has none either. Same shape, same fix, but
-  each needs its own measurement first.
 - German copy for the Play listing.
 - The listing's own screenshots, shot with staged profiles and framed.

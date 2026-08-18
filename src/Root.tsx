@@ -10,6 +10,7 @@ import Animated, { FadeInUp, FadeOutDown, SlideInRight, SlideOutRight, ZoomIn, Z
 import BinderErrorBoundary from './components/BinderErrorBoundary';
 import { BinderIcon, BinderText, MotionPressable, ScreenState, type BinderIconName } from './components/ui';
 import { sessionIdentityChanged } from './lib/authTransition';
+import { startupPhase } from './lib/startupState';
 import { initializeBetaDiagnostics, recordBetaEvent } from './lib/beta';
 import { parseAuthCallback } from './lib/deepLinks';
 import { fetchMatches, type MatchSummary } from './lib/conversation';
@@ -26,7 +27,7 @@ import {
 } from './lib/notifications';
 import { getLegalGate, type LegalGate } from './lib/safety';
 import { safeLog } from './lib/safeLog';
-import { classifyError, isDeadlineError, isLikelyOffline } from './lib/reliability';
+import { classifyError, isDeadlineError, isLikelyOffline, withDeadline } from './lib/reliability';
 import { supabase } from './lib/supabase';
 import AboutScreen from './screens/AboutScreen';
 import AppSettingsScreen from './screens/AppSettingsScreen';
@@ -41,6 +42,11 @@ import ProfileScreen from './screens/ProfileScreen';
 import ProfileSettingsScreen from './screens/ProfileSettingsScreen';
 import { useBinderHaptics } from './theme/haptics';
 import { BinderThemeProvider, useBinderTheme } from './theme/ThemeProvider';
+
+// The same ceiling the legal gate uses, for the same reason: past this point
+// waiting is not going to end on its own, and the screen it blocks is a
+// full-screen loading state.
+const STARTUP_DEADLINE_MS = 15_000;
 
 type Tab = 'discover' | 'matches' | 'profile';
 type ProfileRoute = 'home' | 'edit' | 'settings' | 'beta' | 'about';
@@ -81,6 +87,12 @@ function BinderApp() {
   const wideScreen = windowWidth > 720;
   const [legalGate, setLegalGate] = useState<LegalGate | null | undefined>(undefined);
   const [legalRefreshKey, setLegalRefreshKey] = useState(0);
+  // Two start-up reads used to have no ceiling at all, so a request that never
+  // answered left a full-screen loading state with no message and no way out —
+  // the same shape as the legal gate before it got a deadline. They share one
+  // failure state because they share the only sensible answer: try again.
+  const [startFailed, setStartFailed] = useState(false);
+  const [startKey, setStartKey] = useState(0);
   const [onboardingComplete, setOnboardingComplete] = useState<boolean | undefined>(undefined);
   const [loadError, setLoadError] = useState('');
   // The very first screen a user without network sees was "Safety check failed
@@ -115,6 +127,8 @@ function BinderApp() {
       const identityChanged = sessionIdentityChanged(signedInUserRef.current, nextUserId);
       hadSessionRef.current = Boolean(nextSession);
       signedInUserRef.current = nextUserId;
+      // An answer clears the failure, whenever it turns up.
+      setStartFailed(false);
       setSession(nextSession);
       if (!identityChanged) return;
       setLegalGate(undefined); setOnboardingComplete(undefined); setNotificationPreferencesReadyFor(null); setLoadError(''); setActiveMatch(null); setProfileRoute('home'); setTab('discover'); appSessionRecorded.current = false;
@@ -126,7 +140,23 @@ function BinderApp() {
     // into React while Supabase is already authenticating the new one, and
     // every screen would render one account's data against the other's token.
     let sawAuthEvent = false;
-    supabase.auth.getSession().then(({ data, error }) => { if (!active || sawAuthEvent) return; if (error) setLoadError(error.message); applySession(data.session); });
+    // The deadline and the answer are watched separately on purpose. A deadline
+    // that has already rejected can never resolve again, so wrapping the read
+    // and then waiting on the wrapper would throw away an answer that arrives a
+    // second late — the person would sit on the error screen with a session in
+    // hand. The wrapper decides only when to stop waiting; the request itself
+    // still gets to finish the job whenever it manages to.
+    const storedSession = supabase.auth.getSession();
+    void storedSession
+      .then(({ data, error }) => { if (!active || sawAuthEvent) return; if (error) setLoadError(error.message); applySession(data.session); })
+      .catch(() => undefined);
+    void withDeadline(storedSession, STARTUP_DEADLINE_MS).catch((error: unknown) => {
+      // A live auth event answers the same question, so a slow stored read is
+      // only a failure when nothing else has answered either.
+      if (!active || sawAuthEvent) return;
+      safeLog('warn', `startup_session_failed_${classifyError(error).kind}`);
+      setStartFailed(true);
+    });
     const { data } = supabase.auth.onAuthStateChange((event, nextSession) => {
       sawAuthEvent = true;
       // A reset link signs the person in with a recovery session. Until they
@@ -148,7 +178,7 @@ function BinderApp() {
       applySession(nextSession);
     });
     return () => { active = false; data.subscription.unsubscribe(); };
-  }, []);
+  }, [startKey]);
 
   const handleSessionExpired = useCallback(() => setSessionExpired(true), []);
   const returnToSignIn = useCallback(() => {
@@ -200,9 +230,20 @@ function BinderApp() {
   useEffect(() => {
     if (!session || legalGate?.accepted !== true) { setOnboardingComplete(undefined); return; }
     let active = true; setOnboardingComplete(undefined);
-    supabase.from('profiles').select('onboarding_complete').eq('user_id', session.user.id).maybeSingle().then(({ data, error }) => { if (!active) return; if (error) setLoadError(error.message); setOnboardingComplete(data?.onboarding_complete === true); });
+    // Promise.resolve first: a Supabase query builder is lazy and runs the
+    // query on every `then`, so handing it to two watchers directly would send
+    // the request twice.
+    const profileRead = Promise.resolve(supabase.from('profiles').select('onboarding_complete').eq('user_id', session.user.id).maybeSingle());
+    void profileRead
+      .then(({ data, error }) => { if (!active) return; if (error) setLoadError(error.message); setStartFailed(false); setOnboardingComplete(data?.onboarding_complete === true); })
+      .catch(() => undefined);
+    void withDeadline(profileRead, STARTUP_DEADLINE_MS).catch((error: unknown) => {
+      if (!active) return;
+      safeLog('warn', `startup_profile_failed_${classifyError(error).kind}`);
+      setStartFailed(true);
+    });
     return () => { active = false; };
-  }, [session?.user.id, legalGate?.accepted]);
+  }, [session?.user.id, legalGate?.accepted, startKey]);
 
   useEffect(() => {
     if (!session || legalGate?.accepted !== true || onboardingComplete !== true || appSessionRecorded.current) return;
@@ -350,7 +391,23 @@ function BinderApp() {
   }, [pendingNotificationRoute, session?.user.id, legalGate?.accepted, onboardingComplete]);
 
   if (sessionExpired) return <ScreenState kind="permission" icon="profile" title={t('sessionExpired.title')} message={t('sessionExpired.message')} actionLabel={t('sessionExpired.action')} onAction={returnToSignIn} />;
-  if (session === undefined) return <ScreenState kind="loading" message={loadError || t('root.loading.session')} />;
+  // A failed start-up read speaks only where its own loading state would have,
+  // so it can never cover a recovery, a legal gate or a session that answered
+  // late. `startupPhase` is what decides that, and it is tested.
+  const retryStartup = () => { setStartFailed(false); setSession(undefined); setOnboardingComplete(undefined); setStartKey((value) => value + 1); };
+  const startupFailure = (
+    <ScreenState
+      kind="error"
+      icon="retry"
+      title={t('root.startFailed.title')}
+      message={t('root.startFailed.message')}
+      actionLabel={t('common.retry')}
+      onAction={retryStartup}
+    />
+  );
+  const sessionPhase = startupPhase(session !== undefined, startFailed);
+  if (sessionPhase === 'failed') return startupFailure;
+  if (sessionPhase === 'loading') return <ScreenState kind="loading" message={loadError || t('root.loading.session')} />;
   if (!session) return <AuthScreen />;
   if (recovering) return <AuthScreen recovery onRecoveryHandled={() => setRecovering(false)} />;
   if (legalGate === undefined) return <ScreenState kind="loading" message={t('root.loading.safetyRules')} />;
@@ -365,7 +422,9 @@ function BinderApp() {
     />
   );
   if (!legalGate.accepted) return <LegalGateScreen gate={legalGate} onAccepted={() => { setLegalGate((current) => current ? { ...current, accepted: true } : current); setLoadError(''); }} />;
-  if (onboardingComplete === undefined) return <ScreenState kind="loading" message={loadError || t('root.loading.profile')} />;
+  const profilePhase = startupPhase(onboardingComplete !== undefined, startFailed);
+  if (profilePhase === 'failed') return startupFailure;
+  if (profilePhase === 'loading') return <ScreenState kind="loading" message={loadError || t('root.loading.profile')} />;
   if (!onboardingComplete) return <OnboardingScreen userId={session.user.id} onComplete={() => { setOnboardingComplete(true); setTab('discover'); }} />;
   // Full-screen routes live outside the tab shell, so they need the same centred
   // column — a conversation stretched across a tablet reads as a wall of text.

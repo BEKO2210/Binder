@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 import { sessionIdentityChanged } from '../src/lib/authTransition.ts';
+import { startupPhase } from '../src/lib/startupState.ts';
 
 const ALICE = '11111111-1111-4111-8111-111111111111';
 const BOB = '22222222-2222-4222-8222-222222222222';
@@ -48,4 +49,36 @@ test('undefined reads the same as no session, so the first event is not a false 
   assert.equal(sessionIdentityChanged(undefined, undefined), false);
   assert.equal(sessionIdentityChanged(undefined, ALICE), true);
   assert.equal(sessionIdentityChanged(ALICE, undefined), true);
+});
+
+test('every full-screen start-up read is bounded, and a late answer still lands', () => {
+  // Three of these shipped with no ceiling at all: a request on a socket the
+  // phone quietly lost does not fail, it waits, and the screen waits with it.
+  // The deadline decides only when to stop waiting — the request itself keeps
+  // its own handler, because a wrapper that already rejected can never resolve
+  // again and would drop an answer that arrives a second late.
+  const source = readFileSync(new URL('../src/Root.tsx', import.meta.url), 'utf8');
+  assert.match(source, /STARTUP_DEADLINE_MS = 15_000/);
+  assert.match(source, /withDeadline\(storedSession, STARTUP_DEADLINE_MS\)/);
+  assert.match(source, /withDeadline\(profileRead, STARTUP_DEADLINE_MS\)/);
+  // Each read is also awaited directly, which is what makes a late answer count.
+  assert.match(source, /void storedSession\s*\n\s*\.then\(/);
+  assert.match(source, /void profileRead\s*\n\s*\.then\(/);
+  // The builder is resolved once; handing a lazy builder to two watchers would
+  // send the query twice.
+  assert.match(source, /const profileRead = Promise\.resolve\(/);
+  // The failure is routed through the tested decision, so it can never outrank
+  // a recovery, a legal gate or a session that answered late.
+  assert.match(source, /const sessionPhase = startupPhase\(session !== undefined, startFailed\)/);
+  assert.match(source, /const profilePhase = startupPhase\(onboardingComplete !== undefined, startFailed\)/);
+});
+
+test('a late answer beats an expired deadline', () => {
+  // The failure and the answer race. If the deadline fires at 15s and the
+  // session arrives at 16s, the app has a session — showing "Binder could not
+  // start" over it would be a lie the person cannot dismiss.
+  assert.equal(startupPhase(true, true), 'ready');
+  assert.equal(startupPhase(true, false), 'ready');
+  assert.equal(startupPhase(false, true), 'failed');
+  assert.equal(startupPhase(false, false), 'loading');
 });

@@ -971,6 +971,10 @@
       "safetyRules": "正在检查 Binder 安全规则…",
       "profile": "正在加载你的 Binder 资料…"
     },
+    "startFailed": {
+      "title": "Binder 无法启动",
+      "message": "没有收到响应。请检查网络连接后重试。"
+    },
     "offline": {
       "title": "你已离线",
       "message": "Binder 需要联网才能检查当前安全规则。恢复网络后即可继续使用。"

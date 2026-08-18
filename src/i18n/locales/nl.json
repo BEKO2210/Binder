@@ -971,6 +971,10 @@
       "safetyRules": "Veiligheidsregels van Binder controleren…",
       "profile": "Je Binder-profiel wordt geladen…"
     },
+    "startFailed": {
+      "title": "Binder kon niet starten",
+      "message": "Binder kreeg geen antwoord. Controleer je verbinding en probeer het opnieuw."
+    },
     "offline": {
       "title": "Je bent offline",
       "message": "Binder heeft verbinding nodig om de huidige veiligheidsregels te controleren. Zodra je weer online bent, werkt het weer."

@@ -971,6 +971,10 @@
       "safetyRules": "Memeriksa aturan keamanan Binder…",
       "profile": "Memuat profil Binder kamu…"
     },
+    "startFailed": {
+      "title": "Binder tidak bisa dimulai",
+      "message": "Binder tidak menerima respons. Periksa koneksimu dan coba lagi."
+    },
     "offline": {
       "title": "Anda sedang offline",
       "message": "Binder memerlukan koneksi untuk memeriksa aturan keselamatan saat ini. Binder akan berfungsi segera setelah Anda kembali online."
