@@ -30,7 +30,7 @@ export function DiscoveryPreferences({ interestedIn, minAge, maxAge, distance, o
     <View style={{ gap: theme.spacing.x10 }}>
       {showPresets ? <PreferenceGroup title={t('discoveryPreferences.groups.preset')}>
         <View style={{ gap: theme.spacing.x2 }}>
-          {discoveryPresets.map((preset) => <BinderChip key={preset.id} label={`${t(preset.labelKey)} · ${t(preset.descriptionKey)}`} selected={matchingDiscoveryPreset(current) === preset.id} onPress={() => onChange({ ...current, minAge: preset.minAge, maxAge: preset.maxAge, distance: preset.distance })} />)}
+          {discoveryPresets.map((preset) => <BinderChip key={preset.id} multiline label={`${t(preset.labelKey)} · ${t(preset.descriptionKey)}`} selected={matchingDiscoveryPreset(current) === preset.id} onPress={() => onChange({ ...current, minAge: preset.minAge, maxAge: preset.maxAge, distance: preset.distance })} />)}
         </View>
       </PreferenceGroup> : null}
       <PreferenceGroup title={t('discoveryPreferences.groups.audience')} error={errors.audience}>
