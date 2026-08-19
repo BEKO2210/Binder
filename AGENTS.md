@@ -175,6 +175,23 @@ icons) is its own piece of work and is not done.
 Each bundled language costs about 28 KiB of JS payload (measured, see rule 2),
 so the budget has room for roughly a dozen more before that is a decision again.
 
+**The public site is generated, not written twice.** `site/templates/*.html`
+carries the markup with `{{key}}` where copy goes, `site/i18n/<code>.json`
+carries the copy, and `npm run site:i18n` puts them together — English into
+`site/`, every other language into `site/<code>/`. Canonical links, hreflang
+alternates, the footer language switcher and `sitemap.xml` are all generated,
+because a translator who has to keep a list of URLs in step eventually will not.
+A missing key falls back to English and is reported; a half-finished translation
+degrades rather than breaking a page. CI runs `--check` and fails if the pages
+on disk have drifted from the templates.
+
+Adding a language: copy `site/i18n/en.json`, translate the values, set `$meta`
+(`name`, `endonym`, `htmlLang`, `dir`), save as `<code>.json`, run
+`npm run site:i18n`. `scripts/site-i18n-extract.mjs` is the tool that made the
+first two — it turns a finished page into a template plus a language file, and
+aligns a translated page to the template by the shape of the markup rather than
+by counting strings.
+
 The public site advertises the languages, and it cannot lie about them:
 `site/languages.html` and the language block on the home page are generated from
 the locale files by `npm run site:languages`, and CI fails if they drift from

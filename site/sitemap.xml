@@ -2,66 +2,82 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://beko2210.github.io/Binder/</loc>
-    <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://beko2210.github.io/Binder/"/>
     <xhtml:link rel="alternate" hreflang="de" href="https://beko2210.github.io/Binder/de/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://beko2210.github.io/Binder/"/>
+    <lastmod>2026-08-19</lastmod>
+    <priority>1.0</priority>
   </url>
   <url>
     <loc>https://beko2210.github.io/Binder/de/</loc>
-    <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://beko2210.github.io/Binder/"/>
     <xhtml:link rel="alternate" hreflang="de" href="https://beko2210.github.io/Binder/de/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://beko2210.github.io/Binder/"/>
+    <lastmod>2026-08-19</lastmod>
+    <priority>1.0</priority>
   </url>
-  <url><loc>https://beko2210.github.io/Binder/languages.html</loc><priority>0.8</priority></url>
   <url>
     <loc>https://beko2210.github.io/Binder/privacy.html</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://beko2210.github.io/Binder/privacy.html"/>
     <xhtml:link rel="alternate" hreflang="de" href="https://beko2210.github.io/Binder/de/privacy.html"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://beko2210.github.io/Binder/privacy.html"/>
+    <lastmod>2026-08-19</lastmod>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://beko2210.github.io/Binder/de/privacy.html</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://beko2210.github.io/Binder/privacy.html"/>
     <xhtml:link rel="alternate" hreflang="de" href="https://beko2210.github.io/Binder/de/privacy.html"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://beko2210.github.io/Binder/privacy.html"/>
+    <lastmod>2026-08-19</lastmod>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://beko2210.github.io/Binder/terms.html</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://beko2210.github.io/Binder/terms.html"/>
     <xhtml:link rel="alternate" hreflang="de" href="https://beko2210.github.io/Binder/de/terms.html"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://beko2210.github.io/Binder/terms.html"/>
+    <lastmod>2026-08-19</lastmod>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://beko2210.github.io/Binder/de/terms.html</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://beko2210.github.io/Binder/terms.html"/>
     <xhtml:link rel="alternate" hreflang="de" href="https://beko2210.github.io/Binder/de/terms.html"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://beko2210.github.io/Binder/terms.html"/>
+    <lastmod>2026-08-19</lastmod>
+    <priority>0.5</priority>
   </url>
-  <url>
-    <loc>https://beko2210.github.io/Binder/delete-account.html</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://beko2210.github.io/Binder/delete-account.html"/>
-    <xhtml:link rel="alternate" hreflang="de" href="https://beko2210.github.io/Binder/de/delete-account.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://beko2210.github.io/Binder/delete-account.html"/>
-  </url>
-  <url>
-    <loc>https://beko2210.github.io/Binder/de/delete-account.html</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://beko2210.github.io/Binder/delete-account.html"/>
-    <xhtml:link rel="alternate" hreflang="de" href="https://beko2210.github.io/Binder/de/delete-account.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://beko2210.github.io/Binder/delete-account.html"/>
-  </url>
-  <url><loc>https://beko2210.github.io/Binder/impressum.html</loc></url>
   <url>
     <loc>https://beko2210.github.io/Binder/safety-standards.html</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://beko2210.github.io/Binder/safety-standards.html"/>
     <xhtml:link rel="alternate" hreflang="de" href="https://beko2210.github.io/Binder/de/safety-standards.html"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://beko2210.github.io/Binder/safety-standards.html"/>
+    <lastmod>2026-08-19</lastmod>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://beko2210.github.io/Binder/de/safety-standards.html</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://beko2210.github.io/Binder/safety-standards.html"/>
     <xhtml:link rel="alternate" hreflang="de" href="https://beko2210.github.io/Binder/de/safety-standards.html"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://beko2210.github.io/Binder/safety-standards.html"/>
+    <lastmod>2026-08-19</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://beko2210.github.io/Binder/delete-account.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://beko2210.github.io/Binder/delete-account.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://beko2210.github.io/Binder/de/delete-account.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://beko2210.github.io/Binder/delete-account.html"/>
+    <lastmod>2026-08-19</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://beko2210.github.io/Binder/de/delete-account.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://beko2210.github.io/Binder/delete-account.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://beko2210.github.io/Binder/de/delete-account.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://beko2210.github.io/Binder/delete-account.html"/>
+    <lastmod>2026-08-19</lastmod>
+    <priority>0.6</priority>
   </url>
 </urlset>

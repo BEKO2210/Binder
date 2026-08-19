@@ -1,0 +1,1472 @@
+{
+  "home": [
+    {
+      "key": "home.description-free-dating-app-without",
+      "ctx": "attr:meta:content"
+    },
+    {
+      "key": "home.og-title-binder-both-choose",
+      "ctx": "attr:meta:content"
+    },
+    {
+      "key": "home.og-description-no-paywall-no",
+      "ctx": "attr:meta:content"
+    },
+    {
+      "key": "home.twitter-title-binder-both-choose",
+      "ctx": "attr:meta:content"
+    },
+    {
+      "key": "home.twitter-description-the-free-dating",
+      "ctx": "attr:meta:content"
+    },
+    {
+      "key": "home.binder-free-dating-app-without",
+      "ctx": "text:title"
+    },
+    {
+      "key": "home.jsonld-1",
+      "ctx": "jsonld"
+    },
+    {
+      "key": "home.jsonld-2",
+      "ctx": "jsonld"
+    },
+    {
+      "key": "home.a-aria-label-binder-home",
+      "ctx": "attr:a:aria-label"
+    },
+    {
+      "key": "home.binder",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.nav-aria-label-primary",
+      "ctx": "attr:nav:aria-label"
+    },
+    {
+      "key": "home.how-it-works",
+      "ctx": "text:a"
+    },
+    {
+      "key": "home.safety",
+      "ctx": "text:a"
+    },
+    {
+      "key": "home.languages",
+      "ctx": "text:a"
+    },
+    {
+      "key": "home.privacy",
+      "ctx": "text:a"
+    },
+    {
+      "key": "home.terms",
+      "ctx": "text:a"
+    },
+    {
+      "key": "home.account-control",
+      "ctx": "text:a"
+    },
+    {
+      "key": "home.free-mutual-first-zero-trackers",
+      "ctx": "text:div"
+    },
+    {
+      "key": "home.both-choose",
+      "ctx": "text:h1"
+    },
+    {
+      "key": "home.then-you-talk",
+      "ctx": "text:em"
+    },
+    {
+      "key": "home.dating-apps-monetize-your-loneliness",
+      "ctx": "text:p"
+    },
+    {
+      "key": "home.see-how-binder-works",
+      "ctx": "text:a"
+    },
+    {
+      "key": "home.safety-architecture",
+      "ctx": "text:a"
+    },
+    {
+      "key": "home.div-aria-label-binder-product",
+      "ctx": "attr:div:aria-label"
+    },
+    {
+      "key": "home.0",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "home.everything-in-the-app-is",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.mutual",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "home.nobody-can-message-you-before",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.private",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "home.your-exact-location-and-birth",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.no-paywall-no-blurred-likes",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.no-paywall-no-blurred-likes-2",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.see-it-in-action",
+      "ctx": "text:div"
+    },
+    {
+      "key": "home.this-is-binder-unscripted",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "home.filmed-from-the-shipping-build",
+      "ctx": "text:p"
+    },
+    {
+      "key": "home.video-aria-label-binder-promo",
+      "ctx": "attr:video:aria-label"
+    },
+    {
+      "key": "home.video-aria-label-screen-recording",
+      "ctx": "attr:video:aria-label"
+    },
+    {
+      "key": "home.unfiltered",
+      "ctx": "text:div"
+    },
+    {
+      "key": "home.a-real-conversation-on-a",
+      "ctx": "text:h3"
+    },
+    {
+      "key": "home.open-your-match-say-something",
+      "ctx": "text:p"
+    },
+    {
+      "key": "home.img-alt-two-people-laughing",
+      "ctx": "attr:img:alt"
+    },
+    {
+      "key": "home.where-binder-wants-you-to",
+      "ctx": "text:figcaption"
+    },
+    {
+      "key": "home.img-alt-a-couple-walking",
+      "ctx": "attr:img:alt"
+    },
+    {
+      "key": "home.matching-is-the-start-not",
+      "ctx": "text:figcaption"
+    },
+    {
+      "key": "home.product-discipline",
+      "ctx": "text:div"
+    },
+    {
+      "key": "home.the-useful-product-stays-free",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "home.binder-is-intentionally-focused-identity",
+      "ctx": "text:p"
+    },
+    {
+      "key": "home.01-discover",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.fit-both-sides",
+      "ctx": "text:h3"
+    },
+    {
+      "key": "home.age-preferences-and-distance-are",
+      "ctx": "text:p"
+    },
+    {
+      "key": "home.02-bind",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.one-durable-decision",
+      "ctx": "text:h3"
+    },
+    {
+      "key": "home.a-bind-or-pass-is",
+      "ctx": "text:p"
+    },
+    {
+      "key": "home.03-talk",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.conversation-after-consent",
+      "ctx": "text:h3"
+    },
+    {
+      "key": "home.only-members-of-an-active",
+      "ctx": "text:p"
+    },
+    {
+      "key": "home.04-say-it",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.your-voice-up-to-a",
+      "ctx": "text:h3"
+    },
+    {
+      "key": "home.voice-messages-in-chat-and",
+      "ctx": "text:p"
+    },
+    {
+      "key": "home.05-choose",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.ten-answers-ten-filters",
+      "ctx": "text:h3"
+    },
+    {
+      "key": "home.height-smoking-drinking-drugs-exercise",
+      "ctx": "text:p"
+    },
+    {
+      "key": "home.built-in-2026-behaves-like",
+      "ctx": "text:div"
+    },
+    {
+      "key": "home.an-app-that-respects-your",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "home.every-feature-ships-with-the",
+      "ctx": "text:p"
+    },
+    {
+      "key": "home.photos",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.six-photos-every-one-reviewed",
+      "ctx": "text:h3"
+    },
+    {
+      "key": "home.your-gallery-supports-up-to",
+      "ctx": "text:p"
+    },
+    {
+      "key": "home.notifications",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.push-that-sleeps-when-you",
+      "ctx": "text:h3"
+    },
+    {
+      "key": "home.quiet-hours-are-enforced-on",
+      "ctx": "text:p"
+    },
+    {
+      "key": "home.lock-screen",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.your-lock-screen-stays-yours",
+      "ctx": "text:h3"
+    },
+    {
+      "key": "home.binder-never-puts-message-text",
+      "ctx": "text:p"
+    },
+    {
+      "key": "home.15-languages",
+      "ctx": "text:div"
+    },
+    {
+      "key": "home.in-your-language-from-the",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "home.binder-follows-the-language-your",
+      "ctx": "text:p"
+    },
+    {
+      "key": "home.text",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.english",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.text-2",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.text-3",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.text-4",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.text-5",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.text-6",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.nederlands",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.text-7",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.fran-ais",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.text-8",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.deutsch",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.text-9",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.text-10",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.text-11",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.bahasa-indonesia",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.text-12",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.italiano",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.text-13",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.text-14",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.text-15",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.text-16",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.text-17",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.polski",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.text-18",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.portugu-s-brasil",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.text-19",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.espa-ol",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.text-20",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.tuerk-e",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.all-languages-and-how-they",
+      "ctx": "text:a"
+    },
+    {
+      "key": "home.section-aria-label-engineering-proof",
+      "ctx": "attr:section:aria-label"
+    },
+    {
+      "key": "home.150",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "home.database-assertions-guard-matching-chat",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.1",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "home.match-per-mutual-like-proven",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.0-2",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "home.ad-networks-analytics-sdks-or",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.18",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "home.adult-only-access-enforced-as",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.safety-is-infrastructure",
+      "ctx": "text:div"
+    },
+    {
+      "key": "home.not-a-footer-link-added",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "home.binder-treats-abuse-controls-as",
+      "ctx": "text:p"
+    },
+    {
+      "key": "home.built-into-the-system",
+      "ctx": "text:h3"
+    },
+    {
+      "key": "home.server-enforced-18-onboarding-baseline",
+      "ctx": "text:li"
+    },
+    {
+      "key": "home.block-dominates-discovery-matching-chat",
+      "ctx": "text:li"
+    },
+    {
+      "key": "home.profile-and-message-reporting-with",
+      "ctx": "text:li"
+    },
+    {
+      "key": "home.sender-wide-messaging-rate-limits",
+      "ctx": "text:li"
+    },
+    {
+      "key": "home.private-media-storage-moderation-and",
+      "ctx": "text:li"
+    },
+    {
+      "key": "home.exact-location-retained-only-for",
+      "ctx": "text:li"
+    },
+    {
+      "key": "home.binder-also-publishes-its",
+      "ctx": "text:p"
+    },
+    {
+      "key": "home.standards-against-child-sexual-abuse",
+      "ctx": "text:a"
+    },
+    {
+      "key": "home.the-18-gate-priority-review",
+      "ctx": "text:a"
+    },
+    {
+      "key": "home.your-account-should-remain-yours",
+      "ctx": "text:h3"
+    },
+    {
+      "key": "home.privacy-terms-and-deletion-are",
+      "ctx": "text:p"
+    },
+    {
+      "key": "home.delete-binder-account",
+      "ctx": "text:a"
+    },
+    {
+      "key": "home.2026-binder-independent-product",
+      "ctx": "text:span"
+    },
+    {
+      "key": "home.home",
+      "ctx": "text:a"
+    },
+    {
+      "key": "home.languages-2",
+      "ctx": "text:a"
+    },
+    {
+      "key": "home.privacy-2",
+      "ctx": "text:a"
+    },
+    {
+      "key": "home.terms-2",
+      "ctx": "text:a"
+    },
+    {
+      "key": "home.child-safety",
+      "ctx": "text:a"
+    },
+    {
+      "key": "home.delete-account",
+      "ctx": "text:a"
+    },
+    {
+      "key": "home.impressum",
+      "ctx": "text:a"
+    },
+    {
+      "key": "home.contact",
+      "ctx": "text:a"
+    },
+    {
+      "key": "home.deutsch-2",
+      "ctx": "text:a"
+    }
+  ],
+  "privacy": [
+    {
+      "key": "privacy.privacy-policy-binder-dating-app",
+      "ctx": "text:title"
+    },
+    {
+      "key": "privacy.description-what-binder-collects-and",
+      "ctx": "attr:meta:content"
+    },
+    {
+      "key": "privacy.a-aria-label-binder-home",
+      "ctx": "attr:a:aria-label"
+    },
+    {
+      "key": "privacy.binder",
+      "ctx": "text:span"
+    },
+    {
+      "key": "privacy.terms",
+      "ctx": "text:a"
+    },
+    {
+      "key": "privacy.account-control",
+      "ctx": "text:a"
+    },
+    {
+      "key": "privacy.privacy",
+      "ctx": "text:div"
+    },
+    {
+      "key": "privacy.what-binder-needs-and-what",
+      "ctx": "text:h1"
+    },
+    {
+      "key": "privacy.this-policy-describes-binder-s",
+      "ctx": "text:p"
+    },
+    {
+      "key": "privacy.effective-19-august-2026-contact",
+      "ctx": "text:p"
+    },
+    {
+      "key": "privacy.core-privacy-boundary",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.other-binder-users-do-not",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.data-we-process",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "privacy.account",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.authentication-identifiers-such-as-email",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.private-eligibility-data",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.birth-date-and-current-location",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.profile-and-ugc",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.first-name-bio-gender-interests",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.optional-profile-attributes",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.height-smoking-drinking-drug-use",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.beliefs-religion-or-worldview-is",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.binder-processes-it-only-because",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.discovery-filters",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.the-attribute-filters-you-set",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.voice-recordings",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.voice-messages-you-record-in",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.safety-data",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.blocks-reports-report-context-snapshots",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.device-data",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.an-expo-push-token-may",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.beta-ranking-measurement",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.binder-can-record-the-accounts",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.optional-client-diagnostics",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.if-you-explicitly-enable-beta",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.why-we-use-it",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "privacy.authenticate-your-account",
+      "ctx": "text:li"
+    },
+    {
+      "key": "privacy.enforce-adult-only-onboarding-and",
+      "ctx": "text:li"
+    },
+    {
+      "key": "privacy.calculate-candidate-eligibility-and-rounded",
+      "ctx": "text:li"
+    },
+    {
+      "key": "privacy.store-and-deliver-matched-conversations",
+      "ctx": "text:li"
+    },
+    {
+      "key": "privacy.show-the-optional-attributes-you",
+      "ctx": "text:li"
+    },
+    {
+      "key": "privacy.prevent-abuse-investigate-reports-and",
+      "ctx": "text:li"
+    },
+    {
+      "key": "privacy.measure-whether-discovery-ordering-and",
+      "ctx": "text:li"
+    },
+    {
+      "key": "privacy.diagnose-beta-load-time-or",
+      "ctx": "text:li"
+    },
+    {
+      "key": "privacy.operate-account-deletion-and-security",
+      "ctx": "text:li"
+    },
+    {
+      "key": "privacy.beta-measurement-choices",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "privacy.core-ranking-and-funnel-measurement",
+      "ctx": "text:p"
+    },
+    {
+      "key": "privacy.profile-beta-program",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.disabling-them-deletes-the-existing",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.current-retention-targets-are-30",
+      "ctx": "text:p"
+    },
+    {
+      "key": "privacy.infrastructure",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "privacy.binder-currently-uses-supabase-for",
+      "ctx": "text:p"
+    },
+    {
+      "key": "privacy.account-email",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.confirmation-sign-in-and-password",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "privacy.no-reply-it-handwerk-stuttgart",
+      "ctx": "text:code"
+    },
+    {
+      "key": "privacy.brevo-therefore-processes-your-email",
+      "ctx": "text:code"
+    },
+    {
+      "key": "privacy.microphone",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "privacy.binder-requests-microphone-access-only",
+      "ctx": "text:p"
+    },
+    {
+      "key": "privacy.location",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "privacy.binder-requests-foreground-location-for",
+      "ctx": "text:p"
+    },
+    {
+      "key": "privacy.retention-and-deletion",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "privacy.when-you-request-account-deletion",
+      "ctx": "text:p"
+    },
+    {
+      "key": "privacy.use-the",
+      "ctx": "text:p"
+    },
+    {
+      "key": "privacy.account-deletion-page",
+      "ctx": "text:a"
+    },
+    {
+      "key": "privacy.or-the-in-app-account",
+      "ctx": "text:a"
+    },
+    {
+      "key": "privacy.your-choices",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "privacy.you-can-update-profile-information",
+      "ctx": "text:p"
+    },
+    {
+      "key": "privacy.contact",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "privacy.privacy-questions",
+      "ctx": "text:p"
+    },
+    {
+      "key": "privacy.nullmesh-protonmail-com",
+      "ctx": "text:a"
+    },
+    {
+      "key": "privacy.the-conduct-rules-behind-the",
+      "ctx": "text:a"
+    },
+    {
+      "key": "privacy.terms-amp-community-rules",
+      "ctx": "text:a"
+    },
+    {
+      "key": "privacy.and-the-child-protection-commitments",
+      "ctx": "text:a"
+    },
+    {
+      "key": "privacy.child-safety-standards-page",
+      "ctx": "text:a"
+    },
+    {
+      "key": "privacy.text",
+      "ctx": "text:a"
+    },
+    {
+      "key": "privacy.2026-binder-independent-product",
+      "ctx": "text:span"
+    },
+    {
+      "key": "privacy.home",
+      "ctx": "text:a"
+    },
+    {
+      "key": "privacy.languages",
+      "ctx": "text:a"
+    },
+    {
+      "key": "privacy.privacy-2",
+      "ctx": "text:a"
+    },
+    {
+      "key": "privacy.terms-2",
+      "ctx": "text:a"
+    },
+    {
+      "key": "privacy.child-safety",
+      "ctx": "text:a"
+    },
+    {
+      "key": "privacy.delete-account",
+      "ctx": "text:a"
+    },
+    {
+      "key": "privacy.impressum",
+      "ctx": "text:a"
+    },
+    {
+      "key": "privacy.contact-2",
+      "ctx": "text:a"
+    },
+    {
+      "key": "privacy.deutsch",
+      "ctx": "text:a"
+    }
+  ],
+  "terms": [
+    {
+      "key": "terms.terms-community-rules-binder-dating",
+      "ctx": "text:title"
+    },
+    {
+      "key": "terms.description-binder-terms-18-only",
+      "ctx": "attr:meta:content"
+    },
+    {
+      "key": "terms.a-aria-label-binder-home",
+      "ctx": "attr:a:aria-label"
+    },
+    {
+      "key": "terms.binder",
+      "ctx": "text:span"
+    },
+    {
+      "key": "terms.privacy",
+      "ctx": "text:a"
+    },
+    {
+      "key": "terms.account-control",
+      "ctx": "text:a"
+    },
+    {
+      "key": "terms.terms-community-rules",
+      "ctx": "text:div"
+    },
+    {
+      "key": "terms.mutual-interest-does-not-remove",
+      "ctx": "text:h1"
+    },
+    {
+      "key": "terms.these-rules-apply-before-you",
+      "ctx": "text:p"
+    },
+    {
+      "key": "terms.version-2026-08-15-effective",
+      "ctx": "text:p"
+    },
+    {
+      "key": "terms.binder-is-18-only",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "terms.do-not-use-binder-if",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "terms.1-respect-and-consent",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "terms.you-may-not-use-binder",
+      "ctx": "text:p"
+    },
+    {
+      "key": "terms.2-prohibited-content-and-behavior",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "terms.sexual-exploitation-or-abuse-of",
+      "ctx": "text:li"
+    },
+    {
+      "key": "terms.sexually-explicit-or-pornographic-profile",
+      "ctx": "text:li"
+    },
+    {
+      "key": "terms.credible-threats-incitement-to-violence",
+      "ctx": "text:li"
+    },
+    {
+      "key": "terms.non-consensual-intimate-imagery-or",
+      "ctx": "text:li"
+    },
+    {
+      "key": "terms.impersonation-deceptive-identity-claims-scams",
+      "ctx": "text:li"
+    },
+    {
+      "key": "terms.sale-facilitation-or-promotion-of",
+      "ctx": "text:li"
+    },
+    {
+      "key": "terms.publishing-another-person-s-private",
+      "ctx": "text:li"
+    },
+    {
+      "key": "terms.attempts-to-bypass-blocks-moderation",
+      "ctx": "text:li"
+    },
+    {
+      "key": "terms.3-voice-recordings",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "terms.voice-messages-and-the-profile",
+      "ctx": "text:p"
+    },
+    {
+      "key": "terms.4-profile-and-message-responsibility",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "terms.you-are-responsible-for-content",
+      "ctx": "text:p"
+    },
+    {
+      "key": "terms.5-safety-tools",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "terms.binder-may-provide-report-block",
+      "ctx": "text:p"
+    },
+    {
+      "key": "terms.6-moderation",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "terms.content-may-be-queued-limited",
+      "ctx": "text:p"
+    },
+    {
+      "key": "terms.7-account-deletion",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "terms.you-can-request-deletion-from",
+      "ctx": "text:p"
+    },
+    {
+      "key": "terms.public-deletion-resource",
+      "ctx": "text:a"
+    },
+    {
+      "key": "terms.data-that-must-legitimately-be",
+      "ctx": "text:a"
+    },
+    {
+      "key": "terms.privacy-policy",
+      "ctx": "text:a"
+    },
+    {
+      "key": "terms.describes-exactly-what-is-kept",
+      "ctx": "text:a"
+    },
+    {
+      "key": "terms.8-beta-service",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "terms.binder-is-under-active-development",
+      "ctx": "text:p"
+    },
+    {
+      "key": "terms.9-contact",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "terms.questions-or-safety-concerns",
+      "ctx": "text:p"
+    },
+    {
+      "key": "terms.nullmesh-protonmail-com",
+      "ctx": "text:a"
+    },
+    {
+      "key": "terms.text",
+      "ctx": "text:a"
+    },
+    {
+      "key": "terms.2026-binder-independent-product",
+      "ctx": "text:span"
+    },
+    {
+      "key": "terms.home",
+      "ctx": "text:a"
+    },
+    {
+      "key": "terms.languages",
+      "ctx": "text:a"
+    },
+    {
+      "key": "terms.privacy-2",
+      "ctx": "text:a"
+    },
+    {
+      "key": "terms.terms",
+      "ctx": "text:a"
+    },
+    {
+      "key": "terms.child-safety",
+      "ctx": "text:a"
+    },
+    {
+      "key": "terms.delete-account",
+      "ctx": "text:a"
+    },
+    {
+      "key": "terms.impressum",
+      "ctx": "text:a"
+    },
+    {
+      "key": "terms.contact",
+      "ctx": "text:a"
+    },
+    {
+      "key": "terms.deutsch",
+      "ctx": "text:a"
+    }
+  ],
+  "safety": [
+    {
+      "key": "safety.child-safety-standards-csae-binder",
+      "ctx": "text:title"
+    },
+    {
+      "key": "safety.description-binder-s-published-standards",
+      "ctx": "attr:meta:content"
+    },
+    {
+      "key": "safety.a-aria-label-binder-home",
+      "ctx": "attr:a:aria-label"
+    },
+    {
+      "key": "safety.binder",
+      "ctx": "text:span"
+    },
+    {
+      "key": "safety.nav-aria-label-primary",
+      "ctx": "attr:nav:aria-label"
+    },
+    {
+      "key": "safety.privacy",
+      "ctx": "text:a"
+    },
+    {
+      "key": "safety.terms",
+      "ctx": "text:a"
+    },
+    {
+      "key": "safety.account-control",
+      "ctx": "text:a"
+    },
+    {
+      "key": "safety.safety",
+      "ctx": "text:div"
+    },
+    {
+      "key": "safety.standards-against-child-sexual-abuse",
+      "ctx": "text:h1"
+    },
+    {
+      "key": "safety.published-for-binder-android-app",
+      "ctx": "text:p"
+    },
+    {
+      "key": "safety.binder-has-a",
+      "ctx": "text:p"
+    },
+    {
+      "key": "safety.zero-tolerance-policy",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "safety.toward-child-sexual-abuse-and",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "safety.1-adults-only",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "safety.binder-is-an-18-service",
+      "ctx": "text:p"
+    },
+    {
+      "key": "safety.2-prohibited-content-and-behavior",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "safety.the-following-lead-to-immediate",
+      "ctx": "text:p"
+    },
+    {
+      "key": "safety.any-sexual-content-involving-or",
+      "ctx": "text:li"
+    },
+    {
+      "key": "safety.attempts-by-minors-to-access",
+      "ctx": "text:li"
+    },
+    {
+      "key": "safety.grooming-solicitation-or-sexualized-communication",
+      "ctx": "text:li"
+    },
+    {
+      "key": "safety.sharing-requesting-or-linking-to",
+      "ctx": "text:li"
+    },
+    {
+      "key": "safety.3-in-app-reporting",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "safety.every-profile-and-every-message",
+      "ctx": "text:p"
+    },
+    {
+      "key": "safety.highest-review-priority",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "safety.in-our-moderation-queue-reporting",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "safety.4-photo-moderation",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "safety.every-profile-photo-is-reviewed",
+      "ctx": "text:p"
+    },
+    {
+      "key": "safety.5-action-on-knowledge-and",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "safety.when-we-obtain-actual-knowledge",
+      "ctx": "text:p"
+    },
+    {
+      "key": "safety.6-point-of-contact",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "safety.child-safety-concerns-can-be",
+      "ctx": "text:p"
+    },
+    {
+      "key": "safety.nullmesh-protonmail-com",
+      "ctx": "text:a"
+    },
+    {
+      "key": "safety.reports-of-this-category-are",
+      "ctx": "text:a"
+    },
+    {
+      "key": "safety.impressum",
+      "ctx": "text:a"
+    },
+    {
+      "key": "safety.the-conduct-rules-these-standards",
+      "ctx": "text:a"
+    },
+    {
+      "key": "safety.terms-amp-community-rules",
+      "ctx": "text:a"
+    },
+    {
+      "key": "safety.data-handling-for-reports-and",
+      "ctx": "text:a"
+    },
+    {
+      "key": "safety.privacy-policy",
+      "ctx": "text:a"
+    },
+    {
+      "key": "safety.text",
+      "ctx": "text:a"
+    },
+    {
+      "key": "safety.2026-binder-independent-product",
+      "ctx": "text:span"
+    },
+    {
+      "key": "safety.home",
+      "ctx": "text:a"
+    },
+    {
+      "key": "safety.languages",
+      "ctx": "text:a"
+    },
+    {
+      "key": "safety.privacy-2",
+      "ctx": "text:a"
+    },
+    {
+      "key": "safety.terms-2",
+      "ctx": "text:a"
+    },
+    {
+      "key": "safety.child-safety",
+      "ctx": "text:a"
+    },
+    {
+      "key": "safety.delete-account",
+      "ctx": "text:a"
+    },
+    {
+      "key": "safety.impressum-2",
+      "ctx": "text:a"
+    },
+    {
+      "key": "safety.contact",
+      "ctx": "text:a"
+    },
+    {
+      "key": "safety.deutsch",
+      "ctx": "text:a"
+    }
+  ],
+  "delete-account": [
+    {
+      "key": "delete-account.delete-your-binder-account-official",
+      "ctx": "text:title"
+    },
+    {
+      "key": "delete-account.description-request-deletion-of-your",
+      "ctx": "attr:meta:content"
+    },
+    {
+      "key": "delete-account.a-aria-label-binder-home",
+      "ctx": "attr:a:aria-label"
+    },
+    {
+      "key": "delete-account.binder",
+      "ctx": "text:span"
+    },
+    {
+      "key": "delete-account.privacy",
+      "ctx": "text:a"
+    },
+    {
+      "key": "delete-account.terms",
+      "ctx": "text:a"
+    },
+    {
+      "key": "delete-account.account-control",
+      "ctx": "text:div"
+    },
+    {
+      "key": "delete-account.delete-your-binder-account",
+      "ctx": "text:h1"
+    },
+    {
+      "key": "delete-account.you-do-not-need-to",
+      "ctx": "text:p"
+    },
+    {
+      "key": "delete-account.binder-deletion-resource-contact-nullmesh",
+      "ctx": "text:p"
+    },
+    {
+      "key": "delete-account.request-deletion-by-email",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "delete-account.send-the-request-from-the",
+      "ctx": "text:p"
+    },
+    {
+      "key": "delete-account.request-account-deletion",
+      "ctx": "text:a"
+    },
+    {
+      "key": "delete-account.read-retention-details",
+      "ctx": "text:a"
+    },
+    {
+      "key": "delete-account.what-happens",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "delete-account.your-request-is-matched-to",
+      "ctx": "text:li"
+    },
+    {
+      "key": "delete-account.the-product-account-is-deactivated",
+      "ctx": "text:li"
+    },
+    {
+      "key": "delete-account.account-associated-product-data-and",
+      "ctx": "text:li"
+    },
+    {
+      "key": "delete-account.if-a-narrowly-defined-safety",
+      "ctx": "text:li"
+    },
+    {
+      "key": "delete-account.security-note",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "delete-account.binder-will-never-ask-for",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "delete-account.in-app-deletion",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "delete-account.signed-in-users-can-also",
+      "ctx": "text:p"
+    },
+    {
+      "key": "delete-account.response-times-can-depend-on",
+      "ctx": "text:p"
+    },
+    {
+      "key": "delete-account.2026-binder-independent-product",
+      "ctx": "text:span"
+    },
+    {
+      "key": "delete-account.home",
+      "ctx": "text:a"
+    },
+    {
+      "key": "delete-account.languages",
+      "ctx": "text:a"
+    },
+    {
+      "key": "delete-account.privacy-2",
+      "ctx": "text:a"
+    },
+    {
+      "key": "delete-account.terms-2",
+      "ctx": "text:a"
+    },
+    {
+      "key": "delete-account.child-safety",
+      "ctx": "text:a"
+    },
+    {
+      "key": "delete-account.delete-account",
+      "ctx": "text:a"
+    },
+    {
+      "key": "delete-account.impressum",
+      "ctx": "text:a"
+    },
+    {
+      "key": "delete-account.contact",
+      "ctx": "text:a"
+    },
+    {
+      "key": "delete-account.deutsch",
+      "ctx": "text:a"
+    }
+  ]
+}
