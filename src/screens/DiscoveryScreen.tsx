@@ -24,6 +24,7 @@ import { resolveSpring } from '../lib/motionPolicy';
 import { reportAndBlockDiscoveryProfile, type DiscoveryReportReason } from '../lib/safety';
 import { supabase } from '../lib/supabase';
 import { classifyError, withDeadline, type ReliabilityError } from '../lib/reliability';
+import { askFor, openGate, stillWaitingFor, stopWaiting } from '../lib/lateAnswer';
 import { addPending, loadPending, nextToSend, removePending, savePending, shouldKeepAfterFailure, type PendingDecision } from '../lib/decisionQueue';
 import PartnerProfileScreen from './PartnerProfileScreen';
 import { useBinderHaptics } from '../theme/haptics';
@@ -90,6 +91,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
   const celebrationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mounted = useRef(true);
   const discoveryReloadDeferred = useRef(false);
+  const conversationGate = useRef(openGate());
   useEffect(() => () => {
     mounted.current = false;
     if (celebrationTimer.current) clearTimeout(celebrationTimer.current);
@@ -159,26 +161,43 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
       if (viewingProfile) setViewingProfile(null);
       else if (filtersOpen) setFiltersOpen(false);
       else if (safetyOpen) { setSafetyOpen(false); setSafetyReason(null); }
-      else setMatch(null);
+      else dismissMatch();
       return true;
     });
     return () => subscription.remove();
   }, [viewingProfile, match, safetyOpen, filtersOpen]);
 
-  // The celebration CTA jumps straight into the fresh conversation.
+  // The celebration CTA jumps straight into the fresh conversation — but only
+  // for as long as the celebration is the screen the person is looking at. A
+  // reply that lands after they closed it is read and dropped; it used to
+  // navigate, which opened a chat by itself half a minute later.
   async function openConversation(current: DiscoveryProfile) {
     if (openingConversation) return;
+    const ticket = askFor(conversationGate.current);
     setOpeningConversation(true);
     try {
-      const summaries = await fetchMatches();
+      const summaries = await withDeadline(fetchMatches(), DISCOVERY_DEADLINE_MS);
+      if (!mounted.current || !stillWaitingFor(conversationGate.current, ticket)) return;
       const target = summaries.find((item) => item.otherUserId === current.id);
       setMatch(null);
       if (target && onOpenMatch) onOpenMatch(target);
     } catch {
+      if (!mounted.current || !stillWaitingFor(conversationGate.current, ticket)) return;
       // Keep the moment; the match is safe under Matches either way.
       setError(classifyError(t('discovery.errors.openConversation')));
       setMatch(null);
-    } finally { setOpeningConversation(false); }
+    } finally { if (mounted.current) setOpeningConversation(false); }
+  }
+
+  /**
+   * Leaving the celebration voids whatever it asked for. It is also the only
+   * place that may switch the celebration off, so the person always has a way
+   * out even while a request is still in the air.
+   */
+  function dismissMatch() {
+    stopWaiting(conversationGate.current);
+    setOpeningConversation(false);
+    setMatch(null);
   }
 
   const topCardStyle = useAnimatedStyle(() => ({
@@ -338,7 +357,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
   useEffect(() => { void flushPending(); }, [flushPending]);
 
   function keepDiscoveringAfterMatch() {
-    setMatch(null);
+    dismissMatch();
     if (discoveryReloadDeferred.current) {
       discoveryReloadDeferred.current = false;
       void loadDiscovery(false);

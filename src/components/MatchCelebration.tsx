@@ -81,7 +81,11 @@ export function MatchCelebration({ profile, myPhotoUrl, onSaySomething, onKeepDi
           </Animated.View>
           <Animated.View style={[{ alignItems: 'center', width: '100%' }, actionsStyle]}>
             <BinderButton label={t('matchCelebration.actions.saySomething')} icon="send" loading={busy} onPress={onSaySomething} style={{ marginTop: theme.spacing.x6 }} />
-            <BinderButton label={t('matchCelebration.actions.keepDiscovering')} variant="ghost" disabled={busy} onPress={onKeepDiscovering} style={{ marginTop: theme.spacing.x2 }} />
+            {/* Never disabled: this is the only way out of the celebration, and
+                on a slow network the button above waits for the server. A way
+                out that is switched off while something waits is a trap — the
+                only escape left was the system back gesture. */}
+            <BinderButton label={t('matchCelebration.actions.keepDiscovering')} variant="ghost" onPress={onKeepDiscovering} style={{ marginTop: theme.spacing.x2 }} />
           </Animated.View>
         </View>
       </ScrollView>
