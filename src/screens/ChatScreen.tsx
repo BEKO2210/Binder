@@ -521,8 +521,13 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     // underneath it. The screen is driven directly by the keyboard's own
     // animation instead, on the UI thread, which also keeps the movement in sync
     // with the system's easing rather than approximating it.
-    <Animated.View style={[{ flex: 1, backgroundColor: theme.colors.canvas }, keyboardShift]}>
+    <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
       <BinderScreenHeader title={t('chat.header.title', { name: match.firstName, age: formatCount(match.age, locale) })} eyebrow={t('chat.header.eyebrow')} centered leading={{ icon: 'back', accessibilityLabel: t('chat.accessibility.backToMatches'), onPress: onClose }} onTitlePress={() => setShowPartnerProfile(true)} titleAccessibilityLabel={t('chat.accessibility.openProfile', { name: match.firstName })} trailing={<BinderIconButton name="more" accessibilityLabel={t('chat.accessibility.safetyControls')} selected={showSafety} onPress={() => { if (showSafety) closeSafety(); else { setSafetyMode('menu'); setShowSafety(true); } }} />} />
+
+      {/* Only what sits under the header rides the keyboard. Shifting the whole
+          screen took the back arrow, the name and the safety menu off the top
+          edge and pushed the content under the status bar while typing. */}
+      <Animated.View style={[{ flex: 1, overflow: 'hidden' }, keyboardShift]}>
 
       {showSafety ? (
         <BinderCard style={{ margin: theme.spacing.x3 }}>
@@ -593,6 +598,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
           ? <BinderIconButton name="mic" selected accessibilityLabel={t('chat.voice.accessibility.record')} onPress={() => setRecordingVoice(true)} />
           : <BinderIconButton name={sending ? 'more' : 'send'} accessibilityLabel={sending ? t('chat.accessibility.sendingMessage') : t('chat.accessibility.sendMessageTo', { name: match.firstName })} selected={canSend || sending} disabled={!canSend} onPress={() => void submitMessage()} />}
       </View>
-    </Animated.View>
+      </Animated.View>
+    </View>
   );
 }
