@@ -26,6 +26,9 @@ assets/brand/splash-icon.png
 
 # Prepared only for the static GitHub Pages artifact
 site/assets/
+# ...except the script that decides the visitor's language: it is source, not a
+# generated brand asset, and the site is broken without it.
+!site/assets/language.js
 
 # EAS keystore credentials (Klartext-Passwoerter) — Repo ist public
 credentials.json
