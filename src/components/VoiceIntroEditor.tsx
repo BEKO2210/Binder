@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Alert, View } from 'react-native';
 
 import { loadMyVoiceIntro, removeVoiceIntro, saveVoiceIntro, type VoiceIntro } from '../lib/voiceIntro';
-import { classifyError } from '../lib/reliability';
+import { classifyError, withDeadline } from '../lib/reliability';
 import { useBinderTheme } from '../theme/ThemeProvider';
 import { BinderButton, BinderText } from './ui';
 import { VoiceMessageBubble } from './VoiceMessageBubble';
@@ -18,6 +18,9 @@ type Props = { userId: string };
  * moment it is saved — that is the launch decision, and people deserve to
  * know it before they speak.
  */
+const VOICE_INTRO_DEADLINE_MS = 12_000;
+const VOICE_INTRO_UPLOAD_DEADLINE_MS = 60_000;
+
 export function VoiceIntroEditor({ userId }: Props) {
   const { theme, t } = useBinderTheme();
   const [intro, setIntro] = useState<VoiceIntro | null>(null);
@@ -39,7 +42,7 @@ export function VoiceIntroEditor({ userId }: Props) {
     setBusy(true);
     setError('');
     try {
-      setIntro(await saveVoiceIntro(userId, localUri, durationMs));
+      setIntro(await withDeadline(saveVoiceIntro(userId, localUri, durationMs), VOICE_INTRO_UPLOAD_DEADLINE_MS));
       setPlayerKey((value) => value + 1);
     } catch (cause) {
       classifyError(cause);
@@ -54,7 +57,7 @@ export function VoiceIntroEditor({ userId }: Props) {
     setBusy(true);
     setError('');
     try {
-      await removeVoiceIntro(intro);
+      await withDeadline(removeVoiceIntro(intro), VOICE_INTRO_DEADLINE_MS);
       setIntro(null);
     } catch {
       setError(t('identity.voiceIntro.deleteFailed'));

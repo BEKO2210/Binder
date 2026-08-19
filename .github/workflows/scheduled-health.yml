@@ -55,6 +55,7 @@ jobs:
         run: |
           node scripts/verify-design-contract.mjs
           node scripts/verify-worklet-contract.mjs
+          node scripts/verify-request-deadlines.mjs
           node scripts/verify-i18n.mjs
           node scripts/verify-i18n-coverage.mjs
           node scripts/verify-safety-contract.mjs

@@ -4,9 +4,14 @@ import { ScrollView, View } from 'react-native';
 import { BinderBrand, BinderButton, BinderCard, BinderIcon, BinderText, SectionHeader } from '../components/ui';
 import { MotionPressable as Pressable } from '../components/ui';
 import { PRIVACY_URL, TERMS_URL, acceptCurrentLegalGate, openBinderUrl, type LegalGate } from '../lib/safety';
+import { withDeadline } from '../lib/reliability';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
 type Props = { gate: LegalGate; onAccepted: () => void };
+
+// The gate has one button and no way past it; a silent socket used to hold
+// that button disabled with nothing else on screen.
+const LEGAL_ACCEPT_DEADLINE_MS = 12_000;
 
 export default function LegalGateScreen({ gate, onAccepted }: Props) {
   const { theme, t } = useBinderTheme();
@@ -27,7 +32,7 @@ export default function LegalGateScreen({ gate, onAccepted }: Props) {
     if (!confirmed || busy) return;
     setBusy(true);
     setError('');
-    try { await acceptCurrentLegalGate(gate); onAccepted(); }
+    try { await withDeadline(acceptCurrentLegalGate(gate), LEGAL_ACCEPT_DEADLINE_MS); onAccepted(); }
     catch (cause) { setError(cause instanceof Error ? cause.message : t('legalGate.errors.accept')); }
     finally { setBusy(false); }
   }

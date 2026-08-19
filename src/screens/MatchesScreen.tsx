@@ -10,9 +10,11 @@ import { formatCount } from '../lib/format';
 import { resolveStaggerDelay } from '../lib/motionPolicy';
 import { enablePushNotifications, getNotificationPermissionStatus, openSystemNotificationSettings, refreshPushRegistration } from '../lib/notifications';
 import { bannerOffersEnable, bannerStateAfterRegistration, initialBannerState, type PushBannerState } from '../lib/pushBanner';
-import { classifyError, isAbortError, withRetry, type ReliabilityError } from '../lib/reliability';
+import { classifyError, isAbortError, type ReliabilityError, withDeadline, withRetry } from '../lib/reliability';
 import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
+
+const MATCHES_DEADLINE_MS = 12_000;
 
 export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery, onSessionExpired }: { refreshKey: number; onOpenMatch: (match: MatchSummary) => void; onOpenDiscovery: () => void; onSessionExpired: () => void }) {
   const { theme, settings, updateNotifications, reduceMotion, locale, t } = useBinderTheme();
@@ -42,7 +44,7 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
     setLoading(true);
     setError(null);
     try {
-      const next = await withRetry((signal) => fetchMatches({ signal }), { attempts: 3, signal: controller.signal });
+      const next = await withRetry((signal) => withDeadline(fetchMatches({ signal }), MATCHES_DEADLINE_MS), { attempts: 3, signal: controller.signal });
       if (mountedRef.current && !controller.signal.aborted) setMatches(next);
     } catch (nextError) {
       if (mountedRef.current && !isAbortError(nextError)) {
@@ -72,7 +74,7 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
         // banner would happily say "enabled" over a dead installation. Asking
         // again is idempotent and repairs that case on its own.
         if (state !== 'enabled') return;
-        const result = await refreshPushRegistration(t, controller.signal);
+        const result = await withDeadline(refreshPushRegistration(t, controller.signal), MATCHES_DEADLINE_MS);
         settle(bannerStateAfterRegistration(result.status));
       })
       .catch((nextError: unknown) => {

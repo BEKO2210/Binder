@@ -76,12 +76,16 @@ test('a deadline turns a request that never answers into an error with a way out
   // A fetch on a socket the phone lost does not fail — it waits. The screen
   // behind it waits with it, and on the first screen after sign-in that leaves
   // a full-screen loading state with no retry and no message.
-  const started = Date.now();
   await assert.rejects(
     withDeadline(new Promise(() => {}), 40),
     (error: unknown) => classifyError(error).kind === 'timeout',
   );
-  assert.ok(Date.now() - started >= 40);
+  // And it waits for its deadline rather than giving up at once: a request that
+  // answers inside the ceiling still wins. Comparing wall-clock time here made
+  // the gate flaky — a timer may fire a hair before Date.now() agrees — so the
+  // race itself is the assertion.
+  const answered = new Promise((resolve) => setTimeout(() => resolve('answered'), 10));
+  assert.equal(await withDeadline(answered, 40), 'answered');
 });
 
 test('a deadline passes a result and a failure straight through', async () => {

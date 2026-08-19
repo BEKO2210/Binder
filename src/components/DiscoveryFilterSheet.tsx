@@ -3,6 +3,7 @@ import { ScrollView, View } from 'react-native';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 
 import { supabase } from '../lib/supabase';
+import { withDeadline } from '../lib/reliability';
 import { filtersPayload, parseStoredFilters, type AttributeFilters } from '../lib/attributeFilters';
 import { AttributeFilterSection } from './AttributeFilterSection';
 import { announce } from '../lib/announce';
@@ -17,6 +18,9 @@ import { BinderButton, BinderCard, BinderIconButton, BinderScreenHeader, BinderT
 type Props = { initialValues: DiscoveryPreferenceValues | null; onClose: () => void; onApplied: (values: DiscoveryPreferenceValues) => void };
 type LoadedProfile = { first_name: string; gender: Gender; bio: string; interests: string[] };
 type GroupErrors = { audience?: string; age?: string; distance?: string };
+
+// Applying blocks both buttons in the sheet while it runs.
+const FILTER_SHEET_DEADLINE_MS = 12_000;
 
 export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied }: Props) {
   const { theme, reduceMotion, t } = useBinderTheme();
@@ -39,7 +43,7 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
     let active = true;
     setLoadError('');
     async function load() {
-      const { data: userData } = await supabase.auth.getUser();
+      const { data: userData } = await withDeadline(supabase.auth.getUser(), FILTER_SHEET_DEADLINE_MS);
       const uid = userData.user?.id;
       if (!uid) throw new Error(t('discoveryFilterSheet.errors.authentication'));
       const [profileResult, storedFilters, preferencesResult] = await Promise.all([
@@ -106,9 +110,9 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
     if (Object.keys(nextErrors).length > 0) return;
     setBusy(true);
     try {
-      const { error } = await supabase.rpc('update_my_profile', { p_first_name: profile.first_name, p_gender: profile.gender, p_bio: profile.bio, p_interests: profile.interests, p_interested_in: values.interestedIn, p_min_age: values.minAge, p_max_age: values.maxAge, p_max_distance_km: values.distance });
+      const { error } = await withDeadline(supabase.rpc('update_my_profile', { p_first_name: profile.first_name, p_gender: profile.gender, p_bio: profile.bio, p_interests: profile.interests, p_interested_in: values.interestedIn, p_min_age: values.minAge, p_max_age: values.maxAge, p_max_distance_km: values.distance }), FILTER_SHEET_DEADLINE_MS);
       if (error) throw error;
-      const filtersResult = await supabase.rpc('set_my_attribute_filters', { p_filters: filtersPayload(attributeFilters) });
+      const filtersResult = await withDeadline(supabase.rpc('set_my_attribute_filters', { p_filters: filtersPayload(attributeFilters) }), FILTER_SHEET_DEADLINE_MS);
       if (filtersResult.error) throw filtersResult.error;
       announce(t('discoveryFilterSheet.accessibility.filtersApplied'));
       onApplied(values);

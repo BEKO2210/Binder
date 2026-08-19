@@ -4,12 +4,15 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BinderButton, BinderCard, BinderChip, BinderInput, BinderScreenHeader, BinderText, ScreenState, SectionHeader } from '../components/ui';
 import { getBetaSettings, setBetaDiagnostics, submitBetaFeedback, type BetaFeedbackCategory, type BetaSettings } from '../lib/beta';
+import { withDeadline } from '../lib/reliability';
 import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
 const CATEGORIES: { value: BetaFeedbackCategory; label: string }[] = [
   { value: 'bug', label: 'beta.categories.bug' }, { value: 'ux', label: 'beta.categories.ux' }, { value: 'safety', label: 'beta.categories.safety' }, { value: 'performance', label: 'beta.categories.performance' }, { value: 'other', label: 'beta.categories.other' },
 ];
+
+const BETA_DEADLINE_MS = 12_000;
 
 export default function BetaScreen({ onClose }: { onClose: () => void }) {
   const { theme, t } = useBinderTheme();
@@ -32,7 +35,7 @@ export default function BetaScreen({ onClose }: { onClose: () => void }) {
     if (!settings || busy) return;
     setBusy(true); setMessage('');
     try {
-      const saved = await setBetaDiagnostics(enabled);
+      const saved = await withDeadline(setBetaDiagnostics(enabled), BETA_DEADLINE_MS);
       setSettings((current) => current ? { ...current, diagnostics_enabled: saved } : current);
       await haptic('selection');
       setMessage(t(saved ? 'beta.messages.diagnosticsEnabled' : 'beta.messages.diagnosticsDisabled'));
@@ -43,7 +46,7 @@ export default function BetaScreen({ onClose }: { onClose: () => void }) {
   const submit = useCallback(async () => {
     if (busy) return;
     setBusy(true); setMessage('');
-    try { await submitBetaFeedback(category, rating, details); setDetails(''); await haptic('selection'); setMessage(t('beta.messages.feedbackReceived')); }
+    try { await withDeadline(submitBetaFeedback(category, rating, details), BETA_DEADLINE_MS); setDetails(''); await haptic('selection'); setMessage(t('beta.messages.feedbackReceived')); }
     catch (error) { setMessage(error instanceof Error ? error.message : t('beta.errors.submitFeedback')); }
     finally { setBusy(false); }
   }, [busy, category, details, haptic, rating]);

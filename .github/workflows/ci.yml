@@ -81,6 +81,9 @@ jobs:
       - name: Verify worklet contract
         run: node scripts/verify-worklet-contract.mjs
 
+      - name: Verify every request carries a deadline
+        run: node scripts/verify-request-deadlines.mjs
+
       - name: Verify locale registry
         run: node scripts/verify-i18n.mjs
 

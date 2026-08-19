@@ -75,6 +75,7 @@ server is the truth for every destructive or social action.
 npm run typecheck && npm run typecheck:tests && npm test
 node scripts/verify-design-contract.mjs      # no literal colours/sizes/radii/durations
 node scripts/verify-worklet-contract.mjs     # a worklet may only call worklets
+node scripts/verify-request-deadlines.mjs    # no awaited request without a ceiling
 node scripts/verify-i18n.mjs                 # locale registry matches the files on disk
 node scripts/verify-i18n-coverage.mjs        # no user-visible English left in the screens
 node scripts/verify-safety-contract.mjs

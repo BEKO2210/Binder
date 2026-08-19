@@ -4,6 +4,7 @@ import { Alert, ScrollView, View } from 'react-native';
 import { BinderButton, BinderCard, BinderIcon, BinderScreenHeader, BinderText } from '../components/ui';
 import { MotionPressable as Pressable } from '../components/ui';
 import { DELETE_ACCOUNT_URL, PRIVACY_URL, TERMS_URL, deleteCurrentAccount, openBinderUrl } from '../lib/safety';
+import { withDeadline } from '../lib/reliability';
 import { confirmDestructive } from '../lib/confirmDestructive';
 import { markIntentionalSignOut } from '../lib/sessionEnd';
 import { supabase } from '../lib/supabase';
@@ -20,6 +21,10 @@ type Props = {
 // language picker, the beta programme, the policies, signing out and deleting
 // the account. Two different jobs on one screen, and the destructive one at the
 // bottom of the one people open to look at themselves.
+// Signing out and deleting an account both leave the person on this screen
+// with a disabled button until they answer.
+const MENU_DEADLINE_MS = 15_000;
+
 export default function MenuScreen({ onOpenSettings, onOpenBeta, onOpenAbout }: Props) {
   const { theme, t } = useBinderTheme();
   const [busy, setBusy] = useState(false);
@@ -46,7 +51,7 @@ export default function MenuScreen({ onOpenSettings, onOpenBeta, onOpenAbout }: 
     // Says "this one was on purpose", so Root does not treat it as a session
     // that expired on its own.
     markIntentionalSignOut();
-    const { error } = await supabase.auth.signOut();
+    const { error } = await withDeadline(supabase.auth.signOut(), MENU_DEADLINE_MS);
     if (error) setMessage(error.message);
   }
 
@@ -57,7 +62,7 @@ export default function MenuScreen({ onOpenSettings, onOpenBeta, onOpenAbout }: 
   async function performDeletion() {
     setBusy(true);
     setMessage('');
-    try { await deleteCurrentAccount(); }
+    try { await withDeadline(deleteCurrentAccount(), MENU_DEADLINE_MS); }
     catch (error) { setMessage(error instanceof Error ? error.message : t('profile.errors.deleteAccount')); setBusy(false); }
   }
 

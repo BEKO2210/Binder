@@ -90,14 +90,17 @@ test('a late answer beats an expired deadline', () => {
 });
 
 test('finishing onboarding cannot lock somebody out at the last step', () => {
-  // Three server calls with no ceiling: if one never answered, `busy` and the
+  // Server calls with no ceiling: if one never answered, `busy` and the
   // double-tap guard both stayed closed at the exact moment somebody had filled
   // in everything and was trying to get in. No error, no second attempt.
   const source = readFileSync(new URL('../src/screens/OnboardingScreen.tsx', import.meta.url), 'utf8');
   assert.match(source, /ONBOARDING_DEADLINE_MS = 15_000/);
-  assert.equal(source.match(/withDeadline\(/g)?.length, 3, 'all three server calls, and only those');
-  // The upload keeps no deadline on purpose — a transfer may take a while.
-  assert.ok(!/withDeadline\(addProfileImage/.test(source));
+  assert.equal(source.match(/withDeadline\(/g)?.length, 4, 'every server call on this screen, the upload included');
+  // The upload used to be left unbounded on the grounds that a transfer may
+  // take a while. It may — but one that never answers leaves somebody stuck on
+  // the last step of signing up, so it gets a wider ceiling rather than none.
+  assert.match(source, /withDeadline\(addProfileImage\(userId, photo\), ONBOARDING_UPLOAD_DEADLINE_MS\)/);
+  assert.match(source, /ONBOARDING_UPLOAD_DEADLINE_MS = 60_000/);
   // The guard has to be released whatever happens, or the deadline buys nothing.
   assert.match(source, /finally \{ inFlight\.current = false; setBusy\(false\); \}/);
 });

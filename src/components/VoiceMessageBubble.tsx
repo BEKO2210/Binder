@@ -3,7 +3,7 @@ import { useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 
 import { signedVoiceUrl } from '../lib/conversation';
-import { classifyError } from '../lib/reliability';
+import { classifyError, withDeadline } from '../lib/reliability';
 import { formatVoiceDuration, waveformHeights } from '../lib/voiceMessage';
 import { useBinderTheme } from '../theme/ThemeProvider';
 import { BinderIconButton, BinderText } from './ui';
@@ -25,6 +25,9 @@ const BAR_COUNT = 24;
  * thirty voice messages must not fire thirty storage requests for bubbles
  * nobody taps. Progress fills the bars from the left while playing.
  */
+// The play button is disabled while this runs.
+const VOICE_URL_DEADLINE_MS = 12_000;
+
 export function VoiceMessageBubble({ messageId, audioPath, durationMs, mine, bucket }: Props) {
   const { theme, t } = useBinderTheme();
   const player = useAudioPlayer(null);
@@ -46,7 +49,7 @@ export function VoiceMessageBubble({ messageId, audioPath, durationMs, mine, buc
     try {
       if (!loadedRef.current) {
         setLoading(true);
-        player.replace({ uri: await signedVoiceUrl(audioPath, { bucket }) });
+        player.replace({ uri: await withDeadline(signedVoiceUrl(audioPath, { bucket }), VOICE_URL_DEADLINE_MS) });
         loadedRef.current = true;
       }
       // A finished clip starts over; anything else resumes where it stopped.

@@ -13,7 +13,7 @@ import { announce } from '../lib/announce';
 import { confirmDestructive } from '../lib/confirmDestructive';
 import { composerBody, conversationErrorSurface, shouldShowConnectionNotice } from '../lib/conversationPresentation';
 import { resolveStaggerDelay } from '../lib/motionPolicy';
-import { classifyRequestFailure, isAbortError, isConversationEndedError, withRetry, type ReliabilityError } from '../lib/reliability';
+import { classifyRequestFailure, isAbortError, isConversationEndedError, withDeadline, withRetry, type ReliabilityError } from '../lib/reliability';
 
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import { MotionPressable as Pressable } from '../components/ui';
@@ -114,6 +114,11 @@ const ChatMessageRow = memo(function ChatMessageRow({ type, label, messageId, bo
 
 const chatTimelineKey = (item: TimelineItem<Message>) => item.id;
 
+// Waiting has an end everywhere in the chat: sending, loading, reporting. An
+// upload gets more room than a query — it carries a file over the same socket.
+const CHAT_DEADLINE_MS = 12_000;
+const CHAT_UPLOAD_DEADLINE_MS = 60_000;
+
 export default function ChatScreen({ match, currentUserId, onClose, onConversationEnded, onSessionExpired }: {
   match: MatchSummary;
   currentUserId: string;
@@ -196,7 +201,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
       if (initial) setLoading(true);
       setLoadError(null);
       try {
-        const page = await withRetry((signal) => fetchMessagesPage(match.matchId, undefined, 50, { signal }), { attempts: 3, signal: requestController.signal });
+        const page = await withRetry((signal) => withDeadline(fetchMessagesPage(match.matchId, undefined, 50, { signal }), CHAT_DEADLINE_MS), { attempts: 3, signal: requestController.signal });
         if (!active) return;
         mergeMessages(page.messages);
         setHasMore(page.hasMore);
@@ -290,7 +295,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     setLoadingOlder(true);
     setLoadError(null);
     try {
-      const page = await withRetry((signal) => fetchMessagesPage(match.matchId, oldest, 50, { signal }), { attempts: 3, signal: lifecycleControllerRef.current.signal });
+      const page = await withRetry((signal) => withDeadline(fetchMessagesPage(match.matchId, oldest, 50, { signal }), CHAT_DEADLINE_MS), { attempts: 3, signal: lifecycleControllerRef.current.signal });
       if (!mountedRef.current) return;
       mergeMessages(page.messages);
       setHasMore(page.hasMore);
@@ -307,7 +312,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     setRefreshing(true);
     setLoadError(null);
     try {
-      const page = await withRetry((signal) => fetchMessagesPage(match.matchId, undefined, 50, { signal }), { attempts: 3, signal: lifecycleControllerRef.current.signal });
+      const page = await withRetry((signal) => withDeadline(fetchMessagesPage(match.matchId, undefined, 50, { signal }), CHAT_DEADLINE_MS), { attempts: 3, signal: lifecycleControllerRef.current.signal });
       if (!mountedRef.current) return;
       mergeMessages(page.messages);
       setHasMore(page.hasMore);
@@ -368,7 +373,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     });
     if (!retried) setComposer('');
     try {
-      const confirmed = await sendMessage(match.matchId, clientId, body, { signal: lifecycleControllerRef.current.signal });
+      const confirmed = await withDeadline(sendMessage(match.matchId, clientId, body, { signal: lifecycleControllerRef.current.signal }), CHAT_DEADLINE_MS);
       if (!mountedRef.current) return;
       mergeMessage(confirmed);
       discardAttempt(clientId);
@@ -401,7 +406,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     setAttempts((current) => [...current, { clientId, body: '', localUri, status: 'sending' as const }]);
     setSending(true);
     try {
-      const audioPath = await uploadVoiceRecording(match.matchId, currentUserId, localUri, { signal: lifecycleControllerRef.current.signal });
+      const audioPath = await withDeadline(uploadVoiceRecording(match.matchId, currentUserId, localUri, { signal: lifecycleControllerRef.current.signal }), CHAT_UPLOAD_DEADLINE_MS);
       setAttempts((current) => current.map((attempt) => attempt.clientId === clientId ? { ...attempt, voice: { audioPath, durationMs } } : attempt));
       const confirmed = await sendVoiceMessage(match.matchId, clientId, audioPath, durationMs, { signal: lifecycleControllerRef.current.signal });
       if (!mountedRef.current) return;
@@ -470,12 +475,12 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
 
   function confirmUnmatch() {
     if (safetyBusy) return;
-    confirmDestructive({ title: t('chat.alerts.unmatchTitle', { name: match.firstName }), message: t('chat.alerts.unmatchMessage'), cancelText: t('chat.actions.cancel'), destructiveText: t('chat.actions.unmatch'), onConfirm: () => { if (safetyBusy) return; setSafetyError(null); setSafetyBusy('unmatch'); void unmatch(match.matchId, { signal: lifecycleControllerRef.current.signal }).then(async () => { if (!mountedRef.current) return; await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => { if (mountedRef.current && !isAbortError(error)) setSafetyError(classifyRequestFailure(error)); }).finally(() => { if (mountedRef.current) setSafetyBusy(null); }); } });
+    confirmDestructive({ title: t('chat.alerts.unmatchTitle', { name: match.firstName }), message: t('chat.alerts.unmatchMessage'), cancelText: t('chat.actions.cancel'), destructiveText: t('chat.actions.unmatch'), onConfirm: () => { if (safetyBusy) return; setSafetyError(null); setSafetyBusy('unmatch'); void withDeadline(unmatch(match.matchId, { signal: lifecycleControllerRef.current.signal }), CHAT_DEADLINE_MS).then(async () => { if (!mountedRef.current) return; await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => { if (mountedRef.current && !isAbortError(error)) setSafetyError(classifyRequestFailure(error)); }).finally(() => { if (mountedRef.current) setSafetyBusy(null); }); } });
   }
 
   function confirmBlock() {
     if (safetyBusy) return;
-    confirmDestructive({ title: t('chat.alerts.blockTitle', { name: match.firstName }), message: t('chat.alerts.blockMessage'), cancelText: t('chat.actions.cancel'), destructiveText: t('chat.actions.block'), onConfirm: () => { if (safetyBusy) return; setSafetyError(null); setSafetyBusy('block'); void blockUser(match.otherUserId, { signal: lifecycleControllerRef.current.signal }).then(async () => { if (!mountedRef.current) return; await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => { if (mountedRef.current && !isAbortError(error)) setSafetyError(classifyRequestFailure(error)); }).finally(() => { if (mountedRef.current) setSafetyBusy(null); }); } });
+    confirmDestructive({ title: t('chat.alerts.blockTitle', { name: match.firstName }), message: t('chat.alerts.blockMessage'), cancelText: t('chat.actions.cancel'), destructiveText: t('chat.actions.block'), onConfirm: () => { if (safetyBusy) return; setSafetyError(null); setSafetyBusy('block'); void withDeadline(blockUser(match.otherUserId, { signal: lifecycleControllerRef.current.signal }), CHAT_DEADLINE_MS).then(async () => { if (!mountedRef.current) return; await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => { if (mountedRef.current && !isAbortError(error)) setSafetyError(classifyRequestFailure(error)); }).finally(() => { if (mountedRef.current) setSafetyBusy(null); }); } });
   }
 
   async function submitReport() {
@@ -483,7 +488,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     setReporting(true);
     setSafetyError(null);
     try {
-      await reportUser({ reportedUserId: match.otherUserId, reason: reportReason, details: reportDetails, matchId: match.matchId, messageId: reportMessageId ?? undefined, block: true, signal: lifecycleControllerRef.current.signal });
+      await withDeadline(reportUser({ reportedUserId: match.otherUserId, reason: reportReason, details: reportDetails, matchId: match.matchId, messageId: reportMessageId ?? undefined, block: true, signal: lifecycleControllerRef.current.signal }), CHAT_DEADLINE_MS);
       if (!mountedRef.current) return;
       await haptic('destructive');
       onConversationEnded();

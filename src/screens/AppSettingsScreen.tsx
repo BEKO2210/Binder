@@ -5,6 +5,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderInput, BinderScreenHeader, BinderText, MotionPressable as Pressable, ScreenState, SectionHeader } from '../components/ui';
 import { availableLocales } from '../i18n';
 import { getBetaSettings, setBetaDiagnostics } from '../lib/beta';
+import { withDeadline } from '../lib/reliability';
 import { confirmDestructive } from '../lib/confirmDestructive';
 import { disablePushNotifications, enablePushNotifications, getNotificationPermissionStatus, openSystemNotificationSettings, refreshPushRegistration } from '../lib/notifications';
 import { pushBlockedOnThisDevice, pushSettingsWarning, type PushPermissionStatus, type PushRegistrationStatus } from '../lib/pushBanner';
@@ -25,6 +26,9 @@ const ACCENT_OPTIONS: { id: AccentThemeId; labelKey: string }[] = [
 function isQuietTime(value: string): boolean {
   return /^([01]\d|2[0-3]):[0-5]\d$/.test(value.trim());
 }
+
+// A switch that waits forever is a switch nobody can move back.
+const SETTINGS_DEADLINE_MS = 12_000;
 
 export default function AppSettingsScreen({ onClose }: { onClose: () => void }) {
   const { theme, settings, hydrated, locale, t, updateSettings, updateNotifications, updateQuietHours, resetSettings } = useBinderTheme();
@@ -63,7 +67,7 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
 
   const toggleDiagnostics = useCallback(async (next: boolean) => {
     setDiagnosticsLoading(true); showMessage('');
-    try { setDiagnostics(await setBetaDiagnostics(next)); await haptic('selection'); }
+    try { setDiagnostics(await withDeadline(setBetaDiagnostics(next), SETTINGS_DEADLINE_MS)); await haptic('selection'); }
     catch (error) { showMessage(error instanceof Error ? error.message : t('appSettings.errors.updateDiagnostics')); }
     finally { setDiagnosticsLoading(false); }
   }, [haptic, t]);

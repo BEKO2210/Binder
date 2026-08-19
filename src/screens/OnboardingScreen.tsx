@@ -28,6 +28,7 @@ const STEP_COPY: Record<OnboardingStep, { eyebrow: string; title: string; copy: 
 };
 
 const ONBOARDING_DEADLINE_MS = 15_000;
+const ONBOARDING_UPLOAD_DEADLINE_MS = 60_000;
 
 export default function OnboardingScreen({ userId, onComplete }: Props) {
   const { theme, reduceMotion, t } = useBinderTheme();
@@ -121,14 +122,15 @@ export default function OnboardingScreen({ userId, onComplete }: Props) {
       // Each of these gets a ceiling. Without one, a request that never answers
       // leaves the button disabled and the double-tap guard closed, at the exact
       // moment somebody has filled in everything and is trying to get in — no
-      // error, no way to try again. The photo upload is deliberately left
-      // unbounded: it is a transfer that may legitimately take a while, and it
-      // has its own failure path.
+      // error, no way to try again. The photo upload gets a wider ceiling
+      // rather than none: a transfer may legitimately take a while, but one
+      // that never answers leaves somebody stuck on the last step of signing
+      // up with a disabled button, which is the worst place to be stuck.
       const { error } = await withDeadline(supabase.rpc('complete_my_onboarding', { p_first_name: firstName.trim(), p_birth_date: birthDate, p_gender: gender, p_bio: bio.trim(), p_interests: interests, p_interested_in: preferences.interestedIn, p_min_age: preferences.minAge, p_max_age: preferences.maxAge, p_max_distance_km: preferences.distance }), ONBOARDING_DEADLINE_MS);
       if (error) throw error;
       if (uploadedPhotoUri !== photo.uri) {
         const existingMedia = await withDeadline(listMyProfileMedia(), ONBOARDING_DEADLINE_MS);
-        if (existingMedia.length === 0) await addProfileImage(userId, photo);
+        if (existingMedia.length === 0) await withDeadline(addProfileImage(userId, photo), ONBOARDING_UPLOAD_DEADLINE_MS);
         setUploadedPhotoUri(photo.uri);
       }
       const { error: finalizeError } = await withDeadline(supabase.rpc('finalize_my_onboarding'), ONBOARDING_DEADLINE_MS); if (finalizeError) throw finalizeError;

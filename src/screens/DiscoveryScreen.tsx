@@ -110,7 +110,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
     setError(null);
     setLocationPermissionDenied(false);
     try {
-      if (refreshLocation && !await refreshDiscoveryLocation()) {
+      if (refreshLocation && !await withDeadline(refreshDiscoveryLocation(), DISCOVERY_DEADLINE_MS)) {
         if (current()) setLocationPermissionDenied(true);
         return;
       }
@@ -118,7 +118,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
       if (!current()) return;
       setProfiles(batch);
       if (batch.length === 0) {
-        const values = filterValuesToCountWith(appliedValues, filterValues) ?? await loadDiscoveryPreferences();
+        const values = filterValuesToCountWith(appliedValues, filterValues) ?? await withDeadline(loadDiscoveryPreferences(), DISCOVERY_DEADLINE_MS);
         const [currentCount, standardCount] = await Promise.all([
           countDiscoveryCandidates(values),
           countDiscoveryCandidates(discoveryDefaults),
@@ -145,7 +145,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
   useEffect(() => {
     let active = true;
     async function loadFilterSummary() {
-      const values = await loadDiscoveryPreferences();
+      const values = await withDeadline(loadDiscoveryPreferences(), DISCOVERY_DEADLINE_MS);
       void loadAttributeFilterCount().then((count) => { if (active) setAttributeFilterCount(count); }).catch(() => undefined);
       if (active) setFilterValues(values);
     }

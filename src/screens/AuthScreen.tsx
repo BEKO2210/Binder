@@ -6,6 +6,7 @@ import { BinderBrand, BinderButton, BinderInput, BinderText, SectionHeader } fro
 import { hasAuthErrors, MIN_PASSWORD_LENGTH, validateAuthForm, type AuthFieldErrors, type AuthMode } from '../lib/authForm';
 import { isGoogleSignInConfigured, signInWithGoogle } from '../lib/googleAuth';
 import { supabase } from '../lib/supabase';
+import { withDeadline } from '../lib/reliability';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
 // The reset link has to come back to this app, not to a web page that cannot
@@ -32,6 +33,10 @@ function mapAuthError(error: unknown, t: (key: string, values?: Record<string, s
 // `recovery` is set when the app was opened through a password-reset link and
 // Supabase has handed us a recovery session: the only thing that screen may do
 // is set a new password.
+// Sign-in is the whole app for somebody who is not in yet: a silent socket
+// used to leave every button on this screen disabled with no message.
+const AUTH_DEADLINE_MS = 15_000;
+
 export default function AuthScreen({ recovery = false, onRecoveryHandled }: { recovery?: boolean; onRecoveryHandled?: () => void } = {}) {
   const { theme, t } = useBinderTheme();
   const [mode, setMode] = useState<AuthMode>(recovery ? 'signup' : 'signin');
@@ -93,7 +98,7 @@ export default function AuthScreen({ recovery = false, onRecoveryHandled }: { re
     setMessage('');
     try {
       if (recovery) {
-        const { error } = await supabase.auth.updateUser({ password });
+        const { error } = await withDeadline(supabase.auth.updateUser({ password }), AUTH_DEADLINE_MS);
         if (error) throw error;
         setMessageTone('secondary');
         setMessage(t('auth.messages.passwordChanged'));
@@ -102,22 +107,22 @@ export default function AuthScreen({ recovery = false, onRecoveryHandled }: { re
         // Supabase always answers the same way here, whether or not the address
         // exists — telling an anonymous caller which emails have accounts on a
         // dating app would be a privacy leak, not a convenience.
-        const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: PASSWORD_RESET_REDIRECT });
+        const { error } = await withDeadline(supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: PASSWORD_RESET_REDIRECT }), AUTH_DEADLINE_MS);
         if (error) throw error;
         setMessageTone('secondary');
         setMessage(t('auth.messages.resetSent'));
       } else if (mode === 'signin') {
-        const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+        const { error } = await withDeadline(supabase.auth.signInWithPassword({ email: email.trim(), password }), AUTH_DEADLINE_MS);
         if (error) throw error;
       } else {
         // Back into Binder, not onto the website: the confirmation link carries
         // a PKCE code that only this device can exchange, so the person lands
         // signed in instead of reading "email confirmed" in a browser.
-        const { data, error } = await supabase.auth.signUp({
+        const { data, error } = await withDeadline(supabase.auth.signUp({
           email: email.trim(),
           password,
           options: { emailRedirectTo: EMAIL_CONFIRM_REDIRECT },
-        });
+        }), AUTH_DEADLINE_MS);
         if (error) throw error;
         if (!data.session) {
           setMessageTone('secondary');

@@ -11,7 +11,7 @@ import { pickAndPrepareProfileImage, type PreparedImage } from '../lib/images';
 import { addProfileImage, listMyProfileMedia, removeProfileMedia, reorderProfileMedia, setPrimaryProfileMedia, type GalleryMedia } from '../lib/media';
 import { replacementOrder } from '../lib/photoReplacement';
 import { hasErrors, validateDiscovery, validateIdentity } from '../lib/onboardingFlow';
-import { classifyError } from '../lib/reliability';
+import { classifyError, withDeadline } from '../lib/reliability';
 import { supabase } from '../lib/supabase';
 import { GENDERS, type Gender } from '../lib/validation';
 import { InterestPicker } from '../components/InterestPicker';
@@ -20,6 +20,11 @@ import { VoiceIntroEditor } from '../components/VoiceIntroEditor';
 import { attributesPayload, EMPTY_ATTRIBUTES, rowsFromProfile, type ProfileAttributes } from '../lib/profileAttributes';
 import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
+
+// Saving, reordering and reading the gallery block the screen while they run;
+// an upload carries a file and gets more room than a query.
+const PROFILE_SETTINGS_DEADLINE_MS = 12_000;
+const PROFILE_UPLOAD_DEADLINE_MS = 60_000;
 
 export default function ProfileSettingsScreen({ userId, onClose, onSessionExpired }: { userId: string; onClose: () => void; onSessionExpired: () => void }) {
   const { theme, t } = useBinderTheme();
@@ -86,7 +91,7 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
     setRefreshing(true);
     setMessage('');
     try {
-      setMedia(await listMyProfileMedia());
+      setMedia(await withDeadline(listMyProfileMedia(), PROFILE_SETTINGS_DEADLINE_MS));
     } catch (error) {
       setMessageKind('error');
       setMessage(errorMessage(error, t('profileSettings.errors.load')));
@@ -113,9 +118,9 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
   // photo after the new one never arrived.
   async function uploadPhoto(image: PreparedImage): Promise<boolean> {
     try {
-      await addProfileImage(userId, image, () => setUpload({ phase: 'uploading', image }));
+      await withDeadline(addProfileImage(userId, image, () => setUpload({ phase: 'uploading', image })), PROFILE_UPLOAD_DEADLINE_MS);
       await haptic('selection');
-      setMedia(await listMyProfileMedia());
+      setMedia(await withDeadline(listMyProfileMedia(), PROFILE_SETTINGS_DEADLINE_MS));
       setUpload(null);
       setMessage(t('profileSettings.messages.photoAdded')); setMessageKind('success');
       announce(t('profileSettings.accessibility.photoUploaded'));
@@ -150,7 +155,7 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
         if (!await uploadPhoto(image)) return;
         setBusy(true);
         await removeProfileMedia(item.id);
-        setMedia(await listMyProfileMedia());
+        setMedia(await withDeadline(listMyProfileMedia(), PROFILE_SETTINGS_DEADLINE_MS));
       } else {
         await removeProfileMedia(item.id);
         setBusy(false);
@@ -177,9 +182,9 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
     setBusy(true);
     setMessage('');
     try {
-      await reorderProfileMedia(next.map((item) => item.id));
+      await withDeadline(reorderProfileMedia(next.map((item) => item.id)), PROFILE_SETTINGS_DEADLINE_MS);
       await haptic('selection');
-      setMedia(await listMyProfileMedia());
+      setMedia(await withDeadline(listMyProfileMedia(), PROFILE_SETTINGS_DEADLINE_MS));
     } catch (error) { setMessageKind('error'); setMessage(errorMessage(error, t('profileSettings.errors.reorderPhotos'))); }
     finally { setBusy(false); }
   }
@@ -191,7 +196,7 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
     try {
       await setPrimaryProfileMedia(item.id);
       await haptic('selection');
-      setMedia(await listMyProfileMedia());
+      setMedia(await withDeadline(listMyProfileMedia(), PROFILE_SETTINGS_DEADLINE_MS));
     } catch (error) { setMessageKind('error'); setMessage(errorMessage(error, t('profileSettings.errors.makePrimary'))); }
     finally { setBusy(false); }
   }
@@ -206,7 +211,7 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
     try {
       await removeProfileMedia(item.id);
       await haptic('destructive');
-      setMedia(await listMyProfileMedia());
+      setMedia(await withDeadline(listMyProfileMedia(), PROFILE_SETTINGS_DEADLINE_MS));
       announce(t('profileSettings.accessibility.photoRemoved'));
     } catch (error) { setMessageKind('error'); setMessage(errorMessage(error, t('profileSettings.errors.removePhoto'))); }
     finally { setBusy(false); }
@@ -223,7 +228,7 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
     setBusy(true); setMessage('');
     try {
       const attributeDelta = attributesPayload(savedAttributes, attributes);
-      const { error } = await supabase.rpc('update_my_profile', { p_first_name: firstName.trim(), p_gender: gender, p_bio: bio.trim(), p_interests: interests, p_interested_in: interestedIn, p_min_age: min, p_max_age: max, p_max_distance_km: maxDistance, ...(attributeDelta ? { p_attributes: attributeDelta } : {}) });
+      const { error } = await withDeadline(supabase.rpc('update_my_profile', { p_first_name: firstName.trim(), p_gender: gender, p_bio: bio.trim(), p_interests: interests, p_interested_in: interestedIn, p_min_age: min, p_max_age: max, p_max_distance_km: maxDistance, ...(attributeDelta ? { p_attributes: attributeDelta } : {}) }), PROFILE_SETTINGS_DEADLINE_MS);
       if (error) throw error;
       setSavedAttributes(attributes);
       await haptic('selection');
