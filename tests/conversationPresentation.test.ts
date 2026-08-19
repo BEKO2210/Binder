@@ -3,7 +3,7 @@ process.env.TZ = 'UTC';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { composerBody, previewTimeLabel, splitConversationPreviews } from '../src/lib/conversationPresentation.ts';
+import { composerBody, previewTimeLabel, shouldShowConnectionNotice, splitConversationPreviews } from '../src/lib/conversationPresentation.ts';
 
 test('composer accepts only a trimmed server-valid body', () => {
   assert.equal(composerBody('   '), null);
@@ -25,4 +25,12 @@ test('preview time uses time today and a compact date otherwise', () => {
   const reference = new Date('2026-08-17T18:00:00Z');
   assert.match(previewTimeLabel('2026-08-17T09:05:00Z', 'en', reference), /09:05/);
   assert.equal(previewTimeLabel('2026-08-16T09:05:00Z', 'en', reference), 'yesterday');
+});
+
+test('one lost connection is reported once, not beside the message and above it', () => {
+  assert.equal(shouldShowConnectionNotice('offline', ['offline']), false);
+  assert.equal(shouldShowConnectionNotice('offline', []), true);
+  // A different problem is a different sentence and deserves its own line.
+  assert.equal(shouldShowConnectionNotice('offline', ['server-refusal']), true);
+  assert.equal(shouldShowConnectionNotice(null, ['offline']), false);
 });

@@ -11,9 +11,9 @@ import { formatCount, formatTime } from '../lib/format';
 import { formatVoiceDuration } from '../lib/voiceMessage';
 import { announce } from '../lib/announce';
 import { confirmDestructive } from '../lib/confirmDestructive';
-import { composerBody } from '../lib/conversationPresentation';
+import { composerBody, shouldShowConnectionNotice } from '../lib/conversationPresentation';
 import { resolveStaggerDelay } from '../lib/motionPolicy';
-import { classifyError, isAbortError, isConversationEndedError, withRetry, type ReliabilityError } from '../lib/reliability';
+import { classifyRequestFailure, isAbortError, isConversationEndedError, withRetry, type ReliabilityError } from '../lib/reliability';
 
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import { MotionPressable as Pressable } from '../components/ui';
@@ -201,7 +201,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         void markMatchRead(match.matchId, { signal: requestController.signal }).catch(() => undefined);
       } catch (nextError) {
         if (active && !isAbortError(nextError)) {
-          const failure = classifyError(nextError);
+          const failure = classifyRequestFailure(nextError);
           if (failure.kind === 'permission-denied') onSessionExpired();
           else setLoadError(failure);
         }
@@ -230,7 +230,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         },
         (message) => {
           if (!active) return;
-          setLoadError(classifyError(message));
+          setLoadError(classifyRequestFailure(message));
           unsubscribe?.();
           if (retryAttempt >= 5) return;
           const delay = Math.min(15_000,1_000 * 2 ** retryAttempt);
@@ -290,7 +290,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
       setHasMore(page.hasMore);
       setLoadError(null);
     } catch (error) {
-      if (mountedRef.current && !isAbortError(error)) setLoadError(classifyError(error));
+      if (mountedRef.current && !isAbortError(error)) setLoadError(classifyRequestFailure(error));
     } finally {
       if (mountedRef.current) setLoadingOlder(false);
     }
@@ -308,7 +308,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
       void markMatchRead(match.matchId, { signal: lifecycleControllerRef.current.signal }).catch(() => undefined);
     } catch (error) {
       if (mountedRef.current && !isAbortError(error)) {
-        const failure = classifyError(error);
+        const failure = classifyRequestFailure(error);
         if (failure.kind === 'permission-denied') onSessionExpired();
         else setLoadError(failure);
       }
@@ -318,6 +318,8 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   }
 
   const validComposer = composerBody(composer);
+  const failedAttemptKinds = attempts.filter((attempt) => attempt.status === 'failed').map((attempt) => attempt.error?.kind ?? 'unknown');
+  const connectionNoticeVisible = messages.length > 0 && shouldShowConnectionNotice(loadError?.kind ?? null, failedAttemptKinds);
   const canSend = validComposer !== null && !sending;
   const reportingMessage = useMemo(() => messages.find((message) => message.id === reportMessageId) ?? null, [messages, reportMessageId]);
   // The list renders inverted so the newest message is always pinned to the
@@ -374,7 +376,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
           discardAttempt(clientId);
           return;
         }
-        const failure = classifyError(nextError);
+        const failure = classifyRequestFailure(nextError);
         if (failure.kind === 'permission-denied') {
           discardAttempt(clientId);
           onSessionExpired();
@@ -404,7 +406,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
       if (mountedRef.current && !isAbortError(nextError)) {
         announce(t('chat.accessibility.messageFailed'));
         if (isConversationEndedError(nextError)) { setConversationEnded(true); discardAttempt(clientId); return; }
-        const failure = classifyError(nextError);
+        const failure = classifyRequestFailure(nextError);
         if (failure.kind === 'permission-denied') { discardAttempt(clientId); onSessionExpired(); return; }
         setAttempts((current) => current.map((attempt) => attempt.clientId === clientId ? { ...attempt, status: 'failed' as const, error: failure } : attempt));
       }
@@ -428,7 +430,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
       discardAttempt(attempt.clientId);
     } catch (nextError) {
       if (mountedRef.current && !isAbortError(nextError)) {
-        const failure = classifyError(nextError);
+        const failure = classifyRequestFailure(nextError);
         setAttempts((current) => current.map((entry) => entry.clientId === attempt.clientId ? { ...entry, status: 'failed' as const, error: failure } : entry));
       }
     } finally { if (mountedRef.current) setSending(false); }
@@ -460,12 +462,12 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
 
   function confirmUnmatch() {
     if (safetyBusy) return;
-    confirmDestructive({ title: t('chat.alerts.unmatchTitle', { name: match.firstName }), message: t('chat.alerts.unmatchMessage'), cancelText: t('chat.actions.cancel'), destructiveText: t('chat.actions.unmatch'), onConfirm: () => { if (safetyBusy) return; setSafetyError(null); setSafetyBusy('unmatch'); void unmatch(match.matchId, { signal: lifecycleControllerRef.current.signal }).then(async () => { if (!mountedRef.current) return; await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => { if (mountedRef.current && !isAbortError(error)) setSafetyError(classifyError(error)); }).finally(() => { if (mountedRef.current) setSafetyBusy(null); }); } });
+    confirmDestructive({ title: t('chat.alerts.unmatchTitle', { name: match.firstName }), message: t('chat.alerts.unmatchMessage'), cancelText: t('chat.actions.cancel'), destructiveText: t('chat.actions.unmatch'), onConfirm: () => { if (safetyBusy) return; setSafetyError(null); setSafetyBusy('unmatch'); void unmatch(match.matchId, { signal: lifecycleControllerRef.current.signal }).then(async () => { if (!mountedRef.current) return; await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => { if (mountedRef.current && !isAbortError(error)) setSafetyError(classifyRequestFailure(error)); }).finally(() => { if (mountedRef.current) setSafetyBusy(null); }); } });
   }
 
   function confirmBlock() {
     if (safetyBusy) return;
-    confirmDestructive({ title: t('chat.alerts.blockTitle', { name: match.firstName }), message: t('chat.alerts.blockMessage'), cancelText: t('chat.actions.cancel'), destructiveText: t('chat.actions.block'), onConfirm: () => { if (safetyBusy) return; setSafetyError(null); setSafetyBusy('block'); void blockUser(match.otherUserId, { signal: lifecycleControllerRef.current.signal }).then(async () => { if (!mountedRef.current) return; await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => { if (mountedRef.current && !isAbortError(error)) setSafetyError(classifyError(error)); }).finally(() => { if (mountedRef.current) setSafetyBusy(null); }); } });
+    confirmDestructive({ title: t('chat.alerts.blockTitle', { name: match.firstName }), message: t('chat.alerts.blockMessage'), cancelText: t('chat.actions.cancel'), destructiveText: t('chat.actions.block'), onConfirm: () => { if (safetyBusy) return; setSafetyError(null); setSafetyBusy('block'); void blockUser(match.otherUserId, { signal: lifecycleControllerRef.current.signal }).then(async () => { if (!mountedRef.current) return; await haptic('destructive'); onConversationEnded(); }).catch((error: unknown) => { if (mountedRef.current && !isAbortError(error)) setSafetyError(classifyRequestFailure(error)); }).finally(() => { if (mountedRef.current) setSafetyBusy(null); }); } });
   }
 
   async function submitReport() {
@@ -478,7 +480,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
       await haptic('destructive');
       onConversationEnded();
     } catch (nextError) {
-      if (mountedRef.current && !isAbortError(nextError)) setSafetyError(classifyError(nextError));
+      if (mountedRef.current && !isAbortError(nextError)) setSafetyError(classifyRequestFailure(nextError));
     } finally { if (mountedRef.current) setReporting(false); }
   }
 
@@ -571,7 +573,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         </View>
       ))}
 
-      {loadError && messages.length > 0 ? <View accessibilityLiveRegion="assertive" style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', paddingHorizontal: theme.spacing.x4 }}><BinderText variant="caption" tone="destructive" style={{ flex: 1 }}>{t(loadError.messageKey)}</BinderText><BinderButton label={t('chat.actions.retry')} variant="ghost" fullWidth={false} onPress={() => setReloadKey((value) => value + 1)} /></View> : null}
+      {connectionNoticeVisible ? <View accessibilityLiveRegion="assertive" style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', paddingHorizontal: theme.spacing.x4 }}><BinderText variant="caption" tone="destructive" style={{ flex: 1 }}>{loadError ? t(loadError.messageKey) : ''}</BinderText><BinderButton label={t('chat.actions.retry')} variant="ghost" fullWidth={false} onPress={() => setReloadKey((value) => value + 1)} /></View> : null}
 
       <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: theme.spacing.x2, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x3, borderTopWidth: 1, borderTopColor: theme.colors.borderSubtle, backgroundColor: theme.colors.surface }}>
         {recordingVoice ? <VoiceRecorderBar

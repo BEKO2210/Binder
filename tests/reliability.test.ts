@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { availableLocales, translate } from '../src/i18n/index.ts';
-import { abortable, backoffDelay, classifyError, deadlineError, isConversationEndedError, isDeadlineError, isLikelyOffline, withDeadline, withRetry } from '../src/lib/reliability.ts';
+import { abortable, backoffDelay, classifyError, classifyRequestFailure, deadlineError, isConversationEndedError, isDeadlineError, isLikelyOffline, withDeadline, withRetry } from '../src/lib/reliability.ts';
 
 test('classifies every reliability family with distinct recovery', () => {
   const cases = [
@@ -137,4 +137,14 @@ test('every screen that blocks on a network read has a ceiling on the wait', asy
   assert.match(profile, /withDeadline\(Promise\.all\(\[/, 'the three parallel reads share one deadline');
   // And the failure has a way out: the screen already offers a retry.
   assert.match(profile, /kind="error" icon="retry"|kind={loadError\.kind === 'offline' \? 'offline' : 'error'} icon="retry"/);
+});
+
+test('a lost connection reads as offline even when it says nothing recognisable', () => {
+  // Sending in airplane mode told the person that something unexpected had
+  // happened and asked them to report it — twice on one screen.
+  assert.equal(classifyRequestFailure('CHANNEL_ERROR').kind, 'offline');
+  assert.equal(classifyRequestFailure(new Error('')).kind, 'offline');
+  // Anything the server answered keeps its own classification.
+  assert.equal(classifyRequestFailure({ code: '42501', message: 'permission denied' }).kind, 'permission-denied');
+  assert.equal(classifyRequestFailure({ status: 400, message: 'bad request' }).kind, 'server-refusal');
 });

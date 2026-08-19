@@ -63,6 +63,28 @@ export function classifyError(value: unknown): ReliabilityError {
   return { kind, ...DEFINITIONS[kind] };
 }
 
+/**
+ * The classification a screen should show for a failed request.
+ *
+ * `classifyError` reads what the error says. A transport failure often says
+ * nothing recognisable — a dropped realtime channel arrives as a bare status
+ * string, and some engines word a lost connection differently — so a plain
+ * offline moment reached the chat as "unknown" and the person was told that
+ * something unexpected had happened and they should report it. Airplane mode
+ * is not unexpected and there is nothing to report.
+ *
+ * So: what the error says first, and only where that yields nothing, the
+ * question `isLikelyOffline` already answers — did any server answer at all.
+ */
+export function classifyRequestFailure(value: unknown): ReliabilityError {
+  const classified = classifyError(value);
+  if (classified.kind !== 'unknown') return classified;
+  // A bare status string carries no code and no status either, which is the
+  // same evidence an object without them gives: nothing answered.
+  const asAnswer = typeof value === 'string' ? { message: value } : value;
+  return isLikelyOffline(asAnswer) ? { kind: 'offline', ...DEFINITIONS.offline } : classified;
+}
+
 export function isAbortError(value: unknown): boolean {
   return value instanceof Error && value.name === 'AbortError';
 }
