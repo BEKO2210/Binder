@@ -217,8 +217,8 @@
       "copy": "お互いの条件に合う人。"
     },
     "filters": {
-      "summary": "{minAge}–{maxAge} · {distance} km",
-      "label": "フィルター"
+      "summary": "{distance} km 以内で {minAge}〜{maxAge} 歳を探しています",
+      "label": "あなたの条件"
     },
     "empty": {
       "filteredEyebrow": "フィルターで候補が絞られています",

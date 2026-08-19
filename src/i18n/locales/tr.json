@@ -217,8 +217,8 @@
       "copy": "Her iki tarafa da uyan kişiler."
     },
     "filters": {
-      "summary": "{minAge}–{maxAge} · {distance} km",
-      "label": "Filtreler"
+      "summary": "{distance} km içinde {minAge}–{maxAge} arıyorsun",
+      "label": "Aramanız"
     },
     "empty": {
       "filteredEyebrow": "FİLTRELER LİSTENİZİ DARALTIYOR",

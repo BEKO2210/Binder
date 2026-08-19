@@ -217,8 +217,8 @@
       "copy": "Orang yang cocok dari kedua sisi."
     },
     "filters": {
-      "summary": "{minAge}–{maxAge} · {distance} km",
-      "label": "Filter"
+      "summary": "Mencari {minAge}–{maxAge} dalam {distance} km",
+      "label": "Pencarianmu"
     },
     "empty": {
       "filteredEyebrow": "FILTER MEMPERSEMPIT PILIHAN ANDA",

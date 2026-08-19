@@ -217,8 +217,8 @@
       "copy": "People who fit both sides."
     },
     "filters": {
-      "summary": "{minAge}–{maxAge} · {distance} km",
-      "label": "Filters"
+      "summary": "Looking for {minAge}–{maxAge} within {distance} km",
+      "label": "Your search"
     },
     "empty": {
       "filteredEyebrow": "FILTERS ARE NARROWING YOUR DECK",

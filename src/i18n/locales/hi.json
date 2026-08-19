@@ -217,8 +217,8 @@
       "copy": "वे लोग जो दोनों तरफ़ की पसंद से मेल खाते हैं।"
     },
     "filters": {
-      "summary": "{minAge}–{maxAge} · {distance} किमी",
-      "label": "फ़िल्टर"
+      "summary": "{distance} किमी के भीतर {minAge}–{maxAge} खोज रहे हैं",
+      "label": "आपकी खोज"
     },
     "empty": {
       "filteredEyebrow": "फ़िल्टर आपकी सूची को सीमित कर रहे हैं",

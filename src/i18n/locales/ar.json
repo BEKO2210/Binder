@@ -217,8 +217,8 @@
       "copy": "أشخاص يناسبون تفضيلات الطرفين."
     },
     "filters": {
-      "summary": "{minAge}–{maxAge} · {distance} كم",
-      "label": "الفلاتر"
+      "summary": "تبحث عن {minAge}–{maxAge} ضمن {distance} كم",
+      "label": "بحثك"
     },
     "empty": {
       "filteredEyebrow": "الفلاتر تضيق قائمة اقتراحاتك",

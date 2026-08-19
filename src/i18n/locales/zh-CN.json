@@ -217,8 +217,8 @@
       "copy": "双方条件都合适的人。"
     },
     "filters": {
-      "summary": "{minAge}–{maxAge} · {distance} 公里",
-      "label": "筛选"
+      "summary": "在 {distance} 公里内寻找 {minAge}–{maxAge} 岁",
+      "label": "你的搜索"
     },
     "empty": {
       "filteredEyebrow": "筛选条件正在缩小推荐范围",

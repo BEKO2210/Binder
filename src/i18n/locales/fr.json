@@ -217,8 +217,8 @@
       "copy": "Des personnes qui correspondent aux deux côtés."
     },
     "filters": {
-      "summary": "{minAge}–{maxAge} · {distance} km",
-      "label": "Filtres"
+      "summary": "Recherche {minAge}–{maxAge} dans un rayon de {distance} km",
+      "label": "Ta recherche"
     },
     "empty": {
       "filteredEyebrow": "VOS FILTRES RÉDUISENT VOTRE SÉLECTION",

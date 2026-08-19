@@ -217,8 +217,8 @@
       "copy": "Persone compatibili da entrambe le parti."
     },
     "filters": {
-      "summary": "{minAge}–{maxAge} · {distance} km",
-      "label": "Filtri"
+      "summary": "Cerchi {minAge}–{maxAge} entro {distance} km",
+      "label": "La tua ricerca"
     },
     "empty": {
       "filteredEyebrow": "I FILTRI STANNO LIMITANDO LA TUA SELEZIONE",

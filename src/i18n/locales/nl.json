@@ -217,8 +217,8 @@
       "copy": "Mensen die aan beide kanten passen."
     },
     "filters": {
-      "summary": "{minAge}–{maxAge} · {distance} km",
-      "label": "Filters"
+      "summary": "Zoekt {minAge}–{maxAge} binnen {distance} km",
+      "label": "Jouw zoekopdracht"
     },
     "empty": {
       "filteredEyebrow": "FILTERS VERKLEINEN JE SELECTIE",

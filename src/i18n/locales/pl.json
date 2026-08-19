@@ -217,8 +217,8 @@
       "copy": "Osoby pasujące do obu stron."
     },
     "filters": {
-      "summary": "{minAge}–{maxAge} · {distance} km",
-      "label": "Filtry"
+      "summary": "Szukasz {minAge}–{maxAge} w promieniu {distance} km",
+      "label": "Twoje wyszukiwanie"
     },
     "empty": {
       "filteredEyebrow": "FILTRY ZAWĘŻAJĄ TWOJĄ TALIĘ",

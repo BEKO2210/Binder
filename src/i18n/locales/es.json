@@ -217,8 +217,8 @@
       "copy": "Personas que encajan por ambas partes."
     },
     "filters": {
-      "summary": "{minAge}–{maxAge} · {distance} km",
-      "label": "Filtros"
+      "summary": "Buscas {minAge}–{maxAge} a {distance} km",
+      "label": "Tu búsqueda"
     },
     "empty": {
       "filteredEyebrow": "LOS FILTROS ESTÁN REDUCIENDO TU SELECCIÓN",

@@ -217,8 +217,8 @@
       "copy": "서로의 조건에 맞는 사람들."
     },
     "filters": {
-      "summary": "{minAge}–{maxAge} · {distance}km",
-      "label": "필터"
+      "summary": "{distance} km 이내 {minAge}–{maxAge}세를 찾는 중",
+      "label": "내 검색 조건"
     },
     "empty": {
       "filteredEyebrow": "필터가 추천 범위를 좁히고 있습니다",

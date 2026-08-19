@@ -217,8 +217,8 @@
       "copy": "Pessoas que combinam dos dois lados."
     },
     "filters": {
-      "summary": "{minAge}–{maxAge} · {distance} km",
-      "label": "Filtros"
+      "summary": "Procurando {minAge}–{maxAge} em até {distance} km",
+      "label": "Sua busca"
     },
     "empty": {
       "filteredEyebrow": "OS FILTROS ESTÃO LIMITANDO SUA SELEÇÃO",

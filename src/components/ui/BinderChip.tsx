@@ -1,6 +1,7 @@
 import { type PressableProps } from 'react-native';
 
 import { useBinderTheme } from '../../theme/ThemeProvider';
+import { BinderIcon, type BinderIconName } from './BinderIcon';
 import { BinderText } from './BinderText';
 import { MotionPressable } from './MotionPressable';
 
@@ -11,9 +12,12 @@ type Props = Omit<PressableProps, 'children' | 'style'> & {
    * decorative — the label carries the meaning — so it is hidden from the
    * accessibility tree and excluded from font scaling like every glyph. */
   emoji?: string;
+  /** A leading icon for chips that act as an entry point rather than a value
+   * — it says what the control is for before the label is read. */
+  icon?: BinderIconName;
 };
 
-export function BinderChip({ label, selected = false, emoji, disabled, ...props }: Props) {
+export function BinderChip({ label, selected = false, emoji, icon, disabled, ...props }: Props) {
   const { theme } = useBinderTheme();
   const isDisabled = disabled === true;
   return (
@@ -36,6 +40,7 @@ export function BinderChip({ label, selected = false, emoji, disabled, ...props 
         opacity: isDisabled ? theme.feedback.disabledOpacity : 1,
       })}
     >
+      {icon ? <BinderIcon name={icon} size={18} color={selected ? theme.accent.foreground : theme.accent.onSurface} /> : null}
       {emoji ? <BinderText variant="label" maxFontSizeMultiplier={1} importantForAccessibility="no" accessibilityElementsHidden>{emoji}</BinderText> : null}
       <BinderText variant="label" numberOfLines={1} style={{ color: selected ? theme.accent.foreground : theme.colors.textSecondary, flexShrink: 1 }}>{label}</BinderText>
     </MotionPressable>
