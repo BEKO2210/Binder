@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { accumulateDragPosition, clampRange, grabOffset, moveRange, pointToPosition, positionToStepIndex, resolveDragTarget, shouldReportDialChange, unwrapAngleDelta } from '../src/lib/dialMath.ts';
+import { accumulateDragPosition, clampRange, grabOffset, moveRange, pointToPosition, positionToStepIndex, resolveDragTarget, shouldReportDialChange, touchGrabsRing, unwrapAngleDelta } from '../src/lib/dialMath.ts';
 import { positionToValue, radiusSteps, valueToPosition } from '../src/lib/dialScale.ts';
 
 test('radius scale round-trips every legal value exactly', () => {
@@ -69,4 +69,17 @@ test('dial drag notifications are time-throttled but release is authoritative', 
   assert.equal(shouldReportDialChange(1_000, 1_099, false, 100), false);
   assert.equal(shouldReportDialChange(1_000, 1_100, false, 100), true);
   assert.equal(shouldReportDialChange(1_099, 1_100, true, 100), true);
+});
+
+test('only a touch on the ring belongs to the dial', () => {
+  const size = 260;
+  const ring = 104;
+  const band = 64;
+  // On the ring, at the top of the arc and at its side: the dial's own.
+  assert.equal(touchGrabsRing(size / 2, size / 2 - ring, size, ring, band), true);
+  assert.equal(touchGrabsRing(size / 2 - ring, size / 2, size, ring, band), true);
+  // The middle of the dial is where a thumb swipes to scroll the sheet.
+  assert.equal(touchGrabsRing(size / 2, size / 2, size, ring, band), false);
+  // So is the corner outside the ring.
+  assert.equal(touchGrabsRing(4, 4, size, ring, band), false);
 });

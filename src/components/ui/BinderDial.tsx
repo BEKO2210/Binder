@@ -3,7 +3,7 @@ import { View, type AccessibilityActionEvent } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, type SharedValue } from 'react-native-reanimated';
 
-import { accumulateDragPosition, DIAL_ARC_RADIANS, DIAL_ARC_START, type DialDragTarget, grabOffset as grabOffsetFor, moveRange, pointToAngle, pointToPosition, positionToStepIndex, resolveDragTarget, shouldReportDialChange } from '../../lib/dialMath';
+import { accumulateDragPosition, DIAL_ARC_RADIANS, DIAL_ARC_START, type DialDragTarget, grabOffset as grabOffsetFor, moveRange, pointToAngle, pointToPosition, positionToStepIndex, resolveDragTarget, shouldReportDialChange, touchGrabsRing } from '../../lib/dialMath';
 import { useBinderHaptics } from '../../theme/haptics';
 import { useBinderTheme } from '../../theme/ThemeProvider';
 import { layout } from '../../theme/tokens';
@@ -132,6 +132,16 @@ export function BinderDial(props: BinderDialProps) {
   // Now a single pan decides on touch-down what it grabbed and never hands that
   // decision to anyone else.
   const ringGesture = Gesture.Pan()
+    // The dial lives in a scrolling sheet and covers the middle of a 412 dp
+    // screen. It only takes a drag that lands in the band around the ring,
+    // where the handles are; anything further in or out belongs to the scroll,
+    // which used to be swallowed and left the sheet feeling stuck.
+    .manualActivation(true)
+    .onTouchesDown((event, manager) => {
+      const touch = event.allTouches[0];
+      if (touch && touchGrabsRing(touch.x, touch.y, DIAL_SIZE, RING_RADIUS, HANDLE_SIZE)) manager.activate();
+      else manager.fail();
+    })
     .onBegin((event) => {
       const fingerPosition = pointToPosition(event.x, event.y, DIAL_SIZE);
       const lowPosition = low.value / (count - 1);

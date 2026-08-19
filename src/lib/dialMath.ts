@@ -78,3 +78,27 @@ export function shouldReportDialChange(lastReportAt: number, now: number, author
   'worklet';
   return authoritative || now - lastReportAt >= intervalMs;
 }
+
+/**
+ * Whether a touch belongs to the ring at all.
+ *
+ * The dial sits in the middle of a scrolling sheet, and on a 412 dp phone it
+ * covers exactly the part of the screen a thumb swipes. It used to claim every
+ * drag that landed anywhere on its square: swiping up over it neither scrolled
+ * the sheet nor moved the dial — nothing happened at all, and the distance
+ * dial and the ten attribute filters below it were unreachable that way.
+ *
+ * A touch counts as the dial's only if it lands in the band around the ring,
+ * where the handles are. Anything further in or further out is a scroll.
+ */
+export function touchGrabsRing(
+  x: number,
+  y: number,
+  size: number,
+  ringRadius: number,
+  bandWidth: number,
+): boolean {
+  'worklet';
+  const distance = Math.hypot(x - size / 2, y - size / 2);
+  return Math.abs(distance - ringRadius) <= bandWidth / 2;
+}
