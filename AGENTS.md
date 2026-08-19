@@ -143,7 +143,12 @@ Minification is the kind of change that breaks by reflection rather than by
 compiler, so vc95 was walked on both phones before it was called good: cold
 start, deck, match celebration (Skia), chat with the keyboard, voice recording,
 sending and playback, the photo picker through upload, sign-out and the Google
-sheet. Push delivery under R8 has not been re-tested.
+sheet. **Push under R8 is proven too, end to end on the A15 (1.0.0-vc97):** a
+fresh install registered `ExponentPushToken[90c-1THK9I…]`, a message from a
+staged profile wrote `new_match` and `new_message` into `private.push_outbox`,
+the minute cron and `dispatch-push` moved both deliveries to `delivered` with
+Expo tickets and no error code, and the phone showed "Neue Nachricht — Öffne
+Binder, um weiterzuschreiben." with no message text on the lock screen.
 
 - Upload key: `/home/belkis/Android APP KEY/BINDER APP KEY.jks`, alias `key0`,
   SHA-1 `16:DF:DF:3E:28:30:76:BE:74:F8:A9:E6:75:0E:C8:B8:2D:AD:D2:DF`.
