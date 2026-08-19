@@ -379,6 +379,7 @@
     },
     "voice": {
       "recording": "Recording {time}",
+      "paused": "Paused at {time}",
       "preparing": "Getting ready…",
       "pending": "Voice message · {time}",
       "uploading": "Sending voice message…",

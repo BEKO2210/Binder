@@ -379,6 +379,7 @@
     },
     "voice": {
       "recording": "Aufnahme {time}",
+      "paused": "Pausiert bei {time}",
       "preparing": "Wird vorbereitet…",
       "pending": "Sprachnachricht · {time}",
       "uploading": "Sprachnachricht wird gesendet…",

@@ -379,6 +379,7 @@
     },
     "voice": {
       "recording": "Opname {time}",
+      "paused": "Gepauzeerd op {time}",
       "preparing": "Voorbereiden…",
       "pending": "Spraakbericht · {time}",
       "uploading": "Spraakbericht wordt verzonden…",

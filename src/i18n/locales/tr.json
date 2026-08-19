@@ -379,6 +379,7 @@
     },
     "voice": {
       "recording": "Kayıt {time}",
+      "paused": "{time} süresinde duraklatıldı",
       "preparing": "Hazırlanıyor…",
       "pending": "Sesli mesaj · {time}",
       "uploading": "Sesli mesaj gönderiliyor…",

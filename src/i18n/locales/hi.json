@@ -379,6 +379,7 @@
     },
     "voice": {
       "recording": "रिकॉर्डिंग {time}",
+      "paused": "{time} पर रुका हुआ",
       "preparing": "तैयार हो रहा है…",
       "pending": "वॉइस मैसेज · {time}",
       "uploading": "वॉइस मैसेज भेजा जा रहा है…",

@@ -379,6 +379,7 @@
     },
     "voice": {
       "recording": "녹음 중 {time}",
+      "paused": "{time}에서 일시 정지됨",
       "preparing": "준비 중…",
       "pending": "음성 메시지 · {time}",
       "uploading": "음성 메시지 전송 중…",

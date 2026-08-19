@@ -379,6 +379,7 @@
     },
     "voice": {
       "recording": "Merekam {time}",
+      "paused": "Dijeda pada {time}",
       "preparing": "Menyiapkan…",
       "pending": "Pesan suara · {time}",
       "uploading": "Mengirim pesan suara…",

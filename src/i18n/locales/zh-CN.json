@@ -379,6 +379,7 @@
     },
     "voice": {
       "recording": "录音中 {time}",
+      "paused": "已暂停于 {time}",
       "preparing": "准备中…",
       "pending": "语音消息 · {time}",
       "uploading": "正在发送语音消息…",

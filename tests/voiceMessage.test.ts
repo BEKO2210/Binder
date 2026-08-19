@@ -2,14 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { availableLocales, translate } from '../src/i18n/index.ts';
-import {
-  formatVoiceDuration,
-  recordingStopDecision,
-  VOICE_MAX_DURATION_MS,
-  VOICE_MIN_DURATION_MS,
-  voiceObjectPath,
-  waveformHeights,
-} from '../src/lib/voiceMessage.ts';
+import { VOICE_MAX_DURATION_MS, VOICE_MIN_DURATION_MS, formatVoiceDuration, interruptedTakeAction, recordingStopDecision, voiceObjectPath, waveformHeights } from '../src/lib/voiceMessage.ts';
 
 test('the object path is exactly what the reference guard accepts', () => {
   // The guard compares split_part(path,'/',1) to the match and 2 to the
@@ -56,4 +49,14 @@ test('every voice string exists in every language', () => {
       assert.ok(text && text !== key, `${code} is missing ${key}`);
     }
   }
+});
+
+test('leaving the app keeps a take worth keeping and drops a stub', () => {
+  // Backgrounding used to leave the recorder running: the counter kept
+  // counting while the microphone was gone, so seventy-five seconds away came
+  // back as eleven seconds of audio, and the one-minute cap sends by itself.
+  assert.equal(interruptedTakeAction(VOICE_MIN_DURATION_MS), 'keep');
+  assert.equal(interruptedTakeAction(30_000), 'keep');
+  assert.equal(interruptedTakeAction(VOICE_MIN_DURATION_MS - 1), 'discard');
+  assert.equal(interruptedTakeAction(0), 'discard');
 });

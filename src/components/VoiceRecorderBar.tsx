@@ -1,8 +1,8 @@
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder, useAudioRecorderState } from 'expo-audio';
 import { useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { AppState, View } from 'react-native';
 
-import { formatVoiceDuration, recordingStopDecision, VOICE_MAX_DURATION_MS } from '../lib/voiceMessage';
+import { formatVoiceDuration, interruptedTakeAction, recordingStopDecision, VOICE_MAX_DURATION_MS } from '../lib/voiceMessage';
 import { useBinderTheme } from '../theme/ThemeProvider';
 import { BinderIconButton, BinderText } from './ui';
 
@@ -24,6 +24,8 @@ export function VoiceRecorderBar({ onFinished, onCancel, onPermissionDenied }: P
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const state = useAudioRecorderState(recorder, 250);
   const [ready, setReady] = useState(false);
+  // A take the person walked away from: recorded, stopped, waiting for a tap.
+  const [interrupted, setInterrupted] = useState<{ uri: string; durationMs: number } | null>(null);
   const finishingRef = useRef(false);
 
   useEffect(() => {
@@ -50,9 +52,36 @@ export function VoiceRecorderBar({ onFinished, onCancel, onPermissionDenied }: P
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const durationMs = state.durationMillis ?? 0;
+  const durationMs = interrupted?.durationMs ?? state.durationMillis ?? 0;
+
+  // The microphone is not ours once another app is in front: the strip kept
+  // counting while nothing was being recorded, and the one-minute cap finishes
+  // a take by sending it — a phone in a pocket could post a minute of silence
+  // on its own. Leaving stops the recorder; what is already there waits for a
+  // deliberate tap.
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (next) => {
+      if (next === 'active' || finishingRef.current || !ready) return;
+      finishingRef.current = true;
+      void (async () => {
+        const takenMs = recorder.currentTime ? Math.round(recorder.currentTime * 1000) : (state.durationMillis ?? 0);
+        try { await recorder.stop(); } catch { /* already released */ }
+        const uri = recorder.uri;
+        if (!uri || interruptedTakeAction(takenMs) === 'discard') { onCancel(); return; }
+        setInterrupted({ uri, durationMs: Math.min(takenMs, VOICE_MAX_DURATION_MS) });
+        finishingRef.current = false;
+      })();
+    });
+    return () => subscription.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready]);
 
   async function finish() {
+    if (interrupted) {
+      finishingRef.current = true;
+      onFinished(interrupted.uri, interrupted.durationMs);
+      return;
+    }
     if (finishingRef.current || !ready) return;
     finishingRef.current = true;
     await recorder.stop();
@@ -63,16 +92,16 @@ export function VoiceRecorderBar({ onFinished, onCancel, onPermissionDenied }: P
   }
 
   useEffect(() => {
-    if (ready && durationMs >= VOICE_MAX_DURATION_MS) void finish();
+    if (ready && !interrupted && durationMs >= VOICE_MAX_DURATION_MS) void finish();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, durationMs]);
 
   return (
     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3, minHeight: theme.spacing.x12, backgroundColor: theme.colors.surfaceElevated, borderWidth: 1, borderColor: theme.colors.borderSubtle, borderRadius: theme.radii.control, paddingHorizontal: theme.spacing.x3 }}>
       <BinderIconButton name="delete" size={19} destructive accessibilityLabel={t('chat.voice.accessibility.discard')} onPress={() => { finishingRef.current = true; void recorder.stop(); onCancel(); }} />
-      <View style={{ width: theme.spacing.x2, height: theme.spacing.x2, borderRadius: theme.radii.pill, backgroundColor: theme.semantic.destructive }} />
+      {interrupted ? null : <View style={{ width: theme.spacing.x2, height: theme.spacing.x2, borderRadius: theme.radii.pill, backgroundColor: theme.semantic.destructive }} />}
       <BinderText variant="label" style={{ flex: 1, fontVariant: ['tabular-nums'] }}>
-        {ready ? t('chat.voice.recording', { time: formatVoiceDuration(durationMs) }) : t('chat.voice.preparing')}
+        {interrupted ? t('chat.voice.paused', { time: formatVoiceDuration(durationMs) }) : ready ? t('chat.voice.recording', { time: formatVoiceDuration(durationMs) }) : t('chat.voice.preparing')}
       </BinderText>
       <BinderIconButton name="send" accessibilityLabel={t('chat.voice.accessibility.finish')} selected onPress={() => void finish()} />
     </View>

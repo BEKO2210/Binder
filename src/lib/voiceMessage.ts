@@ -9,6 +9,22 @@ export function voiceObjectPath(matchId: string, senderId: string, fileId: strin
   return `${matchId}/${senderId}/${fileId}.m4a`;
 }
 
+/**
+ * What leaving the app in the middle of a take means for that take.
+ *
+ * The recorder kept running when the app went to the background: the strip
+ * counted on, but the microphone is not ours once another app is in front, so
+ * the counter and the recording drifted apart — seventy-five seconds away came
+ * back as eleven seconds of audio. And the one-minute cap finishes a take by
+ * sending it, so a phone in a pocket could post a minute of nothing by itself.
+ *
+ * Leaving therefore stops the recorder. What is already recorded is kept and
+ * waits for a deliberate tap, unless it is too short to be a message at all.
+ */
+export function interruptedTakeAction(durationMs: number): 'keep' | 'discard' {
+  return recordingStopDecision(durationMs) === 'ready' ? 'keep' : 'discard';
+}
+
 /** What stopping the recorder at this duration means. */
 export function recordingStopDecision(durationMs: number): 'too-short' | 'ready' {
   return durationMs < VOICE_MIN_DURATION_MS ? 'too-short' : 'ready';

@@ -379,6 +379,7 @@
     },
     "voice": {
       "recording": "録音中 {time}",
+      "paused": "{time}で一時停止",
       "preparing": "準備中…",
       "pending": "ボイスメッセージ · {time}",
       "uploading": "ボイスメッセージを送信中…",
