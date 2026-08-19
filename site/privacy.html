@@ -14,20 +14,23 @@
   <div class="kicker">Privacy</div>
   <h1>What Binder needs — and what it does not expose.</h1>
   <p class="intro">This policy describes Binder’s current beta architecture, including first-party ranking measurement and optional technical diagnostics.</p>
-  <p class="meta">Effective: 15 August 2026 · Contact: nullmesh@protonmail.com</p>
+  <p class="meta">Effective: 19 August 2026 · Contact: nullmesh@protonmail.com</p>
   <div class="callout"><strong>Core privacy boundary.</strong> Other Binder users do not receive your raw birth date or exact latitude/longitude. Binder derives age and rounded distance server-side. Binder does not use third-party advertising analytics in the current beta.</div>
 
   <h2>Data we process</h2>
   <p><strong>Account:</strong> authentication identifiers such as email and Supabase Auth metadata.</p>
   <p><strong>Private eligibility data:</strong> birth date and current location used to enforce 18+ access and discovery distance.</p>
   <p><strong>Profile and UGC:</strong> first name, bio, gender, interests, profile photos and messages you choose to create.</p>
+  <p><strong>Optional profile attributes:</strong> height, smoking, drinking, drug use, exercise, diet, beliefs, whether you have children, whether you want children, and whether you have a car. Every one of these is optional, you choose each answer from a fixed list, you can clear any of them at any time, and a question you leave unanswered is simply not shown. <strong>Beliefs (religion or worldview) is a special category of personal data under Article 9 GDPR.</strong> Binder processes it only because you volunteer it by choosing an answer, and only to show it on your profile and to match against other people's filters — never for advertising, scoring or any other purpose. Your zodiac sign is shown on your profile but never stored: the server derives it from your birth date each time your profile is read.</p>
+  <p><strong>Discovery filters:</strong> the attribute filters you set are stored with your discovery preferences. They work in both directions — somebody whose filters exclude you does not appear in your deck either, so a like cannot land in nothing.</p>
+  <p><strong>Voice recordings:</strong> voice messages you record in a chat, and the optional voice intro on your profile. Recordings run up to sixty seconds, are stored in private buckets, and are never public files: a voice message can be heard only by the two people in that conversation, a voice intro only by people who may already view your profile. Moderators can listen to a recording only when it has been reported or is referenced by a message under review. Deleting a voice intro removes it; deleting your account removes your recordings.</p>
   <p><strong>Safety data:</strong> blocks, reports, report context snapshots, moderation state and abuse-control events.</p>
   <p><strong>Device data:</strong> an Expo push token may be stored only if notifications are enabled in a configured build.</p>
   <p><strong>Beta ranking measurement:</strong> Binder can record the accounts involved in a discovery impression, rank position, shared-interest count, a coarse 10-km distance bucket and the later Bind/Pass result. Exact coordinates, profile text, message text and media paths are not copied into this ranking measurement.</p>
   <p><strong>Optional client diagnostics:</strong> if you explicitly enable Beta Diagnostics, Binder may record a fixed technical event or screen name, duration, a small count, success/error outcome, Android/iOS and app version. This channel does not accept free-form metadata, profile/message content, exact location, contact data, raw exception messages or stack traces.</p>
 
   <h2>Why we use it</h2>
-  <ul><li>authenticate your account;</li><li>enforce adult-only onboarding and discovery preferences;</li><li>calculate candidate eligibility and rounded distance;</li><li>store and deliver matched conversations;</li><li>prevent abuse, investigate reports and enforce blocks;</li><li>measure whether discovery ordering and the core matching funnel work;</li><li>diagnose beta load-time or render problems when optional diagnostics are enabled;</li><li>operate account deletion and security controls.</li></ul>
+  <ul><li>authenticate your account;</li><li>enforce adult-only onboarding and discovery preferences;</li><li>calculate candidate eligibility and rounded distance;</li><li>store and deliver matched conversations, including voice messages;</li><li>show the optional attributes you volunteered and match them against the filters other people set;</li><li>prevent abuse, investigate reports and enforce blocks;</li><li>measure whether discovery ordering and the core matching funnel work;</li><li>diagnose beta load-time or render problems when optional diagnostics are enabled;</li><li>operate account deletion and security controls.</li></ul>
 
   <h2>Beta measurement choices</h2>
   <p>Core ranking and funnel measurement is generated by Binder’s own server from product actions and remains private from other users. Optional client diagnostics are separate and start disabled. You can enable or disable them in <strong>Profile → Beta Program</strong>. Disabling them deletes the existing optional client-diagnostic rows for your account.</p>
@@ -37,6 +40,9 @@
   <p>Binder currently uses Supabase for authentication, Postgres data, private file storage, realtime delivery and first-party beta measurement. Expo infrastructure may be used for remote notifications when production push is enabled. Binder does not sell personal data to advertisers.</p>
   <p><strong>Account email:</strong> confirmation, sign-in and password mails are delivered by Brevo (Sendinblue SAS, France) on Binder's behalf, from <code>no-reply@it-handwerk-stuttgart.de</code>. Brevo therefore processes your email address and the delivery status of those mails. Brevo adds its own open and click measurement to transactional mail and does not offer a way to switch it off; Binder runs it in anonymised mode, so opens and clicks are not tied back to an individual recipient. This is delivery infrastructure, not advertising or profiling: nothing from it reaches the app, another user, or any third party.</p>
 
+  <h2>Microphone</h2>
+  <p>Binder requests microphone access only at the moment you start a recording, and only for that recording. There is no background listening, no automatic recording and no transcription. If you deny the permission, everything else in the app keeps working — voice is optional throughout.</p>
+
   <h2>Location</h2>
   <p>Binder requests foreground location for discovery. Exact coordinates are stored privately for server-side distance checks and are not returned to another user. Ranking measurement uses a coarse 10-km distance bucket instead of copying exact coordinates. Background location is not part of the current product.</p>
 
@@ -45,11 +51,11 @@
   <p>Use the <a href="delete-account.html">account deletion page</a> or the in-app account controls to initiate deletion.</p>
 
   <h2>Your choices</h2>
-  <p>You can update profile information in the app, deny location permission, disable push notifications, enable or disable optional Beta Diagnostics, submit private beta feedback, block or report another user, unmatch, and request account deletion.</p>
+  <p>You can update profile information in the app, answer or clear any optional attribute, record, replace or delete your voice intro, deny microphone permission, deny location permission, disable push notifications, enable or disable optional Beta Diagnostics, submit private beta feedback, block or report another user, unmatch, and request account deletion.</p>
 
   <h2>Contact</h2>
   <p>Privacy questions: <a href="mailto:nullmesh@protonmail.com">nullmesh@protonmail.com</a>.</p>
 </main>
-<footer class="footer"><div class="wrap footerin"><span>© 2026 Binder</span><div class="footlinks"><a href="./">Home</a><a href="terms.html">Terms</a><a href="delete-account.html">Delete account</a></div></div></footer>
+<footer class="footer"><div class="wrap footerin"><span>© 2026 Binder · Independent product</span><div class="footlinks"><a href="./">Home</a><a href="languages.html">Languages</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="safety-standards.html">Child safety</a><a href="delete-account.html">Delete account</a><a href="impressum.html">Impressum</a><a href="mailto:nullmesh@protonmail.com">Contact</a></div></div></footer>
 </body>
 </html>
