@@ -6,6 +6,7 @@ import { searchCatalog, toggleInterest } from '../lib/interestPicker';
 import { interestLabel } from '../lib/validation';
 import { useBinderTheme } from '../theme/ThemeProvider';
 import { BinderChip, BinderIcon, BinderText } from './ui';
+import { MotionPressable as Pressable } from './ui';
 
 type Props = {
   selection: readonly string[];
@@ -77,22 +78,34 @@ export function InterestPicker({ selection, onChange }: Props) {
       ) : (
         INTEREST_CATEGORIES.map((categoryId) => {
           const isOpen = expanded.has(categoryId);
+          const chosenHere = interestsInCategory(categoryId).filter((entry) => selection.includes(entry.id)).length;
+          const toggleCategory = () => setExpanded((current) => {
+            const next = new Set(current);
+            if (isOpen) next.delete(categoryId); else next.add(categoryId);
+            return next;
+          });
           return (
             <View key={categoryId} style={{ gap: theme.spacing.x3 }}>
-              <BinderText variant="title">{t(categoryLabelKey(categoryId))}</BinderText>
+              {/* The whole heading opens and closes the category, and it sits
+                  ABOVE the chips on purpose: a control underneath a list that
+                  collapses moves out from under the finger and leaves the
+                  reader at a completely different place in the page. */}
+              <Pressable
+                accessibilityRole="button"
+                accessibilityState={{ expanded: isOpen }}
+                accessibilityLabel={t(categoryLabelKey(categoryId))}
+                onPress={toggleCategory}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3, minHeight: theme.layout.minimumTouchTarget }}
+              >
+                <BinderText variant="title" style={{ flex: 1 }}>{t(categoryLabelKey(categoryId))}</BinderText>
+                {chosenHere > 0 ? <BinderText variant="label" tone="accent">{chosenHere}</BinderText> : null}
+                <BinderIcon name={isOpen ? 'decrease' : 'increase'} size={20} color={theme.colors.textMuted} />
+              </Pressable>
               {isOpen ? (
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>
                   {interestsInCategory(categoryId).map(chip)}
                 </View>
               ) : null}
-              <BinderChip
-                label={t(isOpen ? 'identity.interestPicker.showLess' : 'identity.interestPicker.showMore')}
-                onPress={() => setExpanded((current) => {
-                  const next = new Set(current);
-                  if (isOpen) next.delete(categoryId); else next.add(categoryId);
-                  return next;
-                })}
-              />
             </View>
           );
         })

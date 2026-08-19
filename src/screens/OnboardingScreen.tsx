@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Animated as NativeAnimated, Image, TextInput, View } from 'react-native';
+import { Animated as NativeAnimated, Image, TextInput, View, BackHandler } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import Animated, { SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from 'react-native-reanimated';
 
@@ -44,6 +44,19 @@ export default function OnboardingScreen({ userId, onComplete }: Props) {
   const position = onboardingPosition(step); const copy = STEP_COPY[step];
 
   function goBack() { if (position.index > 0) { setDirection('backward'); setStep(ONBOARDING_STEPS[position.index - 1] ?? 'eligibility'); } }
+
+  // Android's back gesture is the one navigation control every person already
+  // knows. Without this it left the app mid-signup — five screens of work gone
+  // with one habitual swipe. On the first step there is nothing to go back to,
+  // so the system may do its usual thing.
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (position.index === 0 || busy || photoBusy) return false;
+      goBack();
+      return true;
+    });
+    return () => subscription.remove();
+  }, [position.index, busy, photoBusy]);
   function advance() {
     setSubmitError('');
     if (step === 'eligibility' && !birthDate) return;

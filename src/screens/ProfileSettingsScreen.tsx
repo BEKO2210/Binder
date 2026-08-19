@@ -273,6 +273,9 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
         </View>
         {message ? <BinderText accessibilityLiveRegion={messageKind === 'success' ? 'polite' : 'assertive'} variant="caption" tone={messageKind === 'success' ? 'accent' : 'destructive'} style={{ marginTop: theme.spacing.x3 }}>{message}</BinderText> : null}
       </View>
+      <BinderCard style={{ marginTop: theme.spacing.x5 }}>
+        <VoiceIntroEditor userId={userId} />
+      </BinderCard>
 
       <BinderCard style={{ gap: theme.spacing.x5, marginTop: theme.spacing.x8 }}>
         <View><BinderText variant="micro" tone="muted">{t('profileSettings.details.eyebrow')}</BinderText><BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>{t('profileSettings.details.copy')}</BinderText></View>
@@ -283,9 +286,6 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
       </BinderCard>
       <BinderCard style={{ marginTop: theme.spacing.x5 }}>
         <AttributeEditor value={attributes} onChange={setAttributes} />
-      </BinderCard>
-      <BinderCard style={{ marginTop: theme.spacing.x5 }}>
-        <VoiceIntroEditor userId={userId} />
       </BinderCard>
       <BinderCard style={{ marginTop: theme.spacing.x5 }}><View><BinderText variant="micro" tone="muted">{t('profileSettings.discovery.eyebrow')}</BinderText><BinderText variant="title" style={{ marginTop: theme.spacing.x2 }}>{t('profileSettings.discovery.title')}</BinderText><BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2, marginBottom: theme.spacing.x6 }}>{t('profileSettings.discovery.copy')}</BinderText></View>
           <DiscoveryPreferences interestedIn={interestedIn} minAge={minAge} maxAge={maxAge} distance={distance} errors={discoveryErrors} onChange={(next) => { setInterestedIn(next.interestedIn); setMinAge(next.minAge); setMaxAge(next.maxAge); setDistance(next.distance); setDiscoveryErrors(validateDiscovery(next.interestedIn, next.minAge, next.maxAge, next.distance)); }} />
