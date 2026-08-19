@@ -66,7 +66,7 @@ export function VoiceIntroEditor({ userId }: Props) {
   return (
     <View style={{ gap: theme.spacing.x3 }}>
       <View>
-        <BinderText variant="micro" tone="muted">{t('identity.voiceIntro.title')}</BinderText>
+        <BinderText variant="eyebrow" tone="accent">{t('identity.voiceIntro.title')}</BinderText>
         <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>{t('identity.voiceIntro.copy')}</BinderText>
       </View>
       {recording ? (

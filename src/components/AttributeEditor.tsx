@@ -40,7 +40,7 @@ export function AttributeEditor({ value, onChange }: Props) {
   return (
     <View style={{ gap: theme.spacing.x5 }}>
       <View>
-        <BinderText variant="micro" tone="muted">{t('identity.attributes.sectionTitle')}</BinderText>
+        <BinderText variant="eyebrow" tone="accent">{t('identity.attributes.sectionTitle')}</BinderText>
       </View>
 
       <View style={{ gap: theme.spacing.x2 }}>

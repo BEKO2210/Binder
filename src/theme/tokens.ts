@@ -116,6 +116,7 @@ export const typography = {
   label: { fontFamily: fontFamilies.bold, fontSize: 13, lineHeight: 17 },
   caption: { fontFamily: fontFamilies.medium, fontSize: 11, lineHeight: 15 },
   micro: { fontFamily: fontFamilies.extraBold, fontSize: 10, lineHeight: 13, letterSpacing: 1.2 },
+  eyebrow: { fontFamily: fontFamilies.extraBold, fontSize: 14, lineHeight: 19, letterSpacing: 1.1 },
 } as const;
 
 export type BinderTheme = {

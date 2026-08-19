@@ -267,7 +267,7 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
       <SectionHeader title={t('profileSettings.header.sectionTitle')} copy={t('profileSettings.header.sectionCopy')} />
 
       <View style={{ marginTop: theme.spacing.x8 }}>
-        <BinderText variant="micro" tone="muted">{t('profileSettings.photos.eyebrow', { count: media.length })}</BinderText>
+        <BinderText variant="eyebrow" tone="accent">{t('profileSettings.photos.eyebrow', { count: media.length })}</BinderText>
         <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>{t('profileSettings.photos.orderCopy')}</BinderText>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x3, marginTop: theme.spacing.x3 }}>
           {media.map((item, index) => <PhotoTile key={item.id} item={item} index={index} total={media.length} busy={busy} onLeft={() => void movePhoto(index, -1)} onRight={() => void movePhoto(index, 1)} onPrimary={() => void makePrimary(item)} onReplace={() => void replacePhoto(item)} onRemove={() => confirmRemove(item)} onView={() => setViewerIndex(index)} />)}
@@ -280,7 +280,7 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
       </BinderCard>
 
       <BinderCard style={{ gap: theme.spacing.x5, marginTop: theme.spacing.x8 }}>
-        <View><BinderText variant="micro" tone="muted">{t('profileSettings.details.eyebrow')}</BinderText><BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>{t('profileSettings.details.copy')}</BinderText></View>
+        <View><BinderText variant="eyebrow" tone="accent">{t('profileSettings.details.eyebrow')}</BinderText><BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>{t('profileSettings.details.copy')}</BinderText></View>
         <BinderInput label={t('profileSettings.fields.firstName')} error={profileErrors.firstName} value={firstName} onChangeText={(value) => { setFirstName(value); if (profileErrors.firstName) setProfileErrors(validateIdentity(value, gender)); }} maxLength={40} />
         <BinderInput label={t('profileSettings.fields.bio')} helper={t('profileSettings.fields.bioCount', { count: bio.length })} value={bio} onChangeText={setBio} maxLength={500} multiline style={{ minHeight: theme.layout.multilineInputHeight, textAlignVertical: 'top' }} />
         <Choice label={t('profileSettings.fields.gender')} error={profileErrors.gender}><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.x2 }}>{GENDERS.map((item) => <BinderChip key={item.value} label={t(item.labelKey)} selected={gender === item.value} onPress={() => { setGender(item.value); setProfileErrors(validateIdentity(firstName, item.value)); }} />)}</View></Choice>
