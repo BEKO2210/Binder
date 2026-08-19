@@ -1468,5 +1468,629 @@
       "key": "delete-account.deutsch",
       "ctx": "text:a"
     }
+  ],
+  "languages": [
+    {
+      "key": "languages.description-binder-speaks-15-languages",
+      "ctx": "attr:meta:content"
+    },
+    {
+      "key": "languages.og-title-binder-in-15",
+      "ctx": "attr:meta:content"
+    },
+    {
+      "key": "languages.og-description-binder-follows-your",
+      "ctx": "attr:meta:content"
+    },
+    {
+      "key": "languages.languages-binder-speaks-15",
+      "ctx": "text:title"
+    },
+    {
+      "key": "languages.a-aria-label-binder-home",
+      "ctx": "attr:a:aria-label"
+    },
+    {
+      "key": "languages.binder",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.nav-aria-label-primary",
+      "ctx": "attr:nav:aria-label"
+    },
+    {
+      "key": "languages.how-it-works",
+      "ctx": "text:a"
+    },
+    {
+      "key": "languages.safety",
+      "ctx": "text:a"
+    },
+    {
+      "key": "languages.privacy",
+      "ctx": "text:a"
+    },
+    {
+      "key": "languages.account-control",
+      "ctx": "text:a"
+    },
+    {
+      "key": "languages.languages",
+      "ctx": "text:div"
+    },
+    {
+      "key": "languages.binder-speaks-15-languages",
+      "ctx": "text:h1"
+    },
+    {
+      "key": "languages.binder-follows-the-language-your",
+      "ctx": "text:p"
+    },
+    {
+      "key": "languages.settings-app-settings-language",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "languages.text",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "languages.15-of-15-translated-in",
+      "ctx": "text:p"
+    },
+    {
+      "key": "languages.text-2",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.english",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "languages.english-2",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.en",
+      "ctx": "text:code"
+    },
+    {
+      "key": "languages.source-language",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.text-3",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.text-4",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "languages.arabic",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.ar",
+      "ctx": "text:code"
+    },
+    {
+      "key": "languages.fully-translated",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.right-to-left-layout-not",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.text-5",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.text-6",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "languages.chinese-simplified",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.zh-cn",
+      "ctx": "text:code"
+    },
+    {
+      "key": "languages.fully-translated-2",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.text-7",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.nederlands",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "languages.dutch",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.nl",
+      "ctx": "text:code"
+    },
+    {
+      "key": "languages.fully-translated-3",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.text-8",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.fran-ais",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "languages.french",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.fr",
+      "ctx": "text:code"
+    },
+    {
+      "key": "languages.fully-translated-4",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.text-9",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.deutsch",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "languages.german",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.de",
+      "ctx": "text:code"
+    },
+    {
+      "key": "languages.fully-translated-5",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.text-10",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.text-11",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "languages.hindi",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.hi",
+      "ctx": "text:code"
+    },
+    {
+      "key": "languages.fully-translated-6",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.text-12",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.bahasa-indonesia",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "languages.indonesian",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.id",
+      "ctx": "text:code"
+    },
+    {
+      "key": "languages.fully-translated-7",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.text-13",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.italiano",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "languages.italian",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.it",
+      "ctx": "text:code"
+    },
+    {
+      "key": "languages.fully-translated-8",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.text-14",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.text-15",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "languages.japanese",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.ja",
+      "ctx": "text:code"
+    },
+    {
+      "key": "languages.fully-translated-9",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.text-16",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.text-17",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "languages.korean",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.ko",
+      "ctx": "text:code"
+    },
+    {
+      "key": "languages.fully-translated-10",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.text-18",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.polski",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "languages.polish",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.pl",
+      "ctx": "text:code"
+    },
+    {
+      "key": "languages.fully-translated-11",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.text-19",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.portugu-s-brasil",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "languages.portuguese-brazil",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.pt-br",
+      "ctx": "text:code"
+    },
+    {
+      "key": "languages.fully-translated-12",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.text-20",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.espa-ol",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "languages.spanish",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.es",
+      "ctx": "text:code"
+    },
+    {
+      "key": "languages.fully-translated-13",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.text-21",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.tuerk-e",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "languages.turkish",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.tr",
+      "ctx": "text:code"
+    },
+    {
+      "key": "languages.fully-translated-14",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.how-binder-picks-your-language",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "languages.your-phone-reports-a-language",
+      "ctx": "text:p"
+    },
+    {
+      "key": "languages.de-de",
+      "ctx": "text:code"
+    },
+    {
+      "key": "languages.or",
+      "ctx": "text:code"
+    },
+    {
+      "key": "languages.pt-pt",
+      "ctx": "text:code"
+    },
+    {
+      "key": "languages.binder-looks-for-that-exact",
+      "ctx": "text:code"
+    },
+    {
+      "key": "languages.nothing-ships-half-finished",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "languages.a-language-is-only-listed",
+      "ctx": "text:p"
+    },
+    {
+      "key": "languages.arabic-and-right-to-left",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "languages.arabic-text-renders-correctly-but",
+      "ctx": "text:p"
+    },
+    {
+      "key": "languages.want-binder-in-your-language",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "languages.translating-binder-is-one-file",
+      "ctx": "text:p"
+    },
+    {
+      "key": "languages.en-json",
+      "ctx": "text:code"
+    },
+    {
+      "key": "languages.from-the-repository-translate-the",
+      "ctx": "text:code"
+    },
+    {
+      "key": "languages.see-the-locale-files-on",
+      "ctx": "text:a"
+    },
+    {
+      "key": "languages.languages-are-bundled-into-the",
+      "ctx": "text:p"
+    },
+    {
+      "key": "languages.2026-binder-independent-product",
+      "ctx": "text:span"
+    },
+    {
+      "key": "languages.home",
+      "ctx": "text:a"
+    },
+    {
+      "key": "languages.languages-2",
+      "ctx": "text:a"
+    },
+    {
+      "key": "languages.privacy-2",
+      "ctx": "text:a"
+    },
+    {
+      "key": "languages.terms",
+      "ctx": "text:a"
+    },
+    {
+      "key": "languages.child-safety",
+      "ctx": "text:a"
+    },
+    {
+      "key": "languages.delete-account",
+      "ctx": "text:a"
+    },
+    {
+      "key": "languages.impressum",
+      "ctx": "text:a"
+    },
+    {
+      "key": "languages.contact",
+      "ctx": "text:a"
+    }
+  ],
+  "impressum": [
+    {
+      "key": "impressum.robots-noindex",
+      "ctx": "attr:meta:content"
+    },
+    {
+      "key": "impressum.impressum-binder",
+      "ctx": "text:title"
+    },
+    {
+      "key": "impressum.a-aria-label-binder-home",
+      "ctx": "attr:a:aria-label"
+    },
+    {
+      "key": "impressum.binder",
+      "ctx": "text:span"
+    },
+    {
+      "key": "impressum.nav-aria-label-primary",
+      "ctx": "attr:nav:aria-label"
+    },
+    {
+      "key": "impressum.privacy",
+      "ctx": "text:a"
+    },
+    {
+      "key": "impressum.terms",
+      "ctx": "text:a"
+    },
+    {
+      "key": "impressum.account-control",
+      "ctx": "text:a"
+    },
+    {
+      "key": "impressum.rechtliches",
+      "ctx": "text:div"
+    },
+    {
+      "key": "impressum.impressum",
+      "ctx": "text:h1"
+    },
+    {
+      "key": "impressum.angaben-gemaess-5-ddg",
+      "ctx": "text:p"
+    },
+    {
+      "key": "impressum.anbieter",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "impressum.belkis-aslani",
+      "ctx": "text:strong"
+    },
+    {
+      "key": "impressum.vogelsangstrasse-32",
+      "ctx": "text:br"
+    },
+    {
+      "key": "impressum.71691-freiberg-am-neckar",
+      "ctx": "text:br"
+    },
+    {
+      "key": "impressum.deutschland",
+      "ctx": "text:br"
+    },
+    {
+      "key": "impressum.kontakt",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "impressum.e-mail",
+      "ctx": "text:p"
+    },
+    {
+      "key": "impressum.nullmesh-protonmail-com",
+      "ctx": "text:a"
+    },
+    {
+      "key": "impressum.verantwortlich-fuer-den-inhalt",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "impressum.verantwortlich-nach-18-abs-2",
+      "ctx": "text:p"
+    },
+    {
+      "key": "impressum.binder-ist-ein-kostenloses-werbefreies",
+      "ctx": "text:p"
+    },
+    {
+      "key": "impressum.streitbeilegung",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "impressum.zur-teilnahme-an-einem-streitbeilegungsverfahren",
+      "ctx": "text:p"
+    },
+    {
+      "key": "impressum.copyright",
+      "ctx": "text:h2"
+    },
+    {
+      "key": "impressum.binder-its-source-code-database",
+      "ctx": "text:p"
+    },
+    {
+      "key": "impressum.nullmesh-protonmail-com-2",
+      "ctx": "text:a"
+    },
+    {
+      "key": "impressum.third-party-open-source-components",
+      "ctx": "text:a"
+    },
+    {
+      "key": "impressum.2026-binder-independent-product",
+      "ctx": "text:span"
+    },
+    {
+      "key": "impressum.home",
+      "ctx": "text:a"
+    },
+    {
+      "key": "impressum.languages",
+      "ctx": "text:a"
+    },
+    {
+      "key": "impressum.privacy-2",
+      "ctx": "text:a"
+    },
+    {
+      "key": "impressum.terms-2",
+      "ctx": "text:a"
+    },
+    {
+      "key": "impressum.child-safety",
+      "ctx": "text:a"
+    },
+    {
+      "key": "impressum.delete-account",
+      "ctx": "text:a"
+    },
+    {
+      "key": "impressum.impressum-2",
+      "ctx": "text:a"
+    },
+    {
+      "key": "impressum.contact",
+      "ctx": "text:a"
+    }
   ]
 }

@@ -31,6 +31,10 @@ const PAGES = [
   { id: 'terms', file: 'terms.html', priority: '0.5' },
   { id: 'safety', file: 'safety-standards.html', priority: '0.6' },
   { id: 'delete-account', file: 'delete-account.html', priority: '0.6' },
+  { id: 'languages', file: 'languages.html', priority: '0.4' },
+  // Noindex, and therefore out of the sitemap: a legal notice is for the
+  // reader who looks for it, not for search results.
+  { id: 'impressum', file: 'impressum.html', noindex: true },
 ];
 const SOURCE_LOCALE = 'en';
 
@@ -41,6 +45,61 @@ const locales = readdirSync(localeDir)
 
 const dictionaries = Object.fromEntries(locales.map((code) => [code, JSON.parse(readFileSync(join(localeDir, `${code}.json`), 'utf8'))]));
 const missing = [];
+
+// The language page is built from the app's own locale files, so it cannot
+// claim a language Binder does not ship or a coverage number nobody measured.
+const appLocaleDir = join(root, 'src/i18n/locales');
+const appLocales = readdirSync(appLocaleDir)
+  .filter((name) => name.endsWith('.json'))
+  .map((name) => {
+    const data = JSON.parse(readFileSync(join(appLocaleDir, name), 'utf8'));
+    return { code: name.replace('.json', ''), meta: data.$meta ?? {}, data };
+  });
+
+function countStrings(value, seen = 0) {
+  for (const [key, child] of Object.entries(value)) {
+    if (key === '$meta') continue;
+    seen = child && typeof child === 'object' && !Array.isArray(child) ? countStrings(child, seen) : seen + 1;
+  }
+  return seen;
+}
+
+const englishStrings = countStrings(appLocales.find((entry) => entry.code === 'en')?.data ?? {});
+
+const completeLocales = appLocales.filter((entry) => countStrings(entry.data) >= englishStrings).length;
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[character]);
+}
+
+function languageTable(locale) {
+  const words = dictionaries[locale];
+  const full = words['languages.@full'] ?? 'Fully translated';
+  const partial = words['languages.@partial'] ?? 'Partly translated';
+  const source = words['languages.@source'] ?? 'Source language';
+  const rtl = words['languages.@rtl'] ?? 'Right-to-left · layout not mirrored yet';
+  const cards = appLocales
+    .slice()
+    .sort((left, right) => (left.code === 'en' ? -1 : right.code === 'en' ? 1 : (left.meta.endonym ?? left.code).localeCompare(right.meta.endonym ?? right.code)))
+    .map((entry) => {
+      const strings = countStrings(entry.data);
+      const complete = strings >= englishStrings;
+      const badge = entry.code === 'en' ? source : complete ? full : `${partial} · ${strings}/${englishStrings}`;
+      const direction = entry.meta.dir === 'rtl' ? `<span class="langtag note">${escapeHtml(rtl)}</span>` : '';
+      return `<li class="langcard"><span class="langflag" aria-hidden="true">${escapeHtml(entry.meta.flag ?? '')}</span><span class="langbody"><strong lang="${escapeHtml(entry.code)}">${escapeHtml(entry.meta.endonym ?? entry.code)}</strong><span class="langname">${escapeHtml(entry.meta.name ?? entry.code)} · <code>${escapeHtml(entry.code)}</code></span><span class="langtag ${entry.code === 'en' ? 'source' : complete ? 'full' : 'partial'}">${escapeHtml(badge)}</span>${direction}</span></li>`;
+    })
+    .join('');
+  return `<ul class="langgrid">${cards}</ul>`;
+}
+
+// The short strip on the home page comes from the same list, so a new locale
+// file appears in both places at once instead of only where somebody remembered.
+function languageStrip() {
+  const items = appLocales
+    .map((entry) => `<li><span aria-hidden="true">${escapeHtml(entry.meta.flag ?? '')}</span><span lang="${escapeHtml(entry.code)}">${escapeHtml(entry.meta.endonym ?? entry.code)}</span></li>`)
+    .join('');
+  return `<ul class="langstrip">${items}</ul>`;
+}
 
 function pageUrl(locale, file) {
   const path = file === 'index.html' ? '' : file;
@@ -92,10 +151,18 @@ function render(locale, page) {
     if (key === '@alternates') return alternatesFor(page.file) + `\n  <link rel="canonical" href="${pageUrl(locale, page.file)}">`;
     if (key === '@og-url') return `<meta property="og:url" content="${pageUrl(locale, page.file)}">`;
     if (key === '@language-switcher') return switcherFor(locale, page.file);
+    if (key === '@language-table') return languageTable(locale);
+    if (key === '@language-strip') return languageStrip();
+    if (key === '@language-count') return String(appLocales.length);
     if (dictionary[key] !== undefined) return dictionary[key];
     missing.push(`${locale}/${page.id}: ${key}`);
     return source[key] ?? '';
   });
+
+  // Counts live in the translated sentences, so the sentence cannot claim a
+  // number the locale folder does not back up.
+  html = html.replace(/\{\{@language-(count|complete)\}\}/g, (whole, kind) =>
+    String(kind === 'count' ? appLocales.length : completeLocales));
 
   html = html.replace(/<html lang="[^"]*"/, `<html lang="${meta.htmlLang ?? locale}"${meta.dir === 'rtl' ? ' dir="rtl"' : ''}`);
 
@@ -109,7 +176,7 @@ function render(locale, page) {
 
 function sitemap() {
   const today = new Date().toISOString().slice(0, 10);
-  const entries = PAGES.flatMap((page) => locales.map((locale) => {
+  const entries = PAGES.filter((page) => !page.noindex).flatMap((page) => locales.map((locale) => {
     const alternates = locales
       .map((code) => `    <xhtml:link rel="alternate" hreflang="${code}" href="${pageUrl(code, page.file)}"/>`)
       .join('\n');
