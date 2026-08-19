@@ -5,11 +5,12 @@ export type AccentThemeId = 'lime' | 'blue' | 'violet' | 'coral' | 'ice';
 export const baseColors = {
   destructive: '#FF5A76', destructivePressed: '#E84B66', destructiveForeground: '#240A0F',
   destructiveSoftDark: '#211318', destructiveSoftLight: '#FFF0F3', warning: '#F3C969', warningPressed: '#D9AD4D', success: '#8EDB73',
+  bind: '#F1274B',
 } as const;
 
 export const semanticPalettes = {
   dark: baseColors,
-  light: { ...baseColors, destructive: '#B42345', destructivePressed: '#941731', destructiveForeground: '#FFFFFF', warning: '#765600', warningPressed: '#634800', success: '#296719' },
+  light: { ...baseColors, bind: '#D81138', destructive: '#B42345', destructivePressed: '#941731', destructiveForeground: '#FFFFFF', warning: '#765600', warningPressed: '#634800', success: '#296719' },
 } as const;
 
 export const darkPalette = {

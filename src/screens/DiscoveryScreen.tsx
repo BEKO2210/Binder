@@ -2,7 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useRef, useState } from 'react';
 import { BackHandler, Image, ScrollView, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { Extrapolation, FadeIn, FadeOut, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { Extrapolation, FadeIn, FadeOut, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 
 import DiscoveryFilterSheet from '../components/DiscoveryFilterSheet';
 import { DiscoveryLoading } from '../components/DiscoveryLoading';
@@ -10,6 +10,7 @@ import { discoveryDefaults, type DiscoveryPreferenceValues } from '../components
 import { MatchCelebration } from '../components/MatchCelebration';
 import { PhotoPager } from '../components/PhotoPager';
 import { MotionPressable as Pressable } from '../components/ui';
+import { LiquidHeart } from '../components/LiquidHeart';
 import { BinderBrand, BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import { fetchMatches, type MatchSummary } from '../lib/conversation';
 import { announce } from '../lib/announce';
@@ -460,9 +461,30 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
 function DiscoveryAction({ kind, disabled, onPress, onPressIn, onPressOut }: { kind: 'pass' | 'bind'; disabled: boolean; onPress: () => void; onPressIn: () => void; onPressOut: () => void }) {
   const { theme, reduceMotion, t } = useBinderTheme();
   const bind = kind === 'bind';
+  // A Bind is the one irreversible thing on this screen, so it gets the one
+  // piece of motion: the heart fills red from its centre. The circle keeps the
+  // accent colour — only the heart changes, which is what makes it read as
+  // "this one just happened" rather than as a new button state.
+  const beat = useSharedValue(0);
+  const heartStyle = useAnimatedStyle(() => ({ opacity: beat.value, transform: [{ scale: 0.55 + beat.value * 0.45 }] }));
+
+  function fill() {
+    if (!bind) return;
+    if (reduceMotion) { beat.value = 1; return; }
+    beat.value = withSequence(
+      withSpring(1, { damping: 9, stiffness: 260 }),
+      withDelay(320, withTiming(0, { duration: theme.motion.deliberate })),
+    );
+  }
+
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={bind ? t('discovery.accessibility.bindProfile') : t('discovery.accessibility.passProfile')} accessibilityState={{ disabled }} disabled={disabled} onPressIn={onPressIn} onPressOut={onPressOut} onPress={onPress} style={({ pressed }) => ({ width: theme.spacing.x16, height: theme.spacing.x16, borderRadius: theme.radii.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: bind ? theme.accent.accent : theme.colors.surface, borderWidth: 1, borderColor: bind ? theme.accent.accent : theme.colors.borderStrong, opacity: disabled ? 0.42 : pressed ? 0.78 : 1, transform: [{ scale: pressed && !reduceMotion ? theme.motion.pressScale : 1 }] })}>
+    <Pressable accessibilityRole="button" accessibilityLabel={bind ? t('discovery.accessibility.bindProfile') : t('discovery.accessibility.passProfile')} accessibilityState={{ disabled }} disabled={disabled} onPressIn={onPressIn} onPressOut={onPressOut} onPress={() => { fill(); onPress(); }} style={({ pressed }) => ({ width: theme.spacing.x16, height: theme.spacing.x16, borderRadius: theme.radii.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: bind ? theme.accent.accent : theme.colors.surface, borderWidth: 1, borderColor: bind ? theme.accent.accent : theme.colors.borderStrong, opacity: disabled ? 0.42 : pressed ? 0.78 : 1, transform: [{ scale: pressed && !reduceMotion ? theme.motion.pressScale : 1 }] })}>
       <BinderIcon name={bind ? 'matches' : 'close'} size={theme.spacing.x8} color={bind ? theme.accent.foreground : theme.semantic.destructive} />
+      {bind ? (
+        <Animated.View pointerEvents="none" style={[{ position: 'absolute' }, heartStyle]}>
+          <LiquidHeart size={theme.spacing.x8} color={theme.semantic.bind} active={!disabled} />
+        </Animated.View>
+      ) : null}
     </Pressable>
   );
 }
