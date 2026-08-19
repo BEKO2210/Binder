@@ -53,3 +53,24 @@ export function shouldShowConnectionNotice(
   if (!connectionErrorKind) return false;
   return !failedAttemptKinds.includes(connectionErrorKind);
 }
+
+/**
+ * Which surface a conversation problem belongs on.
+ *
+ * A realtime channel that dropped for a moment painted the full-screen
+ * "Unterhaltung konnte nicht geladen werden" over a conversation whose
+ * messages were sitting right there, and the composer stayed active
+ * underneath — you could write into a chat you could not see. Only a first
+ * load that produced nothing may take the whole screen; a connection that
+ * comes and goes is a line.
+ */
+export type ConversationErrorSurface = 'full-screen' | 'notice' | 'none';
+
+export function conversationErrorSurface(input: {
+  hasMessages: boolean;
+  loadFailed: boolean;
+  streamFailed: boolean;
+}): ConversationErrorSurface {
+  if (input.loadFailed && !input.hasMessages) return 'full-screen';
+  return input.loadFailed || input.streamFailed ? 'notice' : 'none';
+}

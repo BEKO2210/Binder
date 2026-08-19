@@ -3,7 +3,7 @@ process.env.TZ = 'UTC';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { composerBody, previewTimeLabel, shouldShowConnectionNotice, splitConversationPreviews } from '../src/lib/conversationPresentation.ts';
+import { composerBody, conversationErrorSurface, previewTimeLabel, shouldShowConnectionNotice, splitConversationPreviews } from '../src/lib/conversationPresentation.ts';
 
 test('composer accepts only a trimmed server-valid body', () => {
   assert.equal(composerBody('   '), null);
@@ -33,4 +33,14 @@ test('one lost connection is reported once, not beside the message and above it'
   // A different problem is a different sentence and deserves its own line.
   assert.equal(shouldShowConnectionNotice('offline', ['server-refusal']), true);
   assert.equal(shouldShowConnectionNotice(null, ['offline']), false);
+});
+
+test('a dropped connection is a line, not a screen over the messages', () => {
+  assert.equal(conversationErrorSurface({ hasMessages: true, loadFailed: false, streamFailed: true }), 'notice');
+  assert.equal(conversationErrorSurface({ hasMessages: true, loadFailed: true, streamFailed: false }), 'notice');
+  // Nothing loaded and nothing to show: the whole screen may say so.
+  assert.equal(conversationErrorSurface({ hasMessages: false, loadFailed: true, streamFailed: false }), 'full-screen');
+  // An empty conversation whose channel hiccuped is still an open, usable chat.
+  assert.equal(conversationErrorSurface({ hasMessages: false, loadFailed: false, streamFailed: true }), 'notice');
+  assert.equal(conversationErrorSurface({ hasMessages: true, loadFailed: false, streamFailed: false }), 'none');
 });

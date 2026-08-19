@@ -11,7 +11,7 @@ import { formatCount, formatTime } from '../lib/format';
 import { formatVoiceDuration } from '../lib/voiceMessage';
 import { announce } from '../lib/announce';
 import { confirmDestructive } from '../lib/confirmDestructive';
-import { composerBody, shouldShowConnectionNotice } from '../lib/conversationPresentation';
+import { composerBody, conversationErrorSurface, shouldShowConnectionNotice } from '../lib/conversationPresentation';
 import { resolveStaggerDelay } from '../lib/motionPolicy';
 import { classifyRequestFailure, isAbortError, isConversationEndedError, withRetry, type ReliabilityError } from '../lib/reliability';
 
@@ -127,6 +127,9 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   const [loading, setLoading] = useState(true);
   const [reloadKey, setReloadKey] = useState(0);
   const [loadError, setLoadError] = useState<ReliabilityError | null>(null);
+  // A channel that dropped is not a conversation that failed to load: the
+  // messages are on screen and the chat stays usable while it reconnects.
+  const [streamError, setStreamError] = useState<ReliabilityError | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [loadingOlder, setLoadingOlder] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -198,6 +201,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         mergeMessages(page.messages);
         setHasMore(page.hasMore);
         setLoadError(null);
+        setStreamError(null);
         void markMatchRead(match.matchId, { signal: requestController.signal }).catch(() => undefined);
       } catch (nextError) {
         if (active && !isAbortError(nextError)) {
@@ -222,7 +226,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         (message) => {
           if (!active) return;
           retryAttempt = 0;
-          setLoadError(null);
+          setStreamError(null);
           mergeMessage(message);
           if (nearNewestRef.current) listRef.current?.scrollToOffset({ offset: 0, animated: !reduceMotion });
           else if (message.sender_id !== currentUserId) setShowNewMessage(true);
@@ -230,9 +234,11 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         },
         (message) => {
           if (!active) return;
-          setLoadError(classifyRequestFailure(message));
+          setStreamError(classifyRequestFailure(message));
           unsubscribe?.();
-          if (retryAttempt >= 5) return;
+          // No hard stop. Giving up after five tries left the chat showing a
+          // permanent failure with a live composer under it, and nothing but
+          // leaving the screen could bring it back.
           const delay = Math.min(15_000,1_000 * 2 ** retryAttempt);
           retryAttempt += 1;
           retryTimer = setTimeout(() => {
@@ -319,7 +325,9 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
 
   const validComposer = composerBody(composer);
   const failedAttemptKinds = attempts.filter((attempt) => attempt.status === 'failed').map((attempt) => attempt.error?.kind ?? 'unknown');
-  const connectionNoticeVisible = messages.length > 0 && shouldShowConnectionNotice(loadError?.kind ?? null, failedAttemptKinds);
+  const errorSurface = conversationErrorSurface({ hasMessages: messages.length > 0, loadFailed: Boolean(loadError), streamFailed: Boolean(streamError) });
+  const connectionError = streamError ?? loadError;
+  const connectionNoticeVisible = errorSurface === 'notice' && shouldShowConnectionNotice(connectionError?.kind ?? null, failedAttemptKinds);
   const canSend = validComposer !== null && !sending;
   const reportingMessage = useMemo(() => messages.find((message) => message.id === reportMessageId) ?? null, [messages, reportMessageId]);
   // The list renders inverted so the newest message is always pinned to the
@@ -538,7 +546,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         </BinderCard>
       ) : null}
 
-      {loading ? <ScreenState kind="loading" loadingShape="conversation" message={t('chat.states.opening')} /> : loadError && messages.length === 0 ? <ScreenState kind={loadError.kind === 'offline' ? 'offline' : loadError.kind === 'permission-denied' ? 'permission' : 'error'} icon="retry" title={loadError.kind === 'offline' ? t('chat.states.offlineTitle') : t('chat.states.loadErrorTitle')} message={t(loadError.messageKey)} actionLabel={loadError.recovery === 'refresh' ? t('chat.actions.refresh') : t('chat.actions.tryAgain')} onAction={() => setReloadKey((value) => value + 1)} /> : messages.length === 0 ? <ScreenState kind="empty" icon="matches" title={t('chat.empty.title')} message={t('chat.empty.message')} /> : (
+      {loading ? <ScreenState kind="loading" loadingShape="conversation" message={t('chat.states.opening')} /> : errorSurface === 'full-screen' && loadError ? <ScreenState kind={loadError.kind === 'offline' ? 'offline' : loadError.kind === 'permission-denied' ? 'permission' : 'error'} icon="retry" title={loadError.kind === 'offline' ? t('chat.states.offlineTitle') : t('chat.states.loadErrorTitle')} message={t(loadError.messageKey)} actionLabel={loadError.recovery === 'refresh' ? t('chat.actions.refresh') : t('chat.actions.tryAgain')} onAction={() => setReloadKey((value) => value + 1)} /> : messages.length === 0 ? <ScreenState kind="empty" icon="matches" title={t('chat.empty.title')} message={t('chat.empty.message')} /> : (
         <FlatList
           ref={listRef}
           data={timeline}
@@ -573,7 +581,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         </View>
       ))}
 
-      {connectionNoticeVisible ? <View accessibilityLiveRegion="assertive" style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', paddingHorizontal: theme.spacing.x4 }}><BinderText variant="caption" tone="destructive" style={{ flex: 1 }}>{loadError ? t(loadError.messageKey) : ''}</BinderText><BinderButton label={t('chat.actions.retry')} variant="ghost" fullWidth={false} onPress={() => setReloadKey((value) => value + 1)} /></View> : null}
+      {connectionNoticeVisible ? <View accessibilityLiveRegion="assertive" style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', paddingHorizontal: theme.spacing.x4 }}><BinderText variant="caption" tone="destructive" style={{ flex: 1 }}>{connectionError ? t(connectionError.messageKey) : ''}</BinderText><BinderButton label={t('chat.actions.retry')} variant="ghost" fullWidth={false} onPress={() => setReloadKey((value) => value + 1)} /></View> : null}
 
       <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: theme.spacing.x2, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x3, borderTopWidth: 1, borderTopColor: theme.colors.borderSubtle, backgroundColor: theme.colors.surface }}>
         {recordingVoice ? <VoiceRecorderBar
