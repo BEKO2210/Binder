@@ -20,6 +20,8 @@ const localeDir = join(root, 'site/i18n');
 const siteDir = join(root, 'site');
 const baseUrl = 'https://beko2210.github.io/Binder/';
 const checkOnly = process.argv.includes('--check');
+// Touching this file, a template or a language file is what makes the workflow
+// in .github/workflows/site-i18n.yml rebuild and commit the pages.
 
 // Which template becomes which file. The English pages keep the URLs the site
 // has always had; a language folder mirrors them.
