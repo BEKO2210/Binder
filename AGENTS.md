@@ -131,13 +131,11 @@ shrinking on in `app.json`, which is where it survives a prebuild; the generated
 the AAB (`BUNDLE-METADATA/com.android.tools.build.obfuscation/proguard.map`), so
 Play picks it up on upload with nothing to do by hand, and the release script
 stages a copy next to the artefacts for reading a crash locally with `retrace`.
-Measured on vc95: the first minified build produced 121.25 MiB APK / 96.04 MiB
-AAB against 128.59 / 98.80 unminified; the build that actually shipped measured
-127.14 / 100.71 with R8 demonstrably active (a mapping file was produced and
-the dex is two files instead of many). The gap between the two minified builds
-is not explained and is worth a clean rebuild before anybody quotes a number —
-what is certain is that the size moved down, not up, and that the mapping now
-exists. Build time went from about 1m30s to 11m. **`expo prebuild` writes the release signing config back to the debug key**
+Measured on vc95: APK 128.59 → 121.25 MiB, AAB 98.80 → 96.04 MiB, build about
+1m30s → 11m. (A moment of confusion is written down here on purpose: the same
+files read 127.14 and 100.71 in MB rather than MiB, which looked like a second,
+larger build. Same artefacts, different unit — when a size does not add up,
+check the unit before the build.) **`expo prebuild` writes the release signing config back to the debug key**
 — the `signingConfigs.release` block that reads `keystore.properties` has to be
 restored afterwards, and the build refuses to run without it.
 
