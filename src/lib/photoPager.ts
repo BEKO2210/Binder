@@ -59,3 +59,29 @@ export function resistedPhotoTranslation(
   if (atStart || atEnd) return translationX * photoPagerPhysics.edgeResistance;
   return translationX;
 }
+
+/**
+ * What a photo in the pager is doing right now.
+ *
+ * A card whose photo request never answers used to show nothing: an empty dark
+ * rectangle with the name and the interests under it, indefinitely, while bind
+ * and pass stayed active — somebody decided about a person they could not see.
+ * The failure text existed but only an error could reach it, and silence is not
+ * an error. Measured on the S23 with a network that accepted the connection and
+ * never replied.
+ */
+export type PhotoLoadStatus = 'pending' | 'ready' | 'failed';
+
+/** How long a photo may stay silent before the card says so and offers a retry. */
+export const photoLoadDeadlineMs = 10_000;
+
+export type PhotoLoadEvent = 'loaded' | 'error' | 'deadline' | 'retry';
+
+export function photoStatusAfter(current: PhotoLoadStatus, event: PhotoLoadEvent): PhotoLoadStatus {
+  if (event === 'loaded') return 'ready';
+  if (event === 'error') return 'failed';
+  if (event === 'retry') return 'pending';
+  // A deadline only decides for a photo that is still waiting: an image that
+  // arrived must never be thrown away by a timer that was already running.
+  return current === 'pending' ? 'failed' : current;
+}

@@ -3,7 +3,7 @@ import { Image, View, type DimensionValue } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, type SharedValue, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
-import { adjacentPhotoIndex, clampPhotoIndex, nextPhotoPage, photosToPreload, resistedPhotoTranslation } from '../lib/photoPager';
+import { adjacentPhotoIndex, clampPhotoIndex, nextPhotoPage, photoLoadDeadlineMs, photosToPreload, photoStatusAfter, resistedPhotoTranslation, type PhotoLoadEvent, type PhotoLoadStatus } from '../lib/photoPager';
 import { resolveSpring } from '../lib/motionPolicy';
 import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
@@ -33,7 +33,10 @@ export function PhotoPager({ photos, name, height = '100%', onOpen, interactive 
   const haptic = useBinderHaptics();
   const [index, setIndex] = useState(() => clampPhotoIndex(initialIndex, photos.length));
   const [width, setWidth] = useState(0);
-  const [failed, setFailed] = useState<Record<number, boolean>>({});
+  const [status, setStatus] = useState<Record<number, PhotoLoadStatus>>({});
+  // Part of the Image's key: a retry has to build a new native view, or it
+  // shows the same cached failure.
+  const [attempt, setAttempt] = useState<Record<number, number>>({});
   const page = useSharedValue(clampPhotoIndex(initialIndex, photos.length));
   const offset = useSharedValue(0);
   const spring = resolveSpring(reduceMotion, 'professional');
@@ -42,6 +45,22 @@ export function PhotoPager({ photos, name, height = '100%', onOpen, interactive 
   useEffect(() => {
     for (const photo of photosToPreload(photos, index)) void Image.prefetch(photo).catch(() => undefined);
   }, [index, photos]);
+
+  // A photo request that is accepted and never answered has no error to react
+  // to, so the wait itself needs an end. Only the photo on screen is watched:
+  // one that is still off to the side may take as long as it likes.
+  useEffect(() => {
+    if ((status[index] ?? 'pending') !== 'pending') return;
+    const timer = setTimeout(() => {
+      setStatus((current) => ({ ...current, [index]: photoStatusAfter(current[index] ?? 'pending', 'deadline') }));
+    }, photoLoadDeadlineMs);
+    return () => clearTimeout(timer);
+  }, [index, status, attempt]);
+
+  function markPhoto(position: number, event: PhotoLoadEvent) {
+    setStatus((current) => ({ ...current, [position]: photoStatusAfter(current[position] ?? 'pending', event) }));
+    if (event === 'retry') setAttempt((current) => ({ ...current, [position]: (current[position] ?? 0) + 1 }));
+  }
 
   // A shorter gallery must never leave the track parked past its last page.
   useEffect(() => {
@@ -110,18 +129,32 @@ export function PhotoPager({ photos, name, height = '100%', onOpen, interactive 
         <Animated.View style={[{ flexDirection: 'row', width: width * Math.max(count, 1), height: '100%' }, trackStyle]}>
           {photos.map((photo, position) => (
             <View key={`${position}-${photo}`} style={{ width, height: '100%', backgroundColor: fit === 'contain' ? theme.colors.canvas : theme.colors.surfaceElevated }}>
-              {failed[position] ? (
-                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: theme.spacing.x5 }}>
+              {(status[position] ?? 'pending') === 'failed' ? (
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: theme.spacing.x5, gap: theme.spacing.x3 }}>
                   <BinderText variant="caption" tone="muted" align="center">{t('photoPager.errors.load')}</BinderText>
+                  <Pressable accessibilityRole="button" accessibilityLabel={t('photoPager.actions.retry')} onPress={() => markPhoto(position, 'retry')} style={{ minHeight: theme.layout.minimumTouchTarget, minWidth: theme.layout.minimumTouchTarget, alignItems: 'center', justifyContent: 'center', paddingHorizontal: theme.spacing.x4, borderWidth: 1, borderColor: theme.colors.borderStrong, borderRadius: theme.radii.pill }}>
+                    <BinderText variant="caption" tone="accent">{t('photoPager.actions.retry')}</BinderText>
+                  </Pressable>
                 </View>
               ) : (
-                <Image
-                  accessibilityIgnoresInvertColors
-                  source={{ uri: photo }}
-                  resizeMode={fit}
-                  onError={() => setFailed((current) => ({ ...current, [position]: true }))}
-                  style={{ width: '100%', height: '100%' }}
-                />
+                <>
+                  <Image
+                    key={`${position}-${attempt[position] ?? 0}`}
+                    accessibilityIgnoresInvertColors
+                    source={{ uri: photo }}
+                    resizeMode={fit}
+                    onLoad={() => markPhoto(position, 'loaded')}
+                    onError={() => markPhoto(position, 'error')}
+                    style={{ width: '100%', height: '100%' }}
+                  />
+                  {/* The wait is visible. An empty rectangle reads as a broken
+                      profile, and a card nobody can see is still decidable. */}
+                  {(status[position] ?? 'pending') === 'pending' ? (
+                    <View pointerEvents="none" style={{ position: 'absolute', inset: 0, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.surfaceElevated }}>
+                      <BinderText variant="caption" tone="muted">{t('photoPager.states.loading')}</BinderText>
+                    </View>
+                  ) : null}
+                </>
               )}
             </View>
           ))}

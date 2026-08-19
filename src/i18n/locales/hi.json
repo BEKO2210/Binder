@@ -1418,6 +1418,12 @@
       "previous": "{name} की पिछली फ़ोटो",
       "openProfile": "{name} की पूरी प्रोफ़ाइल खोलें",
       "next": "{name} की अगली फ़ोटो"
+    },
+    "states": {
+      "loading": "फ़ोटो लोड हो रही है…"
+    },
+    "actions": {
+      "retry": "फिर कोशिश करें"
     }
   },
   "discoveryLoading": {

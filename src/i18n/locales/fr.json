@@ -1418,6 +1418,12 @@
       "previous": "Photo précédente de {name}",
       "openProfile": "Ouvrir le profil complet de {name}",
       "next": "Photo suivante de {name}"
+    },
+    "states": {
+      "loading": "Chargement de la photo…"
+    },
+    "actions": {
+      "retry": "Réessayer"
     }
   },
   "discoveryLoading": {

@@ -1418,6 +1418,12 @@
       "previous": "{name}님의 이전 사진",
       "openProfile": "{name}님의 전체 프로필 열기",
       "next": "{name}님의 다음 사진"
+    },
+    "states": {
+      "loading": "사진 불러오는 중…"
+    },
+    "actions": {
+      "retry": "다시 시도"
     }
   },
   "discoveryLoading": {

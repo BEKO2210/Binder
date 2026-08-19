@@ -1418,6 +1418,12 @@
       "previous": "{name} için önceki fotoğraf",
       "openProfile": "{name} için tam profili aç",
       "next": "{name} için sonraki fotoğraf"
+    },
+    "states": {
+      "loading": "Fotoğraf yükleniyor…"
+    },
+    "actions": {
+      "retry": "Tekrar dene"
     }
   },
   "discoveryLoading": {

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { adjacentPhotoIndex, clampPhotoIndex, nextPhotoPage, photoPagerPhysics, photosToPreload, resistedPhotoTranslation } from '../src/lib/photoPager.ts';
+import { adjacentPhotoIndex, clampPhotoIndex, nextPhotoPage, photoPagerPhysics, photosToPreload, photoStatusAfter, resistedPhotoTranslation } from '../src/lib/photoPager.ts';
 
 test('pager navigation clamps at both ends', () => {
   assert.equal(adjacentPhotoIndex(0, 'previous', 3), 0);
@@ -38,4 +38,21 @@ test('dragging past an edge resists instead of tracking the thumb', () => {
   assert.equal(resistedPhotoTranslation(0, 100, 4), 100 * photoPagerPhysics.edgeResistance);
   assert.equal(resistedPhotoTranslation(3, -100, 4), -100 * photoPagerPhysics.edgeResistance);
   assert.equal(resistedPhotoTranslation(0, -100, 4), -100);
+});
+
+test('a photo that never answers ends as a failure, not as an empty rectangle', () => {
+  // Silence is not an error, so nothing used to reach the failure text: the
+  // card stayed blank and stayed decidable.
+  assert.equal(photoStatusAfter('pending', 'deadline'), 'failed');
+  assert.equal(photoStatusAfter('pending', 'loaded'), 'ready');
+  assert.equal(photoStatusAfter('pending', 'error'), 'failed');
+});
+
+test('a deadline that fires late cannot undo a photo that arrived', () => {
+  assert.equal(photoStatusAfter('ready', 'deadline'), 'ready');
+  assert.equal(photoStatusAfter('failed', 'deadline'), 'failed');
+});
+
+test('a retry puts the photo back into waiting', () => {
+  assert.equal(photoStatusAfter('failed', 'retry'), 'pending');
 });

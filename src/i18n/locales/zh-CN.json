@@ -1418,6 +1418,12 @@
       "previous": "{name} 的上一张照片",
       "openProfile": "打开 {name} 的完整个人资料",
       "next": "{name} 的下一张照片"
+    },
+    "states": {
+      "loading": "正在加载照片…"
+    },
+    "actions": {
+      "retry": "重试"
     }
   },
   "discoveryLoading": {

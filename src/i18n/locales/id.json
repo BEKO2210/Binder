@@ -1418,6 +1418,12 @@
       "previous": "Foto sebelumnya dari {name}",
       "openProfile": "Buka profil lengkap {name}",
       "next": "Foto berikutnya dari {name}"
+    },
+    "states": {
+      "loading": "Memuat foto…"
+    },
+    "actions": {
+      "retry": "Coba lagi"
     }
   },
   "discoveryLoading": {
