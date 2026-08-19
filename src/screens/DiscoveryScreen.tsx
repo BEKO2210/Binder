@@ -14,7 +14,7 @@ import { BinderBrand, BinderButton, BinderCard, BinderChip, BinderIcon, BinderIc
 import { fetchMatches, type MatchSummary } from '../lib/conversation';
 import { announce } from '../lib/announce';
 import { countDiscoveryCandidates, fetchDiscoveryBatch, loadAttributeFilterCount, loadDiscoveryPreferences, recordDecision, refreshDiscoveryLocation, type DiscoveryProfile } from '../lib/discovery';
-import { classifyEmptyDiscovery, type EmptyDiscoveryKind } from '../lib/discoveryAvailability';
+import { classifyEmptyDiscovery, filterValuesToCountWith, type EmptyDiscoveryKind } from '../lib/discoveryAvailability';
 import { advanceDeck, decideSwipe, discoveryDeckPhysics, resistedTranslation, type SwipeDirection } from '../lib/discoveryDeck';
 import { formatCount, formatDistanceKm } from '../lib/format';
 import { listMyProfileMedia } from '../lib/media';
@@ -97,7 +97,9 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
     if (celebrationTimer.current) clearTimeout(celebrationTimer.current);
   }, []);
 
-  async function loadDiscovery(refreshLocation = true) {
+  // appliedValues: what the filter sheet just saved. Without it the reload
+  // counts with the values still in state and explains the empty deck wrongly.
+  async function loadDiscovery(refreshLocation = true, appliedValues?: DiscoveryPreferenceValues) {
     const token = ++loadToken.current;
     const current = () => mounted.current && loadToken.current === token;
     setLoading(true);
@@ -112,7 +114,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
       if (!current()) return;
       setProfiles(batch);
       if (batch.length === 0) {
-        const values = filterValues ?? await loadDiscoveryPreferences();
+        const values = filterValuesToCountWith(appliedValues, filterValues) ?? await loadDiscoveryPreferences();
         const [currentCount, standardCount] = await Promise.all([
           countDiscoveryCandidates(values),
           countDiscoveryCandidates(discoveryDefaults),
@@ -501,7 +503,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
         <DiscoveryFilterSheet
           initialValues={filterValues}
           onClose={() => setFiltersOpen(false)}
-          onApplied={(values) => { setFilterValues(values); setFiltersOpen(false); void loadAttributeFilterCount().then(setAttributeFilterCount).catch(() => undefined); void loadDiscovery(false); }}
+          onApplied={(values) => { setFilterValues(values); setFiltersOpen(false); void loadAttributeFilterCount().then(setAttributeFilterCount).catch(() => undefined); void loadDiscovery(false, values); }}
         />
       ) : null}
 
