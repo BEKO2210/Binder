@@ -4,6 +4,8 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BinderBrand, BinderButton, BinderInput, BinderText, SectionHeader } from '../components/ui';
 import { hasAuthErrors, MIN_PASSWORD_LENGTH, validateAuthForm, type AuthFieldErrors, type AuthMode } from '../lib/authForm';
+import { GoogleSigninButton } from '@react-native-google-signin/google-signin';
+
 import { isGoogleSignInConfigured, signInWithGoogle } from '../lib/googleAuth';
 import { supabase } from '../lib/supabase';
 import { withDeadline } from '../lib/reliability';
@@ -218,13 +220,20 @@ export default function AuthScreen({ recovery = false, onRecoveryHandled }: { re
         {googleAvailable && !recovery && mode !== 'reset' ? (
           <View style={{ marginTop: theme.spacing.x5 }}>
             <BinderText variant="caption" tone="muted" align="center">{t('auth.google.divider')}</BinderText>
-            <BinderButton
-              label={t('auth.google.action')}
-              variant="secondary"
-              loading={googleBusy}
-              disabled={busy}
+            {/* Google's own button, drawn by Google's own library: the mark
+                belongs to them, and a hand-drawn imitation of it is a
+                trademark problem, not a design decision. It is the one control
+                in Binder that does not take its colours from the theme — the
+                same exemption the warning and destructive colours have. */}
+            <GoogleSigninButton
+              size={GoogleSigninButton.Size.Wide}
+              color={theme.mode === 'dark' ? GoogleSigninButton.Color.Dark : GoogleSigninButton.Color.Light}
+              disabled={busy || googleBusy}
               onPress={() => void continueWithGoogle()}
-              style={{ marginTop: theme.spacing.x3 }}
+              accessibilityRole="button"
+              accessibilityLabel={t('auth.google.action')}
+              accessibilityState={{ disabled: busy || googleBusy }}
+              style={{ width: '100%', height: theme.spacing.x12 + theme.spacing.x2, marginTop: theme.spacing.x3 }}
             />
             <BinderText variant="caption" tone="muted" align="center" style={{ marginTop: theme.spacing.x2 }}>{t('auth.google.note')}</BinderText>
           </View>

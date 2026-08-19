@@ -55,13 +55,22 @@ export type DecisionResult = {
   matchCreated: boolean;
 };
 
+/** How old a stored position may be before discovery insists on a fresh one. */
+export const LAST_KNOWN_POSITION_MAX_AGE_MS = 15 * 60 * 1000;
+
 export async function refreshDiscoveryLocation(): Promise<boolean> {
   const permission = await Location.requestForegroundPermissionsAsync();
   if (permission.status !== 'granted') {
     return false;
   }
 
-  const position = await Location.getCurrentPositionAsync({
+  // A fix the phone already has beats a fix it has to go and get. Asking for a
+  // fresh position indoors took longer than the screen's own deadline on the
+  // S23 — the deck said "Binder hat zu lange gebraucht" before it had ever
+  // loaded. Discovery is a radius in kilometres; a position from the last
+  // quarter of an hour is exactly as good for that, and it arrives at once.
+  const recent = await Location.getLastKnownPositionAsync({ maxAge: LAST_KNOWN_POSITION_MAX_AGE_MS });
+  const position = recent ?? await Location.getCurrentPositionAsync({
     accuracy: Location.Accuracy.Balanced,
   });
 
