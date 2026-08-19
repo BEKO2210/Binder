@@ -32,6 +32,8 @@ credentials.json
 supabase/.temp/
 artifacts/
 
-# The generated code graph: rebuilt on demand with `graphify update .`,
-# a megabyte of HTML, and stale the moment anybody commits.
-graphify-out/
+# The code map belongs in the repo so any agent can find its way; the browser
+# view and the extractor's cache do not — one is a megabyte of generated HTML,
+# the other is scratch.
+graphify-out/graph.html
+graphify-out/cache/
