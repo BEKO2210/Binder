@@ -218,7 +218,9 @@
     },
     "filters": {
       "summary": "Suche {minAge}–{maxAge} im Umkreis von {distance} km",
-      "label": "Deine Suche"
+      "label": "Deine Suche",
+      "moreOne": "{count} weiterer Filter",
+      "moreOther": "{count} weitere Filter"
     },
     "empty": {
       "filteredEyebrow": "FILTER SCHRÄNKEN DEIN DECK EIN",

@@ -218,7 +218,9 @@
     },
     "filters": {
       "summary": "{distance} km 이내 {minAge}–{maxAge}세를 찾는 중",
-      "label": "내 검색 조건"
+      "label": "내 검색 조건",
+      "moreOne": "필터 {count}개 더",
+      "moreOther": "필터 {count}개 더"
     },
     "empty": {
       "filteredEyebrow": "필터가 추천 범위를 좁히고 있습니다",

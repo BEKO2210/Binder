@@ -2,8 +2,25 @@ import * as Location from 'expo-location';
 
 import { recordBetaEvent } from './beta';
 import { mapDiscoveryPreferences, type DiscoveryPreferencesRow } from './discoveryPreferences';
+import { activeFilterCount, parseStoredFilters } from './attributeFilters';
 import { supabase } from './supabase';
 import type { DiscoveryPreferenceValues } from '../components/DiscoveryPreferences';
+
+/**
+ * How many attribute fields the person is filtering on.
+ *
+ * The header line can honestly say "18–45 within 50 km" and still describe a
+ * deck that is far narrower, because ten more filters may be set out of
+ * sight. This is what makes that visible.
+ */
+export async function loadAttributeFilterCount(): Promise<number> {
+  const { data: userData } = await supabase.auth.getUser();
+  const uid = userData.user?.id;
+  if (!uid) return 0;
+  const { data, error } = await supabase.from('user_preferences').select('attribute_filters').eq('user_id', uid).single();
+  if (error) return 0;
+  return activeFilterCount(parseStoredFilters(data.attribute_filters));
+}
 
 export async function loadDiscoveryPreferences(): Promise<DiscoveryPreferenceValues> {
   const { data: userData, error: userError } = await supabase.auth.getUser();

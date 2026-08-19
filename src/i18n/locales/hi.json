@@ -218,7 +218,9 @@
     },
     "filters": {
       "summary": "{distance} किमी के भीतर {minAge}–{maxAge} खोज रहे हैं",
-      "label": "आपकी खोज"
+      "label": "आपकी खोज",
+      "moreOne": "{count} और फ़िल्टर",
+      "moreOther": "{count} और फ़िल्टर"
     },
     "empty": {
       "filteredEyebrow": "फ़िल्टर आपकी सूची को सीमित कर रहे हैं",

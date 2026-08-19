@@ -13,7 +13,7 @@ import { MotionPressable as Pressable } from '../components/ui';
 import { BinderBrand, BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import { fetchMatches, type MatchSummary } from '../lib/conversation';
 import { announce } from '../lib/announce';
-import { countDiscoveryCandidates, fetchDiscoveryBatch, loadDiscoveryPreferences, recordDecision, refreshDiscoveryLocation, type DiscoveryProfile } from '../lib/discovery';
+import { countDiscoveryCandidates, fetchDiscoveryBatch, loadAttributeFilterCount, loadDiscoveryPreferences, recordDecision, refreshDiscoveryLocation, type DiscoveryProfile } from '../lib/discovery';
 import { classifyEmptyDiscovery, type EmptyDiscoveryKind } from '../lib/discoveryAvailability';
 import { advanceDeck, decideSwipe, discoveryDeckPhysics, resistedTranslation, type SwipeDirection } from '../lib/discoveryDeck';
 import { formatCount, formatDistanceKm } from '../lib/format';
@@ -59,6 +59,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
   const [viewingProfile, setViewingProfile] = useState<DiscoveryProfile | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filterValues, setFilterValues] = useState<DiscoveryPreferenceValues | null>(null);
+  const [attributeFilterCount, setAttributeFilterCount] = useState(0);
   const [emptyKind, setEmptyKind] = useState<EmptyDiscoveryKind | null>(null);
   const [locationPermissionDenied, setLocationPermissionDenied] = useState(false);
   const [safetyOpen, setSafetyOpen] = useState(false);
@@ -128,6 +129,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
     let active = true;
     async function loadFilterSummary() {
       const values = await loadDiscoveryPreferences();
+      void loadAttributeFilterCount().then((count) => { if (active) setAttributeFilterCount(count); }).catch(() => undefined);
       if (active) setFilterValues(values);
     }
     void loadFilterSummary().catch(() => undefined);
@@ -369,7 +371,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
-      <BinderScreenHeader title={t('discovery.header.title')} titleVisual={<View><BinderBrand compact /><BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>{t('discovery.header.copy')}</BinderText>{filterValues ? <BinderText variant="caption" tone="accent" style={{ marginTop: theme.spacing.x1 }}>{t('discovery.filters.summary', { minAge: formatCount(filterValues.minAge, locale), maxAge: formatCount(filterValues.maxAge, locale), distance: formatDistanceKm(filterValues.distance, locale) })}</BinderText> : null}</View>} trailing={<View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
+      <BinderScreenHeader title={t('discovery.header.title')} titleVisual={<View><BinderBrand compact /><BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>{t('discovery.header.copy')}</BinderText>{filterValues ? <BinderText variant="caption" tone="accent" style={{ marginTop: theme.spacing.x2, marginBottom: theme.spacing.x1 }}>{t('discovery.filters.summary', { minAge: formatCount(filterValues.minAge, locale), maxAge: formatCount(filterValues.maxAge, locale), distance: formatDistanceKm(filterValues.distance, locale) })}{attributeFilterCount > 0 ? ` · ${t(attributeFilterCount === 1 ? 'discovery.filters.moreOne' : 'discovery.filters.moreOther', { count: formatCount(attributeFilterCount, locale) })}` : ''}</BinderText> : null}</View>} trailing={<View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
           {decisionPending ? <BinderText accessibilityLiveRegion="polite" variant="caption" tone="accent">{t('discovery.states.saving')}</BinderText> : null}
           <Animated.View key={filterValues ? `${filterValues.minAge}-${filterValues.maxAge}-${filterValues.distance}` : 'filters'} entering={reduceMotion ? undefined : FadeIn.duration(theme.motion.standard)} exiting={reduceMotion ? undefined : FadeOut.duration(theme.motion.fast)}><BinderChip icon="settings" label={t('discovery.filters.label')} selected={filtersOpen} disabled={decisionPending} accessibilityLabel={t('discovery.accessibility.openFilters')} onPress={() => setFiltersOpen(true)} /></Animated.View>
         </View>} />
@@ -430,7 +432,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
         <DiscoveryFilterSheet
           initialValues={filterValues}
           onClose={() => setFiltersOpen(false)}
-          onApplied={(values) => { setFilterValues(values); setFiltersOpen(false); void loadDiscovery(false); }}
+          onApplied={(values) => { setFilterValues(values); setFiltersOpen(false); void loadAttributeFilterCount().then(setAttributeFilterCount).catch(() => undefined); void loadDiscovery(false); }}
         />
       ) : null}
 

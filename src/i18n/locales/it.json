@@ -218,7 +218,9 @@
     },
     "filters": {
       "summary": "Cerchi {minAge}–{maxAge} entro {distance} km",
-      "label": "La tua ricerca"
+      "label": "La tua ricerca",
+      "moreOne": "{count} filtro in più",
+      "moreOther": "{count} filtri in più"
     },
     "empty": {
       "filteredEyebrow": "I FILTRI STANNO LIMITANDO LA TUA SELEZIONE",

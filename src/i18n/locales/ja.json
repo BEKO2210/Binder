@@ -218,7 +218,9 @@
     },
     "filters": {
       "summary": "{distance} km 以内で {minAge}〜{maxAge} 歳を探しています",
-      "label": "あなたの条件"
+      "label": "あなたの条件",
+      "moreOne": "他に {count} 件の条件",
+      "moreOther": "他に {count} 件の条件"
     },
     "empty": {
       "filteredEyebrow": "フィルターで候補が絞られています",

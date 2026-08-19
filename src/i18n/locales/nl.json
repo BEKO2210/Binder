@@ -218,7 +218,9 @@
     },
     "filters": {
       "summary": "Zoekt {minAge}–{maxAge} binnen {distance} km",
-      "label": "Jouw zoekopdracht"
+      "label": "Jouw zoekopdracht",
+      "moreOne": "nog {count} filter",
+      "moreOther": "nog {count} filters"
     },
     "empty": {
       "filteredEyebrow": "FILTERS VERKLEINEN JE SELECTIE",

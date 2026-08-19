@@ -218,7 +218,9 @@
     },
     "filters": {
       "summary": "{distance} km içinde {minAge}–{maxAge} arıyorsun",
-      "label": "Aramanız"
+      "label": "Aramanız",
+      "moreOne": "{count} filtre daha",
+      "moreOther": "{count} filtre daha"
     },
     "empty": {
       "filteredEyebrow": "FİLTRELER LİSTENİZİ DARALTIYOR",

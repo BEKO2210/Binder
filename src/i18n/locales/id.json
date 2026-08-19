@@ -218,7 +218,9 @@
     },
     "filters": {
       "summary": "Mencari {minAge}–{maxAge} dalam {distance} km",
-      "label": "Pencarianmu"
+      "label": "Pencarianmu",
+      "moreOne": "{count} filter lagi",
+      "moreOther": "{count} filter lagi"
     },
     "empty": {
       "filteredEyebrow": "FILTER MEMPERSEMPIT PILIHAN ANDA",

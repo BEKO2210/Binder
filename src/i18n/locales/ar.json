@@ -218,7 +218,9 @@
     },
     "filters": {
       "summary": "تبحث عن {minAge}–{maxAge} ضمن {distance} كم",
-      "label": "بحثك"
+      "label": "بحثك",
+      "moreOne": "فلتر {count} إضافي",
+      "moreOther": "{count} فلاتر إضافية"
     },
     "empty": {
       "filteredEyebrow": "الفلاتر تضيق قائمة اقتراحاتك",

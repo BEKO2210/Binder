@@ -218,7 +218,9 @@
     },
     "filters": {
       "summary": "在 {distance} 公里内寻找 {minAge}–{maxAge} 岁",
-      "label": "你的搜索"
+      "label": "你的搜索",
+      "moreOne": "另有 {count} 个筛选",
+      "moreOther": "另有 {count} 个筛选"
     },
     "empty": {
       "filteredEyebrow": "筛选条件正在缩小推荐范围",

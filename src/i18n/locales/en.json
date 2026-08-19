@@ -218,7 +218,9 @@
     },
     "filters": {
       "summary": "Looking for {minAge}–{maxAge} within {distance} km",
-      "label": "Your search"
+      "label": "Your search",
+      "moreOne": "{count} more filter",
+      "moreOther": "{count} more filters"
     },
     "empty": {
       "filteredEyebrow": "FILTERS ARE NARROWING YOUR DECK",
