@@ -15,6 +15,7 @@ import { fetchMatches, type MatchSummary } from '../lib/conversation';
 import { announce } from '../lib/announce';
 import { countDiscoveryCandidates, fetchDiscoveryBatch, loadAttributeFilterCount, loadDiscoveryPreferences, recordDecision, refreshDiscoveryLocation, type DiscoveryProfile } from '../lib/discovery';
 import { classifyEmptyDiscovery, filterValuesToCountWith, type EmptyDiscoveryKind } from '../lib/discoveryAvailability';
+import { discoveryLoadingVisible } from '../lib/discoveryOverlays';
 import { advanceDeck, decideSwipe, discoveryDeckPhysics, resistedTranslation, type SwipeDirection } from '../lib/discoveryDeck';
 import { formatCount, formatDistanceKm } from '../lib/format';
 import { listMyProfileMedia } from '../lib/media';
@@ -84,6 +85,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
   const profile = profiles[0];
   const nextProfile = profiles[1];
   const spring = resolveSpring(reduceMotion, 'professional');
+  const loadingVisible = discoveryLoadingVisible(loading, { filtersOpen, safetyOpen, profileOpen: Boolean(viewingProfile), celebrating: Boolean(match) });
 
   // Only the newest load may write the deck. An older response finishing last
   // used to overwrite a freshly filtered deck with the previous one.
@@ -448,7 +450,6 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
         </View>} />
 
       <View style={{ flex: 1, marginHorizontal: theme.spacing.x4, marginTop: theme.spacing.x1, marginBottom: theme.spacing.x3, justifyContent: 'center' }}>
-        {loading ? <View style={{ position: 'absolute', inset: 0, zIndex: 2, backgroundColor: theme.colors.canvas }}><DiscoveryLoading /></View> : null}
         {!profile ? (
           <BinderCard>
             <BinderText variant="micro" tone="accent">{t(emptyKind === 'filtered' ? 'discovery.empty.filteredEyebrow' : 'discovery.empty.genuineEyebrow')}</BinderText>
@@ -473,6 +474,9 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
             <View style={{ position: 'absolute', top: theme.spacing.x3, right: theme.spacing.x3 }}><BinderIconButton name="safety" accessibilityLabel={t('discovery.accessibility.safetyOptions', { name: profile.name })} onPress={openSafety} /></View>
           </>
         )}
+        {/* Last child, so plain paint order puts it over the cards — a zIndex
+            here is a promise about layers that only holds inside this parent. */}
+        {loadingVisible ? <View style={{ position: 'absolute', inset: 0, backgroundColor: theme.colors.canvas }}><DiscoveryLoading /></View> : null}
       </View>
 
       {error ? <BinderText accessibilityLiveRegion="assertive" variant="caption" tone="destructive" align="center" style={{ paddingHorizontal: theme.spacing.x5, paddingBottom: theme.spacing.x1 }}>{t(error.messageKey)}</BinderText> : null}
