@@ -126,3 +126,15 @@ test('every reliability message exists in every language', () => {
     }
   }
 });
+
+test('every screen that blocks on a network read has a ceiling on the wait', async () => {
+  // The diagnostics recorded profile_load failing after 8.7 seconds — not a
+  // server error, but the system giving up on requests the app was willing to
+  // wait for indefinitely, with a spinner and no way out until then.
+  const { readFileSync } = await import('node:fs');
+  const profile = readFileSync(new URL('../src/screens/ProfileScreen.tsx', import.meta.url), 'utf8');
+  assert.match(profile, /PROFILE_DEADLINE_MS = 12_000/);
+  assert.match(profile, /withDeadline\(Promise\.all\(\[/, 'the three parallel reads share one deadline');
+  // And the failure has a way out: the screen already offers a retry.
+  assert.match(profile, /kind="error" icon="retry"|kind={loadError\.kind === 'offline' \? 'offline' : 'error'} icon="retry"/);
+});

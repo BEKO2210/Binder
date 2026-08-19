@@ -10,7 +10,7 @@ import { discoveryVisibility, type MediaState } from '../lib/discoveryVisibility
 import { ProfileAttributeList } from '../components/ProfileAttributeList';
 import { EMPTY_ATTRIBUTES, rowsFromProfile, type ProfileAttributes } from '../lib/profileAttributes';
 import { profileCompleteness } from '../lib/profileCompleteness';
-import { classifyError, isAbortError, type ReliabilityError } from '../lib/reliability';
+import { classifyError, isAbortError, type ReliabilityError, withDeadline } from '../lib/reliability';
 import { fetchMySafetyNotice } from '../lib/safety';
 import { prepareSafetyNotice, type SafetyNotice } from '../lib/safetyNotice';
 import { supabase } from '../lib/supabase';
@@ -22,6 +22,8 @@ type Props = {
   onPreviewProfile: () => void;
   onSessionExpired: () => void;
 };
+
+const PROFILE_DEADLINE_MS = 12_000;
 
 export default function ProfileScreen({ userId, onEditProfile, onPreviewProfile, onSessionExpired }: Props) {
   const { theme, t, locale } = useBinderTheme();
@@ -49,11 +51,15 @@ export default function ProfileScreen({ userId, onEditProfile, onPreviewProfile,
     setMessage('');
     setLoadError(null);
     try {
-      const [profile, media, notice] = await Promise.all([
+      // Three requests with no ceiling: on a socket the phone quietly lost,
+      // none of them fails — they wait, and the screen waits with them. The
+      // diagnostics showed this as an 8.7-second "error" that was really the
+      // system giving up, with nothing on screen but a spinner until then.
+      const [profile, media, notice] = await withDeadline(Promise.all([
         supabase.from('profiles').select('first_name,bio,interests,height_cm,smoking,drinking,drugs,activity,diet,spirituality,children_has,children_wants,car').eq('user_id', userId).abortSignal(signal ?? new AbortController().signal).single(),
         listMyProfileMedia(),
         fetchMySafetyNotice({ signal }),
-      ]);
+      ]), PROFILE_DEADLINE_MS);
       if (profile.error) throw profile.error;
       setFirstName(profile.data.first_name);
       setBio(profile.data.bio);
