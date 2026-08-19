@@ -23,13 +23,20 @@ import { interestLabel } from '../lib/validation';
 import { resolveSpring } from '../lib/motionPolicy';
 import { reportAndBlockDiscoveryProfile, type DiscoveryReportReason } from '../lib/safety';
 import { supabase } from '../lib/supabase';
-import { classifyError, type ReliabilityError } from '../lib/reliability';
+import { classifyError, withDeadline, type ReliabilityError } from '../lib/reliability';
 import { addPending, loadPending, nextToSend, removePending, savePending, shouldKeepAfterFailure, type PendingDecision } from '../lib/decisionQueue';
 import PartnerProfileScreen from './PartnerProfileScreen';
 import { useBinderHaptics } from '../theme/haptics';
 import { darkPalette } from '../theme/tokens';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
+
+// A request that never answers is worse than one that fails: the deck kept
+// "Wird gespeichert…" on screen with both buttons dead for as long as the
+// socket stayed quiet — measured at over seventy seconds on a stalled network,
+// with no way out and no error. Every await here that holds a blocking state
+// gets the same ceiling the profile screen already has.
+const DISCOVERY_DEADLINE_MS = 12_000;
 
 export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onOpenMatch?: (match: MatchSummary) => void; onSessionExpired: () => void }) {
   const { theme, reduceMotion, locale, t } = useBinderTheme();
@@ -99,7 +106,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
         if (current()) setLocationPermissionDenied(true);
         return;
       }
-      const batch = await fetchDiscoveryBatch(20);
+      const batch = await withDeadline(fetchDiscoveryBatch(20), DISCOVERY_DEADLINE_MS);
       if (!current()) return;
       setProfiles(batch);
       if (batch.length === 0) {
@@ -273,7 +280,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
       intentX.value = withTiming(direction === 'right' ? SWIPE_OUT : -SWIPE_OUT, { duration: theme.motion.deliberate });
     }
     try {
-      const result = await recordDecision(current.id, direction === 'right' ? 'bind' : 'pass');
+      const result = await withDeadline(recordDecision(current.id, direction === 'right' ? 'bind' : 'pass'), DISCOVERY_DEADLINE_MS);
       if (result.matched) await haptic('match');
       finishDismiss(current, result.matched);
       if (profiles.length === 1) {
@@ -313,7 +320,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
       const entry = nextToSend(queue);
       if (!entry) break;
       try {
-        await recordDecision(entry.targetUserId, entry.decision);
+        await withDeadline(recordDecision(entry.targetUserId, entry.decision), DISCOVERY_DEADLINE_MS);
         queue = removePending(queue, entry.targetUserId);
       } catch (cause) {
         const failure = classifyError(cause);
@@ -352,7 +359,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
     setSafetyBusy(true);
     setError(null);
     try {
-      await reportAndBlockDiscoveryProfile(targetId, safetyReason);
+      await withDeadline(reportAndBlockDiscoveryProfile(targetId, safetyReason), DISCOVERY_DEADLINE_MS);
       await haptic('destructive');
       setSafetyOpen(false);
       setSafetyReason(null);

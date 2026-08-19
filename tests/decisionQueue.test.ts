@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { addPending, nextToSend, removePending, shouldKeepAfterFailure, type PendingDecision } from '../src/lib/decisionQueue.ts';
+import { classifyError, deadlineError } from '../src/lib/reliability.ts';
 
 const entry = (id: string, at: number, decision: 'bind' | 'pass' = 'bind'): PendingDecision => ({ targetUserId: id, decision, decidedAt: at });
 
@@ -44,4 +45,12 @@ test('the queue cannot grow without bound', () => {
   for (let index = 0; index < 250; index += 1) queue = addPending(queue, entry(`p${index}`, index));
   assert.equal(queue.length, 200);
   assert.equal(queue[0]?.targetUserId, 'p50', 'the oldest fall off, not the newest');
+});
+
+test('a request that never answers keeps the decision instead of dropping it', () => {
+  // The deck used to wait forever on a stalled socket: no error, no queue, both
+  // buttons dead. The deadline is only worth anything if the error it raises
+  // lands in the same branch a lost connection lands in.
+  assert.equal(classifyError(deadlineError()).kind, 'timeout');
+  assert.equal(shouldKeepAfterFailure(classifyError(deadlineError()).kind), true);
 });
