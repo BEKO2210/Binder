@@ -29,7 +29,12 @@ import { askFor, openGate, stillWaitingFor, stopWaiting } from '../lib/lateAnswe
 import { addPending, loadPending, nextToSend, removePending, savePending, shouldKeepAfterFailure, type PendingDecision } from '../lib/decisionQueue';
 import PartnerProfileScreen from './PartnerProfileScreen';
 import { useBinderHaptics } from '../theme/haptics';
-import { darkPalette } from '../theme/tokens';
+// The stamps sit on a photograph, and a photograph is not a surface whose
+// brightness the theme controls: in light mode the lime stamp on a bright
+// picture was almost invisible — reported after a bind on a sunny portrait.
+// Both stamps therefore take the dark palette and carry their own backing,
+// the same rule the card's name and bio already follow.
+import { darkPalette, semanticPalettes } from '../theme/tokens';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
 
@@ -477,8 +482,8 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
             <GestureDetector gesture={panGesture}>
               <Animated.View style={[{ position: 'absolute', inset: 0 }, topCardStyle]}>
                 <ProfileCard key={profile.id} profile={profile} onOpenProfile={() => openProfile(profile)} />
-                <Animated.View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[{ position: 'absolute', inset: 0, borderRadius: theme.radii.hero, borderRightWidth: theme.spacing.x1, borderColor: theme.accent.accent, alignItems: 'flex-end', justifyContent: 'center', paddingRight: theme.spacing.x5 }, bindStampStyle]}><BinderText variant="title" tone="accent">{t('discovery.actions.bindStamp')}</BinderText></Animated.View>
-                <Animated.View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[{ position: 'absolute', inset: 0, borderRadius: theme.radii.hero, borderLeftWidth: theme.spacing.x1, borderColor: theme.semantic.destructive, justifyContent: 'center', paddingLeft: theme.spacing.x5 }, passStampStyle]}><BinderText variant="title" tone="destructive">{t('discovery.actions.passStamp')}</BinderText></Animated.View>
+                <Animated.View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[{ position: 'absolute', inset: 0, borderRadius: theme.radii.hero, borderRightWidth: theme.spacing.x1, borderColor: theme.accent.onDark, alignItems: 'flex-end', justifyContent: 'center', paddingRight: theme.spacing.x5 }, bindStampStyle]}><View style={{ backgroundColor: darkPalette.overlay, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x2 }}><BinderText variant="title" style={{ color: theme.accent.onDark }}>{t('discovery.actions.bindStamp')}</BinderText></View></Animated.View>
+                <Animated.View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[{ position: 'absolute', inset: 0, borderRadius: theme.radii.hero, borderLeftWidth: theme.spacing.x1, borderColor: semanticPalettes.dark.destructive, justifyContent: 'center', paddingLeft: theme.spacing.x5 }, passStampStyle]}><View style={{ alignSelf: 'flex-start', backgroundColor: darkPalette.overlay, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x2 }}><BinderText variant="title" style={{ color: semanticPalettes.dark.destructive }}>{t('discovery.actions.passStamp')}</BinderText></View></Animated.View>
               </Animated.View>
             </GestureDetector>
             <View style={{ position: 'absolute', top: theme.spacing.x3, right: theme.spacing.x3 }}><BinderIconButton name="safety" accessibilityLabel={t('discovery.accessibility.safetyOptions', { name: profile.name })} onPress={openSafety} /></View>

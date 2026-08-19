@@ -5,6 +5,7 @@ import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withTimi
 import type { DiscoveryProfile } from '../lib/discovery';
 import { resolveMatchCelebrationLayout } from '../lib/matchCelebrationLayout';
 import { resolveStaggerDelay } from '../lib/motionPolicy';
+import { darkPalette } from '../theme/tokens';
 import { useBinderTheme } from '../theme/ThemeProvider';
 import { BinderButton, BinderText } from './ui';
 
@@ -75,9 +76,13 @@ export function MatchCelebration({ profile, myPhotoUrl, onSaySomething, onKeepDi
           </Animated.View>
 
           <Animated.View style={[{ alignItems: 'center', width: '100%' }, headingStyle]}>
-            <BinderText variant="micro" tone="accent" style={{ marginTop: theme.spacing.x6 }}>{t('matchCelebration.copy.eyebrow')}</BinderText>
-            <BinderText variant="heading" align="center" style={{ marginTop: theme.spacing.x2 }}>{t('matchCelebration.copy.title', { name: profile.name })}</BinderText>
-            <BinderText variant="body" tone="secondary" align="center" style={{ marginTop: theme.spacing.x3 }}>{t('matchCelebration.copy.message')}</BinderText>
+            {/* The celebration paints a dark overlay in both schemes, so its
+                text takes the dark palette in both — in light mode the theme's
+                near-black type sat on that overlay and was all but invisible,
+                which is how a match looked like an empty screen. */}
+            <BinderText variant="micro" style={{ marginTop: theme.spacing.x6, color: theme.accent.onDark }}>{t('matchCelebration.copy.eyebrow')}</BinderText>
+            <BinderText variant="heading" align="center" style={{ marginTop: theme.spacing.x2, color: darkPalette.textPrimary }}>{t('matchCelebration.copy.title', { name: profile.name })}</BinderText>
+            <BinderText variant="body" align="center" style={{ marginTop: theme.spacing.x3, color: darkPalette.textSecondary }}>{t('matchCelebration.copy.message')}</BinderText>
           </Animated.View>
           <Animated.View style={[{ alignItems: 'center', width: '100%' }, actionsStyle]}>
             <BinderButton label={t('matchCelebration.actions.saySomething')} icon="send" loading={busy} onPress={onSaySomething} style={{ marginTop: theme.spacing.x6 }} />
@@ -85,7 +90,7 @@ export function MatchCelebration({ profile, myPhotoUrl, onSaySomething, onKeepDi
                 on a slow network the button above waits for the server. A way
                 out that is switched off while something waits is a trap — the
                 only escape left was the system back gesture. */}
-            <BinderButton label={t('matchCelebration.actions.keepDiscovering')} variant="ghost" onPress={onKeepDiscovering} style={{ marginTop: theme.spacing.x2 }} />
+            <BinderButton label={t('matchCelebration.actions.keepDiscovering')} variant="ghost" overMedia onPress={onKeepDiscovering} style={{ marginTop: theme.spacing.x2 }} />
           </Animated.View>
         </View>
       </ScrollView>

@@ -1,5 +1,6 @@
 import { ActivityIndicator, View, type PressableProps, type ViewStyle } from 'react-native';
 
+import { darkPalette } from '../../theme/tokens';
 import { useBinderTheme } from '../../theme/ThemeProvider';
 import { BinderIcon, type BinderIconName } from './BinderIcon';
 import { BinderText } from './BinderText';
@@ -13,17 +14,24 @@ type Props = Omit<PressableProps, 'style' | 'children'> & {
   loading?: boolean;
   icon?: BinderIconName;
   fullWidth?: boolean;
+  /**
+   * The button sits over a photograph or over the dark overlay a celebration
+   * paints — a surface whose brightness the theme does not control. Its label
+   * and its border then come from the dark palette in both schemes, which is
+   * the same rule the cards' text over media already follows.
+   */
+  overMedia?: boolean;
   style?: ViewStyle;
 };
 
-export function BinderButton({ label, variant = 'primary', loading = false, icon, fullWidth = true, disabled, style, onPressIn, onPressOut, ...props }: Props) {
+export function BinderButton({ label, variant = 'primary', loading = false, icon, fullWidth = true, overMedia = false, disabled, style, onPressIn, onPressOut, ...props }: Props) {
   const { theme } = useBinderTheme();
   const isDisabled = disabled === true || loading;
   const foreground = variant === 'primary'
     ? theme.accent.foreground
     : variant === 'destructive'
       ? theme.semantic.destructiveForeground
-      : theme.colors.textPrimary;
+      : overMedia ? darkPalette.textPrimary : theme.colors.textPrimary;
   const background = variant === 'primary'
     ? theme.accent.accent
     : variant === 'destructive'
@@ -32,9 +40,9 @@ export function BinderButton({ label, variant = 'primary', loading = false, icon
         ? theme.colors.surfaceElevated
         : 'transparent';
   const borderColor = variant === 'secondary'
-    ? theme.colors.borderStrong
+    ? (overMedia ? darkPalette.borderStrong : theme.colors.borderStrong)
     : variant === 'ghost'
-      ? theme.colors.borderSubtle
+      ? (overMedia ? darkPalette.borderStrong : theme.colors.borderSubtle)
       : background;
 
   return (
