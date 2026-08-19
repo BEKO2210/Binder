@@ -24,7 +24,10 @@ type Props = {
 export function InterestPicker({ selection, onChange }: Props) {
   const { theme, t } = useBinderTheme();
   const [query, setQuery] = useState('');
-  const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set(INTEREST_CATEGORIES.slice(0, 1)));
+  // Everything starts closed: thirteen headings fit on one screen, one open
+  // category does not — the first one alone is forty chips, and leaving it
+  // open buried the other twelve below a scroll nobody knew to make.
+  const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set<string>());
 
   const labelOf = useMemo(() => (entry: InterestEntry) => t(catalogLabelKey(entry.id)), [t]);
   const results = useMemo(() => searchCatalog(query, labelOf), [query, labelOf]);
