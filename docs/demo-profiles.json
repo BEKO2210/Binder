@@ -1,5 +1,5 @@
 {
-  "note": "Profiles used only while store screenshots are taken. The portraits are generated, never a photograph of a real person: presenting someone's likeness as a fictional dating profile is the one use a stock licence does not cover. Create, shoot, remove — see docs/STORE-SCREENSHOTS.md.",
+  "note": "Profiles used only while store screenshots are taken. The portraits are generated, never a photograph of a real person: presenting someone's likeness as a fictional dating profile is the one use a stock licence does not cover. Create, shoot, remove — see docs/STORE-SCREENSHOTS.md. Die Portraits liegen dauerhaft in ~/Binder-Roadmap/demo-portraits/.",
   "profiles": [
     {
       "email": "belkis.aslani+binder.demo1@gmail.com",
@@ -21,8 +21,8 @@
       "latitude": 48.9268,
       "longitude": 9.1899,
       "photos": [
-        "/tmp/claude-1000/-home-belkis/32ee395c-ebd6-4961-8caf-e39af627fbf6/scratchpad/portraits/lena-1.webp",
-        "/tmp/claude-1000/-home-belkis/32ee395c-ebd6-4961-8caf-e39af627fbf6/scratchpad/portraits/lena-2.webp"
+        "/home/belkis/Binder-Roadmap/demo-portraits/lena-1.webp",
+        "/home/belkis/Binder-Roadmap/demo-portraits/lena-2.webp"
       ],
       "portraitPrompts": [
         "A woman in her late twenties with shoulder-length brown hair, smiling softly at the camera, standing on a riverside path in autumn, wearing a green jacket",
@@ -31,7 +31,7 @@
     },
     {
       "email": "belkis.aslani+binder.demo2@gmail.com",
-      "firstName": "Mira",
+      "firstName": "Nora",
       "birthDate": "1993-11-07",
       "gender": "woman",
       "bio": "Fotografiert Fassaden, sammelt Kochbücher, fährt lieber Rad als Auto. Sag was Echtes, nicht 'hey'.",
@@ -49,8 +49,8 @@
       "latitude": 48.9241,
       "longitude": 9.1934,
       "photos": [
-        "/tmp/claude-1000/-home-belkis/32ee395c-ebd6-4961-8caf-e39af627fbf6/scratchpad/portraits/mira-1.webp",
-        "/tmp/claude-1000/-home-belkis/32ee395c-ebd6-4961-8caf-e39af627fbf6/scratchpad/portraits/mira-2.webp"
+        "/home/belkis/Binder-Roadmap/demo-portraits/nora-1.webp",
+        "/home/belkis/Binder-Roadmap/demo-portraits/nora-2.webp"
       ],
       "portraitPrompts": [
         "A woman around thirty with curly dark hair and glasses, standing in front of a pale city wall, wearing a denim jacket, relaxed expression",
@@ -77,8 +77,8 @@
       "latitude": 48.9285,
       "longitude": 9.1866,
       "photos": [
-        "/tmp/claude-1000/-home-belkis/32ee395c-ebd6-4961-8caf-e39af627fbf6/scratchpad/portraits/sophie-1.webp",
-        "/tmp/claude-1000/-home-belkis/32ee395c-ebd6-4961-8caf-e39af627fbf6/scratchpad/portraits/sophie-2.webp"
+        "/home/belkis/Binder-Roadmap/demo-portraits/sophie-1.webp",
+        "/home/belkis/Binder-Roadmap/demo-portraits/sophie-2.webp"
       ],
       "portraitPrompts": [
         "A woman in her late twenties with blonde hair in a low ponytail, on a mountain trail with a light backpack, smiling, alpine background slightly out of focus",

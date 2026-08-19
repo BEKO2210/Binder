@@ -213,9 +213,22 @@ their photos in storage — production now holds only real people. The passwords
 in the vault (`BINDER_TEST_CLAUDE_PASSWORD`, `BINDER_TEST_CODEX_PASSWORD`) and
 `scripts/as-test-user.sh` still work; they just have no accounts to sign in to.
 
-Recreating one is a sign-up like any other, and it must be labelled in the
-profile name the way those two were, so nobody has to guess later which rows
-are real. Whatever is created, delete it again when the work is done: a dating
+Recreating one is two commands now, and both label what they make:
+
+```
+node scripts/stage-test-account.mjs create              # prints a throwaway password
+node scripts/stage-demo-profiles.mjs create docs/demo-profiles.json
+...
+node scripts/stage-demo-profiles.mjs remove docs/demo-profiles.json
+node scripts/stage-test-account.mjs remove
+```
+
+The account is called `Testlauf (Testkonto)`, carries `binder_demo_profile` in
+auth metadata like the demo profiles, and stands in Freiberg so the deck has
+somebody in it without widening anybody's search radius. The portraits for the
+demo profiles live in `~/Binder-Roadmap/demo-portraits/` — generated faces, not
+photographs of real people. It must be labelled in the profile name the way the
+old two were, so nobody has to guess later which rows are real. Whatever is created, delete it again when the work is done: a dating
 app whose database is half test accounts cannot answer "how many real people
 signed up" — and every fake profile in discovery is a real person's wasted
 swipe.
