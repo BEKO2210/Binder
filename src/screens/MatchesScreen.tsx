@@ -117,27 +117,28 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas, paddingHorizontal: theme.spacing.screen }}>
       <BinderScreenHeader title={t('matches.header.title')} eyebrow={t('matches.header.eyebrow')} style={{ marginHorizontal: -theme.spacing.screen, marginBottom: theme.spacing.x4 }} trailing={<BinderButton label={t('matches.actions.refresh')} icon="retry" variant="ghost" fullWidth={false} loading={loading} onPress={() => void load()} />} />
 
+      {pushState === 'enabled' ? null : (
       <BinderCard style={{ marginBottom: theme.spacing.x3, padding: theme.spacing.x4 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3 }}>
-          <View style={{ width: 40, height: 40, borderRadius: theme.radii.control, backgroundColor: theme.colors.surfaceElevated, alignItems: 'center', justifyContent: 'center' }}>
-            <BinderIcon name="notifications" size={21} color={pushState === 'enabled' ? theme.accent.onSurface : theme.colors.textSecondary} />
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3 }}>
+            <View style={{ width: 40, height: 40, borderRadius: theme.radii.control, backgroundColor: theme.colors.surfaceElevated, alignItems: 'center', justifyContent: 'center' }}>
+              <BinderIcon name="notifications" size={21} color={theme.colors.textSecondary} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <BinderText variant="label">{pushState === 'busy' ? t('matches.notifications.enablingTitle') : pushState === 'denied' ? t('matches.notifications.blockedTitle') : t('matches.notifications.title')}</BinderText>
+              <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1 }}>
+                {pushState === 'unavailable' ? t('matches.notifications.unavailableCopy')
+                  : pushState === 'failed' ? t('matches.notifications.failedCopy')
+                  : pushState === 'offline' ? t('matches.notifications.offlineCopy')
+                  : pushState === 'denied' ? t('matches.notifications.blockedCopy')
+                  : t('matches.notifications.copy')}
+              </BinderText>
+              {pushError ? <BinderText accessibilityLiveRegion="assertive" variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x2 }}>{t(pushError.messageKey)}</BinderText> : null}
+            </View>
+            {bannerOffersEnable(pushState) ? <BinderButton label={pushState === 'offline' || pushState === 'failed' ? t('matches.actions.retry') : t('matches.actions.enable')} variant="secondary" fullWidth={false} loading={pushState === 'busy'} onPress={() => void enablePush()} /> : null}
+            {pushState === 'denied' ? <BinderButton label={t('matches.actions.openSettings')} variant="secondary" fullWidth={false} onPress={() => void openSystemNotificationSettings().catch(() => undefined)} /> : null}
           </View>
-          <View style={{ flex: 1 }}>
-            <BinderText variant="label">{pushState === 'enabled' ? t('matches.notifications.enabledTitle') : pushState === 'busy' ? t('matches.notifications.enablingTitle') : pushState === 'denied' ? t('matches.notifications.blockedTitle') : t('matches.notifications.title')}</BinderText>
-            <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1 }}>
-              {pushState === 'unavailable' ? t('matches.notifications.unavailableCopy')
-                : pushState === 'failed' ? t('matches.notifications.failedCopy')
-                : pushState === 'offline' ? t('matches.notifications.offlineCopy')
-                : pushState === 'denied' ? t('matches.notifications.blockedCopy')
-                : pushState === 'enabled' ? t('matches.notifications.enabledCopy')
-                : t('matches.notifications.copy')}
-            </BinderText>
-            {pushError ? <BinderText accessibilityLiveRegion="assertive" variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x2 }}>{t(pushError.messageKey)}</BinderText> : null}
-          </View>
-          {bannerOffersEnable(pushState) ? <BinderButton label={pushState === 'offline' || pushState === 'failed' ? t('matches.actions.retry') : t('matches.actions.enable')} variant="secondary" fullWidth={false} loading={pushState === 'busy'} onPress={() => void enablePush()} /> : null}
-          {pushState === 'denied' ? <BinderButton label={t('matches.actions.openSettings')} variant="secondary" fullWidth={false} onPress={() => void openSystemNotificationSettings().catch(() => undefined)} /> : null}
-        </View>
-      </BinderCard>
+        </BinderCard>
+      )}
 
       {loading && matches.length === 0 ? <ScreenState kind="loading" loadingShape="matches" message={t('matches.states.loading')} /> : error && matches.length === 0 ? <ScreenState kind={error.kind === 'offline' ? 'offline' : 'error'} icon="retry" title={error.kind === 'offline' ? t('matches.states.offlineTitle') : t('matches.states.errorTitle')} message={error.kind === 'offline' ? t('matches.states.offlineMessage') : t(error.messageKey)} actionLabel={t('matches.actions.tryAgain')} onAction={() => void load()} /> : matches.length === 0 ? <ScreenState kind="empty" icon="matches" title={t('matches.empty.title')} message={t('matches.empty.message')} actionLabel={t('matches.actions.goToDiscovery')} onAction={onOpenDiscovery} /> : (
         <FlatList

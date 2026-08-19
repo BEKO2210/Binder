@@ -72,7 +72,7 @@ export default function MenuScreen({ onOpenSettings, onOpenBeta, onOpenAbout }: 
         </View>
 
         <View style={{ marginTop: theme.spacing.x8 }}>
-          <BinderText variant="micro" tone="muted">{t('profile.safety.eyebrow')}</BinderText>
+          <BinderText variant="eyebrow" tone="accent">{t('profile.safety.eyebrow')}</BinderText>
           <View style={{ marginTop: theme.spacing.x2 }}>
             <PolicyRow icon="legal" label={t('profile.safety.terms')} onPress={() => void open(TERMS_URL)} />
             <PolicyRow icon="privacy" label={t('profile.safety.privacy')} onPress={() => void open(PRIVACY_URL)} />
@@ -83,7 +83,7 @@ export default function MenuScreen({ onOpenSettings, onOpenBeta, onOpenAbout }: 
         {message ? <BinderText accessibilityLiveRegion="assertive" variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x4 }}>{message}</BinderText> : null}
 
         <View style={{ marginTop: theme.spacing.x10, paddingTop: theme.spacing.x6, borderTopWidth: 1, borderTopColor: theme.colors.borderSubtle }}>
-          <BinderText variant="micro" tone="muted">{t('profile.account.eyebrow')}</BinderText>
+          <BinderText variant="eyebrow" tone="accent">{t('profile.account.eyebrow')}</BinderText>
           <BinderButton label={t('profile.actions.signOut')} icon="logout" variant="secondary" disabled={busy} onPress={confirmSignOut} style={{ marginTop: theme.spacing.x4 }} />
         </View>
 

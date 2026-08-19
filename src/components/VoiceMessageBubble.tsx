@@ -34,6 +34,7 @@ export function VoiceMessageBubble({ messageId, audioPath, durationMs, mine, buc
   const loadedRef = useRef(false);
 
   const bars = useMemo(() => waveformHeights(messageId, BAR_COUNT), [messageId]);
+  const onAccent = mine;
 
   const playing = status.playing;
   const progress = status.duration > 0 ? Math.min(1, status.currentTime / status.duration) : 0;
@@ -59,7 +60,6 @@ export function VoiceMessageBubble({ messageId, audioPath, durationMs, mine, buc
     }
   }
 
-  const onAccent = mine;
   const barColor = onAccent ? theme.accent.foreground : theme.colors.textMuted;
   const barPlayedColor = onAccent ? theme.accent.foreground : theme.accent.accent;
 
@@ -68,6 +68,7 @@ export function VoiceMessageBubble({ messageId, audioPath, durationMs, mine, buc
       <BinderIconButton
         name={playing ? 'pause' : 'play'}
         size={21}
+        color={onAccent ? theme.accent.foreground : theme.accent.onSurface}
         accessibilityLabel={playing ? t('chat.voice.accessibility.pause') : t('chat.voice.accessibility.play')}
         onPress={() => void toggle()}
         disabled={loading}

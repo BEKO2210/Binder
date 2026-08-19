@@ -1,6 +1,6 @@
 {
   "name": "binder",
-  "version": "0.7.34",
+  "version": "0.7.35",
   "private": true,
   "main": "index.ts",
   "scripts": {

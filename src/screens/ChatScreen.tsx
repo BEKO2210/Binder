@@ -569,7 +569,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
           onPermissionDenied={() => { setRecordingVoice(false); Alert.alert(t('chat.voice.permissionTitle'), t('chat.voice.permissionBody')); }}
         /> : <TextInput accessibilityLabel={t('chat.accessibility.messagePerson', { name: match.firstName })} value={composer} onChangeText={setComposer} maxLength={2000} multiline scrollEnabled placeholder={t('chat.message.placeholder', { name: match.firstName })} placeholderTextColor={theme.colors.textMuted} selectionColor={theme.accent.accent} style={{ flex: 1, minHeight: theme.spacing.x12, maxHeight: theme.spacing.x16 * 2, color: theme.colors.textPrimary, backgroundColor: theme.colors.surfaceElevated, borderWidth: 1, borderColor: theme.colors.borderSubtle, borderRadius: theme.radii.control, paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x3, textAlignVertical: 'center' }} />}
         {recordingVoice ? null : validComposer === null && !sending
-          ? <BinderIconButton name="mic" accessibilityLabel={t('chat.voice.accessibility.record')} onPress={() => setRecordingVoice(true)} />
+          ? <BinderIconButton name="mic" selected accessibilityLabel={t('chat.voice.accessibility.record')} onPress={() => setRecordingVoice(true)} />
           : <BinderIconButton name={sending ? 'more' : 'send'} accessibilityLabel={sending ? t('chat.accessibility.sendingMessage') : t('chat.accessibility.sendMessageTo', { name: match.firstName })} selected={canSend || sending} disabled={!canSend} onPress={() => void submitMessage()} />}
       </View>
     </Animated.View>

@@ -120,7 +120,10 @@ type IconButtonProps = IconProps & {
 
 export function BinderIconButton({ accessibilityLabel, onPress, disabled, selected, destructive, overMedia = false, style, ...icon }: IconButtonProps) {
   const { theme } = useBinderTheme();
-  const color = destructive ? theme.semantic.destructive : selected ? theme.accent.onSurface : theme.colors.textSecondary;
+  // An explicit colour wins: a button sitting on the accent colour needs the
+  // dark foreground, and the secondary grey it would otherwise get is barely
+  // visible there.
+  const color = icon.color ?? (destructive ? theme.semantic.destructive : selected ? theme.accent.onSurface : theme.colors.textSecondary);
   // Over a photo the control has no surface to tint: a pressed rectangle there
   // reads as a rendering glitch. The icon dims instead, which is feedback the
   // photo survives.
