@@ -4,6 +4,7 @@ import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller
 import Animated, { FadeInDown, FadeInUp, FadeOutDown, useAnimatedStyle } from 'react-native-reanimated';
 
 import { buildChatTimeline, type TimelineItem } from '../lib/chatTimeline';
+import { forgetChat, recallAttempts, recallDraft, rememberAttempts, rememberDraft } from '../lib/chatDrafts';
 import { VoiceMessageBubble } from '../components/VoiceMessageBubble';
 import { VoiceRecorderBar } from '../components/VoiceRecorderBar';
 import { formatCount, formatTime } from '../lib/format';
@@ -45,7 +46,7 @@ const REPORT_REASONS: { value: ReportReason; labelKey: string }[] = [
   { value: 'other', labelKey: 'chat.safety.reasons.other' },
 ];
 
-type LocalAttempt = { clientId: string; body: string; voice?: { audioPath: string; durationMs: number }; status: 'sending' | 'failed'; error?: ReliabilityError };
+type LocalAttempt = { clientId: string; body: string; localUri?: string; voice?: { audioPath: string; durationMs: number }; status: 'sending' | 'failed'; error?: ReliabilityError };
 type SafetyMode = 'menu' | 'report';
 
 type MessageRowProps = {
@@ -60,12 +61,11 @@ type MessageRowProps = {
   endsGroup?: boolean;
   showsTimestamp?: boolean;
   index: number;
-  onOpenActions: (messageId: string, body: string, mine: boolean, longPress: boolean) => void;
+  onOpenActions: (messageId: string, body: string, mine: boolean, longPress: boolean, isVoice?: boolean) => void;
 };
 
 const ChatMessageRow = memo(function ChatMessageRow({ type, label, messageId, body, voice, createdAt, mine = false, groupedWithPrevious = false, endsGroup = false, showsTimestamp = false, index, onOpenActions }: MessageRowProps) {
   const { theme, reduceMotion, locale, t } = useBinderTheme();
-  const longPressHandled = useRef(false);
   if (type === 'day') {
     return (
       <View style={{ alignItems: 'center', marginTop: theme.spacing.x5, marginBottom: theme.spacing.x2 }}>
@@ -80,17 +80,10 @@ const ChatMessageRow = memo(function ChatMessageRow({ type, label, messageId, bo
   return (
     <Animated.View entering={reduceMotion ? undefined : FadeInDown.delay(resolveStaggerDelay(index, false)).duration(theme.motion.feedback)} style={{ marginTop: groupedWithPrevious ? theme.spacing.x1 : theme.spacing.x3 }}>
       <Pressable
-        onPress={() => {
-          if (longPressHandled.current) {
-            longPressHandled.current = false;
-            return;
-          }
-          onOpenActions(messageId, body, mine, false);
-        }}
-        onLongPress={() => {
-          longPressHandled.current = true;
-          onOpenActions(messageId, body, mine, true);
-        }}
+        // A plain tap does nothing on purpose: the hint promises "hold", and a
+        // menu that also appears on tap fires while somebody is scrolling or
+        // reaching for the play button inside a voice bubble.
+        onLongPress={() => onOpenActions(messageId, body, mine, true, Boolean(voice))}
         accessibilityHint={mine ? t('chat.accessibility.holdToCopy') : t('chat.accessibility.holdToCopyOrReport')}
         pressedSurface={false}
         style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: theme.layout.chatBubbleMaxWidth }}
@@ -137,15 +130,19 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   const [hasMore, setHasMore] = useState(false);
   const [loadingOlder, setLoadingOlder] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [composer, setComposer] = useState('');
+  const [composer, setComposer] = useState(() => recallDraft(match.matchId));
   const keyboard = useReanimatedKeyboardAnimation();
   const keyboardShift = useAnimatedStyle(() => ({ transform: [{ translateY: keyboard.height.value }] }));
   const [sending, setSending] = useState(false);
   // Every unsent message keeps its own entry. A single slot meant that writing
   // a new message after a failure silently discarded the failed one — the text
   // the user had typed, and the only way to retry it, both disappeared.
-  const [attempts, setAttempts] = useState<LocalAttempt[]>([]);
+  const [attempts, setAttempts] = useState<LocalAttempt[]>(() => recallAttempts(match.matchId).map((attempt) => ({ ...attempt, status: 'failed' as const })));
   const [recordingVoice, setRecordingVoice] = useState(false);
+  const composerRef = useRef(composer);
+  const attemptsRef = useRef(attempts);
+  composerRef.current = composer;
+  attemptsRef.current = attempts;
   const [safetyBusy, setSafetyBusy] = useState<null | 'unmatch' | 'block'>(null);
   const [showNewMessage, setShowNewMessage] = useState(false);
   const listRef = useRef<FlatList<TimelineItem<Message>>>(null);
@@ -338,6 +335,13 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     return () => subscription.remove();
   }, [showPartnerProfile, showSafety]);
 
+  // Leaving the list is not throwing the work away: the draft and every failed
+  // send are the person's, and the screen unmounting is not their decision.
+  useEffect(() => () => {
+    rememberDraft(match.matchId, composerRef.current);
+    rememberAttempts(match.matchId, attemptsRef.current.filter((attempt) => attempt.status === 'failed').map(({ clientId, body, localUri, voice }) => ({ clientId, body, localUri, voice })));
+  }, [match.matchId]);
+
   function discardAttempt(clientId: string) {
     setAttempts((current) => current.filter((attempt) => attempt.clientId !== clientId));
   }
@@ -366,6 +370,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         announce(t('chat.accessibility.messageFailed'));
         if (isConversationEndedError(nextError)) {
           setConversationEnded(true);
+          forgetChat(match.matchId);
           discardAttempt(clientId);
           return;
         }
@@ -380,10 +385,10 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     } finally { if (mountedRef.current) setSending(false); }
   }
 
-  async function submitVoice(localUri: string, durationMs: number) {
+  async function submitVoice(localUri: string, durationMs: number, retryClientId?: string) {
     setRecordingVoice(false);
-    const clientId = createClientMessageId();
-    setAttempts((current) => [...current, { clientId, body: '', status: 'sending' as const }]);
+    const clientId = retryClientId ?? createClientMessageId();
+    setAttempts((current) => [...current, { clientId, body: '', localUri, status: 'sending' as const }]);
     setSending(true);
     try {
       const audioPath = await uploadVoiceRecording(match.matchId, currentUserId, localUri, { signal: lifecycleControllerRef.current.signal });
@@ -407,7 +412,11 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   }
 
   async function retryVoice(attempt: LocalAttempt) {
-    if (!attempt.voice || sending) return;
+    if (sending) return;
+    // The upload may be what failed, in which case there is no path yet — the
+    // recording is still on the phone and gets a second run at it.
+    if (!attempt.voice && attempt.localUri) { await submitVoice(attempt.localUri, 0, attempt.clientId); return; }
+    if (!attempt.voice) return;
     setSending(true);
     setAttempts((current) => current.map((entry) => entry.clientId === attempt.clientId ? { ...entry, status: 'sending' as const } : entry));
     try {
@@ -425,10 +434,12 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     } finally { if (mountedRef.current) setSending(false); }
   }
 
-  const openMessageActions = useCallback((messageId: string, body: string, mine: boolean, longPress: boolean) => {
+  const openMessageActions = useCallback((messageId: string, body: string, mine: boolean, longPress: boolean, isVoice = false) => {
     if (longPress) void haptic('selection');
     const actions = [
-      { text: t('chat.actions.copy'), onPress: () => Clipboard.setString(body) },
+      // Copying a voice message would put an empty string in the clipboard and
+      // quietly destroy whatever was in it.
+      ...(isVoice ? [] : [{ text: t('chat.actions.copy'), onPress: () => Clipboard.setString(body) }]),
       ...(mine ? [] : [{ text: t('chat.actions.report'), style: 'destructive' as const, onPress: () => openReport(messageId) }]),
       { text: t('chat.actions.cancel'), style: 'cancel' as const },
     ];
@@ -552,7 +563,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
             {attempt.status === 'sending' ? <BinderText variant="caption" tone="muted">{t('chat.message.sending')}</BinderText> : (
               <>
                 <BinderText variant="caption" tone="destructive" style={{ flexShrink: 1 }}>{attempt.error ? t(attempt.error.messageKey) : t('chat.errors.messageNotSent')}</BinderText>
-                <Pressable accessibilityRole="button" accessibilityLabel={t('chat.accessibility.retrySending', { message: attempt.body.slice(0, 24) })} disabled={sending} onPress={() => attempt.voice ? void retryVoice(attempt) : attempt.body ? void submitMessage(attempt.clientId) : discardAttempt(attempt.clientId)} style={({ pressed }) => ({ minHeight: theme.spacing.x12, justifyContent: 'center', paddingHorizontal: theme.spacing.x3, borderRadius: theme.radii.pill, opacity: sending ? theme.feedback.disabledOpacity : 1, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surfaceElevated })}><BinderText variant="label" tone="accent">{t('chat.actions.retry')}</BinderText></Pressable>
+                <Pressable accessibilityRole="button" accessibilityLabel={t('chat.accessibility.retrySending', { message: attempt.body.slice(0, 24) })} disabled={sending} onPress={() => attempt.voice || attempt.localUri ? void retryVoice(attempt) : attempt.body ? void submitMessage(attempt.clientId) : discardAttempt(attempt.clientId)} style={({ pressed }) => ({ minHeight: theme.spacing.x12, justifyContent: 'center', paddingHorizontal: theme.spacing.x3, borderRadius: theme.radii.pill, opacity: sending ? theme.feedback.disabledOpacity : 1, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surfaceElevated })}><BinderText variant="label" tone="accent">{t('chat.actions.retry')}</BinderText></Pressable>
                 <Pressable accessibilityRole="button" accessibilityLabel={t('chat.accessibility.discardUnsent', { message: attempt.body.slice(0, 24) })} onPress={() => discardAttempt(attempt.clientId)} style={({ pressed }) => ({ minHeight: theme.spacing.x12, justifyContent: 'center', paddingHorizontal: theme.spacing.x3, borderRadius: theme.radii.pill, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.transparent })}><BinderText variant="label" tone="muted">{t('chat.actions.discard')}</BinderText></Pressable>
               </>
             )}
