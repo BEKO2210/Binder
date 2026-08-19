@@ -286,6 +286,10 @@
     "profile": {
       "away": "{distance} km verderop",
       "photosReviewed": "· Foto's beoordeeld"
+    },
+    "pending": {
+      "one": "1 keuze wacht op verbinding",
+      "other": "{count} keuzes wachten op verbinding"
     }
   },
   "chat": {

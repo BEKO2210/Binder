@@ -14,6 +14,7 @@ import { hasErrors, onboardingPosition, ONBOARDING_STEPS, type OnboardingStep, v
 import { withDeadline } from '../lib/reliability';
 import { supabase } from '../lib/supabase';
 import { GENDERS, type Gender } from '../lib/validation';
+import { clearOnboardingDraft, loadOnboardingDraft, saveOnboardingDraft } from '../lib/onboardingDraft';
 import { InterestPicker } from '../components/InterestPicker';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
@@ -31,6 +32,7 @@ const ONBOARDING_DEADLINE_MS = 15_000;
 export default function OnboardingScreen({ userId, onComplete }: Props) {
   const { theme, reduceMotion, t } = useBinderTheme();
   const [step, setStep] = useState<OnboardingStep>('eligibility');
+  const [draftLoaded, setDraftLoaded] = useState(false);
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
   const [photoBusy, setPhotoBusy] = useState(false);
   const inFlight = useRef(false);
@@ -41,6 +43,39 @@ export default function OnboardingScreen({ userId, onComplete }: Props) {
   const [busy, setBusy] = useState(false); const [submitError, setSubmitError] = useState('');
   const [identityErrors, setIdentityErrors] = useState<ReturnType<typeof validateIdentity>>({ firstName: undefined, gender: undefined });
   const [discoveryErrors, setDiscoveryErrors] = useState<ReturnType<typeof validateDiscovery>>({ audience: undefined, age: undefined, distance: undefined });
+  // Five screens of personal questions used to exist nowhere until the very
+  // last one: closing the app, losing the connection or swiping back started
+  // the whole signup again from the birth date. Every answer is written down
+  // as it is given, and only cleared once the account exists.
+  useEffect(() => {
+    let active = true;
+    void loadOnboardingDraft().then((draft) => {
+      if (!active) return;
+      if (draft.birthDate) setBirthDate(draft.birthDate);
+      if (draft.firstName) setFirstName(draft.firstName);
+      if (draft.gender) setGender(draft.gender as Gender);
+      if (draft.bio) setBio(draft.bio);
+      if (draft.interests) setInterests(draft.interests);
+      if (draft.interestedIn || draft.minAge !== undefined || draft.maxAge !== undefined || draft.distance !== undefined) {
+        setPreferences((current) => ({
+          interestedIn: (draft.interestedIn as Gender[] | undefined) ?? current.interestedIn,
+          minAge: draft.minAge ?? current.minAge,
+          maxAge: draft.maxAge ?? current.maxAge,
+          distance: draft.distance ?? current.distance,
+        }));
+      }
+      if (draft.step && ONBOARDING_STEPS.includes(draft.step as OnboardingStep)) setStep(draft.step as OnboardingStep);
+      setDraftLoaded(true);
+    }).catch(() => setDraftLoaded(true));
+    return () => { active = false; };
+  }, []);
+
+  useEffect(() => {
+    // Only after the restore, or an empty first render would erase the draft.
+    if (!draftLoaded) return;
+    void saveOnboardingDraft({ step, birthDate, firstName, gender: gender ?? undefined, bio, interests, interestedIn: preferences.interestedIn, minAge: preferences.minAge, maxAge: preferences.maxAge, distance: preferences.distance });
+  }, [draftLoaded, step, birthDate, firstName, gender, bio, interests, preferences]);
+
   const position = onboardingPosition(step); const copy = STEP_COPY[step];
 
   function goBack() { if (position.index > 0) { setDirection('backward'); setStep(ONBOARDING_STEPS[position.index - 1] ?? 'eligibility'); } }
@@ -97,6 +132,8 @@ export default function OnboardingScreen({ userId, onComplete }: Props) {
         setUploadedPhotoUri(photo.uri);
       }
       const { error: finalizeError } = await withDeadline(supabase.rpc('finalize_my_onboarding'), ONBOARDING_DEADLINE_MS); if (finalizeError) throw finalizeError;
+      // The account exists now; the draft has served its purpose.
+      await clearOnboardingDraft();
       onComplete();
     } catch (error) { setSubmitError(error instanceof Error ? error.message : t('onboarding.errors.complete')); } finally { inFlight.current = false; setBusy(false); }
   }

@@ -286,6 +286,10 @@
     "profile": {
       "away": "Berjarak {distance} km",
       "photosReviewed": "· Foto ditinjau"
+    },
+    "pending": {
+      "one": "1 keputusan menunggu koneksi",
+      "other": "{count} keputusan menunggu koneksi"
     }
   },
   "chat": {

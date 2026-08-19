@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { BackHandler, Image, ScrollView, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { Extrapolation, FadeIn, FadeOut, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
@@ -24,6 +24,7 @@ import { resolveSpring } from '../lib/motionPolicy';
 import { reportAndBlockDiscoveryProfile, type DiscoveryReportReason } from '../lib/safety';
 import { supabase } from '../lib/supabase';
 import { classifyError, type ReliabilityError } from '../lib/reliability';
+import { addPending, loadPending, nextToSend, removePending, savePending, shouldKeepAfterFailure, type PendingDecision } from '../lib/decisionQueue';
 import PartnerProfileScreen from './PartnerProfileScreen';
 import { useBinderHaptics } from '../theme/haptics';
 import { darkPalette } from '../theme/tokens';
@@ -59,6 +60,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
   const [viewingProfile, setViewingProfile] = useState<DiscoveryProfile | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filterValues, setFilterValues] = useState<DiscoveryPreferenceValues | null>(null);
+  const [pendingCount, setPendingCount] = useState(0);
   const [attributeFilterCount, setAttributeFilterCount] = useState(0);
   const [emptyKind, setEmptyKind] = useState<EmptyDiscoveryKind | null>(null);
   const [locationPermissionDenied, setLocationPermissionDenied] = useState(false);
@@ -281,11 +283,52 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
     } catch (cause) {
       setDecisionPending(false);
       const failure = classifyError(cause);
-      if (failure.kind === 'permission-denied') onSessionExpired();
-      else setError(failure);
+      if (failure.kind === 'permission-denied') { onSessionExpired(); springBack(); return; }
+      // A decision the person already made survives a missing network: the card
+      // leaves as it would have, and the queue delivers it when the phone is
+      // back. Only a refusal — which will refuse again — brings the card back.
+      if (shouldKeepAfterFailure(failure.kind)) {
+        void queueDecision({ targetUserId: current.id, decision: direction === 'right' ? 'bind' : 'pass', decidedAt: Date.now() });
+        finishDismiss(current, false);
+        if (profiles.length === 1) void loadDiscovery(false);
+        return;
+      }
+      setError(failure);
       springBack();
     }
   }
+
+  async function queueDecision(entry: PendingDecision) {
+    const queue = addPending(await loadPending(), entry);
+    await savePending(queue);
+    setPendingCount(queue.length);
+  }
+
+  // Whatever is waiting goes out as soon as the app is open and the network
+  // answers again — oldest first, so a later pass cannot overtake an earlier
+  // bind on the same evening.
+  const flushPending = useCallback(async () => {
+    let queue = await loadPending();
+    while (queue.length > 0) {
+      const entry = nextToSend(queue);
+      if (!entry) break;
+      try {
+        await recordDecision(entry.targetUserId, entry.decision);
+        queue = removePending(queue, entry.targetUserId);
+      } catch (cause) {
+        const failure = classifyError(cause);
+        if (shouldKeepAfterFailure(failure.kind)) break;
+        // A refusal is final; keeping it would retry forever.
+        queue = removePending(queue, entry.targetUserId);
+      }
+      await savePending(queue);
+    }
+    setPendingCount(queue.length);
+  }, []);
+
+  // Whatever waited from an earlier session goes out as soon as this screen
+  // is alive again.
+  useEffect(() => { void flushPending(); }, [flushPending]);
 
   function keepDiscoveringAfterMatch() {
     setMatch(null);
@@ -371,7 +414,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
-      <BinderScreenHeader title={t('discovery.header.title')} titleVisual={<View><BinderBrand compact /><BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>{t('discovery.header.copy')}</BinderText>{filterValues ? <BinderText variant="caption" tone="accent" style={{ marginTop: theme.spacing.x2, marginBottom: theme.spacing.x1 }}>{t('discovery.filters.summary', { minAge: formatCount(filterValues.minAge, locale), maxAge: formatCount(filterValues.maxAge, locale), distance: formatDistanceKm(filterValues.distance, locale) })}{attributeFilterCount > 0 ? ` · ${t(attributeFilterCount === 1 ? 'discovery.filters.moreOne' : 'discovery.filters.moreOther', { count: formatCount(attributeFilterCount, locale) })}` : ''}</BinderText> : null}</View>} trailing={<View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
+      <BinderScreenHeader title={t('discovery.header.title')} titleVisual={<View><BinderBrand compact /><BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>{t('discovery.header.copy')}</BinderText>{filterValues ? <BinderText variant="caption" tone="accent" style={{ marginTop: theme.spacing.x2, marginBottom: theme.spacing.x1 }}>{t('discovery.filters.summary', { minAge: formatCount(filterValues.minAge, locale), maxAge: formatCount(filterValues.maxAge, locale), distance: formatDistanceKm(filterValues.distance, locale) })}{attributeFilterCount > 0 ? ` · ${t(attributeFilterCount === 1 ? 'discovery.filters.moreOne' : 'discovery.filters.moreOther', { count: formatCount(attributeFilterCount, locale) })}` : ''}</BinderText> : null}{pendingCount > 0 ? <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1 }}>{t(pendingCount === 1 ? 'discovery.pending.one' : 'discovery.pending.other', { count: formatCount(pendingCount, locale) })}</BinderText> : null}</View>} trailing={<View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
           {decisionPending ? <BinderText accessibilityLiveRegion="polite" variant="caption" tone="accent">{t('discovery.states.saving')}</BinderText> : null}
           <Animated.View key={filterValues ? `${filterValues.minAge}-${filterValues.maxAge}-${filterValues.distance}` : 'filters'} entering={reduceMotion ? undefined : FadeIn.duration(theme.motion.standard)} exiting={reduceMotion ? undefined : FadeOut.duration(theme.motion.fast)}><BinderChip icon="settings" label={t('discovery.filters.label')} selected={filtersOpen} disabled={decisionPending} accessibilityLabel={t('discovery.accessibility.openFilters')} onPress={() => setFiltersOpen(true)} /></Animated.View>
         </View>} />

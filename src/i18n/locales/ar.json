@@ -286,6 +286,10 @@
     "profile": {
       "away": "يبعد {distance} كم",
       "photosReviewed": "· تمت مراجعة الصور"
+    },
+    "pending": {
+      "one": "قرار واحد ينتظر الاتصال",
+      "other": "{count} قرارات تنتظر الاتصال"
     }
   },
   "chat": {

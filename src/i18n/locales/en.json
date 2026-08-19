@@ -286,6 +286,10 @@
     "profile": {
       "away": "{distance} km away",
       "photosReviewed": "· Photos reviewed"
+    },
+    "pending": {
+      "one": "1 decision is waiting for a connection",
+      "other": "{count} decisions are waiting for a connection"
     }
   },
   "chat": {
