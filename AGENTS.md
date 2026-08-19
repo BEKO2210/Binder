@@ -119,6 +119,17 @@ opening `?lang=de` stores it. `verify-site-language-switch.mjs` runs that logic
 in a fake window and fails the build on a loop, an ignored choice or a language
 that does not exist.
 
+## Push, and what has to be true before it is on
+
+Four conditions, unchanged since phase 7, and none of them is a secret worth
+hiding: **FCM v1** credentials attached to the Expo project, a **Supabase Cron**
+job driving the dispatcher, the **dispatch secret** held in the vault and set as
+the Edge Function secret, and **device evidence** recorded for every row before
+the feature is called done. Deliveries move `queued → ticketed → delivered`
+through Expo receipts; permanent failures dead-letter with their reason and are
+never silently retried. The dispatcher never touches a message body — the
+verifier fails the build if it references one.
+
 ## Lessons that cost real time
 
 1. **Never hand a function style to an animated component.** Reanimated drops
