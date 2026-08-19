@@ -61,7 +61,9 @@ function switcherFor(locale, file) {
       const href = code === SOURCE_LOCALE
         ? (locale === SOURCE_LOCALE ? './' : `../${file === 'index.html' ? '' : file}`)
         : (locale === SOURCE_LOCALE ? `${code}/${file === 'index.html' ? '' : file}` : `../${code}/${file === 'index.html' ? '' : file}`);
-      return `<a href="${href}" hreflang="${code}" lang="${code}">${meta.endonym ?? code}</a>`;
+      // data-binder-lang: clicking the switcher is the visitor choosing, and
+      // language.js remembers it so the automatic redirect never argues.
+      return `<a href="${href}" hreflang="${code}" lang="${code}" data-binder-lang="${code}">${meta.endonym ?? code}</a>`;
     })
     .join('');
 }
@@ -96,6 +98,12 @@ function render(locale, page) {
   });
 
   html = html.replace(/<html lang="[^"]*"/, `<html lang="${meta.htmlLang ?? locale}"${meta.dir === 'rtl' ? ' dir="rtl"' : ''}`);
+
+  // The page tells the script which languages exist and which page this is, so
+  // the script itself stays free of anything generated.
+  const languageScript = `<script>window.binderLanguages=${JSON.stringify({ available: locales, source: SOURCE_LOCALE, page: page.file === 'index.html' ? '' : page.file })}</script>\n<script src="assets/language.js" defer></script>`;
+  html = html.replace('</body>', `${languageScript}\n</body>`);
+
   return localisePaths(html, locale);
 }
 

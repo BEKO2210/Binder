@@ -112,6 +112,13 @@ Canonical links, hreflang alternates, the footer switcher and `sitemap.xml` are
 generated. A missing key falls back to English and is reported. CI runs
 `--check`, and a workflow rebuilds the pages when a language file changes.
 
+A visitor lands in the language their device is set to: `site/assets/language.js`
+reads `navigator.languages`, redirects once towards a language the site actually
+has, and never argues with a choice the visitor made — clicking the switcher or
+opening `?lang=de` stores it. `verify-site-language-switch.mjs` runs that logic
+in a fake window and fails the build on a loop, an ignored choice or a language
+that does not exist.
+
 ## Lessons that cost real time
 
 1. **Never hand a function style to an animated component.** Reanimated drops

@@ -51,6 +51,12 @@ jobs:
       - name: Verify site language page matches bundled locales
         run: npm run verify:site-languages
 
+      - name: Verify the site matches its templates and language files
+        run: node scripts/build-site-i18n.mjs --check
+
+      - name: Verify the site's language switch
+        run: node scripts/verify-site-language-switch.mjs
+
       - name: Verify admin dashboard authorization boundary
         run: npm run verify:admin
 

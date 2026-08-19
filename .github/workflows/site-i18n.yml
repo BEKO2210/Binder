@@ -53,6 +53,7 @@ jobs:
         run: |
           node scripts/verify-site.mjs
           node scripts/build-site-languages.mjs --check
+          node scripts/verify-site-language-switch.mjs
 
       - name: Commit the regenerated pages
         run: |
