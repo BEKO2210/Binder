@@ -16,6 +16,10 @@ test('the chat header does not ride the keyboard', () => {
   assert.ok(header < shift, 'the header is rendered outside the keyboard-shifted region');
 });
 
-test('the keyboard-shifted region clips what it moves out of view', () => {
-  assert.match(source, /overflow: 'hidden' \}, keyboardShift\]/);
+test('the keyboard shrinks the region instead of sliding it', () => {
+  // Sliding moved the clipping box along with the content, so the messages
+  // rode up over the header and painted on top of it. Padding keeps every
+  // edge where it belongs.
+  assert.match(source, /paddingBottom: Math\.max\(0, -keyboard\.height\.value\)/);
+  assert.doesNotMatch(source, /translateY: keyboard\.height\.value/);
 });

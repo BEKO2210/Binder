@@ -140,7 +140,12 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   const [refreshing, setRefreshing] = useState(false);
   const [composer, setComposer] = useState(() => recallDraft(match.matchId));
   const keyboard = useReanimatedKeyboardAnimation();
-  const keyboardShift = useAnimatedStyle(() => ({ transform: [{ translateY: keyboard.height.value }] }));
+  // Shrink, do not slide. Translating the region moved its clipping box with
+  // it, so the content rode up over the header and painted on top of it; the
+  // header was still there and still touchable, just invisible. Padding the
+  // bottom by the keyboard's height keeps every edge where it belongs and
+  // lifts the composer exactly as far as the keyboard is tall.
+  const keyboardShift = useAnimatedStyle(() => ({ paddingBottom: Math.max(0, -keyboard.height.value) }));
   const [sending, setSending] = useState(false);
   // Every unsent message keeps its own entry. A single slot meant that writing
   // a new message after a failure silently discarded the failed one — the text
