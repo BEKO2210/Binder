@@ -65,22 +65,33 @@ export async function refreshDiscoveryLocation(): Promise<boolean> {
   }
 
   // A fix the phone already has beats a fix it has to go and get. Asking for a
-  // fresh position indoors took longer than the screen's own deadline on the
-  // S23 — the deck said "Binder hat zu lange gebraucht" before it had ever
-  // loaded. Discovery is a radius in kilometres; a position from the last
-  // quarter of an hour is exactly as good for that, and it arrives at once.
+  // fresh position indoors took longer than the screen's own deadline on both
+  // test phones — the deck said "Binder hat zu lange gebraucht" before it had
+  // ever loaded, twice in a row on a freshly installed app. Discovery is a
+  // radius in kilometres; a position from the last quarter of an hour is
+  // exactly as good for that, and it arrives at once.
   const recent = await Location.getLastKnownPositionAsync({ maxAge: LAST_KNOWN_POSITION_MAX_AGE_MS });
-  const position = recent ?? await Location.getCurrentPositionAsync({
-    accuracy: Location.Accuracy.Balanced,
-  });
+  if (recent) {
+    await writeDiscoveryLocation(recent);
+    return true;
+  }
 
+  // Nothing stored: ask the phone for a fix, but do not make the deck wait for
+  // one. A cold GPS fix indoors can take minutes, and the server still has the
+  // position from onboarding or from the last session — which is what the deck
+  // is built from anyway. The fresh fix is written when it arrives.
+  void Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced })
+    .then((position) => writeDiscoveryLocation(position))
+    .catch(() => undefined);
+  return true;
+}
+
+async function writeDiscoveryLocation(position: Location.LocationObject): Promise<void> {
   const { error } = await supabase.rpc('set_my_location', {
     latitude: position.coords.latitude,
     longitude: position.coords.longitude,
   });
-
   if (error) throw error;
-  return true;
 }
 
 export async function countDiscoveryCandidates(values: DiscoveryPreferenceValues): Promise<number> {
