@@ -545,7 +545,7 @@
       }
     },
     "details": {
-      "eyebrow": "프로필 세부 정보",
+      "eyebrow": "나에 대해",
       "copy": "상대방에게 보이는 신원과 배경 정보입니다."
     },
     "fields": {
@@ -1162,7 +1162,7 @@
       "noResults": "검색과 일치하는 항목이 없습니다."
     },
     "attributes": {
-      "sectionTitle": "나에 대해 더",
+      "sectionTitle": "라이프스타일",
       "notSet": "미입력",
       "height": {
         "label": "키",
@@ -1269,7 +1269,7 @@
       }
     },
     "voiceIntro": {
-      "title": "음성 소개",
+      "title": "내 목소리",
       "copy": "내 목소리로 인사해 보세요. 저장하는 순간 프로필에 공개됩니다 — 신고와 검토는 다른 곳과 동일하게 적용돼요.",
       "record": "음성 소개 녹음",
       "replace": "교체",

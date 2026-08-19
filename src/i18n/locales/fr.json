@@ -545,7 +545,7 @@
       }
     },
     "details": {
-      "eyebrow": "DÉTAILS DU PROFIL",
+      "eyebrow": "À PROPOS DE TOI",
       "copy": "Voici l’identité et le contexte que les autres voient."
     },
     "fields": {
@@ -1162,7 +1162,7 @@
       "noResults": "Rien ne correspond à cette recherche."
     },
     "attributes": {
-      "sectionTitle": "Plus sur moi",
+      "sectionTitle": "Mode de vie",
       "notSet": "Non renseigné",
       "height": {
         "label": "Taille",
@@ -1269,7 +1269,7 @@
       }
     },
     "voiceIntro": {
-      "title": "Intro vocale",
+      "title": "Ta voix",
       "copy": "Dis bonjour avec ta propre voix. Ton intro est publique sur ton profil dès son enregistrement — signalement et modération s’appliquent comme partout.",
       "record": "Enregistrer une intro vocale",
       "replace": "Remplacer",

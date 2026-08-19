@@ -5,7 +5,6 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { PhotoPager } from '../components/PhotoPager';
 import { announce } from '../lib/announce';
 import { confirmDestructive } from '../lib/confirmDestructive';
-import { DiscoveryPreferences } from '../components/DiscoveryPreferences';
 import { MotionPressable as Pressable } from '../components/ui';
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderInput, BinderScreenHeader, BinderText, ScreenState, SectionHeader } from '../components/ui';
 import { pickAndPrepareProfileImage, type PreparedImage } from '../lib/images';
@@ -46,7 +45,6 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
   const [upload, setUpload] = useState<{ phase: 'preparing' | 'uploading' | 'error'; image: PreparedImage | null; error?: string } | null>(null);
   const uploadLockedRef = useRef(false);
   const [profileErrors, setProfileErrors] = useState<ReturnType<typeof validateIdentity>>({ firstName: undefined, gender: undefined });
-  const [discoveryErrors, setDiscoveryErrors] = useState<ReturnType<typeof validateDiscovery>>({ audience: undefined, age: undefined, distance: undefined });
 
   useEffect(() => { void load(); }, [userId]);
 
@@ -215,8 +213,12 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
   }
 
   async function save() {
+    // The discovery values are edited in the filter sheet, where they take
+    // effect; this screen only carries them back unchanged so the one RPC that
+    // writes both cannot wipe them. They are still validated: a stored value
+    // that somehow went bad must not be written back silently.
     const identity = validateIdentity(firstName, gender); const discovery = validateDiscovery(interestedIn, minAge, maxAge, distance);
-    setProfileErrors(identity); setDiscoveryErrors(discovery); if (hasErrors(identity) || hasErrors(discovery)) return;
+    setProfileErrors(identity); if (hasErrors(identity) || hasErrors(discovery)) return;
     const min = minAge; const max = maxAge; const maxDistance = distance;
     setBusy(true); setMessage('');
     try {
@@ -286,9 +288,6 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
       </BinderCard>
       <BinderCard style={{ marginTop: theme.spacing.x5 }}>
         <AttributeEditor value={attributes} onChange={setAttributes} />
-      </BinderCard>
-      <BinderCard style={{ marginTop: theme.spacing.x5 }}><View><BinderText variant="micro" tone="muted">{t('profileSettings.discovery.eyebrow')}</BinderText><BinderText variant="title" style={{ marginTop: theme.spacing.x2 }}>{t('profileSettings.discovery.title')}</BinderText><BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2, marginBottom: theme.spacing.x6 }}>{t('profileSettings.discovery.copy')}</BinderText></View>
-          <DiscoveryPreferences interestedIn={interestedIn} minAge={minAge} maxAge={maxAge} distance={distance} errors={discoveryErrors} onChange={(next) => { setInterestedIn(next.interestedIn); setMinAge(next.minAge); setMaxAge(next.maxAge); setDistance(next.distance); setDiscoveryErrors(validateDiscovery(next.interestedIn, next.minAge, next.maxAge, next.distance)); }} />
       </BinderCard>
       <BinderButton label={t('profileSettings.actions.saveProfile')} loading={busy} onPress={() => void save()} style={{ marginTop: theme.spacing.x6 }} />
       </KeyboardAwareScrollView>

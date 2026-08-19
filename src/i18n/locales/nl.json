@@ -545,7 +545,7 @@
       }
     },
     "details": {
-      "eyebrow": "PROFIELGEGEVENS",
+      "eyebrow": "OVER JOU",
       "copy": "Dit is de identiteit en context die mensen zien."
     },
     "fields": {
@@ -1162,7 +1162,7 @@
       "noResults": "Niets komt overeen met deze zoekopdracht."
     },
     "attributes": {
-      "sectionTitle": "Meer over mij",
+      "sectionTitle": "Levensstijl",
       "notSet": "Niet opgegeven",
       "height": {
         "label": "Lengte",
@@ -1269,7 +1269,7 @@
       }
     },
     "voiceIntro": {
-      "title": "Spraakintro",
+      "title": "Jouw stem",
       "copy": "Zeg hallo met je eigen stem. Je intro is openbaar op je profiel zodra je opslaat — melden en moderatie gelden zoals overal.",
       "record": "Spraakintro opnemen",
       "replace": "Vervangen",

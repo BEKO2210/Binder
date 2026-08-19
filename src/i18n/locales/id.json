@@ -545,7 +545,7 @@
       }
     },
     "details": {
-      "eyebrow": "DETAIL PROFIL",
+      "eyebrow": "TENTANG KAMU",
       "copy": "Ini adalah identitas dan konteks yang dilihat orang."
     },
     "fields": {
@@ -1162,7 +1162,7 @@
       "noResults": "Tidak ada yang cocok dengan pencarian itu."
     },
     "attributes": {
-      "sectionTitle": "Lainnya tentang saya",
+      "sectionTitle": "Gaya hidup",
       "notSet": "Tidak diisi",
       "height": {
         "label": "Tinggi badan",
@@ -1269,7 +1269,7 @@
       }
     },
     "voiceIntro": {
-      "title": "Intro suara",
+      "title": "Suaramu",
       "copy": "Sapa dengan suaramu sendiri. Intro langsung publik di profil begitu disimpan — pelaporan dan moderasi berlaku seperti di mana pun.",
       "record": "Rekam intro suara",
       "replace": "Ganti",

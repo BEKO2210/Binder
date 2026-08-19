@@ -3,6 +3,7 @@ import { TextInput, View } from 'react-native';
 
 import { INTEREST_CATEGORIES, INTEREST_SELECTION_LIMIT, catalogLabelKey, categoryLabelKey, interestsInCategory, type InterestEntry } from '../lib/interestCatalog';
 import { searchCatalog, toggleInterest } from '../lib/interestPicker';
+import { formatCount } from '../lib/format';
 import { interestLabel } from '../lib/validation';
 import { useBinderTheme } from '../theme/ThemeProvider';
 import { BinderChip, BinderIcon, BinderText } from './ui';
@@ -22,12 +23,12 @@ type Props = {
 // mounted tree is exactly the kind of screen that starts dropping frames, and
 // a collapsed section costs one header row.
 export function InterestPicker({ selection, onChange }: Props) {
-  const { theme, t } = useBinderTheme();
+  const { theme, locale, t } = useBinderTheme();
   const [query, setQuery] = useState('');
   // Everything starts closed: thirteen headings fit on one screen, one open
   // category does not — the first one alone is forty chips, and leaving it
   // open buried the other twelve below a scroll nobody knew to make.
-  const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set<string>());
+  const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set([] as string[]));
 
   const labelOf = useMemo(() => (entry: InterestEntry) => t(catalogLabelKey(entry.id)), [t]);
   const results = useMemo(() => searchCatalog(query, labelOf), [query, labelOf]);
@@ -101,7 +102,7 @@ export function InterestPicker({ selection, onChange }: Props) {
                 style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3, minHeight: theme.layout.minimumTouchTarget }}
               >
                 <BinderText variant="title" style={{ flex: 1 }}>{t(categoryLabelKey(categoryId))}</BinderText>
-                {chosenHere > 0 ? <BinderText variant="label" tone="accent">{chosenHere}</BinderText> : null}
+                {chosenHere > 0 ? <BinderText variant="label" tone="accent">{formatCount(chosenHere, locale)}</BinderText> : null}
                 <BinderIcon name={isOpen ? 'decrease' : 'increase'} size={20} color={theme.colors.textMuted} />
               </Pressable>
               {isOpen ? (

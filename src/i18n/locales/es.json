@@ -545,7 +545,7 @@
       }
     },
     "details": {
-      "eyebrow": "DETALLES DEL PERFIL",
+      "eyebrow": "SOBRE TI",
       "copy": "Esta es la identidad y el contexto que ven los demás."
     },
     "fields": {
@@ -1162,7 +1162,7 @@
       "noResults": "Nada coincide con esa búsqueda."
     },
     "attributes": {
-      "sectionTitle": "Más sobre mí",
+      "sectionTitle": "Estilo de vida",
       "notSet": "Sin especificar",
       "height": {
         "label": "Estatura",
@@ -1269,7 +1269,7 @@
       }
     },
     "voiceIntro": {
-      "title": "Intro de voz",
+      "title": "Tu voz",
       "copy": "Saluda con tu propia voz. Tu intro es pública en tu perfil desde que la guardas: denuncias y moderación aplican como en todo lo demás.",
       "record": "Grabar intro de voz",
       "replace": "Reemplazar",

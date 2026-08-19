@@ -545,7 +545,7 @@
       }
     },
     "details": {
-      "eyebrow": "SZCZEGÓŁY PROFILU",
+      "eyebrow": "O TOBIE",
       "copy": "Tożsamość i kontekst widoczne dla innych."
     },
     "fields": {
@@ -1162,7 +1162,7 @@
       "noResults": "Nic nie pasuje do tego wyszukiwania."
     },
     "attributes": {
-      "sectionTitle": "Więcej o mnie",
+      "sectionTitle": "Styl życia",
       "notSet": "Nie podano",
       "height": {
         "label": "Wzrost",
@@ -1269,7 +1269,7 @@
       }
     },
     "voiceIntro": {
-      "title": "Intro głosowe",
+      "title": "Twój głos",
       "copy": "Przywitaj się własnym głosem. Twoje intro jest publiczne na profilu od chwili zapisania — zgłoszenia i moderacja działają jak wszędzie.",
       "record": "Nagraj intro głosowe",
       "replace": "Zastąp",

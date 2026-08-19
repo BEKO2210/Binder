@@ -46,3 +46,19 @@ test('a category opens from its heading, above the chips it reveals', async () =
   assert.ok(headingAt < chipsAt, 'the control sits above the chips');
   assert.match(source, /minHeight: theme\.layout\.minimumTouchTarget/, 'the heading is a full touch target');
 });
+
+test('discovery preferences are edited in one place only, and the editor cannot wipe them', async () => {
+  // The same setting lived in the profile editor and in the discovery filter
+  // sheet. Two places to change one thing is the bug, whichever one you keep —
+  // this one belongs where it takes effect, above the deck.
+  const { readFileSync } = await import('node:fs');
+  const editor = readFileSync(new URL('../src/screens/ProfileSettingsScreen.tsx', import.meta.url), 'utf8');
+  const sheet = readFileSync(new URL('../src/components/DiscoveryFilterSheet.tsx', import.meta.url), 'utf8');
+  assert.ok(!editor.includes('<DiscoveryPreferences'), 'the editor no longer renders the preference controls');
+  assert.match(sheet, /<DiscoveryPreferences/, 'the filter sheet still does');
+  // The editor keeps carrying the values back, or the one RPC that writes both
+  // profile and preferences would clear them on every save.
+  assert.match(editor, /p_interested_in: interestedIn/);
+  assert.match(editor, /p_min_age: min/);
+  assert.match(editor, /p_max_distance_km: maxDistance/);
+});

@@ -545,7 +545,7 @@
       }
     },
     "details": {
-      "eyebrow": "PROFILE DETAILS",
+      "eyebrow": "ABOUT YOU",
       "copy": "This is the identity and context people see."
     },
     "fields": {
@@ -1162,7 +1162,7 @@
       "noResults": "Nothing matches that search."
     },
     "attributes": {
-      "sectionTitle": "More about me",
+      "sectionTitle": "Lifestyle",
       "notSet": "Not specified",
       "height": {
         "label": "Height",
@@ -1269,7 +1269,7 @@
       }
     },
     "voiceIntro": {
-      "title": "Voice intro",
+      "title": "Your voice",
       "copy": "Say hello in your own voice. Your intro is public on your profile the moment you save it — report and moderation apply like everywhere else.",
       "record": "Record voice intro",
       "replace": "Replace",
