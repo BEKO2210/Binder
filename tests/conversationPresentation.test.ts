@@ -3,7 +3,7 @@ process.env.TZ = 'UTC';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { composerBody, conversationErrorSurface, previewTimeLabel, shouldShowConnectionNotice, splitConversationPreviews } from '../src/lib/conversationPresentation.ts';
+import { composerBody, conversationErrorSurface, previewTimeLabel, shouldShowConnectionNotice, splitConversationPreviews, unsentMessageNote } from '../src/lib/conversationPresentation.ts';
 
 test('composer accepts only a trimmed server-valid body', () => {
   assert.equal(composerBody('   '), null);
@@ -43,4 +43,18 @@ test('a dropped connection is a line, not a screen over the messages', () => {
   // An empty conversation whose channel hiccuped is still an open, usable chat.
   assert.equal(conversationErrorSurface({ hasMessages: false, loadFailed: false, streamFailed: true }), 'notice');
   assert.equal(conversationErrorSurface({ hasMessages: true, loadFailed: false, streamFailed: false }), 'none');
+});
+
+test('a message that has not gone out is content, so nothing takes the screen', () => {
+  // Offline with an empty conversation used to paint the full-screen offline
+  // state over the very message the person had just written.
+  assert.equal(conversationErrorSurface({ hasMessages: false, hasAttempts: true, loadFailed: true, streamFailed: false }), 'notice');
+  assert.equal(conversationErrorSurface({ hasMessages: false, hasAttempts: false, loadFailed: true, streamFailed: false }), 'full-screen');
+});
+
+test('a lost connection waits, a refusal reports', () => {
+  assert.equal(unsentMessageNote('offline'), 'waiting');
+  assert.equal(unsentMessageNote('timeout'), 'waiting');
+  assert.equal(unsentMessageNote('server-refusal'), 'failed');
+  assert.equal(unsentMessageNote(undefined), 'failed');
 });

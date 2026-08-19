@@ -358,7 +358,8 @@
       "placeholder": "给 {name} 发消息"
     },
     "errors": {
-      "messageNotSent": "消息未发送。"
+      "messageNotSent": "消息未发送。",
+      "waitingForConnection": "等待连接中"
     },
     "accessibility": {
       "backToMatches": "返回 Binds",

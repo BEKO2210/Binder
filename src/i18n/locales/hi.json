@@ -358,7 +358,8 @@
       "placeholder": "{name} को संदेश"
     },
     "errors": {
-      "messageNotSent": "संदेश नहीं भेजा गया।"
+      "messageNotSent": "संदेश नहीं भेजा गया।",
+      "waitingForConnection": "कनेक्शन की प्रतीक्षा"
     },
     "accessibility": {
       "backToMatches": "Binds पर वापस जाएँ",

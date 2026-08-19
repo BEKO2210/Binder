@@ -358,7 +358,8 @@
       "placeholder": "Mensaje para {name}"
     },
     "errors": {
-      "messageNotSent": "Mensaje no enviado."
+      "messageNotSent": "Mensaje no enviado.",
+      "waitingForConnection": "Esperando conexión"
     },
     "accessibility": {
       "backToMatches": "Volver a Binds",

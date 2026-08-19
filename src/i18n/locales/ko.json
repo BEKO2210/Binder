@@ -358,7 +358,8 @@
       "placeholder": "{name}님에게 메시지"
     },
     "errors": {
-      "messageNotSent": "메시지를 보내지 못했습니다."
+      "messageNotSent": "메시지를 보내지 못했습니다.",
+      "waitingForConnection": "연결 대기 중"
     },
     "accessibility": {
       "backToMatches": "Binds로 돌아가기",

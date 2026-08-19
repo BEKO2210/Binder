@@ -358,7 +358,8 @@
       "placeholder": "{name} kişisine mesaj"
     },
     "errors": {
-      "messageNotSent": "Mesaj gönderilmedi."
+      "messageNotSent": "Mesaj gönderilmedi.",
+      "waitingForConnection": "Bağlantı bekleniyor"
     },
     "accessibility": {
       "backToMatches": "Bind'lere dön",

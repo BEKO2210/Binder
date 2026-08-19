@@ -358,7 +358,8 @@
       "placeholder": "Pesan untuk {name}"
     },
     "errors": {
-      "messageNotSent": "Pesan tidak terkirim."
+      "messageNotSent": "Pesan tidak terkirim.",
+      "waitingForConnection": "Menunggu koneksi"
     },
     "accessibility": {
       "backToMatches": "Kembali ke Matches",

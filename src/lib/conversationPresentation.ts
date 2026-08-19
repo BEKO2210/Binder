@@ -68,9 +68,25 @@ export type ConversationErrorSurface = 'full-screen' | 'notice' | 'none';
 
 export function conversationErrorSurface(input: {
   hasMessages: boolean;
+  /** Messages the person wrote that have not gone out yet. They are content too. */
+  hasAttempts?: boolean;
   loadFailed: boolean;
   streamFailed: boolean;
 }): ConversationErrorSurface {
-  if (input.loadFailed && !input.hasMessages) return 'full-screen';
+  const hasContent = input.hasMessages || input.hasAttempts === true;
+  if (input.loadFailed && !hasContent) return 'full-screen';
   return input.loadFailed || input.streamFailed ? 'notice' : 'none';
+}
+
+/**
+ * What to write beside a message that did not go out.
+ *
+ * A lost connection is not an error the person has to act on: the message is
+ * kept and goes out by itself as soon as the conversation is reachable. Saying
+ * "retry" for that is asking somebody to do the app's work. Anything the
+ * server actually refused keeps its own sentence, because that one will not
+ * fix itself.
+ */
+export function unsentMessageNote(errorKind: string | undefined): 'waiting' | 'failed' {
+  return errorKind === 'offline' || errorKind === 'timeout' ? 'waiting' : 'failed';
 }

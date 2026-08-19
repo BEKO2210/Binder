@@ -358,7 +358,8 @@
       "placeholder": "إرسال رسالة إلى {name}"
     },
     "errors": {
-      "messageNotSent": "لم يتم إرسال الرسالة."
+      "messageNotSent": "لم يتم إرسال الرسالة.",
+      "waitingForConnection": "بانتظار الاتصال"
     },
     "accessibility": {
       "backToMatches": "العودة إلى Binds",

@@ -358,7 +358,8 @@
       "placeholder": "Wiadomość do {name}"
     },
     "errors": {
-      "messageNotSent": "Wiadomość nie została wysłana."
+      "messageNotSent": "Wiadomość nie została wysłana.",
+      "waitingForConnection": "Oczekiwanie na połączenie"
     },
     "accessibility": {
       "backToMatches": "Wróć do Bindów",

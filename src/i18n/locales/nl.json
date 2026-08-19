@@ -358,7 +358,8 @@
       "placeholder": "Bericht aan {name}"
     },
     "errors": {
-      "messageNotSent": "Bericht niet verzonden."
+      "messageNotSent": "Bericht niet verzonden.",
+      "waitingForConnection": "Wachten op verbinding"
     },
     "accessibility": {
       "backToMatches": "Terug naar Binds",

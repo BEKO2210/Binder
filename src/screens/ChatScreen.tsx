@@ -11,7 +11,7 @@ import { formatCount, formatTime } from '../lib/format';
 import { formatVoiceDuration } from '../lib/voiceMessage';
 import { announce } from '../lib/announce';
 import { confirmDestructive } from '../lib/confirmDestructive';
-import { composerBody, conversationErrorSurface, shouldShowConnectionNotice } from '../lib/conversationPresentation';
+import { composerBody, conversationErrorSurface, shouldShowConnectionNotice, unsentMessageNote } from '../lib/conversationPresentation';
 import { resolveStaggerDelay } from '../lib/motionPolicy';
 import { classifyRequestFailure, isAbortError, isConversationEndedError, withDeadline, withRetry, type ReliabilityError } from '../lib/reliability';
 
@@ -154,6 +154,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   const [recordingVoice, setRecordingVoice] = useState(false);
   const composerRef = useRef(composer);
   const attemptsRef = useRef(attempts);
+  const sendingRef = useRef(false);
   composerRef.current = composer;
   attemptsRef.current = attempts;
   const [safetyBusy, setSafetyBusy] = useState<null | 'unmatch' | 'block'>(null);
@@ -212,6 +213,9 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         setHasMore(page.hasMore);
         setLoadError(null);
         setStreamError(null);
+        // The conversation answered, so the phone is reachable: whatever failed
+        // to send while it was not goes out now, without anybody tapping.
+        void resendRef.current?.();
         void markMatchRead(match.matchId, { signal: requestController.signal }).catch(() => undefined);
       } catch (nextError) {
         if (active && !isAbortError(nextError)) {
@@ -335,7 +339,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
 
   const validComposer = composerBody(composer);
   const failedAttemptKinds = attempts.filter((attempt) => attempt.status === 'failed').map((attempt) => attempt.error?.kind ?? 'unknown');
-  const errorSurface = conversationErrorSurface({ hasMessages: messages.length > 0, loadFailed: Boolean(loadError), streamFailed: Boolean(streamError) });
+  const errorSurface = conversationErrorSurface({ hasMessages: messages.length > 0, hasAttempts: attempts.length > 0, loadFailed: Boolean(loadError), streamFailed: Boolean(streamError) });
   const connectionError = streamError ?? loadError;
   const connectionNoticeVisible = errorSurface === 'notice' && shouldShowConnectionNotice(connectionError?.kind ?? null, failedAttemptKinds);
   const canSend = validComposer !== null && !sending;
@@ -362,6 +366,32 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     rememberAttempts(match.matchId, attemptsRef.current.filter((attempt) => attempt.status === 'failed').map(({ clientId, body, localUri, voice }) => ({ clientId, body, localUri, voice })));
   }, [match.matchId]);
 
+  // A message that failed because the phone was in a tunnel is not a message
+  // the person has to send again by hand — the deck already treats a decision
+  // that way. Whatever is waiting goes out by itself as soon as the
+  // conversation is reachable again, oldest first.
+  const resendRef = useRef<(() => Promise<void>) | null>(null);
+  const flushingRef = useRef(false);
+
+  async function flushFailedAttempts() {
+    if (flushingRef.current || sendingRef.current) return;
+    flushingRef.current = true;
+    try {
+      for (const attempt of attemptsRef.current.filter((entry) => entry.status === 'failed' && entry.error?.retryable !== false)) {
+        if (!mountedRef.current) return;
+        if (attempt.voice || attempt.localUri) await retryVoice(attempt);
+        else if (attempt.body) await submitMessage(attempt.clientId);
+        // One failure means the connection is still not there; the next
+        // reconnect will pick the queue up again.
+        if (attemptsRef.current.some((entry) => entry.clientId === attempt.clientId && entry.status === 'failed')) return;
+      }
+    } finally {
+      flushingRef.current = false;
+    }
+  }
+
+  resendRef.current = flushFailedAttempts;
+
   function discardAttempt(clientId: string) {
     setAttempts((current) => current.filter((attempt) => attempt.clientId !== clientId));
   }
@@ -372,6 +402,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     if (!body || sending) return;
     const clientId = retried ? retried.clientId : createClientMessageId();
     setSending(true);
+    sendingRef.current = true;
     setAttempts((current) => {
       const without = current.filter((attempt) => attempt.clientId !== clientId);
       return [...without, { clientId, body, status: 'sending' as const }];
@@ -402,7 +433,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         }
         setAttempts((current) => current.map((attempt) => attempt.clientId === clientId ? { ...attempt, status: 'failed' as const, error: failure } : attempt));
       }
-    } finally { if (mountedRef.current) setSending(false); }
+    } finally { sendingRef.current = false; if (mountedRef.current) setSending(false); }
   }
 
   async function submitVoice(localUri: string, durationMs: number, retryClientId?: string) {
@@ -410,6 +441,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     const clientId = retryClientId ?? createClientMessageId();
     setAttempts((current) => [...current, { clientId, body: '', localUri, status: 'sending' as const }]);
     setSending(true);
+    sendingRef.current = true;
     try {
       const audioPath = await withDeadline(uploadVoiceRecording(match.matchId, currentUserId, localUri, { signal: lifecycleControllerRef.current.signal }), CHAT_UPLOAD_DEADLINE_MS);
       setAttempts((current) => current.map((attempt) => attempt.clientId === clientId ? { ...attempt, voice: { audioPath, durationMs } } : attempt));
@@ -428,7 +460,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         if (failure.kind === 'permission-denied') { discardAttempt(clientId); onSessionExpired(); return; }
         setAttempts((current) => current.map((attempt) => attempt.clientId === clientId ? { ...attempt, status: 'failed' as const, error: failure } : attempt));
       }
-    } finally { if (mountedRef.current) setSending(false); }
+    } finally { sendingRef.current = false; if (mountedRef.current) setSending(false); }
   }
 
   async function retryVoice(attempt: LocalAttempt) {
@@ -438,6 +470,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     if (!attempt.voice && attempt.localUri) { await submitVoice(attempt.localUri, 0, attempt.clientId); return; }
     if (!attempt.voice) return;
     setSending(true);
+    sendingRef.current = true;
     setAttempts((current) => current.map((entry) => entry.clientId === attempt.clientId ? { ...entry, status: 'sending' as const } : entry));
     try {
       // The object is already uploaded; the same client id and path converge
@@ -451,7 +484,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         const failure = classifyRequestFailure(nextError);
         setAttempts((current) => current.map((entry) => entry.clientId === attempt.clientId ? { ...entry, status: 'failed' as const, error: failure } : entry));
       }
-    } finally { if (mountedRef.current) setSending(false); }
+    } finally { sendingRef.current = false; if (mountedRef.current) setSending(false); }
   }
 
   const openMessageActions = useCallback((messageId: string, body: string, mine: boolean, longPress: boolean, isVoice = false) => {
@@ -587,7 +620,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
           <View style={{ minHeight: theme.spacing.x12, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
             {attempt.status === 'sending' ? <BinderText variant="caption" tone="muted">{t('chat.message.sending')}</BinderText> : (
               <>
-                <BinderText variant="caption" tone="destructive" style={{ flexShrink: 1 }}>{attempt.error ? t(attempt.error.messageKey) : t('chat.errors.messageNotSent')}</BinderText>
+                <BinderText variant="caption" tone={unsentMessageNote(attempt.error?.kind) === 'waiting' ? 'muted' : 'destructive'} style={{ flexShrink: 1 }}>{unsentMessageNote(attempt.error?.kind) === 'waiting' ? t('chat.errors.waitingForConnection') : attempt.error ? t(attempt.error.messageKey) : t('chat.errors.messageNotSent')}</BinderText>
                 <Pressable accessibilityRole="button" accessibilityLabel={t('chat.accessibility.retrySending', { message: attempt.body.slice(0, 24) })} disabled={sending} onPress={() => attempt.voice || attempt.localUri ? void retryVoice(attempt) : attempt.body ? void submitMessage(attempt.clientId) : discardAttempt(attempt.clientId)} style={({ pressed }) => ({ minHeight: theme.spacing.x12, justifyContent: 'center', paddingHorizontal: theme.spacing.x3, borderRadius: theme.radii.pill, opacity: sending ? theme.feedback.disabledOpacity : 1, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surfaceElevated })}><BinderText variant="label" tone="accent">{t('chat.actions.retry')}</BinderText></Pressable>
                 <Pressable accessibilityRole="button" accessibilityLabel={t('chat.accessibility.discardUnsent', { message: attempt.body.slice(0, 24) })} onPress={() => discardAttempt(attempt.clientId)} style={({ pressed }) => ({ minHeight: theme.spacing.x12, justifyContent: 'center', paddingHorizontal: theme.spacing.x3, borderRadius: theme.radii.pill, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.transparent })}><BinderText variant="label" tone="muted">{t('chat.actions.discard')}</BinderText></Pressable>
               </>

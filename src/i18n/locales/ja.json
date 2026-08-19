@@ -358,7 +358,8 @@
       "placeholder": "{name}にメッセージ"
     },
     "errors": {
-      "messageNotSent": "メッセージを送信できませんでした。"
+      "messageNotSent": "メッセージを送信できませんでした。",
+      "waitingForConnection": "接続を待機中"
     },
     "accessibility": {
       "backToMatches": "Bindsに戻る",

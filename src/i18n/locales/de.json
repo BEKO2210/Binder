@@ -358,7 +358,8 @@
       "placeholder": "Nachricht an {name}"
     },
     "errors": {
-      "messageNotSent": "Nachricht nicht gesendet."
+      "messageNotSent": "Nachricht nicht gesendet.",
+      "waitingForConnection": "Warten auf Verbindung"
     },
     "accessibility": {
       "backToMatches": "Zurück zu Matches",
