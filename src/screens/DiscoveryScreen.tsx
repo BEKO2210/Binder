@@ -39,6 +39,11 @@ import { useBinderTheme } from '../theme/ThemeProvider';
 // with no way out and no error. Every await here that holds a blocking state
 // gets the same ceiling the profile screen already has.
 const DISCOVERY_DEADLINE_MS = 12_000;
+// Refreshing the location is not a query: it asks for a permission and then
+// waits for a position fix, and a cold fix on a phone that has just been
+// unlocked takes longer than any request does. Measured on the S23 — twelve
+// seconds turned a normal first start into "Binder hat zu lange gebraucht".
+const DISCOVERY_LOCATION_DEADLINE_MS = 30_000;
 
 export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onOpenMatch?: (match: MatchSummary) => void; onSessionExpired: () => void }) {
   const { theme, reduceMotion, locale, t } = useBinderTheme();
@@ -110,7 +115,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
     setError(null);
     setLocationPermissionDenied(false);
     try {
-      if (refreshLocation && !await withDeadline(refreshDiscoveryLocation(), DISCOVERY_DEADLINE_MS)) {
+      if (refreshLocation && !await withDeadline(refreshDiscoveryLocation(), DISCOVERY_LOCATION_DEADLINE_MS)) {
         if (current()) setLocationPermissionDenied(true);
         return;
       }
