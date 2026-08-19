@@ -31,3 +31,7 @@ site/assets/
 credentials.json
 supabase/.temp/
 artifacts/
+
+# The generated code graph: rebuilt on demand with `graphify update .`,
+# a megabyte of HTML, and stale the moment anybody commits.
+graphify-out/
