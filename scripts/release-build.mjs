@@ -112,3 +112,6 @@ function bumpSemver(value, kind) {
   if (kind === 'minor') return `${major}.${minor + 1}.0`;
   return `${major}.${minor}.${patch + 1}`;
 }
+
+// Keep the folder from growing without bound: newest twenty plus the first.
+execFileSync(process.execPath, [join(root, 'scripts/prune-releases.mjs')], { stdio: 'inherit' });
