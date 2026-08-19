@@ -76,6 +76,12 @@ mkdirSync(releaseDir, { recursive: true });
 const staged = [];
 stage(join(root, 'android/app/build/outputs/apk/release/app-release.apk'), `Binder-v${version}-vc${versionCode}.apk`);
 if (withBundle) stage(join(root, 'android/app/build/outputs/bundle/release/app-release.aab'), `Binder-v${version}-vc${versionCode}.aab`);
+// R8 renames everything, so a stack trace from the wild is unreadable without
+// the map that was used for exactly this build. Play reads it out of the AAB
+// by itself; this copy is for reading a crash locally with `retrace`, because
+// android/app/build/ does not survive the next build.
+const mappingFile = join(root, 'android/app/build/outputs/mapping/release/mapping.txt');
+if (existsSync(mappingFile)) stage(mappingFile, `Binder-v${version}-vc${versionCode}-mapping.txt`);
 
 // Trust the artefact, not the configuration: read the certificate out of the
 // APK that was just produced and compare it with the upload key. This is the

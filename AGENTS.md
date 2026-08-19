@@ -125,6 +125,23 @@ Raises the version in `app.json`, `package.json` and the generated
 `/home/belkis/Binder-Release/` as `Binder-v<version>-vc<code>.apk|aab`. Never
 hand-edit a version.
 
+Release builds are minified. `expo-build-properties` turns R8 and resource
+shrinking on in `app.json`, which is where it survives a prebuild; the generated
+`android/gradle.properties` carries the two flags. The mapping file rides inside
+the AAB (`BUNDLE-METADATA/com.android.tools.build.obfuscation/proguard.map`), so
+Play picks it up on upload with nothing to do by hand, and the release script
+stages a copy next to the artefacts for reading a crash locally with `retrace`.
+Measured on vc95: APK 128.59 → 121.25 MiB, AAB 98.80 → 96.04 MiB, build 1m30s →
+11m. **`expo prebuild` writes the release signing config back to the debug key**
+— the `signingConfigs.release` block that reads `keystore.properties` has to be
+restored afterwards, and the build refuses to run without it.
+
+Minification is the kind of change that breaks by reflection rather than by
+compiler, so vc95 was walked on both phones before it was called good: cold
+start, deck, match celebration (Skia), chat with the keyboard, voice recording,
+sending and playback, the photo picker through upload, sign-out and the Google
+sheet. Push delivery under R8 has not been re-tested.
+
 - Upload key: `/home/belkis/Android APP KEY/BINDER APP KEY.jks`, alias `key0`,
   SHA-1 `16:DF:DF:3E:28:30:76:BE:74:F8:A9:E6:75:0E:C8:B8:2D:AD:D2:DF`.
 - Play App Signing is active; a locally built APK can never update a store
