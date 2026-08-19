@@ -1,0 +1,51 @@
+Binder — Proprietary Software License
+Copyright (c) 2026 Belkis Aslani. All rights reserved.
+
+The Binder application, its source code, database schema, migrations, design
+system, texts, translations, brand assets and documentation (together, the
+"Software") are the exclusive property of Belkis Aslani.
+
+WHAT IS NOT GRANTED
+
+No licence, right or permission of any kind is granted by the mere fact that
+this repository can be viewed. In particular, and without limitation, you may
+NOT, without prior written permission from the copyright holder:
+
+  1. use the Software, in whole or in part, for any purpose, commercial or
+     non-commercial;
+  2. copy, reproduce, publish, distribute, sublicense, sell or rent it;
+  3. modify it, translate it, or create derivative or "inspired by" works that
+     reuse its code, schema, migrations, texts or assets;
+  4. host, deploy or operate it, or any service derived from it;
+  5. train, fine-tune or evaluate machine-learning models on it;
+  6. remove or alter this notice or any copyright or attribution notice.
+
+Viewing the repository and creating a GitHub fork are permitted only to the
+extent required by the GitHub Terms of Service, and grant no further rights:
+a fork may not be used, run, modified or published beyond that.
+
+THE APP ITSELF IS FREE
+
+This licence covers the source code, not the service. The Binder app is and
+remains free for the people who use it: no paywall, no advertising, no sale of
+personal data. Being free to use is not permission to reuse what is here.
+
+THIRD-PARTY COMPONENTS
+
+The Software depends on third-party open-source components (React Native,
+Expo, Supabase client libraries and others). Those remain under their own
+licences, held by their own authors; nothing in this licence changes them.
+
+NO WARRANTY
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR ITS USE.
+
+PERMISSIONS AND CONTACT
+
+Written permission may be requested at: nullmesh@protonmail.com
+Governing law: Federal Republic of Germany.

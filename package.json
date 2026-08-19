@@ -1,6 +1,6 @@
 {
   "name": "binder",
-  "version": "0.7.28",
+  "version": "0.7.29",
   "private": true,
   "main": "index.ts",
   "scripts": {
@@ -76,5 +76,7 @@
     "@types/node": "^26.2.0",
     "@types/react": "~19.2.2",
     "typescript": "~6.0.3"
-  }
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "author": "Belkis Aslani"
 }
