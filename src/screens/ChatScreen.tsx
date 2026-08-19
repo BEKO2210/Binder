@@ -12,6 +12,7 @@ import { formatVoiceDuration } from '../lib/voiceMessage';
 import { announce } from '../lib/announce';
 import { confirmDestructive } from '../lib/confirmDestructive';
 import { composerBody, conversationErrorSurface, shouldShowConnectionNotice, unsentMessageNote } from '../lib/conversationPresentation';
+import { addUnsent, forgetUnsentMatch, loadUnsent, removeUnsent, saveUnsent, unsentInOrder } from '../lib/unsentMessages';
 import { resolveStaggerDelay } from '../lib/motionPolicy';
 import { classifyRequestFailure, isAbortError, isConversationEndedError, withDeadline, withRetry, type ReliabilityError } from '../lib/reliability';
 
@@ -366,6 +367,25 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     rememberAttempts(match.matchId, attemptsRef.current.filter((attempt) => attempt.status === 'failed').map(({ clientId, body, localUri, voice }) => ({ clientId, body, localUri, voice })));
   }, [match.matchId]);
 
+  // Whatever was still unsent when the app was last closed comes back as a
+  // failed attempt, so it is visible and so the flush below can take it.
+  useEffect(() => {
+    let active = true;
+    void loadUnsent().then((store) => {
+      if (!active) return;
+      const waiting = unsentInOrder(store, match.matchId);
+      if (waiting.length === 0) return;
+      setAttempts((current) => {
+        const known = new Set(current.map((entry) => entry.clientId));
+        const restored = waiting
+          .filter((entry) => !known.has(entry.clientId))
+          .map((entry) => ({ clientId: entry.clientId, body: entry.body, localUri: entry.localUri, voice: entry.voice, status: 'failed' as const }));
+        return restored.length > 0 ? [...restored, ...current] : current;
+      });
+    });
+    return () => { active = false; };
+  }, [match.matchId]);
+
   // A message that failed because the phone was in a tunnel is not a message
   // the person has to send again by hand — the deck already treats a decision
   // that way. Whatever is waiting goes out by itself as soon as the
@@ -394,6 +414,17 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
 
   function discardAttempt(clientId: string) {
     setAttempts((current) => current.filter((attempt) => attempt.clientId !== clientId));
+    void loadUnsent().then((store) => saveUnsent(removeUnsent(store, match.matchId, clientId)));
+  }
+
+  /**
+   * The moment a send fails, what the person wrote goes on disk. Waiting until
+   * the screen unmounts meant a killed app threw the message away silently,
+   * which is exactly when it is most likely to happen: no network, phone put
+   * away, app swiped out of the recents.
+   */
+  function keepUnsent(entry: { clientId: string; body: string; localUri?: string; voice?: { audioPath: string; durationMs: number } }) {
+    void loadUnsent().then((store) => saveUnsent(addUnsent(store, match.matchId, { ...entry, createdAt: Date.now() })));
   }
 
   async function submitMessage(retryClientId?: string) {
@@ -422,6 +453,8 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         if (isConversationEndedError(nextError)) {
           setConversationEnded(true);
           forgetChat(match.matchId);
+          // Nothing left to deliver into a conversation that has ended.
+          void loadUnsent().then((store) => saveUnsent(forgetUnsentMatch(store, match.matchId)));
           discardAttempt(clientId);
           return;
         }
@@ -432,6 +465,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
           return;
         }
         setAttempts((current) => current.map((attempt) => attempt.clientId === clientId ? { ...attempt, status: 'failed' as const, error: failure } : attempt));
+        keepUnsent({ clientId, body });
       }
     } finally { sendingRef.current = false; if (mountedRef.current) setSending(false); }
   }
@@ -459,6 +493,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         const failure = classifyRequestFailure(nextError);
         if (failure.kind === 'permission-denied') { discardAttempt(clientId); onSessionExpired(); return; }
         setAttempts((current) => current.map((attempt) => attempt.clientId === clientId ? { ...attempt, status: 'failed' as const, error: failure } : attempt));
+        keepUnsent({ clientId, body: '', localUri });
       }
     } finally { sendingRef.current = false; if (mountedRef.current) setSending(false); }
   }
@@ -483,6 +518,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
       if (mountedRef.current && !isAbortError(nextError)) {
         const failure = classifyRequestFailure(nextError);
         setAttempts((current) => current.map((entry) => entry.clientId === attempt.clientId ? { ...entry, status: 'failed' as const, error: failure } : entry));
+        keepUnsent({ clientId: attempt.clientId, body: attempt.body, localUri: attempt.localUri, voice: attempt.voice });
       }
     } finally { sendingRef.current = false; if (mountedRef.current) setSending(false); }
   }
