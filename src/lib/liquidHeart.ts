@@ -2,20 +2,11 @@
 // can be tested without a device, a canvas or a sensor.
 
 export const LIQUID_FILL_RATIO = 0.62;
-/** How far the surface may tilt, in surface-height units per unit of gravity. */
-export const LIQUID_TILT_LIMIT = 0.42;
-
-/** The device's sideways gravity, clamped and softened into a tilt factor. */
-export function tiltFromGravity(x: number): number {
-  const clamped = Math.max(-1, Math.min(1, x));
-  return clamped * LIQUID_TILT_LIMIT;
-}
-
 /**
  * The wave surface as an SVG path, filled to the bottom of the box.
  *
- * `phase` walks the wave sideways, `tilt` lifts one end of the surface the way
- * water in a tipped glass stays level with the ground, and `fill` is how full
+ * `phase` walks the wave sideways, `tilt` lifts one end of the surface, and
+ * `fill` is how full
  * the heart is (never quite full — a full heart reads as a solid shape and the
  * whole point is that it moves).
  */

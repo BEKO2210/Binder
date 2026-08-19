@@ -1,8 +1,7 @@
 import { Canvas, Group, Path, Skia } from '@shopify/react-native-skia';
-import { Accelerometer } from 'expo-sensors';
 import { useEffect, useState } from 'react';
 
-import { heartPath, liquidPath, tiltFromGravity } from '../lib/liquidHeart';
+import { heartPath, liquidPath } from '../lib/liquidHeart';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
 type Props = {
@@ -18,7 +17,6 @@ type Props = {
 };
 
 const FRAME_MS = 1000 / 30;
-const SENSOR_MS = 1000 / 20;
 
 /**
  * A heart holding liquid: filled part-way, surface waving, and level with the
@@ -31,7 +29,6 @@ const SENSOR_MS = 1000 / 20;
 export function LiquidHeart({ size, color, active, outlineColor, still = false }: Props) {
   const { reduceMotion } = useBinderTheme();
   const [phase, setPhase] = useState(0);
-  const [tilt, setTilt] = useState(0);
 
   useEffect(() => {
     if (!active || reduceMotion || still) return;
@@ -39,20 +36,10 @@ export function LiquidHeart({ size, color, active, outlineColor, still = false }
     return () => clearInterval(timer);
   }, [active, reduceMotion, still]);
 
-  useEffect(() => {
-    if (!active || still) return;
-    Accelerometer.setUpdateInterval(SENSOR_MS);
-    const subscription = Accelerometer.addListener(({ x }) => {
-      // Ease towards the reading instead of following it exactly: raw
-      // accelerometer output jitters, and jitter in a water surface looks
-      // like a rendering fault rather than like water.
-      setTilt((current) => current + (tiltFromGravity(x) - current) * 0.18);
-    });
-    return () => subscription.remove();
-  }, [active, still]);
+
 
   const outline = Skia.Path.MakeFromSVGString(heartPath(size));
-  const surface = Skia.Path.MakeFromSVGString(liquidPath(size, size, still ? 0 : phase, reduceMotion || still ? 0 : tilt));
+  const surface = Skia.Path.MakeFromSVGString(liquidPath(size, size, still ? 0 : phase, 0));
   if (!outline || !surface) return null;
 
   return (

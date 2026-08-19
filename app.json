@@ -92,7 +92,9 @@
       ],
       "blockedPermissions": [
         "android.permission.SYSTEM_ALERT_WINDOW",
-        "android.permission.CAMERA"
+        "android.permission.CAMERA",
+        "android.permission.ACTIVITY_RECOGNITION",
+        "com.google.android.gms.permission.ACTIVITY_RECOGNITION"
       ],
       "allowBackup": false
     },
