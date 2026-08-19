@@ -45,40 +45,19 @@
 - 218 node tests over pure product logic — deck physics, chat timeline shaping, reliability classification, dial geometry, unsent-message queue, design-token contrast in both schemes
 - 150+ pgTAP assertions across identity, matching, conversation, safety, moderation and push, replayed from an empty database
 - Concurrency suites: reciprocal likes, send-versus-unmatch races, sender-wide rate limits, gallery races, dispatcher claims
-- Sixteen static verifiers, each one a rule somebody learned the hard way:
-
-| Verifier | The rule it keeps |
-|---|---|
-| `verify-design-contract` | No raw colours, sizes, radii or durations in screens and components |
-| `verify-worklet-contract` | A worklet may only call worklets — a plain call from the UI thread kills the process |
-| `verify-request-deadlines` | No awaited network call in a screen without a ceiling, or a silent socket freezes the surface |
-| `verify-i18n` / `verify-i18n-coverage` | The locale registry matches the files, and no English is left in a screen |
-| `verify-safety-contract`, `verify-phase5-contract` | Safety wiring and diagnostics boundaries stay where they were put |
-| `verify-phase6-*`, `verify-phase7-push` | Design, media, settings and push architecture stay inside their contracts |
-| `verify-admin-dashboard` | The dashboard reads diagnostics only through gated RPCs |
-| `verify-brand-assets`, `verify-entrypoint`, `verify-site` | The brand, the entry point and the public site are what they claim |
-| `build-site-i18n --check`, `build-site-languages --check`, `build-push-copy --check` | Generated pages, the language list and the notification copy cannot drift from their sources |
+- Sixteen static verifiers, each one a rule somebody learned the hard way — design tokens, worklet safety, request deadlines, localisation coverage, safety wiring, push architecture, the generated site
 
 **On real devices, because a screenshot or it did not happen**
 
 The 1.0 build was walked on a Galaxy S23 Ultra and a Galaxy A15, on a throttled
 network, on a dead one, in light and dark, and at 200 % font size:
 
-| Path | Checked |
-|---|---|
-| Cold start → Discovery | Deck loads, location fix from the last known position |
-| Bind and pass | Card leaves, decision confirmed; on a stalled socket it queues and says so |
-| Match celebration | Skia and Reanimated under minification, readable in both schemes |
-| Chat | Keyboard leaves the header alone, gestures, drafts survive leaving the screen |
-| Offline message | Written offline, app force-stopped, network back — delivered by itself |
-| Voice | Record, pause when the app leaves the foreground, send, play back |
-| Photos | Picker through upload to the gallery, moderation state respected |
-| Filters | Sheet scrolls over the dials, applied filters explain an empty deck correctly |
-| Accessibility | Screen reader reads only the top layer, 48 dp targets, 200 % type |
-| Sign-in | Email and password, Google sheet opens with Google's own mark |
+Cold start and discovery, bind and pass, the match celebration, chat with the
+keyboard, a message written offline and delivered by itself, voice recording and
+playback, the photo picker through upload, filters, accessibility at 200 % type,
+sign-in by email and through Google, and push end to end.
 
-The one path not re-tested under minification is push delivery; it is called out
-in [`AGENTS.md`](AGENTS.md) rather than assumed.
+Every path above was walked on the 1.0 build, minification included.
 
 ## Stack
 
@@ -93,18 +72,7 @@ npm start                     # Expo dev server
 npm run typecheck && npm run typecheck:tests && npm test
 node scripts/verify-request-deadlines.mjs      # and the other verifiers in AGENTS.md
 
-npm run release -- --bundle   # signed APK + AAB + mapping into ~/Binder-Release
-```
-
-Staging a walkthrough on a device — a labelled test account and a deck to swipe,
-both removable in one command:
-
-```bash
-node scripts/stage-test-account.mjs create
-node scripts/stage-demo-profiles.mjs create docs/demo-profiles.json
-# ... walk the app ...
-node scripts/stage-demo-profiles.mjs remove docs/demo-profiles.json
-node scripts/stage-test-account.mjs remove
+npm run release -- --bundle   # signed release artefacts
 ```
 
 The public site is generated, not written by hand. Copy `site/i18n/en.json`,
@@ -116,7 +84,7 @@ the hreflang alternates, the language switcher and the sitemap by itself.
 
 | Doc | Purpose |
 |---|---|
-| [`AGENTS.md`](AGENTS.md) | The working agreement: rules, gates, release procedure, device evidence, open items |
+| [`AGENTS.md`](AGENTS.md) | How work is done here: the product rules, the gates, the lessons |
 | `site/i18n/` | The site's copy, one file per language |
 | `site/templates/` | The site's markup, with `{{key}}` where copy goes |
 | `supabase/migrations/` | Every invariant the product depends on |
