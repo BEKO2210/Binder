@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#090A0F">
+  <title>Datenschutzerklärung — Binder Dating-App</title>
+  <meta name="description" content="Was Binder erhebt und was es nie weitergibt: kein genauer Standort, kein Geburtsdatum für andere, keine Werbetracker, Diagnostik standardmäßig aus.">
+  <link rel="canonical" href="https://beko2210.github.io/Binder/de/privacy.html">
+  <link rel="alternate" hreflang="en" href="https://beko2210.github.io/Binder/privacy.html">
+  <link rel="alternate" hreflang="de" href="https://beko2210.github.io/Binder/de/privacy.html">
+  <link rel="alternate" hreflang="x-default" href="https://beko2210.github.io/Binder/privacy.html">
+  <link rel="icon" type="image/png" href="../assets/binder-icon.png">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<header class="nav"><div class="wrap navin"><a class="brand" href="./" aria-label="Binder Startseite"><img src="../assets/binder-icon.png" alt="" width="36" height="36"><span class="brand-word">BINDER</span></a><nav class="links"><a class="navlink" href="terms.html">AGB</a><a class="btn secondary" href="delete-account.html">Konto verwalten</a></nav></div></header>
+<main class="legal">
+  <div class="kicker">Datenschutz</div>
+  <h1>Was Binder braucht — und was es nicht preisgibt.</h1>
+  <p class="intro">Diese Erklärung beschreibt die aktuelle Beta-Architektur von Binder, einschließlich der eigenen Ranking-Messung und der optionalen technischen Diagnostik.</p>
+  <p class="meta">Stand: 19. August 2026 · Kontakt: nullmesh@protonmail.com</p>
+  <div class="callout"><strong>Zentrale Datenschutzgrenze.</strong> Andere Binder-Nutzer erhalten weder dein rohes Geburtsdatum noch deine genauen geografischen Koordinaten. Alter und gerundete Entfernung leitet Binder serverseitig ab. Binder setzt in der aktuellen Beta keine Werbe-Analysen von Drittanbietern ein.</div>
+
+  <h2>Daten, die wir verarbeiten</h2>
+  <p><strong>Konto:</strong> Authentifizierungskennungen wie E-Mail-Adresse und Supabase-Auth-Metadaten.</p>
+  <p><strong>Private Berechtigungsdaten:</strong> Geburtsdatum und aktueller Standort, verwendet zur Durchsetzung des 18+-Zugangs und der Entdeckungsdistanz.</p>
+  <p><strong>Profil und nutzergenerierte Inhalte:</strong> Vorname, Beschreibung, Geschlecht, Interessen, Profilfotos und Nachrichten, die du selbst erstellst.</p>
+  <p><strong>Optionale Profilattribute:</strong> Größe, Rauchen, Alkohol, Drogenkonsum, Sport, Ernährung, Weltanschauung, ob du Kinder hast, ob du Kinder möchtest und ob du ein Auto hast. Jede dieser Angaben ist optional, du wählst jede Antwort aus einer festen Liste, du kannst jede jederzeit wieder löschen, und eine unbeantwortete Frage wird schlicht nicht angezeigt. <strong>Weltanschauung (Religion oder Überzeugung) ist eine besondere Kategorie personenbezogener Daten nach Artikel 9 DSGVO.</strong> Binder verarbeitet sie nur, weil du sie freiwillig durch die Wahl einer Antwort angibst, und nur, um sie auf deinem Profil zu zeigen und gegen die Filter anderer Personen zu prüfen — nie für Werbung, Scoring oder einen anderen Zweck. Dein Sternzeichen wird auf deinem Profil angezeigt, aber nie gespeichert: Der Server leitet es bei jedem Auslesen deines Profils erneut aus deinem Geburtsdatum ab.</p>
+  <p><strong>Entdeckungsfilter:</strong> Die von dir gesetzten Attributfilter werden mit deinen Entdeckungspräferenzen gespeichert. Sie wirken in beide Richtungen — jemand, dessen Filter dich ausschließen, erscheint auch nicht in deinem Stapel, damit ein Like nicht ins Leere laufen kann.</p>
+  <p><strong>Sprachaufnahmen:</strong> Sprachnachrichten, die du in einem Chat aufnimmst, und das optionale Sprach-Intro auf deinem Profil. Aufnahmen laufen bis zu sechzig Sekunden, liegen in privaten Speicherbereichen und sind nie öffentliche Dateien: Eine Sprachnachricht können nur die zwei Personen in diesem Gespräch hören, ein Sprach-Intro nur Personen, die dein Profil ohnehin ansehen dürfen. Moderatoren können eine Aufnahme nur anhören, wenn sie gemeldet wurde oder zu einer geprüften Nachricht gehört. Das Löschen eines Sprach-Intros entfernt es; das Löschen deines Kontos entfernt deine Aufnahmen.</p>
+  <p><strong>Sicherheitsdaten:</strong> Blocks, Meldungen, Kontextschnappschüsse zu Meldungen, Moderationsstatus und Ereignisse der Missbrauchskontrolle.</p>
+  <p><strong>Gerätedaten:</strong> Ein Expo-Push-Token wird nur gespeichert, wenn Benachrichtigungen in einem konfigurierten Build aktiviert sind.</p>
+  <p><strong>Beta-Ranking-Messung:</strong> Binder kann die an einem Entdeckungs-Eindruck beteiligten Konten, die Rangposition, die Anzahl gemeinsamer Interessen, ein grobes 10-km-Distanzintervall und das spätere Bind/Pass-Ergebnis aufzeichnen. Genaue Koordinaten, Profiltexte, Nachrichtentexte und Medienpfade werden nicht in diese Ranking-Messung kopiert.</p>
+  <p><strong>Optionale Client-Diagnostik:</strong> Wenn du die Beta-Diagnostik ausdrücklich aktivierst, kann Binder einen festen technischen Ereignis- oder Bildschirmnamen, eine Dauer, eine kleine Zahl, das Erfolg/Fehler-Ergebnis, Android/iOS und die App-Version aufzeichnen. Dieser Kanal akzeptiert keine freien Metadaten, keine Profil- oder Nachrichteninhalte, keinen genauen Standort, keine Kontaktdaten, keine rohen Fehlermeldungen und keine Stacktraces.</p>
+
+  <h2>Wofür wir sie verwenden</h2>
+  <ul><li>dein Konto zu authentifizieren;</li><li>das Onboarding nur für Erwachsene und die Entdeckungspräferenzen durchzusetzen;</li><li>Kandidaten-Berechtigung und gerundete Entfernung zu berechnen;</li><li>gematchte Gespräche zu speichern und zuzustellen, einschließlich Sprachnachrichten;</li><li>die von dir angegebenen optionalen Attribute anzuzeigen und gegen die Filter anderer Personen zu prüfen;</li><li>Missbrauch zu verhindern, Meldungen zu untersuchen und Blocks durchzusetzen;</li><li>zu messen, ob die Reihenfolge der Entdeckung und der zentrale Matching-Trichter funktionieren;</li><li>Ladezeit- oder Darstellungsprobleme der Beta zu diagnostizieren, wenn die optionale Diagnostik aktiviert ist;</li><li>Kontolöschung und Sicherheitskontrollen zu betreiben.</li></ul>
+
+  <h2>Messoptionen in der Beta</h2>
+  <p>Die zentrale Ranking- und Trichtermessung wird von Binders eigenem Server aus Produktaktionen erzeugt und bleibt anderen Nutzern gegenüber privat. Die optionale Client-Diagnostik ist davon getrennt und startet deaktiviert. Du kannst sie unter <strong>Profil → Beta-Programm</strong> aktivieren oder deaktivieren. Das Deaktivieren löscht die vorhandenen optionalen Client-Diagnostik-Einträge für dein Konto.</p>
+  <p>Die aktuellen Aufbewahrungsziele sind 30 Tage für die optionale Client-Diagnostik und 90 Tage für Beobachtungen des Entdeckungs-Rankings. Privates Beta-Feedback und inhaltsfreie Server-Trichteraufzeichnungen können bis zu 180 Tage aufbewahrt werden, während die Beta ausgewertet wird.</p>
+
+  <h2>Infrastruktur</h2>
+  <p>Binder nutzt derzeit Supabase für Authentifizierung, Postgres-Daten, privaten Dateispeicher, Echtzeit-Zustellung und die eigene Beta-Messung. Expo-Infrastruktur kann für entfernte Benachrichtigungen verwendet werden, wenn produktiver Push aktiviert ist. Binder verkauft keine personenbezogenen Daten an Werbetreibende.</p>
+  <p><strong>Konto-E-Mails:</strong> Bestätigungs-, Anmelde- und Passwort-Mails werden von Brevo (Sendinblue SAS, Frankreich) im Auftrag von Binder zugestellt, von <code>no-reply@it-handwerk-stuttgart.de</code>. Brevo verarbeitet dafür deine E-Mail-Adresse und den Zustellstatus dieser Mails. Brevo fügt Transaktionsmails eine eigene Öffnungs- und Klickmessung hinzu und bietet keine Möglichkeit, sie abzuschalten; Binder betreibt sie im anonymisierten Modus, sodass Öffnungen und Klicks keiner einzelnen Empfängerin oder keinem einzelnen Empfänger zugeordnet werden. Das ist Zustellinfrastruktur, keine Werbung und kein Profiling: Nichts davon erreicht die App, einen anderen Nutzer oder Dritte.</p>
+
+  <h2>Mikrofon</h2>
+  <p>Binder fragt den Mikrofonzugriff nur in dem Moment an, in dem du eine Aufnahme startest, und nur für diese Aufnahme. Es gibt kein Mithören im Hintergrund, keine automatische Aufnahme und keine Transkription. Verweigerst du die Berechtigung, funktioniert alles andere in der App weiter — Sprache ist durchgehend optional.</p>
+
+  <h2>Standort</h2>
+  <p>Binder fragt den Vordergrund-Standort für die Entdeckung an. Genaue Koordinaten werden privat für serverseitige Distanzprüfungen gespeichert und nicht an andere Nutzer zurückgegeben. Die Ranking-Messung verwendet stattdessen ein grobes 10-km-Distanzintervall, statt genaue Koordinaten zu kopieren. Hintergrund-Standort ist nicht Teil des aktuellen Produkts.</p>
+
+  <h2>Aufbewahrung und Löschung</h2>
+  <p>Wenn du die Löschung deines Kontos anforderst, ist Binder darauf ausgelegt, kontobezogene Produktdaten, die Authentifizierungsidentität und kontoverknüpfte Beta-Messungen durch Datenbank-Kaskaden zu entfernen. Bestimmte Sicherheits- oder Betrugspräventionsaufzeichnungen können eine begrenzte Aufbewahrung erfordern, soweit rechtlich gerechtfertigt; aufbewahrte Aufzeichnungen sollten minimiert und vom normalen Produktbetrieb getrennt werden.</p>
+  <p>Nutze die <a href="delete-account.html">Seite zur Kontolöschung</a> oder die Konto-Einstellungen in der App, um die Löschung einzuleiten.</p>
+
+  <h2>Deine Möglichkeiten</h2>
+  <p>Du kannst Profilinformationen in der App aktualisieren, jedes optionale Attribut beantworten oder löschen, dein Sprach-Intro aufnehmen, ersetzen oder löschen, die Mikrofonberechtigung verweigern, die Standortberechtigung verweigern, Push-Benachrichtigungen deaktivieren, die optionale Beta-Diagnostik aktivieren oder deaktivieren, privates Beta-Feedback senden, einen anderen Nutzer blockieren oder melden, ein Match auflösen und die Löschung deines Kontos anfordern.</p>
+
+  <h2>Kontakt</h2>
+  <p>Datenschutzfragen: <a href="mailto:nullmesh@protonmail.com">nullmesh@protonmail.com</a>. Die Verhaltensregeln hinter den hier beschriebenen Schutzkontrollen stehen in den <a href="terms.html">AGB &amp; Community-Regeln</a>, und die Kinderschutz-Zusagen sind auf der Seite <a href="safety-standards.html">Kinderschutz-Standards</a> veröffentlicht.</p>
+</main>
+<footer class="footer"><div class="wrap footerin"><span>© 2026 Binder · Unabhängiges Produkt</span><div class="footlinks"><a href="./">Start</a><a href="../languages.html">Sprachen</a><a href="privacy.html">Datenschutz</a><a href="terms.html">AGB</a><a href="safety-standards.html">Kinderschutz</a><a href="delete-account.html">Konto löschen</a><a href="../impressum.html">Impressum</a><a href="mailto:nullmesh@protonmail.com">Kontakt</a><a href="../privacy.html" hreflang="en" lang="en">English</a></div></div></footer>
+</body>
+</html>
