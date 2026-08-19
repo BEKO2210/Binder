@@ -80,4 +80,20 @@
     <lastmod>2026-08-19</lastmod>
     <priority>0.6</priority>
   </url>
+  <url>
+    <loc>https://beko2210.github.io/Binder/languages.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://beko2210.github.io/Binder/languages.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://beko2210.github.io/Binder/de/languages.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://beko2210.github.io/Binder/languages.html"/>
+    <lastmod>2026-08-19</lastmod>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://beko2210.github.io/Binder/de/languages.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://beko2210.github.io/Binder/languages.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://beko2210.github.io/Binder/de/languages.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://beko2210.github.io/Binder/languages.html"/>
+    <lastmod>2026-08-19</lastmod>
+    <priority>0.4</priority>
+  </url>
 </urlset>
