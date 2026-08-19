@@ -7,8 +7,8 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInUp, FadeOutDown, SlideInRight, SlideOutRight, ZoomIn, ZoomOut } from 'react-native-reanimated';
 
-import { LiquidHeart } from './components/LiquidHeart';
 import BinderErrorBoundary from './components/BinderErrorBoundary';
+import { LiquidHeart } from './components/LiquidHeart';
 import { BinderIcon, BinderText, MotionPressable, ScreenState, type BinderIconName } from './components/ui';
 import { sessionIdentityChanged } from './lib/authTransition';
 import { consumeIntentionalSignOut, markIntentionalSignOut, sessionEndDecision } from './lib/sessionEnd';
@@ -506,17 +506,13 @@ function CenteredColumn({ wide, children }: { wide: boolean; children: React.Rea
 
 function NavItem({ icon, label, active, onPress }: { icon: BinderIconName; label: string; active: boolean; onPress: () => void }) {
   const { theme } = useBinderTheme();
-  // The Binds tab is the heart of the app in the literal sense, so its icon
-  // holds liquid: filled while the tab is open, still while it is not. The
-  // water stays level with the ground, so tilting the phone tips it — the one
-  // place in the chrome that is alive rather than drawn.
-  const liquid = icon === 'matches';
-  return <MotionPressable accessibilityRole="tab" accessibilityLabel={label} accessibilityState={{ selected: active }} onPress={onPress} style={({ pressed }) => ({ flex: 1, minHeight: 52, borderRadius: theme.radii.control, alignItems: 'center', justifyContent: 'center', gap: 3, backgroundColor: pressed ? theme.colors.surfacePressed : 'transparent' })}>
-    <View style={{ width: 22, height: 22, alignItems: 'center', justifyContent: 'center' }}>
-      <BinderIcon name={icon} size={22} color={active ? theme.accent.onSurface : theme.colors.textMuted} />
-      {liquid ? <View pointerEvents="none" style={{ position: 'absolute' }}><LiquidHeart size={22} color={active ? theme.semantic.bind : theme.colors.textMuted} active={active} /></View> : null}
-    </View>
-    <BinderText variant="caption" numberOfLines={1} maxFontSizeMultiplier={theme.layout.chromeFontScaleCap} style={{ color: active ? theme.accent.onSurface : theme.colors.textMuted }}>{label}</BinderText></MotionPressable>;
+  // The Binds heart fills with its own red while its tab is open and keeps its
+  // outline, so the shape stays a heart rather than a red blob. No waves down
+  // here: at twenty-two pixels a wave is two pixels of movement and reads as a
+  // rendering fault, which is exactly how it looked when it had them.
+  const heartTab = icon === 'matches';
+  const iconColor = active ? theme.accent.onSurface : theme.colors.textMuted;
+  return <MotionPressable accessibilityRole="tab" accessibilityLabel={label} accessibilityState={{ selected: active }} onPress={onPress} style={({ pressed }) => ({ flex: 1, minHeight: 52, borderRadius: theme.radii.control, alignItems: 'center', justifyContent: 'center', gap: 3, backgroundColor: pressed ? theme.colors.surfacePressed : 'transparent' })}>{heartTab ? <LiquidHeart size={22} color={active ? theme.semantic.bind : theme.colors.transparent} outlineColor={active ? theme.semantic.bind : theme.colors.textMuted} active={active} still /> : <BinderIcon name={icon} size={22} color={iconColor} />}<BinderText variant="caption" numberOfLines={1} maxFontSizeMultiplier={theme.layout.chromeFontScaleCap} style={{ color: active ? theme.accent.onSurface : theme.colors.textMuted }}>{label}</BinderText></MotionPressable>;
 }
 
 function RouteFrame({ route, children }: { route: 'expand' | 'lift' | 'trailing'; children: React.ReactNode }) {
