@@ -36,7 +36,15 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: '22.13.1'
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      # The brand assets are generated, not committed, and verify-site insists
+      # on them being there.
+      - name: Prepare Binder site assets
+        run: npm run site:prepare
 
       - name: Build the site from its language files
         run: node scripts/build-site-i18n.mjs
@@ -54,7 +62,7 @@ jobs:
           fi
           git config user.name "binder-site-bot"
           git config user.email "noreply@github.com"
-          git add site/
+          git add site/*.html site/de site/sitemap.xml site/i18n site/templates
           LANGS=$(ls site/i18n/*.json | grep -v context | xargs -n1 basename | sed 's/.json//' | paste -sd', ')
           git commit -m "The site is rebuilt from its language files ($LANGS)
 
