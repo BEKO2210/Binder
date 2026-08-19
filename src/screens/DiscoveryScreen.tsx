@@ -15,7 +15,7 @@ import { fetchMatches, type MatchSummary } from '../lib/conversation';
 import { announce } from '../lib/announce';
 import { countDiscoveryCandidates, fetchDiscoveryBatch, loadAttributeFilterCount, loadDiscoveryPreferences, recordDecision, refreshDiscoveryLocation, type DiscoveryProfile } from '../lib/discovery';
 import { classifyEmptyDiscovery, filterValuesToCountWith, type EmptyDiscoveryKind } from '../lib/discoveryAvailability';
-import { discoveryLoadingVisible } from '../lib/discoveryOverlays';
+import { deckIsCovered, discoveryLoadingVisible } from '../lib/discoveryOverlays';
 import { advanceDeck, decideSwipe, discoveryDeckPhysics, resistedTranslation, type SwipeDirection } from '../lib/discoveryDeck';
 import { formatCount, formatDistanceKm } from '../lib/format';
 import { listMyProfileMedia } from '../lib/media';
@@ -85,7 +85,9 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
   const profile = profiles[0];
   const nextProfile = profiles[1];
   const spring = resolveSpring(reduceMotion, 'professional');
-  const loadingVisible = discoveryLoadingVisible(loading, { filtersOpen, safetyOpen, profileOpen: Boolean(viewingProfile), celebrating: Boolean(match) });
+  const overlays = { filtersOpen, safetyOpen, profileOpen: Boolean(viewingProfile), celebrating: Boolean(match) };
+  const deckCovered = deckIsCovered(overlays);
+  const loadingVisible = discoveryLoadingVisible(loading, overlays);
 
   // Only the newest load may write the deck. An older response finishing last
   // used to overwrite a freshly filtered deck with the previous one.
@@ -444,6 +446,9 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
+      {/* Everything the sheets cover. A screen reader used to keep reading the
+          deck and its header while a sheet was open on top of them. */}
+      <View style={{ flex: 1 }} accessibilityElementsHidden={deckCovered} importantForAccessibility={deckCovered ? 'no-hide-descendants' : 'auto'}>
       <BinderScreenHeader title={t('discovery.header.title')} titleVisual={<View><BinderBrand compact /><BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>{t('discovery.header.copy')}</BinderText>{filterValues ? <BinderText variant="caption" tone="accent" style={{ marginTop: theme.spacing.x2, marginBottom: theme.spacing.x1 }}>{t('discovery.filters.summary', { minAge: formatCount(filterValues.minAge, locale), maxAge: formatCount(filterValues.maxAge, locale), distance: formatDistanceKm(filterValues.distance, locale) })}{attributeFilterCount > 0 ? ` · ${t(attributeFilterCount === 1 ? 'discovery.filters.moreOne' : 'discovery.filters.moreOther', { count: formatCount(attributeFilterCount, locale) })}` : ''}</BinderText> : null}{pendingCount > 0 ? <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1 }}>{t(pendingCount === 1 ? 'discovery.pending.one' : 'discovery.pending.other', { count: formatCount(pendingCount, locale) })}</BinderText> : null}</View>} trailing={<View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
           {decisionPending ? <BinderText accessibilityLiveRegion="polite" variant="caption" tone="accent">{t('discovery.states.saving')}</BinderText> : null}
           <Animated.View key={filterValues ? `${filterValues.minAge}-${filterValues.maxAge}-${filterValues.distance}` : 'filters'} entering={reduceMotion ? undefined : FadeIn.duration(theme.motion.standard)} exiting={reduceMotion ? undefined : FadeOut.duration(theme.motion.fast)}><BinderChip icon="settings" label={t('discovery.filters.label')} selected={filtersOpen} disabled={decisionPending} accessibilityLabel={t('discovery.accessibility.openFilters')} onPress={() => setFiltersOpen(true)} /></Animated.View>
@@ -461,7 +466,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
           <>
             {nextProfile ? (
               <Animated.View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[{ position: 'absolute', inset: 0 }, reduceMotion ? undefined : backCardStyle]}>
-                <ProfileCard key={nextProfile.id} profile={nextProfile} back={reduceMotion} />
+                <ProfileCard key={nextProfile.id} profile={nextProfile} back={reduceMotion} behind />
               </Animated.View>
             ) : null}
             <GestureDetector gesture={panGesture}>
@@ -485,6 +490,8 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
             the pair off the screen's centre line by half a button. */}
         <View style={{ width: theme.spacing.x16 }}><DiscoveryAction kind="pass" disabled={!profile || decisionPending || safetyOpen} onPressIn={() => previewDecision('left')} onPressOut={() => previewDecision(null)} onPress={() => void submitDecision('left')} /></View>
         <View style={{ width: theme.spacing.x16 }}><DiscoveryAction kind="bind" disabled={!profile || decisionPending || safetyOpen} onPressIn={() => previewDecision('right')} onPressOut={() => previewDecision(null)} onPress={() => void submitDecision('right')} /></View>
+      </View>
+
       </View>
 
       {viewingProfile ? (
@@ -542,7 +549,10 @@ function DiscoveryAction({ kind, disabled, onPress, onPressIn, onPressOut }: { k
   );
 }
 
-function ProfileCard({ profile, back = false, onOpenProfile }: { profile: DiscoveryProfile; back?: boolean; onOpenProfile?: () => void }) {
+// behind: the card under the top one. It is decoration until it is dealt —
+// its photo hot zones must not be reachable and a screen reader must not read
+// a second person while the first one is on screen, which it did.
+function ProfileCard({ profile, back = false, behind = false, onOpenProfile }: { profile: DiscoveryProfile; back?: boolean; behind?: boolean; onOpenProfile?: () => void }) {
   const { theme, locale, t } = useBinderTheme();
   const { width } = useWindowDimensions();
   const backCardOffset = width * discoveryDeckPhysics.backCardOffsetRatio;
@@ -553,8 +563,8 @@ function ProfileCard({ profile, back = false, onOpenProfile }: { profile: Discov
   const onMedia = darkPalette;
 
   return (
-    <View style={{ position: 'absolute', inset: 0, borderRadius: theme.radii.hero, overflow: 'hidden', backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.borderSubtle, transform: back ? [{ scale: discoveryDeckPhysics.backCardScale }, { translateY: backCardOffset }] : undefined, opacity: back ? discoveryDeckPhysics.backCardOpacity : 1 }}>
-      <PhotoPager photos={photos} name={t('discovery.accessibility.profileSummary', { name: profile.name, age: formatCount(profile.age, locale), distance: formatDistanceKm(profile.distanceKm, locale) })} interactive={!back} onOpen={onOpenProfile ? () => onOpenProfile() : undefined} />
+    <View accessibilityElementsHidden={behind} importantForAccessibility={behind ? 'no-hide-descendants' : 'auto'} style={{ position: 'absolute', inset: 0, borderRadius: theme.radii.hero, overflow: 'hidden', backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.borderSubtle, transform: back ? [{ scale: discoveryDeckPhysics.backCardScale }, { translateY: backCardOffset }] : undefined, opacity: back ? discoveryDeckPhysics.backCardOpacity : 1 }}>
+      <PhotoPager photos={photos} name={t('discovery.accessibility.profileSummary', { name: profile.name, age: formatCount(profile.age, locale), distance: formatDistanceKm(profile.distanceKm, locale) })} interactive={!back && !behind} onOpen={onOpenProfile ? () => onOpenProfile() : undefined} />
       <LinearGradient pointerEvents="none" colors={[theme.colors.transparent, theme.colors.scrim, theme.colors.overlay]} locations={[0, 0.52, 1]} style={{ position: 'absolute', inset: 0 }} />
 
       <View pointerEvents="none" style={{ position: 'absolute', left: theme.spacing.x5, right: theme.spacing.x5, bottom: theme.spacing.x5 }}>
