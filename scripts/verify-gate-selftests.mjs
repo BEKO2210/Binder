@@ -41,6 +41,25 @@ check('a chat transport counts as network', network.has('sendMessage'));
 check('a wrapper around one counts too', network.has('sendVoiceMessage'));
 check('a pure helper does not', !network.has('formatVoiceDuration'));
 
+// ── The worklet gate ─────────────────────────────────────────────────────────
+const { findViolations: workletViolations, workletNames } = await import('./lib/worklet-gate.mjs');
+const { filesUnder } = await import('./lib/network-calls.mjs');
+const projectFiles = ['src/lib', 'src/components', 'src/screens', 'src/theme'].flatMap((root) => filesUnder(root));
+const knownWorklets = workletNames(projectFiles);
+
+const workletDir = 'scripts/gate-fixtures/worklets';
+for (const fixture of readdirSync(workletDir).filter((entry) => entry.endsWith('.tsx'))) {
+  const path = join(workletDir, fixture);
+  const found = workletViolations([path], { workletNames: knownWorklets });
+  if (fixture.includes('.bad.')) check(`worklet gate catches ${fixture}`, found.length > 0);
+  else check(`worklet gate leaves ${fixture} alone`, found.length === 0);
+}
+
+// And the real thing it protects: the two functions whose absence caused the
+// crashes this gate exists for are recognised as worklets.
+check('a marked worklet is recognised', knownWorklets.has('resistedTranslation'));
+check('the chat padding is a worklet', knownWorklets.has('conversationKeyboardPadding'));
+
 let failed = 0;
 for (const [name, passed] of cases) {
   if (!passed) {
