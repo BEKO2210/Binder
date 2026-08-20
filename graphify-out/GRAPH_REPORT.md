@@ -1,16 +1,16 @@
 # Graph Report - Binder  (2026-08-20)
 
 ## Corpus Check
-- 311 files · ~305,714 words
+- 363 files · ~323,316 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1351 nodes · 2974 edges · 110 communities (88 shown, 22 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 20 edges (avg confidence: 0.59)
+- 1688 nodes · 3371 edges · 125 communities (97 shown, 28 thin omitted)
+- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 19 edges (avg confidence: 0.59)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `cbd67925`
+- Built from commit: `eeb38b0a`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -123,79 +123,85 @@
 - mediaRemoval.test.ts
 - discoveryDecisionOrder.test.ts
 - releaseSignatureGate.test.ts
+- verify-coverage-floors.mjs
+- verify-no-secrets.mjs
+- conversationKeyboardPadding
+- db-evidence.mjs
+- stage-test-match.mjs
+- verify-pinned-toolchain.mjs
 
 ## God Nodes (most connected - your core abstractions)
 1. `useBinderTheme()` - 109 edges
-2. `BinderText()` - 40 edges
-3. `scripts` - 39 edges
-4. `withDeadline()` - 25 edges
-5. `BinderApp()` - 24 edges
+2. `scripts` - 52 edges
+3. `BinderText()` - 40 edges
+4. `BinderApp()` - 26 edges
+5. `withDeadline()` - 25 edges
 6. `DiscoveryScreen()` - 24 edges
-7. `MotionPressable()` - 23 edges
-8. `useBinderHaptics()` - 22 edges
-9. `BinderButton()` - 20 edges
-10. `BinderIcon()` - 20 edges
+7. `BinderButton()` - 23 edges
+8. `MotionPressable()` - 23 edges
+9. `classifyError()` - 22 edges
+10. `useBinderHaptics()` - 22 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `PhotoPager()` --indirect_call--> `position()`  [INFERRED]
-  src/components/PhotoPager.tsx → site/header-art.js
+- `filesUnder()` --indirect_call--> `entry()`  [INFERRED]
+  scripts/lib/network-calls.mjs → src/lib/interestCatalog.ts
 - `refreshDiscoveryLocation()` --indirect_call--> `position()`  [INFERRED]
   src/lib/discovery.ts → site/header-art.js
-- `sourceFiles()` --indirect_call--> `entry()`  [INFERRED]
-  scripts/verify-request-deadlines.mjs → src/lib/interestCatalog.ts
+- `makeGesture()` --calls--> `resolveSpring()`  [EXTRACTED]
+  scripts/gate-fixtures/worklets/resolved-outside.good.tsx → src/lib/motionPolicy.ts
+- `PhotoPager()` --indirect_call--> `position()`  [INFERRED]
+  src/components/PhotoPager.tsx → site/header-art.js
 - `TopInset()` --calls--> `useBinderTheme()`  [EXTRACTED]
-  src/Root.tsx → src/theme/ThemeProvider.tsx
-- `CenteredColumn()` --calls--> `useBinderTheme()`  [EXTRACTED]
   src/Root.tsx → src/theme/ThemeProvider.tsx
 
 ## Import Cycles
 - None detected.
 
-## Communities (110 total, 22 thin omitted)
+## Communities (125 total, 28 thin omitted)
 
 ### Community 0 - "ThemeProvider.tsx"
-Cohesion: 0.13
-Nodes (20): clampUnit(), colorToUnitRgb(), colorToUnitRgba(), UnitRgba, AccentThemeId, baseColors, lightPalette, semanticContrastPairs() (+12 more)
+Cohesion: 0.05
+Nodes (53): swipe, makeGesture(), auroraSource, DiscoveryLoading(), MatchCelebration(), Portrait(), Props, DiscoveryProfile (+45 more)
 
 ### Community 1 - "ChatScreen.tsx"
-Cohesion: 0.11
-Nodes (26): recordBetaEvent(), blockUser(), createClientMessageId(), fetchMatches(), fetchMessages(), fetchMessagesPage(), markMatchRead(), MatchSummary (+18 more)
+Cohesion: 0.14
+Nodes (19): createClientMessageId(), fetchMessages(), fetchMessagesPage(), markMatchRead(), MatchSummary, Message, MessagePage, ReportReason (+11 more)
 
 ### Community 2 - "ProfileSettingsScreen.tsx"
-Cohesion: 0.13
-Nodes (19): addProfileImage(), GalleryMedia, listMyProfileMedia(), ModerationStatus, parseModerationStatus(), payloadFor(), Phase6Rpc, RegisteredMediaRow (+11 more)
+Cohesion: 0.10
+Nodes (20): artefacts, builtAt, commit, dependencies, lockfileSha256, sbom, node, qualityGate (+12 more)
 
 ### Community 3 - "DiscoveryFilterSheet.tsx"
-Cohesion: 0.15
-Nodes (27): AttributeEditor(), Props, AttributeFilterSection(), Props, ProfileAttributeList(), Props, AttributeFilters, clearFilterField() (+19 more)
+Cohesion: 0.06
+Nodes (60): AttributeEditor(), Props, AttributeFilterSection(), Props, CountConsequence(), DiscoveryFilterSheet(), GroupErrors, LoadedProfile (+52 more)
 
 ### Community 4 - "dependencies"
-Cohesion: 0.06
-Nodes (32): dependencies, aes-js, expo, expo-audio, expo-build-properties, expo-constants, expo-crypto, expo-file-system (+24 more)
+Cohesion: 0.05
+Nodes (42): author, dependencies, aes-js, expo, expo-audio, expo-build-properties, expo-constants, expo-crypto (+34 more)
 
 ### Community 5 - "scripts"
-Cohesion: 0.05
-Nodes (39): scripts, android, brand:assets, bundlecheck, i18n:coverage, i18n:sync, ios, mail:templates (+31 more)
+Cohesion: 0.04
+Nodes (52): scripts, android, brand:assets, bundlecheck, coverage, coverage:record, db:evidence, device:matrix (+44 more)
 
 ### Community 6 - "InterestPicker.tsx"
-Cohesion: 0.08
-Nodes (42): NETWORK_CALLS, ROOTS, sourceFiles(), violations, InterestPicker(), knownIds, labelOfKnown(), Props (+34 more)
+Cohesion: 0.09
+Nodes (37): InterestPicker(), knownIds, labelOfKnown(), Props, availableLocales(), dictionaries, Dictionary, hasTranslations() (+29 more)
 
 ### Community 7 - "format.ts"
-Cohesion: 0.23
-Nodes (13): previewTimeLabel(), DayLabel, formatCount(), formatDate(), formatDayLabel(), formatDistanceKm(), formatTime(), resolvedLocale() (+5 more)
+Cohesion: 0.33
+Nodes (10): previewTimeLabel(), DayLabel, formatCount(), formatDayLabel(), formatDistanceKm(), formatTime(), resolvedLocale(), startOfLocalDay() (+2 more)
 
 ### Community 8 - "AppSettingsScreen.tsx"
-Cohesion: 0.10
-Nodes (25): BetaEventName, BetaFeedbackCategory, BetaOutcome, BetaSettings, BetaSurface, BINDER_APP_VERSION, getBetaSettings(), initializeBetaDiagnostics() (+17 more)
+Cohesion: 0.14
+Nodes (19): BetaEventName, BetaFeedbackCategory, BetaOutcome, BetaSettings, BetaSurface, BINDER_APP_VERSION, getBetaSettings(), initializeBetaDiagnostics() (+11 more)
 
 ### Community 9 - "admin.js"
 Cohesion: 0.23
 Nodes (31): actionButton(), allowedTabs(), attachProtectedImage(), authorizeSession(), bindEvents(), configurePermissions(), empty(), evidenceBlock() (+23 more)
 
 ### Community 10 - "index.ts"
-Cohesion: 0.14
-Nodes (26): DiscoveryLoading(), BinderCard(), BinderChip(), BinderIcon(), BinderInput(), Props, BinderScreenHeader(), ChangingNumber() (+18 more)
+Cohesion: 0.18
+Nodes (15): BinderCard(), BinderChip(), BinderInput(), ScreenState(), Props, SectionHeader(), Props, VerifiedBadge() (+7 more)
 
 ### Community 11 - "expo"
 Cohesion: 0.07
@@ -206,16 +212,16 @@ Cohesion: 0.15
 Nodes (24): Path, adb(), adb_raw(), audit(), crawl(), devices(), dump(), dump_settled() (+16 more)
 
 ### Community 13 - "Root.tsx"
-Cohesion: 0.11
-Nodes (22): sessionIdentityChanged(), loadNotificationPreferences(), NotificationRoute, observeForegroundNotifications(), observeNotificationResponses(), parseNotificationRoute(), PushRegistrationResult, setNotificationForegroundContext() (+14 more)
+Cohesion: 0.09
+Nodes (24): sessionIdentityChanged(), acceptanceApplies(), CachedAcceptance, forgetAcceptance(), recallAcceptance(), rememberAcceptance(), consumeIntentionalSignOut(), forgetIntentionalSignOut() (+16 more)
 
 ### Community 14 - "AGENTS.md — the working agreement for Binder"
 Cohesion: 0.12
 Nodes (15): AGENTS.md — how work is done in this repository, Gates — all of them, before every push, How work runs, Languages, Lessons that cost real time, Non-negotiable rules, Push, and what has to be true before it is on, The public site (+7 more)
 
 ### Community 15 - "PartnerProfileScreen.tsx"
-Cohesion: 0.18
-Nodes (22): PhotoPager(), PhotoProgressSegment(), Props, resolveSpring(), adjacentPhotoIndex(), clampPhotoIndex(), nextPhotoPage(), photoCounterDurations() (+14 more)
+Cohesion: 0.15
+Nodes (26): animate(), curve(), dot(), eventStrength(), makeSignals(), mulberry32(), position(), render() (+18 more)
 
 ### Community 16 - "BinderDial.tsx"
 Cohesion: 0.17
@@ -230,28 +236,28 @@ Cohesion: 0.18
 Nodes (17): PUSH_COPY, pushCopy(), PushKind, channelId(), checkReceipts(), ClaimedDelivery, ClaimedReceipt, expoHeaders() (+9 more)
 
 ### Community 19 - "notifications.ts"
-Cohesion: 0.16
-Nodes (19): behaviorName(), categories, disablePushNotifications(), enablePushNotifications(), ensureAndroidNotificationChannels(), foregroundContext, getProjectId(), installationId() (+11 more)
+Cohesion: 0.06
+Nodes (76): Props, VoiceIntroEditor(), confirmDestructive(), blockUser(), fetchMatches(), signProfilePhoto(), uploadVoiceRecording(), DestructiveConfirmationAction (+68 more)
 
 ### Community 20 - "useBinderTheme"
 Cohesion: 0.29
 Nodes (9): attempts, DraftAttempt, forgetAllChats(), forgetChat(), recallAttempts(), recallDraft(), rememberAttempts(), rememberDraft() (+1 more)
 
 ### Community 21 - "reliability.ts"
-Cohesion: 0.25
-Nodes (14): backoffDelay(), cancellableDelay(), classifyError(), classifyRequestFailure(), deadlineError(), DEFINITIONS, errorText(), isConversationEndedError() (+6 more)
+Cohesion: 0.10
+Nodes (20): artefacts, builtAt, commit, dependencies, lockfileSha256, sbom, node, qualityGate (+12 more)
 
 ### Community 22 - "release-build.mjs"
-Cohesion: 0.11
-Nodes (15): appJson, appJsonPath, builtApk, certs, currentCode, currentVersion, flags, gradlePath (+7 more)
+Cohesion: 0.09
+Nodes (21): certificateOf(), git(), sha256(), writeEvidence(), appJson, appJsonPath, builtApk, certs (+13 more)
 
 ### Community 23 - "beta.ts"
-Cohesion: 0.12
-Nodes (19): BinderButtonVariant, Props, Props, BinderIconButton(), BinderIconName, IconButtonProps, iconFont, iconFontWaiters (+11 more)
+Cohesion: 0.13
+Nodes (24): BinderButtonVariant, Props, Props, BinderIcon(), BinderIconButton(), BinderIconName, IconButtonProps, iconFont (+16 more)
 
 ### Community 24 - "DiscoveryScreen.tsx"
-Cohesion: 0.07
-Nodes (48): DiscoveryPreferenceValues, announce(), activeFilterCount(), parseStoredFilters(), addPending(), loadPending(), nextToSend(), PendingDecision (+40 more)
+Cohesion: 0.08
+Nodes (41): DecisionOutcome, NOTHING, outcomeForConfirmation(), outcomeForFailure(), outcomeForQueueFailure(), shouldReloadDeck(), addPending(), loadPending() (+33 more)
 
 ### Community 25 - "store-assets.py"
 Cohesion: 0.32
@@ -262,40 +268,40 @@ Cohesion: 0.25
 Nodes (6): codes, dictionaries, languages, problems, siteLocales, sourceKeys
 
 ### Community 27 - "ProfileScreen.tsx"
-Cohesion: 0.10
-Nodes (22): discoveryVisibility, MediaState, CompletenessItem, profileCompleteness(), ProfileCompletenessInput, ReliabilityError, acceptCurrentLegalGate(), deleteCurrentAccount() (+14 more)
+Cohesion: 0.12
+Nodes (20): BinderScreenHeader(), acceptCurrentLegalGate(), deleteCurrentAccount(), DiscoveryReportReason, fetchMySafetyNotice(), getLegalGate(), getMyPrimaryMediaState(), LegalGate (+12 more)
 
 ### Community 28 - "i18n-sync.mjs"
 Cohesion: 0.17
 Nodes (9): codes, dictionaries, entries, files, imports, problems, report, sourceKeys (+1 more)
 
 ### Community 29 - "header-art.js"
-Cohesion: 0.22
-Nodes (15): clearOnboardingDraft(), loadOnboardingDraft(), OnboardingDraft, sanitize(), saveOnboardingDraft(), hasErrors(), ONBOARDING_STEPS, onboardingPosition() (+7 more)
+Cohesion: 0.08
+Nodes (38): ageSteps, discoveryDefaults, DiscoveryPreferences(), PreferenceGroup(), Props, ageOn(), assessBirthDate(), BirthDateAssessment (+30 more)
 
 ### Community 30 - "verify-i18n-coverage.mjs"
-Cohesion: 0.18
-Nodes (8): legalExceptions, perFile, regressions, report, root, scanRoots, total, userFacingProps
+Cohesion: 0.07
+Nodes (45): findViolations(), hasExemption(), insideDeadline(), findEnglish(), isProse(), literalBindings(), stringsFrom(), USER_FACING_PROPS (+37 more)
 
 ### Community 31 - "verify-phase7-push.mjs"
 Cohesion: 0.18
 Nodes (10): activation, app, chat, eas, failures, migration, notifications, requiredMigrationContracts (+2 more)
 
 ### Community 32 - "DiscoveryPreferences.tsx"
-Cohesion: 0.40
-Nodes (8): VoiceMessageBubble(), Props, VoiceRecorderBar(), formatVoiceDuration(), interruptedTakeAction(), recordingStopDecision(), voiceObjectPath(), waveformHeights()
+Cohesion: 0.31
+Nodes (10): Props, VoiceMessageBubble(), Props, VoiceRecorderBar(), signedVoiceUrl(), formatVoiceDuration(), interruptedTakeAction(), recordingStopDecision() (+2 more)
 
 ### Community 33 - "discoveryDeck.ts"
 Cohesion: 0.18
 Nodes (11): entries, html, keyFor(), [locale, pagePath, pageId], localePath, META_SKIP, root, slug() (+3 more)
 
 ### Community 34 - "googleAuth.ts"
-Cohesion: 0.14
-Nodes (17): conversationKeyboardPadding(), addUnsent(), clearUnsent(), forgetUnsentMatch(), isMessage(), loadUnsent(), removeUnsent(), saveUnsent() (+9 more)
+Cohesion: 0.24
+Nodes (10): addUnsent(), clearUnsent(), forgetUnsentMatch(), isMessage(), loadUnsent(), removeUnsent(), saveUnsent(), unsentInOrder() (+2 more)
 
 ### Community 35 - "stage-demo-profiles.mjs"
-Cohesion: 0.20
-Nodes (4): headers, key, manifest, [mode, manifestPath]
+Cohesion: 0.22
+Nodes (6): createUser(), headers, key, listDemoUsers(), manifest, [mode, manifestPath]
 
 ### Community 36 - "verify-phase5-contract.mjs"
 Cohesion: 0.20
@@ -314,16 +320,16 @@ Cohesion: 0.22
 Nodes (8): 1. Was die App erhebt, 1b. Spalte für Spalte, 2. Die Antworten je Datentyp, 3. Die übrigen Erklärungen unter App-Inhalte, 4. Wie das Formular maschinell befüllt wird, 5. Was am hochgeladenen Stand falsch war, 6. FOREGROUND_SERVICE_MEDIA_PLAYBACK, Play Console: Datensicherheit und App-Inhalte
 
 ### Community 40 - "deepLinks.ts"
-Cohesion: 0.20
-Nodes (12): LiquidHeart(), Props, AuthCallback, AuthCallbackKind, CALLBACK_HOSTS, parseAuthCallback(), parseRecoveryCallback(), RecoveryCallback (+4 more)
+Cohesion: 0.33
+Nodes (8): AuthCallback, AuthCallbackKind, CALLBACK_HOSTS, parseAuthCallback(), parseRecoveryCallback(), RecoveryCallback, singleParameter(), validOpaque()
 
 ### Community 41 - "supabase.ts"
-Cohesion: 0.29
-Nodes (3): LargeSecureStore, isSupabaseConfigured, Database
+Cohesion: 0.10
+Nodes (20): artefacts, builtAt, commit, dependencies, lockfileSha256, sbom, node, qualityGate (+12 more)
 
 ### Community 42 - "database.ts"
-Cohesion: 0.20
-Nodes (9): CompositeTypes, Constants, DatabaseWithoutInternals, DefaultSchema, Enums, Json, Tables, TablesInsert (+1 more)
+Cohesion: 0.10
+Nodes (20): artefacts, builtAt, commit, dependencies, lockfileSha256, sbom, node, qualityGate (+12 more)
 
 ### Community 43 - "report-bundle-size.mjs"
 Cohesion: 0.47
@@ -334,16 +340,16 @@ Cohesion: 0.22
 Nodes (8): brandComponent, brandReadme, config, failures, generator, notifications, required, splash
 
 ### Community 45 - "verify-worklet-contract.mjs"
-Cohesion: 0.20
-Nodes (5): exportedWorklets, failures, root, scanRoots, workletSafe
+Cohesion: 0.10
+Nodes (20): artefacts, builtAt, commit, dependencies, lockfileSha256, sbom, node, qualityGate (+12 more)
 
 ### Community 46 - "AuthScreen.tsx"
-Cohesion: 0.27
-Nodes (10): AuthFieldErrors, AuthMode, hasAuthErrors(), validateAuthForm(), configure(), describeGoogleError(), GoogleSignInOutcome, isGoogleSignInConfigured() (+2 more)
+Cohesion: 0.05
+Nodes (42): AuthFieldErrors, AuthMode, hasAuthErrors(), validateAuthForm(), configure(), describeGoogleError(), GoogleSignInOutcome, isGoogleSignInConfigured() (+34 more)
 
 ### Community 47 - "verify-design-contract.mjs"
-Cohesion: 0.25
-Nodes (6): allowlist, failures, root, rules, scanRoots, usedAllowlist
+Cohesion: 0.22
+Nodes (7): allowlist, COLOUR_PROPERTY, failures, root, rules, scanRoots, usedAllowlist
 
 ### Community 48 - "verify-safety-contract.mjs"
 Cohesion: 0.25
@@ -362,8 +368,8 @@ Cohesion: 0.29
 Nodes (5): accepted, allowedHighAdvisories, audit, failures, packageJson
 
 ### Community 52 - "LiquidHeart.tsx"
-Cohesion: 0.14
-Nodes (19): auroraSource, BinderBrand(), binderIcon, darkPalette, defaultSettings, NotificationPreferences, QuietHours, ThemeContext (+11 more)
+Cohesion: 0.10
+Nodes (20): artefacts, builtAt, commit, dependencies, lockfileSha256, sbom, node, qualityGate (+12 more)
 
 ### Community 53 - "compilerOptions"
 Cohesion: 0.29
@@ -434,44 +440,44 @@ Cohesion: 0.22
 Nodes (5): created, headers, key, [mode], payload
 
 ### Community 87 - "birthdate.ts"
-Cohesion: 0.44
-Nodes (7): ageOn(), assessBirthDate(), BirthDateAssessment, composeBirthDate(), sanitizeDigits(), BirthDateField(), ref
+Cohesion: 0.11
+Nodes (17): answers, database, device, e2e, evidenceDir, gate, newestEvidence(), offline (+9 more)
 
 ### Community 88 - "images.ts"
-Cohesion: 0.48
-Nodes (4): IMAGE_POLICY, imageDecodeSize(), pickAndPrepareProfileImage(), PreparedImage
+Cohesion: 0.11
+Nodes (17): Baseline, Decided — device coverage on hardware we own, Decided — observability without a new data recipient, Enterprise hardening, P0, P1, P2, P3 (+9 more)
 
 ### Community 89 - "supabase"
-Cohesion: 0.38
-Nodes (6): signedProfileImageUrl(), fetchPartnerProfile(), PartnerProfile, PublicProfileRow, rowsFromProfile(), supabase
+Cohesion: 0.18
+Nodes (11): account, baseline, coldStartMs(), flow(), interactionFrames(), maestro, MARGIN, memoryMb() (+3 more)
 
 ### Community 90 - "verify-data-safety.mjs"
 Cohesion: 0.33
 Nodes (5): doc, IGNORED, PERSONAL_TABLES, problems, types
 
 ### Community 91 - "confirmDestructive.ts"
-Cohesion: 0.36
-Nodes (5): Props, VoiceIntroEditor(), confirmDestructive(), DestructiveConfirmationAction, destructiveConfirmationActions()
+Cohesion: 0.20
+Nodes (8): ANDROID_CHECKS, CHECKS, failed, plan, PREPARE, report, results, withAndroid
+
+### Community 92 - "BinderErrorBoundary"
+Cohesion: 0.17
+Nodes (6): BinderErrorBoundary, CrashFallback(), Props, State, BinderBrand(), binderIcon
 
 ### Community 94 - "conversationKeyboardPadding"
-Cohesion: 0.15
-Nodes (17): CountConsequence(), DiscoveryFilterSheet(), GroupErrors, LoadedProfile, Props, ageSteps, discoveryDefaults, DiscoveryPreferences() (+9 more)
-
-### Community 97 - "BinderButton"
-Cohesion: 0.18
-Nodes (10): CrashFallback(), Props, State, MatchCelebration(), Portrait(), Props, BinderButton(), CelebrationLayout (+2 more)
+Cohesion: 0.25
+Nodes (7): CONDITIONS, device(), evidence, hardware, results, shell(), wanted
 
 ### Community 98 - "header-art.js"
-Cohesion: 0.32
-Nodes (11): animate(), curve(), dot(), eventStrength(), makeSignals(), mulberry32(), position(), render() (+3 more)
+Cohesion: 0.29
+Nodes (4): account, device(), maestro, network()
 
 ### Community 99 - "MatchesScreen.tsx"
-Cohesion: 0.33
-Nodes (10): resolveStaggerDelay(), getNotificationPermissionStatus(), openSystemNotificationSettings(), bannerOffersEnable(), bannerStateAfterRegistration(), initialBannerState(), PushBannerState, isAbortError() (+2 more)
+Cohesion: 0.29
+Nodes (6): Android security posture, Network, Not done, and named as such, Permissions, Platform, Storage
 
 ### Community 100 - "motionPolicy.ts"
-Cohesion: 0.27
-Nodes (7): AnimatedPressable, Props, MotionDurations, motionSprings, motionStagger, resolveDurations(), resolvePressScale()
+Cohesion: 0.57
+Nodes (4): LiquidHeart(), Props, heartPath(), liquidPath()
 
 ### Community 101 - "ChatScreen"
 Cohesion: 0.42
@@ -485,37 +491,37 @@ Nodes (6): buildChatTimeline(), dayKey(), localDayKey(), TimelineItem, TimelineM
 Cohesion: 0.29
 Nodes (5): element(), ok, release, run(), source
 
-### Community 104 - "package.json"
-Cohesion: 0.29
-Nodes (6): author, license, main, name, private, version
-
-### Community 105 - "devDependencies"
-Cohesion: 0.50
-Nodes (4): devDependencies, @types/node, @types/react, typescript
-
 ### Community 106 - "menuSessionEnd.test.ts"
 Cohesion: 0.50
 Nodes (3): deletion, signOut, source
 
+### Community 110 - "verify-coverage-floors.mjs"
+Cohesion: 0.40
+Nodes (3): floors, measured, regressions
+
+### Community 111 - "verify-no-secrets.mjs"
+Cohesion: 0.67
+Nodes (3): ALLOWED, PATTERNS, scan()
+
 ## Knowledge Gaps
-- **492 isolated node(s):** `name`, `slug`, `scheme`, `projectId`, `version` (+487 more)
+- **680 isolated node(s):** `name`, `slug`, `scheme`, `projectId`, `version` (+675 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **22 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **28 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `useBinderTheme()` connect `index.ts` to `ProfileSettingsScreen.tsx`, `DiscoveryFilterSheet.tsx`, `InterestPicker.tsx`, `format.ts`, `AppSettingsScreen.tsx`, `Root.tsx`, `PartnerProfileScreen.tsx`, `BinderDial.tsx`, `beta.ts`, `DiscoveryScreen.tsx`, `ProfileScreen.tsx`, `header-art.js`, `DiscoveryPreferences.tsx`, `googleAuth.ts`, `deepLinks.ts`, `AuthScreen.tsx`, `LiquidHeart.tsx`, `birthdate.ts`, `confirmDestructive.ts`, `conversationKeyboardPadding`, `BinderButton`, `MatchesScreen.tsx`, `motionPolicy.ts`, `ChatScreen`?**
-  _High betweenness centrality (0.045) - this node is a cross-community bridge._
-- **Why does `position()` connect `header-art.js` to `DiscoveryScreen.tsx`, `PartnerProfileScreen.tsx`?**
-  _High betweenness centrality (0.015) - this node is a cross-community bridge._
-- **Why does `PhotoPager()` connect `PartnerProfileScreen.tsx` to `header-art.js`, `ProfileSettingsScreen.tsx`, `index.ts`, `DiscoveryScreen.tsx`, `ProfileScreen.tsx`?**
-  _High betweenness centrality (0.014) - this node is a cross-community bridge._
+- **Why does `useBinderTheme()` connect `index.ts` to `ThemeProvider.tsx`, `ChatScreen.tsx`, `DiscoveryFilterSheet.tsx`, `InterestPicker.tsx`, `format.ts`, `AppSettingsScreen.tsx`, `Root.tsx`, `PartnerProfileScreen.tsx`, `BinderDial.tsx`, `notifications.ts`, `beta.ts`, `DiscoveryScreen.tsx`, `ProfileScreen.tsx`, `header-art.js`, `DiscoveryPreferences.tsx`, `AuthScreen.tsx`, `BinderErrorBoundary`, `BinderButton`, `motionPolicy.ts`, `ChatScreen`?**
+  _High betweenness centrality (0.033) - this node is a cross-community bridge._
+- **Why does `entry()` connect `InterestPicker.tsx` to `verify-i18n-coverage.mjs`?**
+  _High betweenness centrality (0.023) - this node is a cross-community bridge._
+- **Why does `filesUnder()` connect `verify-i18n-coverage.mjs` to `InterestPicker.tsx`?**
+  _High betweenness centrality (0.023) - this node is a cross-community bridge._
 - **What connects `name`, `slug`, `scheme` to the rest of the system?**
-  _497 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _685 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `ThemeProvider.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.13230769230769232 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05271629778672032 - nodes in this community are weakly interconnected._
 - **Should `ChatScreen.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.10591133004926108 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.14285714285714285 - nodes in this community are weakly interconnected._
 - **Should `ProfileSettingsScreen.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.13043478260869565 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09523809523809523 - nodes in this community are weakly interconnected._

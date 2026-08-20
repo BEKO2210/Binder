@@ -108,5 +108,20 @@
   "106": "menuSessionEnd.test.ts",
   "107": "mediaRemoval.test.ts",
   "108": "discoveryDecisionOrder.test.ts",
-  "109": "releaseSignatureGate.test.ts"
+  "109": "releaseSignatureGate.test.ts",
+  "110": "verify-coverage-floors.mjs",
+  "111": "verify-no-secrets.mjs",
+  "112": "conversationKeyboardPadding",
+  "113": "db-evidence.mjs",
+  "114": "stage-test-match.mjs",
+  "115": "verify-pinned-toolchain.mjs",
+  "116": "alias.bad.tsx",
+  "117": "documented.good.tsx",
+  "118": "multiline.bad.tsx",
+  "119": "namespace.bad.tsx",
+  "120": "wrapped.good.tsx",
+  "121": "named.bad.tsx",
+  "122": "rgb.bad.tsx",
+  "123": "shorthex.bad.tsx",
+  "124": "token.good.tsx"
 }
