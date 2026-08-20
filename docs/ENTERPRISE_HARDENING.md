@@ -297,8 +297,34 @@ names what is missing instead of rounding up.
     frames of 8851, 338.7 MB. A second run measured 0.66% and 345.8 MB and
     passed: that is what noise looks like, and a regression looks different.
   - Commit: `87168f2`
-- [ ] OPEN — Branch coverage floors for the critical modules
-- [ ] OPEN — Controlled decoupling of the four orchestrators
+- [x] PROVEN — Branch coverage floors for the critical modules
+  - Evidence: 48 modules in `src/lib` carry a floor measured from a real run.
+    The modules pulled out of the orchestrators sit at 100% of branches:
+    `decisionOutcome`, `messageOutcome`, `identityReset`, `photoGallery`,
+    `photoCrop`. `scripts/verify-coverage-floors.mjs` is check 30 of the gate
+    and fails on a floor that drops by more than a point.
+  - Commit: `bb7e6f6`
+
+- [x] PROVEN — Controlled decoupling of the four orchestrators
+  - Protection: each screen kept its rules in its handlers, where they drifted
+    apart. The decisions now live in pure modules that import nothing and are
+    tested directly: `decisionOutcome` (DiscoveryScreen), `messageOutcome`
+    (ChatScreen), `identityReset` (Root), `photoGallery` and `photoCrop`
+    (ProfileSettingsScreen and the partner profile).
+  - Evidence: every one at 100% of branches, and two defects fell out of the
+    move — the gallery guards were not the same shape between add, move and
+    replace, and the card crop centred what it kept, cutting heads off portraits.
+  - Commit: `bb7e6f6`
+
+- [x] PROVEN — Lint for the ordinary mistake (Phase 10)
+  - Protection: `eslint.config.mjs` runs behaviour rules only — hooks and
+    shadowing — because the four AST verifiers cover what is specific to Binder
+    and TypeScript covers types. `eslint-config-expo` is deliberately not used:
+    it pulls `unrs-resolver`, whose optional WASM bindings resolve differently
+    under npm 10 and npm 11 and broke `npm ci` in every workflow.
+  - Evidence: four real shadowing defects fixed (Root, DiscoveryScreen,
+    ProfileScreen); 0 errors, 32 warnings; check 26 of the gate.
+  - Commit: `3ec24f7`
 ### Decided — observability without a new data recipient
 
 No third-party telemetry SDK. Sentry or Crashlytics would mean stack traces,
