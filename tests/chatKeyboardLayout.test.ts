@@ -58,3 +58,15 @@ test('the timestamp lines up with the edge of its bubble', () => {
   const style = source.slice(stamp, source.indexOf('}}', stamp));
   assert.doesNotMatch(style, /marginHorizontal/);
 });
+
+test('leaving mid-send keeps the message, not only failures', () => {
+  // Sending clears the composer, and closing the screen aborts the request in
+  // flight. When only 'failed' attempts were written to disk, a message that
+  // was still on its way vanished with the screen: nothing in the composer,
+  // nothing stored, nothing to retry.
+  const cleanup = source.indexOf('rememberDraft(match.matchId, composerRef.current)');
+  assert.ok(cleanup > 0, 'the screen still stores the draft on the way out');
+  const block = source.slice(cleanup, cleanup + 700);
+  assert.match(block, /rememberAttempts\(match\.matchId, attemptsRef\.current\.map\(/);
+  assert.doesNotMatch(block, /filter\(\(attempt\) => attempt\.status === 'failed'\)/);
+});

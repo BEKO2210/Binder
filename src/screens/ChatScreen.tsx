@@ -49,7 +49,7 @@ const REPORT_REASONS: { value: ReportReason; labelKey: string }[] = [
   { value: 'other', labelKey: 'chat.safety.reasons.other' },
 ];
 
-type LocalAttempt = { clientId: string; body: string; localUri?: string; voice?: { audioPath: string; durationMs: number }; status: 'sending' | 'failed'; error?: ReliabilityError };
+type LocalAttempt = { clientId: string; body: string; localUri?: string; durationMs?: number; voice?: { audioPath: string; durationMs: number }; status: 'sending' | 'failed'; error?: ReliabilityError };
 type SafetyMode = 'menu' | 'report';
 
 type MessageRowProps = {
@@ -376,7 +376,11 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   // send are the person's, and the screen unmounting is not their decision.
   useEffect(() => () => {
     rememberDraft(match.matchId, composerRef.current);
-    rememberAttempts(match.matchId, attemptsRef.current.filter((attempt) => attempt.status === 'failed').map(({ clientId, body, localUri, voice }) => ({ clientId, body, localUri, voice })));
+    // Anything not confirmed by the server is kept, not only what already
+    // failed: leaving the screen aborts the request in flight, and a message
+    // that was still on its way used to disappear with the screen — composer
+    // already cleared, nothing on disk, nothing to retry.
+    rememberAttempts(match.matchId, attemptsRef.current.map(({ clientId, body, localUri, durationMs, voice }) => ({ clientId, body, localUri, durationMs, voice })));
   }, [match.matchId]);
 
   // Whatever was still unsent when the app was last closed comes back as a
@@ -391,7 +395,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         const known = new Set(current.map((entry) => entry.clientId));
         const restored = waiting
           .filter((entry) => !known.has(entry.clientId))
-          .map((entry) => ({ clientId: entry.clientId, body: entry.body, localUri: entry.localUri, voice: entry.voice, status: 'failed' as const }));
+          .map((entry) => ({ clientId: entry.clientId, body: entry.body, localUri: entry.localUri, durationMs: entry.durationMs, voice: entry.voice, status: 'failed' as const }));
         return restored.length > 0 ? [...restored, ...current] : current;
       });
     });
@@ -435,7 +439,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
    * which is exactly when it is most likely to happen: no network, phone put
    * away, app swiped out of the recents.
    */
-  function keepUnsent(entry: { clientId: string; body: string; localUri?: string; voice?: { audioPath: string; durationMs: number } }) {
+  function keepUnsent(entry: { clientId: string; body: string; localUri?: string; durationMs?: number; voice?: { audioPath: string; durationMs: number } }) {
     void loadUnsent().then((store) => saveUnsent(addUnsent(store, match.matchId, { ...entry, createdAt: Date.now() })));
   }
 
@@ -504,8 +508,8 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         if (isConversationEndedError(nextError)) { setConversationEnded(true); discardAttempt(clientId); return; }
         const failure = classifyRequestFailure(nextError);
         if (failure.kind === 'permission-denied') { discardAttempt(clientId); onSessionExpired(); return; }
-        setAttempts((current) => current.map((attempt) => attempt.clientId === clientId ? { ...attempt, status: 'failed' as const, error: failure } : attempt));
-        keepUnsent({ clientId, body: '', localUri });
+        setAttempts((current) => current.map((attempt) => attempt.clientId === clientId ? { ...attempt, status: 'failed' as const, error: failure, durationMs } : attempt));
+        keepUnsent({ clientId, body: '', localUri, durationMs });
       }
     } finally { sendingRef.current = false; if (mountedRef.current) setSending(false); }
   }
@@ -514,7 +518,9 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     if (sending) return;
     // The upload may be what failed, in which case there is no path yet — the
     // recording is still on the phone and gets a second run at it.
-    if (!attempt.voice && attempt.localUri) { await submitVoice(attempt.localUri, 0, attempt.clientId); return; }
+    // The recording's own length, not zero: the server refuses anything under
+    // a second, so a retry that forgot the duration could never succeed.
+    if (!attempt.voice && attempt.localUri) { await submitVoice(attempt.localUri, attempt.durationMs ?? 0, attempt.clientId); return; }
     if (!attempt.voice) return;
     setSending(true);
     sendingRef.current = true;

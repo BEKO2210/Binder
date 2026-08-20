@@ -152,3 +152,16 @@ test('a lost connection reads as offline even when it says nothing recognisable'
   assert.equal(classifyRequestFailure({ code: '42501', message: 'permission denied' }).kind, 'permission-denied');
   assert.equal(classifyRequestFailure({ status: 400, message: 'bad request' }).kind, 'server-refusal');
 });
+
+test('a bug in our own code is not reported as the phone being offline', () => {
+  // Everything without a server answer counts as offline, which is right for a
+  // request that never arrived. A TypeError from a mistake in the request path
+  // used to fall into the same bucket and be retried automatically, hiding the
+  // fault behind a message about the person's connection.
+  assert.equal(classifyRequestFailure(new TypeError('undefined is not an object (evaluating \'row.id\')')).kind, 'unknown');
+  assert.equal(classifyRequestFailure(new ReferenceError('supabase is not defined')).kind, 'unknown');
+  // The transport failure React Native reports keeps reading as offline.
+  assert.equal(classifyRequestFailure(new TypeError('Network request failed')).kind, 'offline');
+  // And a request that simply never answered still counts as offline.
+  assert.equal(classifyRequestFailure({ message: 'no answer' }).kind, 'offline');
+});

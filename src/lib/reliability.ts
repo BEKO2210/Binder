@@ -76,9 +76,25 @@ export function classifyError(value: unknown): ReliabilityError {
  * So: what the error says first, and only where that yields nothing, the
  * question `isLikelyOffline` already answers — did any server answer at all.
  */
+/**
+ * The shapes a JavaScript engine uses to report a fault in the program itself.
+ * A failed request never looks like this: React Native reports a dead network
+ * as a TypeError too, but with "Network request failed", which is matched long
+ * before this is asked.
+ */
+function isProgrammingError(value: unknown): boolean {
+  if (!(value instanceof TypeError) && !(value instanceof ReferenceError)) return false;
+  return /undefined is not|null is not|is not a function|cannot read|cannot access|is not defined/i.test(String(value.message ?? ''));
+}
+
 export function classifyRequestFailure(value: unknown): ReliabilityError {
   const classified = classifyError(value);
   if (classified.kind !== 'unknown') return classified;
+  // A mistake in our own code is not a tunnel. Without this, a TypeError from
+  // a bug in the request path was shown as "no network" and retried
+  // automatically for as long as somebody kept the screen open — a loop that
+  // hides the actual fault behind a message about the person's connection.
+  if (isProgrammingError(value)) return classified;
   // A bare status string carries no code and no status either, which is the
   // same evidence an object without them gives: nothing answered.
   const asAnswer = typeof value === 'string' ? { message: value } : value;

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { forgetChat, recallAttempts, recallDraft, rememberAttempts, rememberDraft } from '../src/lib/chatDrafts.ts';
+import { forgetAllChats, forgetChat, recallAttempts, recallDraft, rememberAttempts, rememberDraft } from '../src/lib/chatDrafts.ts';
 
 test('a half-written message survives leaving the chat', () => {
   rememberDraft('m1', 'Hey, ich wollte fragen');
@@ -48,4 +48,12 @@ test('the chat screen actually uses the store, and a tap no longer opens the men
   assert.ok(!/onPress=\{\(\) => \{\s*\n\s*if \(longPressHandled/.test(source), 'no tap handler on the bubble');
   assert.match(source, /onLongPress=\{\(\) => onOpenActions\(messageId, body, mine, true, Boolean\(voice\)\)\}/);
   assert.match(source, /isVoice \? \[\] : \[\{ text: t\('chat\.actions\.copy'\)/, 'copy is not offered for audio');
+});
+
+test('signing out leaves no drafts or attempts on the phone', () => {
+  rememberDraft('m-out', 'halb geschriebener Satz');
+  rememberAttempts('m-out', [{ clientId: 'c9', body: 'ging nicht raus' }]);
+  forgetAllChats();
+  assert.equal(recallDraft('m-out'), '');
+  assert.deepEqual(recallAttempts('m-out'), []);
 });

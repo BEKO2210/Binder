@@ -18,6 +18,12 @@ export type UnsentMessage = {
   body: string;
   /** A voice take whose upload never finished; the file is still on the phone. */
   localUri?: string;
+  /**
+   * How long that take is. Without it a retry sent zero and the server
+   * refused it, so a voice message whose upload failed could never be sent
+   * at all — the recording sat there with a retry button that could not work.
+   */
+  durationMs?: number;
   voice?: { audioPath: string; durationMs: number };
   /** When they pressed send, so the queue keeps their order. */
   createdAt: number;
@@ -82,4 +88,17 @@ export async function saveUnsent(store: UnsentStore): Promise<void> {
     // Storage full or unavailable: the message is still in memory for this
     // session, and losing it later is better than crashing now.
   }
+}
+
+/**
+ * Everything unsent, gone from this device.
+ *
+ * Messages waiting for a connection are written to disk in plain text so they
+ * survive the app being killed — which is right while somebody is signed in,
+ * and wrong the moment they sign out or delete the account. What they typed is
+ * theirs, and after they leave it belongs on the phone no more than the session
+ * does.
+ */
+export async function clearUnsent(): Promise<void> {
+  await saveUnsent({});
 }

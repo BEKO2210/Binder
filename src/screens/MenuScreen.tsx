@@ -4,6 +4,8 @@ import { Alert, ScrollView, View } from 'react-native';
 import { BinderButton, BinderCard, BinderIcon, BinderScreenHeader, BinderText } from '../components/ui';
 import { MotionPressable as Pressable } from '../components/ui';
 import { DELETE_ACCOUNT_URL, PRIVACY_URL, TERMS_URL, deleteCurrentAccount, openBinderUrl } from '../lib/safety';
+import { forgetAllChats } from '../lib/chatDrafts';
+import { clearUnsent } from '../lib/unsentMessages';
 import { withDeadline } from '../lib/reliability';
 import { confirmDestructive } from '../lib/confirmDestructive';
 import { markIntentionalSignOut } from '../lib/sessionEnd';
@@ -52,7 +54,13 @@ export default function MenuScreen({ onOpenSettings, onOpenBeta, onOpenAbout }: 
     // that expired on its own.
     markIntentionalSignOut();
     const { error } = await withDeadline(supabase.auth.signOut(), MENU_DEADLINE_MS);
-    if (error) setMessage(error.message);
+    if (error) { setMessage(error.message); return; }
+    // What they typed and never managed to send is written to disk in plain
+    // text so it survives the app being killed. That is right while they are
+    // signed in and wrong the moment they leave: the next person to open the
+    // app on this phone must not find a half-written message to somebody.
+    forgetAllChats();
+    await clearUnsent();
   }
 
   function confirmDeletion() {
@@ -62,7 +70,11 @@ export default function MenuScreen({ onOpenSettings, onOpenBeta, onOpenAbout }: 
   async function performDeletion() {
     setBusy(true);
     setMessage('');
-    try { await withDeadline(deleteCurrentAccount(), MENU_DEADLINE_MS); }
+    try {
+      await withDeadline(deleteCurrentAccount(), MENU_DEADLINE_MS);
+      forgetAllChats();
+      await clearUnsent();
+    }
     catch (error) { setMessage(error instanceof Error ? error.message : t('profile.errors.deleteAccount')); setBusy(false); }
   }
 

@@ -10,6 +10,12 @@ export type DraftAttempt = {
   body: string;
   /** For a voice attempt whose upload never finished. */
   localUri?: string;
+  /**
+   * How long that take is. Without it a retry sent zero and the server
+   * refused it, so a voice message whose upload failed could never be sent
+   * at all — the recording sat there with a retry button that could not work.
+   */
+  durationMs?: number;
   voice?: { audioPath: string; durationMs: number };
 };
 
@@ -39,4 +45,17 @@ export function recallAttempts(matchId: string): DraftAttempt[] {
 export function forgetChat(matchId: string): void {
   texts.delete(matchId);
   attempts.delete(matchId);
+}
+
+/**
+ * Every draft and every unsent attempt on this device, forgotten.
+ *
+ * Drafts live in memory only, so signing out and starting fresh already loses
+ * them — but the process survives a sign-out, and a half-written message to
+ * somebody must not be waiting for the next person who opens the app on this
+ * phone.
+ */
+export function forgetAllChats(): void {
+  texts.clear();
+  attempts.clear();
 }
