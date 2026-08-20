@@ -1,5 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, AppState, BackHandler, Clipboard, FlatList, Platform, RefreshControl, TextInput, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
 import Animated, { FadeInDown, FadeInUp, FadeOutDown, useAnimatedStyle } from 'react-native-reanimated';
 
@@ -11,7 +12,8 @@ import { formatCount, formatTime } from '../lib/format';
 import { formatVoiceDuration } from '../lib/voiceMessage';
 import { announce } from '../lib/announce';
 import { confirmDestructive } from '../lib/confirmDestructive';
-import { composerBody, conversationErrorSurface, shouldShowConnectionNotice, unsentMessageNote } from '../lib/conversationPresentation';
+import { conversationKeyboardPadding } from '../lib/chatKeyboardLayout';
+import { composerBody, conversationErrorSurface, conversationListContentStyle, shouldShowConnectionNotice, unsentMessageNote } from '../lib/conversationPresentation';
 import { addUnsent, forgetUnsentMatch, loadUnsent, removeUnsent, saveUnsent, unsentInOrder } from '../lib/unsentMessages';
 import { resolveStaggerDelay } from '../lib/motionPolicy';
 import { classifyRequestFailure, isAbortError, isConversationEndedError, withDeadline, withRetry, type ReliabilityError } from '../lib/reliability';
@@ -90,6 +92,12 @@ const ChatMessageRow = memo(function ChatMessageRow({ type, label, messageId, bo
         style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: theme.layout.chatBubbleMaxWidth }}
       >
         <View style={{
+          // Hug the text. The bubble and the timestamp are siblings in a
+          // column, so without this the bubble stretched to the width of
+          // "00:15 · Sent" underneath it: "Fesh" got a bubble half full of
+          // empty accent colour, and every short message looked ragged next to
+          // a long one.
+          alignSelf: mine ? 'flex-end' : 'flex-start',
           paddingHorizontal: theme.spacing.x4,
           paddingVertical: theme.spacing.x3,
           borderRadius: bubbleRadius,
@@ -104,7 +112,7 @@ const ChatMessageRow = memo(function ChatMessageRow({ type, label, messageId, bo
             : <BinderText variant="body" style={{ color: mine ? theme.accent.foreground : theme.colors.textPrimary }}>{body}</BinderText>}
         </View>
         {showsTimestamp ? (
-          <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1, alignSelf: mine ? 'flex-end' : 'flex-start', marginHorizontal: theme.spacing.x2 }}>
+          <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1, alignSelf: mine ? 'flex-end' : 'flex-start' }}>
             {mine ? t('chat.message.sentAt', { time: formatTime(new Date(createdAt), locale) }) : formatTime(new Date(createdAt), locale)}
           </BinderText>
         ) : null}
@@ -140,13 +148,17 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   const [loadingOlder, setLoadingOlder] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [composer, setComposer] = useState(() => recallDraft(match.matchId));
+  const insets = useSafeAreaInsets();
   const keyboard = useReanimatedKeyboardAnimation();
   // Shrink, do not slide. Translating the region moved its clipping box with
   // it, so the content rode up over the header and painted on top of it; the
   // header was still there and still touchable, just invisible. Padding the
   // bottom by the keyboard's height keeps every edge where it belongs and
   // lifts the composer exactly as far as the keyboard is tall.
-  const keyboardShift = useAnimatedStyle(() => ({ paddingBottom: Math.max(0, -keyboard.height.value) }));
+  // The screen is already padded by the system's bottom inset, and the keyboard
+  // covers that bar — counting it twice left a dead strip between the text
+  // field and the keys.
+  const keyboardShift = useAnimatedStyle(() => ({ paddingBottom: conversationKeyboardPadding(keyboard.height.value, insets.bottom) }));
   const [sending, setSending] = useState(false);
   // Every unsent message keeps its own entry. A single slot meant that writing
   // a new message after a failure silently discarded the failed one — the text
@@ -636,7 +648,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
           data={timeline}
           inverted
           keyExtractor={chatTimelineKey}
-          contentContainerStyle={{ padding: theme.spacing.x4 }}
+          contentContainerStyle={conversationListContentStyle(theme.spacing.x4)}
           showsVerticalScrollIndicator={false}
           onScroll={trackScroll}
           scrollEventThrottle={theme.motion.feedback}

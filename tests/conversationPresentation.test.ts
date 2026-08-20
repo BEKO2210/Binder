@@ -3,7 +3,7 @@ process.env.TZ = 'UTC';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { composerBody, conversationErrorSurface, previewTimeLabel, shouldShowConnectionNotice, splitConversationPreviews, unsentMessageNote } from '../src/lib/conversationPresentation.ts';
+import { composerBody, conversationErrorSurface, conversationListContentStyle, previewTimeLabel, shouldShowConnectionNotice, splitConversationPreviews, unsentMessageNote } from '../src/lib/conversationPresentation.ts';
 
 test('composer accepts only a trimmed server-valid body', () => {
   assert.equal(composerBody('   '), null);
@@ -57,4 +57,14 @@ test('a lost connection waits, a refusal reports', () => {
   assert.equal(unsentMessageNote('timeout'), 'waiting');
   assert.equal(unsentMessageNote('server-refusal'), 'failed');
   assert.equal(unsentMessageNote(undefined), 'failed');
+});
+
+
+test('a short conversation starts under the header, not hanging from the input', () => {
+  const style = conversationListContentStyle(16);
+  assert.equal(style.padding, 16);
+  // The list is inverted, so "flex-end" is the visual top. Without flexGrow the
+  // container is only as tall as its content and the rule does nothing.
+  assert.equal(style.flexGrow, 1);
+  assert.equal(style.justifyContent, 'flex-end');
 });

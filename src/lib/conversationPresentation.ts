@@ -90,3 +90,22 @@ export function conversationErrorSurface(input: {
 export function unsentMessageNote(errorKind: string | undefined): 'waiting' | 'failed' {
   return errorKind === 'offline' || errorKind === 'timeout' ? 'waiting' : 'failed';
 }
+
+/**
+ * How the message list fills the space it has.
+ *
+ * The list renders inverted so new messages arrive at the bottom without
+ * scrolling. The side effect is that a short conversation hangs from the
+ * bottom edge, leaving a large hole under the header — a chat with four
+ * messages looked like a chat that had lost its history. `flexGrow` plus
+ * `flex-end` on an inverted list means "start at the visual top": short
+ * conversations sit under the header like every other messenger, and long ones
+ * are unaffected because the content is already taller than the list.
+ */
+export function conversationListContentStyle(padding: number): {
+  padding: number;
+  flexGrow: number;
+  justifyContent: 'flex-end';
+} {
+  return { padding, flexGrow: 1, justifyContent: 'flex-end' };
+}
