@@ -1297,7 +1297,9 @@
       "replace": "교체",
       "delete": "삭제",
       "saveFailed": "소개를 저장하지 못했어요.",
-      "deleteFailed": "소개를 삭제하지 못했어요."
+      "deleteFailed": "소개를 삭제하지 못했어요.",
+      "deleteTitle": "음성 소개를 삭제할까요?",
+      "deleteMessage": "녹음은 삭제되며 되돌릴 수 없습니다."
     }
   },
   "about": {

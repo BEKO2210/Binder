@@ -129,8 +129,13 @@ export async function removeProfileMedia(mediaId: string): Promise<void> {
   await supabase.storage.from('profile-media').remove(paths);
 }
 
+// Long enough that a screen left open does not turn its photos into empty
+// rectangles. Half an hour expired while somebody was still looking at a
+// profile, and the retry inside the pager re-mounted the very same dead URL.
+const SIGNED_URL_SECONDS = 60 * 60 * 4;
+
 export async function signedProfileImageUrl(path: string): Promise<string> {
-  const { data, error } = await supabase.storage.from('profile-media').createSignedUrl(path, 60 * 30);
+  const { data, error } = await supabase.storage.from('profile-media').createSignedUrl(path, SIGNED_URL_SECONDS);
   if (error) throw error;
   return data.signedUrl;
 }

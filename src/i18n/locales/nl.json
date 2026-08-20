@@ -1297,7 +1297,9 @@
       "replace": "Vervangen",
       "delete": "Verwijderen",
       "saveFailed": "Intro kon niet worden opgeslagen.",
-      "deleteFailed": "Intro kon niet worden verwijderd."
+      "deleteFailed": "Intro kon niet worden verwijderd.",
+      "deleteTitle": "Je stem-intro verwijderen?",
+      "deleteMessage": "De opname is daarna weg en komt niet terug."
     }
   },
   "about": {

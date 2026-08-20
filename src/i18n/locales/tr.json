@@ -1297,7 +1297,9 @@
       "replace": "Değiştir",
       "delete": "Sil",
       "saveFailed": "Tanıtım kaydedilemedi.",
-      "deleteFailed": "Tanıtım silinemedi."
+      "deleteFailed": "Tanıtım silinemedi.",
+      "deleteTitle": "Sesli tanıtımın silinsin mi?",
+      "deleteMessage": "Kayıt gider ve geri getirilemez."
     }
   },
   "about": {

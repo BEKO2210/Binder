@@ -1297,7 +1297,9 @@
       "replace": "差し替え",
       "delete": "削除",
       "saveFailed": "自己紹介を保存できませんでした。",
-      "deleteFailed": "自己紹介を削除できませんでした。"
+      "deleteFailed": "自己紹介を削除できませんでした。",
+      "deleteTitle": "音声紹介を削除しますか？",
+      "deleteMessage": "録音は消え、元に戻せません。"
     }
   },
   "about": {

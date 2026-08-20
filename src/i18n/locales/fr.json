@@ -1297,7 +1297,9 @@
       "replace": "Remplacer",
       "delete": "Supprimer",
       "saveFailed": "Impossible d’enregistrer l’intro.",
-      "deleteFailed": "Impossible de supprimer l’intro."
+      "deleteFailed": "Impossible de supprimer l’intro.",
+      "deleteTitle": "Supprimer ton intro vocale ?",
+      "deleteMessage": "L’enregistrement disparaît et ne peut pas être récupéré."
     }
   },
   "about": {

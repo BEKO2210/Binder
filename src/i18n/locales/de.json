@@ -1297,7 +1297,9 @@
       "replace": "Ersetzen",
       "delete": "Löschen",
       "saveFailed": "Intro konnte nicht gespeichert werden.",
-      "deleteFailed": "Intro konnte nicht gelöscht werden."
+      "deleteFailed": "Intro konnte nicht gelöscht werden.",
+      "deleteTitle": "Sprachintro löschen?",
+      "deleteMessage": "Die Aufnahme ist danach weg und lässt sich nicht zurückholen."
     }
   },
   "about": {

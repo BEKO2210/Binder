@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Alert, View } from 'react-native';
 
+import { confirmDestructive } from '../lib/confirmDestructive';
 import { loadMyVoiceIntro, removeVoiceIntro, saveVoiceIntro, type VoiceIntro } from '../lib/voiceIntro';
 import { classifyError, withDeadline } from '../lib/reliability';
 import { useBinderTheme } from '../theme/ThemeProvider';
@@ -87,7 +88,7 @@ export function VoiceIntroEditor({ userId }: Props) {
           </View>
           <View style={{ flexDirection: 'row', gap: theme.spacing.x2 }}>
             <BinderButton label={t('identity.voiceIntro.replace')} variant="secondary" fullWidth={false} disabled={busy} onPress={() => setRecording(true)} style={{ flex: 1 }} />
-            <BinderButton label={t('identity.voiceIntro.delete')} variant="ghost" fullWidth={false} disabled={busy} onPress={() => void remove()} style={{ flex: 1 }} />
+            <BinderButton label={t('identity.voiceIntro.delete')} variant="ghost" fullWidth={false} disabled={busy} onPress={() => confirmDestructive({ title: t('identity.voiceIntro.deleteTitle'), message: t('identity.voiceIntro.deleteMessage'), cancelText: t('profileSettings.actions.cancel'), destructiveText: t('identity.voiceIntro.delete'), onConfirm: () => void remove() })} style={{ flex: 1 }} />
           </View>
         </View>
       ) : (

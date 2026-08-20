@@ -1297,7 +1297,9 @@
       "replace": "替换",
       "delete": "删除",
       "saveFailed": "无法保存语音介绍。",
-      "deleteFailed": "无法删除语音介绍。"
+      "deleteFailed": "无法删除语音介绍。",
+      "deleteTitle": "删除你的语音介绍？",
+      "deleteMessage": "录音会被删除，无法恢复。"
     }
   },
   "about": {

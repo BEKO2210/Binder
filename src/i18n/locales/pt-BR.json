@@ -1297,7 +1297,9 @@
       "replace": "Substituir",
       "delete": "Excluir",
       "saveFailed": "Não foi possível salvar a intro.",
-      "deleteFailed": "Não foi possível excluir a intro."
+      "deleteFailed": "Não foi possível excluir a intro.",
+      "deleteTitle": "Apagar sua introdução em voz?",
+      "deleteMessage": "A gravação some e não pode ser recuperada."
     }
   },
   "about": {

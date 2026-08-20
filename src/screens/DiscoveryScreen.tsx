@@ -134,12 +134,22 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
       // just as loudly and only a moment later.
       const batch = await withRetry(() => withDeadline(fetchDiscoveryBatch(20), DISCOVERY_DEADLINE_MS), { attempts: 2, baseDelayMs: 400 });
       if (!current()) return;
-      setProfiles(batch);
-      if (batch.length === 0) {
+      // The server only knows about decisions it has received. Anything still
+      // waiting on disk would otherwise come back into the deck and be decided
+      // a second time — the same person, asked twice, the first answer quietly
+      // replaced by the second.
+      const waiting = new Set((await loadPending()).map((entry) => entry.targetUserId));
+      const fresh = waiting.size === 0 ? batch : batch.filter((profile) => !waiting.has(profile.id));
+      if (!current()) return;
+      setProfiles(fresh);
+      if (fresh.length === 0) {
         const values = filterValuesToCountWith(appliedValues, filterValues) ?? await withDeadline(loadDiscoveryPreferences(), DISCOVERY_DEADLINE_MS);
+        // Same ceiling as everything else that holds the loading state: a
+        // socket that stalls here left the deck under its own overlay forever,
+        // with no error and no way to retry.
         const [currentCount, standardCount] = await Promise.all([
-          countDiscoveryCandidates(values),
-          countDiscoveryCandidates(discoveryDefaults),
+          withDeadline(countDiscoveryCandidates(values), DISCOVERY_DEADLINE_MS),
+          withDeadline(countDiscoveryCandidates(discoveryDefaults), DISCOVERY_DEADLINE_MS),
         ]);
         if (!current()) return;
         setFilterValues(values);
@@ -394,7 +404,9 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
         // A refusal is final; keeping it would retry forever.
         queue = removePending(queue, entry.targetUserId);
       }
-      await savePending(queue);
+      // The server already has this decision; a failed write only means the
+      // queue is retried later, so it must not stop the flush.
+      try { await savePending(queue); } catch { break; }
     }
     setPendingCount(queue.length);
   }, []);

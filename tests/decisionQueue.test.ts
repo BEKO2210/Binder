@@ -13,10 +13,13 @@ test('a decision waits instead of being lost', () => {
 });
 
 test('the same person is never queued twice', () => {
-  // A retry that appends would ask the server the same question again.
+  // A retry that appends would ask the server the same question again. Which
+  // of the two survives changed on purpose: the deck can hand the same profile
+  // out again while its decision is still queued, and a second swipe must not
+  // quietly replace the answer the person already gave.
   const queue = addPending(addPending([], entry('a', 1)), entry('a', 2, 'pass'));
   assert.equal(queue.length, 1);
-  assert.equal(queue[0]?.decision, 'pass', 'the newer decision wins');
+  assert.equal(queue[0]?.decision, 'bind', 'the decision that was made first stands');
 });
 
 test('decisions leave in the order they were made', () => {
@@ -53,4 +56,22 @@ test('a request that never answers keeps the decision instead of dropping it', (
   // lands in the same branch a lost connection lands in.
   assert.equal(classifyError(deadlineError()).kind, 'timeout');
   assert.equal(shouldKeepAfterFailure(classifyError(deadlineError()).kind), true);
+});
+
+test('the first decision about a person wins', () => {
+  // A profile can come back into the deck while its decision is still queued —
+  // the server has not seen it yet. Letting the second swipe overwrite the
+  // first turned somebody's bind into a pass without telling them.
+  const first = addPending([], { targetUserId: 'u1', decision: 'bind', decidedAt: 100 });
+  const second = addPending(first, { targetUserId: 'u1', decision: 'pass', decidedAt: 200 });
+  assert.equal(second.length, 1);
+  assert.equal(second[0]?.decision, 'bind');
+  assert.equal(second[0]?.decidedAt, 100);
+});
+
+test('different people still queue separately, oldest first', () => {
+  let queue = addPending([], { targetUserId: 'a', decision: 'bind', decidedAt: 10 });
+  queue = addPending(queue, { targetUserId: 'b', decision: 'pass', decidedAt: 20 });
+  assert.equal(queue.length, 2);
+  assert.equal(nextToSend(queue)?.targetUserId, 'a');
 });

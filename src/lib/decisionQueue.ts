@@ -16,10 +16,14 @@ export type PendingDecision = {
 };
 
 export function addPending(queue: PendingDecision[], entry: PendingDecision): PendingDecision[] {
-  // One decision per person: swiping the same card twice cannot happen, but a
-  // retry writing a second copy would ask the server the same question twice.
-  const without = queue.filter((item) => item.targetUserId !== entry.targetUserId);
-  return [...without, entry].slice(-MAX_PENDING);
+  // One decision per person: a retry writing a second copy would ask the server
+  // the same question twice. The first answer wins — a profile can come back
+  // into the deck while its decision is still queued (the server has not seen
+  // it yet), and letting the second swipe overwrite the first would silently
+  // turn somebody's bind into a pass.
+  const existing = queue.find((item) => item.targetUserId === entry.targetUserId);
+  if (existing) return queue;
+  return [...queue, entry].slice(-MAX_PENDING);
 }
 
 export function removePending(queue: PendingDecision[], targetUserId: string): PendingDecision[] {
@@ -56,12 +60,15 @@ export async function loadPending(): Promise<PendingDecision[]> {
   }
 }
 
+/**
+ * Writes the queue, or says it could not.
+ *
+ * This used to swallow every storage error, which made the caller's recovery
+ * path unreachable: the card left the deck as if the decision were safe while
+ * nothing had been written, and the queue is only ever read back from disk. A
+ * failure has to reach the screen so the card can come back.
+ */
 export async function savePending(queue: PendingDecision[]): Promise<void> {
-  try {
-    if (queue.length === 0) await AsyncStorage.removeItem(STORAGE_KEY);
-    else await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(queue));
-  } catch {
-    // Storage full or unavailable: the decision is still in memory for this
-    // session, and losing it later is better than crashing now.
-  }
+  if (queue.length === 0) await AsyncStorage.removeItem(STORAGE_KEY);
+  else await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(queue));
 }

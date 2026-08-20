@@ -1297,7 +1297,9 @@
       "replace": "استبدال",
       "delete": "حذف",
       "saveFailed": "تعذر حفظ المقدمة.",
-      "deleteFailed": "تعذر حذف المقدمة."
+      "deleteFailed": "تعذر حذف المقدمة.",
+      "deleteTitle": "حذف المقطع الصوتي؟",
+      "deleteMessage": "لا يمكن استرجاع التسجيل بعد حذفه."
     }
   },
   "about": {

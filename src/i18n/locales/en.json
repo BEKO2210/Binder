@@ -1297,7 +1297,9 @@
       "replace": "Replace",
       "delete": "Delete",
       "saveFailed": "Could not save the intro.",
-      "deleteFailed": "Could not delete the intro."
+      "deleteFailed": "Could not delete the intro.",
+      "deleteTitle": "Delete your voice intro?",
+      "deleteMessage": "The recording is gone afterwards and cannot be brought back."
     }
   },
   "about": {

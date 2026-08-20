@@ -1297,7 +1297,9 @@
       "replace": "Zastąp",
       "delete": "Usuń",
       "saveFailed": "Nie udało się zapisać intro.",
-      "deleteFailed": "Nie udało się usunąć intro."
+      "deleteFailed": "Nie udało się usunąć intro.",
+      "deleteTitle": "Usunąć intro głosowe?",
+      "deleteMessage": "Nagranie zniknie i nie da się go odzyskać."
     }
   },
   "about": {

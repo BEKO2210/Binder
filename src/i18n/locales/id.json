@@ -1297,7 +1297,9 @@
       "replace": "Ganti",
       "delete": "Hapus",
       "saveFailed": "Intro tidak dapat disimpan.",
-      "deleteFailed": "Intro tidak dapat dihapus."
+      "deleteFailed": "Intro tidak dapat dihapus.",
+      "deleteTitle": "Hapus intro suaramu?",
+      "deleteMessage": "Rekaman akan hilang dan tidak bisa dikembalikan."
     }
   },
   "about": {
