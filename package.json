@@ -47,7 +47,9 @@
     "gate:android": "node scripts/quality-gate.mjs --android",
     "verify:pinned": "node scripts/verify-pinned-toolchain.mjs",
     "e2e": "node scripts/e2e.mjs",
-    "e2e:offline": "node scripts/e2e-offline.mjs"
+    "e2e:offline": "node scripts/e2e-offline.mjs",
+    "db:evidence": "node scripts/db-evidence.mjs",
+    "release:candidate": "node scripts/release-candidate.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/manrope": "0.4.2",

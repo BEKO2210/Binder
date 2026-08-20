@@ -8,7 +8,7 @@
 //   node scripts/e2e.mjs                 every journey under .maestro
 //   node scripts/e2e.mjs 01-auth.yaml    one of them
 import { execFileSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
@@ -42,7 +42,10 @@ function unstage() {
 let failure = null;
 const account = stage();
 try {
-  execFileSync(maestro, ['test', target], {
+  // The offline scenario's steps carry the `scenario` tag: they assume a
+  // network state and a screen that only their runner sets up, so a plain
+  // folder run must not pick them up.
+  execFileSync(maestro, ['test', '--exclude-tags=scenario', target], {
     stdio: 'inherit',
     env: {
       ...process.env,
@@ -57,6 +60,25 @@ try {
 } finally {
   unstage();
 }
+
+// The record the release gate reads: which journeys ran, on which build, with
+// what result. A journey that was not run is not a journey that passed.
+mkdirSync('artifacts', { recursive: true });
+writeFileSync('artifacts/e2e-evidence.json', `${JSON.stringify({
+  ranAt: new Date().toISOString(),
+  target,
+  commit: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
+  installedVersion: (() => {
+    try {
+      const dump = execFileSync(process.env.ADB ?? `${process.env.HOME}/Android/Sdk/platform-tools/adb`, ['shell', 'dumpsys', 'package', 'de.beko2210.binder'], { encoding: 'utf8' });
+      return {
+        versionName: /versionName=(\S+)/.exec(dump)?.[1] ?? null,
+        versionCode: Number(/versionCode=(\d+)/.exec(dump)?.[1] ?? 0) || null,
+      };
+    } catch { return null; }
+  })(),
+  status: failure ? 'FAIL' : 'PASS',
+}, null, 2)}\n`);
 
 if (failure) {
   console.error('\nJourneys failed. The staged account and demo profiles were removed.');

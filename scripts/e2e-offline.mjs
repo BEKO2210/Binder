@@ -8,7 +8,7 @@
 //
 //   node scripts/e2e-offline.mjs
 import { execFileSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
@@ -30,7 +30,7 @@ const network = (state) => {
 };
 
 function flow(file, account) {
-  execFileSync(maestro, ['test', join('.maestro', file)], {
+  execFileSync(maestro, ['test', '--include-tags=scenario', join('.maestro', file)], {
     stdio: 'inherit',
     env: {
       ...process.env,
@@ -86,6 +86,14 @@ try {
   network(true);
   unstage();
 }
+
+mkdirSync('artifacts', { recursive: true });
+writeFileSync('artifacts/e2e-offline-evidence.json', `${JSON.stringify({
+  ranAt: new Date().toISOString(),
+  commit: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
+  message: text,
+  status: failure ? 'FAIL' : 'PASS',
+}, null, 2)}\n`);
 
 if (failure) {
   console.error(`\nThe offline journey failed. Text used: ${text}`);

@@ -5,6 +5,10 @@
 # message typed on a train, an app closed at the station, and nothing left when
 # the phone found signal again.
 appId: de.beko2210.binder
+tags:
+  # A step of the offline scenario, not a journey on its own: it assumes the
+  # network state and the screen its runner sets up.
+  - scenario
 name: Offline — the waiting message is delivered after a restart
 ---
 - launchApp
