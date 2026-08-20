@@ -104,3 +104,15 @@ test('finishing onboarding cannot lock somebody out at the last step', () => {
   // The guard has to be released whatever happens, or the deadline buys nothing.
   assert.match(source, /finally \{ inFlight\.current = false; setBusy\(false\); \}/);
 });
+
+test('a password recovery does not follow the next account', () => {
+  // Recovery belongs to the identity that started it. The identity reset in
+  // Root cleared every other screen flag and left this one standing, so the
+  // next person to sign in on the phone landed in a password reset they never
+  // asked for.
+  const source = readFileSync(new URL('../src/Root.tsx', import.meta.url), 'utf8');
+  const reset = source.indexOf('if (!identityChanged) return;');
+  assert.ok(reset > 0, 'the identity reset still exists');
+  const block = source.slice(reset, reset + 600);
+  assert.match(block, /setRecovering\(false\)/);
+});

@@ -46,6 +46,18 @@ export function markIntentionalSignOut(): void {
   intentionalSignOut = true;
 }
 
+/**
+ * Takes the flag back when the sign-out never happened.
+ *
+ * It is set before the request, because the SIGNED_OUT event can arrive while
+ * that request is still running. If the request then fails, the flag would sit
+ * there and be eaten by the next genuine session end — a token refresh that
+ * failed in a tunnel would look deliberate and drop the person out silently.
+ */
+export function forgetIntentionalSignOut(): void {
+  intentionalSignOut = false;
+}
+
 export function consumeIntentionalSignOut(): boolean {
   const value = intentionalSignOut;
   intentionalSignOut = false;

@@ -140,6 +140,10 @@ function BinderApp() {
       setStartFailed(false);
       setSession(nextSession);
       if (!identityChanged) return;
+      // Recovery belongs to the identity that started it. Leaving it set sent
+      // the next person to sign in on this phone straight into a password reset
+      // they never asked for.
+      setRecovering(false);
       setLegalGate(undefined); setOnboardingComplete(undefined); setNotificationPreferencesReadyFor(null); setLoadError(''); setActiveMatch(null); setProfileRoute('home'); setMenuRoute('home'); setTab('discover'); appSessionRecorded.current = false;
     };
 

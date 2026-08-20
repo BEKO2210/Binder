@@ -6,9 +6,10 @@ import { MotionPressable as Pressable } from '../components/ui';
 import { DELETE_ACCOUNT_URL, PRIVACY_URL, TERMS_URL, deleteCurrentAccount, openBinderUrl } from '../lib/safety';
 import { forgetAllChats } from '../lib/chatDrafts';
 import { clearUnsent } from '../lib/unsentMessages';
-import { withDeadline } from '../lib/reliability';
+import { disablePushNotifications } from '../lib/notifications';
+import { isDeadlineError, withDeadline } from '../lib/reliability';
 import { confirmDestructive } from '../lib/confirmDestructive';
-import { markIntentionalSignOut } from '../lib/sessionEnd';
+import { forgetIntentionalSignOut, markIntentionalSignOut } from '../lib/sessionEnd';
 import { supabase } from '../lib/supabase';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
@@ -54,7 +55,18 @@ export default function MenuScreen({ onOpenSettings, onOpenBeta, onOpenAbout }: 
     // that expired on its own.
     markIntentionalSignOut();
     const { error } = await withDeadline(supabase.auth.signOut(), MENU_DEADLINE_MS);
-    if (error) { setMessage(error.message); return; }
+    if (error) {
+      // The sign-out did not happen, so the flag must not survive: the next
+      // genuine session end would inherit it and drop somebody out without
+      // asking the server whether the session really ended.
+      forgetIntentionalSignOut();
+      setMessage(error.message);
+      return;
+    }
+    // The device stops being addressable for this account. Otherwise the
+    // dispatcher keeps delivering that account's matches and messages to this
+    // phone, on the lock screen, for whoever picks it up next.
+    try { await withDeadline(disablePushNotifications(), MENU_DEADLINE_MS); } catch { /* the session is already gone; the token expires with it */ }
     // What they typed and never managed to send is written to disk in plain
     // text so it survives the app being killed. That is right while they are
     // signed in and wrong the moment they leave: the next person to open the
@@ -70,12 +82,25 @@ export default function MenuScreen({ onOpenSettings, onOpenBeta, onOpenAbout }: 
   async function performDeletion() {
     setBusy(true);
     setMessage('');
+    // Deleting ends the session on purpose. Without saying so, the sign-out
+    // that follows the deletion looked like an expiry and greeted the person
+    // with "your session has expired" right after they had asked for the
+    // account to be removed.
+    markIntentionalSignOut();
     try {
       await withDeadline(deleteCurrentAccount(), MENU_DEADLINE_MS);
       forgetAllChats();
       await clearUnsent();
+    } catch (error) {
+      // A deadline here does not mean nothing happened: the request keeps
+      // running on the server, and the account may well be gone. Anything else
+      // is a real refusal, and then the flag has to go back.
+      if (!isDeadlineError(error)) forgetIntentionalSignOut();
+      forgetAllChats();
+      await clearUnsent();
+      setMessage(error instanceof Error ? error.message : t('profile.errors.deleteAccount'));
+      setBusy(false);
     }
-    catch (error) { setMessage(error instanceof Error ? error.message : t('profile.errors.deleteAccount')); setBusy(false); }
   }
 
   return (
