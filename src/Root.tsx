@@ -12,6 +12,7 @@ import { LiquidHeart } from './components/LiquidHeart';
 import { BinderIcon, BinderText, MotionPressable, ScreenState, type BinderIconName } from './components/ui';
 import { sessionIdentityChanged } from './lib/authTransition';
 import { consumeIntentionalSignOut, markIntentionalSignOut, sessionEndDecision } from './lib/sessionEnd';
+import { freshIdentityState, type MenuRoute as IdentityMenuRoute, type ProfileRoute as IdentityProfileRoute, type Tab as IdentityTab } from './lib/identityReset';
 import { startupPhase } from './lib/startupState';
 import { initializeBetaDiagnostics, recordBetaEvent } from './lib/beta';
 import { parseAuthCallback } from './lib/deepLinks';
@@ -53,12 +54,12 @@ import { BinderThemeProvider, useBinderTheme } from './theme/ThemeProvider';
 // full-screen loading state.
 const STARTUP_DEADLINE_MS = 15_000;
 
-type Tab = 'discover' | 'matches' | 'profile' | 'menu';
-type ProfileRoute = 'home' | 'edit' | 'preview';
+type Tab = IdentityTab;
+type ProfileRoute = IdentityProfileRoute;
 // Settings, beta and about used to be profile routes, which is why the screen
 // that shows a person their own photo also held the language picker and the
 // delete-account button. They belong to the menu tab now.
-type MenuRoute = 'home' | 'settings' | 'beta' | 'about';
+type MenuRoute = IdentityMenuRoute;
 
 export default function Root() {
   return (
@@ -141,11 +142,22 @@ function BinderApp() {
       setStartFailed(false);
       setSession(nextSession);
       if (!identityChanged) return;
-      // Recovery belongs to the identity that started it. Leaving it set sent
-      // the next person to sign in on this phone straight into a password reset
-      // they never asked for.
-      setRecovering(false);
-      setLegalGate(undefined); setOnboardingComplete(undefined); setNotificationPreferencesReadyFor(null); setLoadError(''); setActiveMatch(null); setProfileRoute('home'); setMenuRoute('home'); setTab('discover'); appSessionRecorded.current = false;
+      // Everything that belonged to the person who just left. The list is named
+      // in src/lib/identityReset.ts and a test holds this block to it, because
+      // the way this went wrong was a field being added to the app and not to
+      // the reset: a password recovery survived an account change and sent the
+      // next person into a reset they never asked for.
+      const fresh = freshIdentityState();
+      setRecovering(fresh.recovering);
+      setLegalGate(fresh.legalGate);
+      setOnboardingComplete(fresh.onboardingComplete);
+      setNotificationPreferencesReadyFor(fresh.notificationPreferencesReadyFor);
+      setLoadError(fresh.loadError);
+      setActiveMatch(fresh.activeMatch);
+      setProfileRoute(fresh.profileRoute);
+      setMenuRoute(fresh.menuRoute);
+      setTab(fresh.tab);
+      appSessionRecorded.current = false;
     };
 
     // The stored session is read once at start-up and can answer late. A live

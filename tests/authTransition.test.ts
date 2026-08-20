@@ -113,6 +113,8 @@ test('a password recovery does not follow the next account', () => {
   const source = readFileSync(new URL('../src/Root.tsx', import.meta.url), 'utf8');
   const reset = source.indexOf('if (!identityChanged) return;');
   assert.ok(reset > 0, 'the identity reset still exists');
-  const block = source.slice(reset, reset + 600);
-  assert.match(block, /setRecovering\(false\)/);
+  const block = source.slice(reset, reset + 900);
+  // The reset applies a named list now (src/lib/identityReset.ts); what this
+  // still guards is that recovery is part of what gets cleared.
+  assert.match(block, /setRecovering\(fresh\.recovering\)/);
 });
