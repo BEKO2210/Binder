@@ -553,7 +553,8 @@
         "pending": "En cours de vérification",
         "rejected": "Non approuvée",
         "removed": "Supprimée"
-      }
+      },
+      "reviewedOne": "Photo vérifiée"
     },
     "details": {
       "eyebrow": "À PROPOS DE TOI",

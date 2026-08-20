@@ -553,7 +553,8 @@
         "pending": "Sedang ditinjau",
         "rejected": "Tidak disetujui",
         "removed": "Dihapus"
-      }
+      },
+      "reviewedOne": "Foto ditinjau"
     },
     "details": {
       "eyebrow": "TENTANG KAMU",

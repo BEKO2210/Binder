@@ -553,7 +553,8 @@
         "pending": "审核中",
         "rejected": "未通过",
         "removed": "已移除"
-      }
+      },
+      "reviewedOne": "照片已审核"
     },
     "details": {
       "eyebrow": "关于你",

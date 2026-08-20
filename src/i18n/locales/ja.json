@@ -553,7 +553,8 @@
         "pending": "審査中",
         "rejected": "未承認",
         "removed": "削除済み"
-      }
+      },
+      "reviewedOne": "写真確認済み"
     },
     "details": {
       "eyebrow": "あなたについて",

@@ -553,7 +553,8 @@
         "pending": "İnceleniyor",
         "rejected": "Onaylanmadı",
         "removed": "Kaldırıldı"
-      }
+      },
+      "reviewedOne": "Fotoğraf incelendi"
     },
     "details": {
       "eyebrow": "HAKKINDA",

@@ -553,7 +553,8 @@
         "pending": "En revisión",
         "rejected": "No aprobada",
         "removed": "Eliminada"
-      }
+      },
+      "reviewedOne": "Foto revisada"
     },
     "details": {
       "eyebrow": "SOBRE TI",

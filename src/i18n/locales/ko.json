@@ -553,7 +553,8 @@
         "pending": "검토 중",
         "rejected": "승인되지 않음",
         "removed": "제거됨"
-      }
+      },
+      "reviewedOne": "사진 검토 완료"
     },
     "details": {
       "eyebrow": "나에 대해",

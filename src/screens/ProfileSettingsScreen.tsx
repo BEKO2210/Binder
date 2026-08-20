@@ -3,6 +3,7 @@ import { Image, RefreshControl, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { PhotoPager } from '../components/PhotoPager';
+import { VerifiedBadge } from '../components/VerifiedBadge';
 import { announce } from '../lib/announce';
 import { confirmDestructive } from '../lib/confirmDestructive';
 import { MotionPressable as Pressable } from '../components/ui';
@@ -261,6 +262,14 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
           initialIndex={safeIndex}
           onPageChange={setViewerIndex}
         />
+        {/* One photo on screen, so the badge speaks about that one — and only
+            when this photo actually passed. The deck card, which stands for the
+            whole set, says it in the plural. */}
+        {media[safeIndex]?.moderationStatus === 'approved' ? (
+          <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, bottom: theme.spacing.x8, alignItems: 'center' }}>
+            <VerifiedBadge onMedia label={t('profileSettings.photos.reviewedOne')} accessibilityLabel={t('profileSettings.photos.reviewedOne')} />
+          </View>
+        ) : null}
       </View>
     );
   }

@@ -553,7 +553,8 @@
         "pending": "W trakcie weryfikacji",
         "rejected": "Nie zatwierdzono",
         "removed": "Usunięte"
-      }
+      },
+      "reviewedOne": "Zdjęcie sprawdzone"
     },
     "details": {
       "eyebrow": "O TOBIE",

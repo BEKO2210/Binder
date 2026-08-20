@@ -8,7 +8,7 @@
 //        npm run release -- --minor   → minor bump
 //        npm run release -- --keep-version
 import { execFileSync } from 'node:child_process';
-import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const root = process.cwd();
@@ -63,6 +63,13 @@ if (!existsSync(keystoreProperties)) {
   console.error('Restore it (and the .jks it points at) before building a release.');
   process.exit(1);
 }
+
+// Gradle kept a JavaScript bundle it should have rebuilt: a release built
+// minutes after a locale file changed still shipped the old German strings, and
+// the phone proved it while the source said otherwise. The bundle is a few
+// seconds of work and the only artefact that carries every line of the app, so
+// it is thrown away before every release rather than trusted.
+rmSync(join(root, 'android/app/build/generated/assets/react'), { recursive: true, force: true });
 
 const tasks = withBundle ? ['assembleRelease', 'bundleRelease'] : ['assembleRelease'];
 console.log(`Gradle: ${tasks.join(' ')}`);

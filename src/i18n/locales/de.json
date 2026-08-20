@@ -553,7 +553,8 @@
         "pending": "Wird geprüft",
         "rejected": "Nicht freigegeben",
         "removed": "Entfernt"
-      }
+      },
+      "reviewedOne": "Foto geprüft"
     },
     "details": {
       "eyebrow": "ÜBER DICH",

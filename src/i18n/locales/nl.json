@@ -553,7 +553,8 @@
         "pending": "In beoordeling",
         "rejected": "Niet goedgekeurd",
         "removed": "Verwijderd"
-      }
+      },
+      "reviewedOne": "Foto beoordeeld"
     },
     "details": {
       "eyebrow": "OVER JOU",

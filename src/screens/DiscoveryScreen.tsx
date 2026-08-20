@@ -591,10 +591,7 @@ function ProfileCard({ profile, back = false, behind = false, onOpenProfile }: {
 
       <View pointerEvents="none" style={{ position: 'absolute', left: theme.spacing.x5, right: theme.spacing.x5, bottom: theme.spacing.x5 }}>
         <BinderText variant="displayL" style={{ color: onMedia.textPrimary }} numberOfLines={1}>{profile.name} <BinderText variant="heading" style={{ color: onMedia.textPrimary }}>{formatCount(profile.age, locale)}</BinderText></BinderText>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, marginTop: theme.spacing.x2, flexWrap: 'wrap' }}><BinderText variant="caption" style={{ color: onMedia.textSecondary }}>{t('discovery.profile.away', { distance: formatDistanceKm(profile.distanceKm, locale) })}</BinderText>{/* Singular on the card: the badge sits on the one photograph you are
-              looking at, so it speaks about that photograph. The full profile,
-              which lists the whole set, says it in the plural. */}
-          <VerifiedBadge onMedia label={t('discovery.profile.photosReviewedBadgeOne')} accessibilityLabel={t('discovery.profile.photosReviewedBadgeOne')} /></View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, marginTop: theme.spacing.x2, flexWrap: 'wrap' }}><BinderText variant="caption" style={{ color: onMedia.textSecondary }}>{t('discovery.profile.away', { distance: formatDistanceKm(profile.distanceKm, locale) })}</BinderText><VerifiedBadge onMedia label={t('discovery.profile.photosReviewedBadgeOther')} accessibilityLabel={t('discovery.profile.photosReviewedBadgeOther')} /></View>
         {profile.bio ? <BinderText variant="body" style={{ color: onMedia.textPrimary, marginTop: theme.spacing.x2 }} numberOfLines={2}>{profile.bio}</BinderText> : null}
         <View style={{ flexDirection: 'row', gap: theme.spacing.x2, marginTop: theme.spacing.x3, overflow: 'hidden' }}>
           {/* The same chips as on the full profile, emoji included — the card was

@@ -553,7 +553,8 @@
         "pending": "In review",
         "rejected": "Not approved",
         "removed": "Removed"
-      }
+      },
+      "reviewedOne": "Photo reviewed"
     },
     "details": {
       "eyebrow": "ABOUT YOU",

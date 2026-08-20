@@ -553,7 +553,8 @@
         "pending": "Em análise",
         "rejected": "Não aprovada",
         "removed": "Removida"
-      }
+      },
+      "reviewedOne": "Foto analisada"
     },
     "details": {
       "eyebrow": "SOBRE VOCÊ",

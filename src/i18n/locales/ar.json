@@ -553,7 +553,8 @@
         "pending": "قيد المراجعة",
         "rejected": "غير معتمدة",
         "removed": "تمت إزالتها"
-      }
+      },
+      "reviewedOne": "تمت مراجعة الصورة"
     },
     "details": {
       "eyebrow": "عنك",
