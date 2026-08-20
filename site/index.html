@@ -56,17 +56,25 @@
 </script>
   <script type="application/ld+json">
 {
-    "@context": "https://schema.org",
-    "@type": "MobileApplication",
-    "name": "Binder",
-    "operatingSystem": "Android",
-    "applicationCategory": "SocialNetworkingApplication",
-    "description": "Free dating app where both people choose each other before a conversation can begin. No paywall, no ads, moderated photos, server-enforced safety.",
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
-    "url": "https://beko2210.github.io/Binder/",
-    "image": "https://beko2210.github.io/Binder/media/og-image.jpg",
-    "author": { "@type": "Person", "name": "Belkis Aslani" }
-  }
+  "@context": "https://schema.org",
+  "@type": "MobileApplication",
+  "name": "Binder",
+  "operatingSystem": "Android",
+  "applicationCategory": "SocialNetworkingApplication",
+  "description": "Free dating app where both people choose each other before a conversation can begin. No paywall, no ads, moderated photos, server-enforced safety.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR"
+  },
+  "url": "https://beko2210.github.io/Binder/",
+  "image": "https://beko2210.github.io/Binder/media/og-image.jpg",
+  "author": {
+    "@type": "Person",
+    "name": "Belkis Aslani"
+  },
+  "downloadUrl": "https://github.com/BEKO2210/Binder/releases/latest"
+}
 </script>
   <link rel="icon" type="image/png" sizes="192x192" href="assets/binder-icon-192.png">
   <link rel="apple-touch-icon" href="assets/binder-icon-192.png">
@@ -93,6 +101,10 @@
 <main id="main" tabindex="-1">
 <section class="hero"><div class="hero-blobs" aria-hidden="true"><i></i><i></i><i></i></div><canvas class="hero-art" aria-hidden="true"></canvas><div class="wrap"><div class="kicker">Free · mutual first · Android · zero trackers</div><h1>Both choose.<br><em>Then you talk.</em></h1><p class="lead">Dating apps monetize your loneliness: blurred likes, paid boosts, countdown timers. Binder refuses the whole playbook — no fake locks, no artificial daily wall and no paid tier. Just two people who actually picked each other.</p><div class="actions"><a class="btn primary" href="#principles">See how Binder works</a><a class="btn secondary" href="#safety">Safety architecture</a></div><p class="herostatus">Currently in test on Android. The Google Play listing is in preparation — until then the build below is the way in.</p><div class="proof" aria-label="Binder product principles"><div><strong>0 €</strong><span>Everything in the app is free. Forever. That is the roadmap.</span></div><div><strong>Mutual</strong><span>Nobody can message you before both of you said yes.</span></div><div><strong>Private</strong><span>Your exact location and birth date never reach another user.</span></div></div></div></section>
 
+<!-- Deliberately two copies of the strip: the loop is seamless only if the
+     second one is real text moving behind the first. It is aria-hidden and
+     purely decorative; a crawler sees the same six words twice, which is the
+     accepted cost of not faking motion with CSS content. -->
 <div class="marquee" aria-hidden="true"><div class="marquee-track"><span>NO PAYWALL · NO BLURRED LIKES · NO BOOSTS · NO ADS · NO TRACKERS · MUTUAL ONLY · </span><span>NO PAYWALL · NO BLURRED LIKES · NO BOOSTS · NO ADS · NO TRACKERS · MUTUAL ONLY · </span></div></div>
 
 <section class="section" id="live"><div class="wrap"><div class="sectionhead"><div class="kicker">See Binder in action</div><h2>This is Binder, unscripted.</h2><p>Filmed from the shipping build on a real phone. The profiles in it are staged for the film; the app is not.</p></div><video class="promo" src="media/binder-promo.mp4" poster="media/binder-promo-poster.jpg" controls playsinline preload="none" aria-label="Binder promo film: discovery, a mutual match and the conversation that follows"></video><div class="livegrid" style="margin-top:28px"><div class="phonewrap"><video class="phone" src="media/binder-demo.mp4" poster="media/binder-demo-poster.jpg" autoplay loop muted playsinline aria-label="Screen recording of Binder: opening a match and chatting"></video></div><div class="livecopy"><div class="kicker">Unfiltered</div><h3>A real conversation on a real device.</h3><p>Open your match, say something real, watch the reply land. No staged mockups — the product simply looks like this.</p><div class="lifegrid"><figure class="lifecard"><img src="media/life-cafe.jpg" alt="Two people laughing together over coffee in a cozy cafe at night" loading="lazy"><figcaption>Where Binder wants you to end up: off the app.</figcaption></figure><figure class="lifecard"><img src="media/life-street.jpg" alt="A couple walking hand in hand through a city street at dusk" loading="lazy"><figcaption>Matching is the start, not the product.</figcaption></figure></div></div></div></div></section>

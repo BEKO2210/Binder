@@ -233,6 +233,18 @@ function render(locale, page) {
   };
   html = html.replace('</head>', `  <script type="application/ld+json">\n${JSON.stringify(site, null, 2)}\n  </script>\n</head>`);
 
+  // Structured data is hand-maintained text in a locale file, so a stray comma
+  // in a translation would ship silently broken markup. Parsing it here turns
+  // that into a build failure.
+  for (const [, block] of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+    try {
+      JSON.parse(block);
+    } catch (error) {
+      console.error(`${locale}/${page.id}: structured data is not valid JSON — ${error.message}`);
+      process.exit(1);
+    }
+  }
+
   // The two weights used above the fold are fetched in parallel with the
   // stylesheet instead of after it — otherwise the first paint waits for CSS to
   // parse before it even learns the fonts exist.
