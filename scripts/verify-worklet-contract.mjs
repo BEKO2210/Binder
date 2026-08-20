@@ -95,6 +95,28 @@ for (const file of scanRoots.flatMap(filesUnder)) {
 
 const IMPLICIT_WORKLET_CALLBACKS = /\.(onStart|onBegin|onUpdate|onChange|onEnd|onFinalize|onTouchesDown|onTouchesMove|onTouchesUp)\(\s*(?:\([^)]*\)|[A-Za-z0-9_$]+)\s*=>\s*\{/g;
 
+// The same trap, one layer up: the body of useAnimatedStyle and its relatives
+// also runs on the UI runtime. This one cost a crash loop on the A15 — the
+// chat's keyboard padding moved into a plain function in src/lib, the gate
+// above never looked at animated styles, and the app died on every frame with
+// "Tried to synchronously call a Remote Function".
+const ANIMATED_HOOKS = /\b(useAnimatedStyle|useAnimatedProps|useDerivedValue|useAnimatedReaction|useAnimatedScrollHandler|useFrameCallback)\(\s*(?:\([^)]*\)|[A-Za-z0-9_$]+)\s*=>\s*[({]/g;
+
+/** The body of an arrow function, whether it opens with a brace or a paren. */
+function arrowBodyAt(source, start) {
+  const open = source[start];
+  const close = open === '{' ? '}' : ')';
+  let depth = 0;
+  for (let index = start; index < source.length; index += 1) {
+    if (source[index] === open) depth += 1;
+    else if (source[index] === close) {
+      depth -= 1;
+      if (depth === 0) return source.slice(start, index + 1);
+    }
+  }
+  return '';
+}
+
 function bodyAfter(source, openBraceIndex) {
   let depth = 0;
   for (let index = openBraceIndex; index < source.length; index += 1) {
@@ -131,6 +153,18 @@ for (const file of scanRoots.flatMap(filesUnder)) {
       if (new RegExp(`runOnJS\\(\\s*${callee}\\s*\\)`).test(body)) continue;
       const line = source.slice(0, match.index).split('\n').length;
       failures.push(`${relativePath}:${line}: gesture callback calls ${callee}(), which crosses into the JS runtime — resolve it outside the worklet or wrap it in runOnJS`);
+    }
+  }
+
+  for (const match of source.matchAll(ANIMATED_HOOKS)) {
+    const body = arrowBodyAt(source, match.index + match[0].length - 1);
+    for (const call of body.matchAll(/(?<![.\w$])([A-Za-z0-9_$]+)\s*\(/g)) {
+      const callee = call[1];
+      const original = imported.get(callee);
+      if (!original || workletSafe.has(callee) || exportedWorklets.has(original)) continue;
+      if (new RegExp(`runOnJS\\(\\s*${callee}\\s*\\)`).test(body)) continue;
+      const line = source.slice(0, match.index).split('\n').length;
+      failures.push(`${relativePath}:${line}: ${match[1]} calls ${callee}(), which runs on the JS runtime — mark it 'worklet' or resolve it outside`);
     }
   }
 }
