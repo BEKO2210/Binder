@@ -9,15 +9,17 @@ test('a card only leaves after its decision is on disk', () => {
   // would have. Queuing without waiting meant an app closed in the same second
   // lost the decision: the card was gone from the deck and the profile either
   // never came back or came back as if nothing had been decided.
-  const branch = source.slice(source.indexOf('if (shouldKeepAfterFailure(failure.kind))'));
-  const queued = branch.indexOf('await queueDecision(');
-  const dismissed = branch.indexOf('finishDismiss(');
-  assert.ok(queued > 0, 'the offline branch still queues the decision');
-  assert.ok(dismissed > 0, 'the offline branch still dismisses the card');
+  //
+  // The rule now lives in src/lib/decisionOutcome.ts, which has its own tests;
+  // what this file protects is the order of the effects in the screen.
+  const effects = source.slice(source.indexOf('async function applyOutcome'));
+  const queued = effects.indexOf('await queueDecision(');
+  const dismissed = effects.indexOf('finishDismiss(');
+  const springs = effects.indexOf('springBack();');
+  assert.ok(queued > 0, 'the screen still writes the decision to disk');
+  assert.ok(dismissed > 0, 'the screen still dismisses the card');
   assert.ok(queued < dismissed, 'the decision is stored before the card is thrown away');
-  // A queue write that fails must bring the card back rather than lose it.
-  const failure = branch.indexOf('springBack()');
-  assert.ok(failure > 0 && failure < dismissed, 'a failed queue write springs the card back');
+  assert.ok(springs > 0 && springs < dismissed, 'a failed queue write springs the card back');
 });
 
 test('the queue write itself is awaited, not fired and forgotten', () => {
