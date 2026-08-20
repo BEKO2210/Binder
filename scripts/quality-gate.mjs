@@ -56,6 +56,7 @@ const CHECKS = [
   ['typescript (app)', 'npm', ['run', 'typecheck']],
   ['typescript (tests)', 'npm', ['run', 'typecheck:tests']],
   ['unit tests', 'npm', ['test']],
+  ['branch coverage floors', 'node', ['scripts/verify-coverage-floors.mjs']],
 ];
 
 const ANDROID_CHECKS = [
