@@ -44,6 +44,19 @@ const locales = readdirSync(localeDir)
   .sort((left, right) => (left === SOURCE_LOCALE ? -1 : right === SOURCE_LOCALE ? 1 : left.localeCompare(right)));
 
 const dictionaries = Object.fromEntries(locales.map((code) => [code, JSON.parse(readFileSync(join(localeDir, `${code}.json`), 'utf8'))]));
+
+// A key literally named "undefined" once sat in de.json holding the English
+// switcher label, and nothing noticed for weeks. It can only come from a
+// generator that stringified a missing value, so it is a build error, not a
+// translation to fix later.
+for (const [code, dictionary] of Object.entries(dictionaries)) {
+  for (const key of Object.keys(dictionary)) {
+    if (key === 'undefined' || key.includes('undefined')) {
+      console.error(`${code}.json: key "${key}" comes from a stringified missing value`);
+      process.exit(1);
+    }
+  }
+}
 const missing = [];
 
 // The language page is built from the app's own locale files, so it cannot
@@ -105,6 +118,23 @@ function languageStrip() {
 // from the same source: the structured data block. Google only honours FAQ
 // markup whose answers are visible on the page, and a second copy of these
 // sentences in the locale files would drift apart within two edits.
+// The number of database assertions is measured, not maintained: every pgTAP
+// file declares its own plan, so the sum is the count the suite actually runs.
+// A hand-written "150+" in a locale file was already three years of work out of
+// date in the wrong direction.
+function databaseAssertions() {
+  let total = 0;
+  for (const file of readdirSync('supabase/tests')) {
+    if (!file.endsWith('.sql')) continue;
+    const sql = readFileSync(join('supabase/tests', file), 'utf8');
+    for (const [, count] of sql.matchAll(/\bplan\(\s*(\d+)\s*\)/g)) total += Number(count);
+  }
+  if (!total) throw new Error('no pgTAP plans found — the proof number would be a guess');
+  // Rounded down to the nearest ten and marked as a floor: the page claims at
+  // least this many, which stays true between two test edits.
+  return `${Math.floor(total / 10) * 10}+`;
+}
+
 function faqSection(dictionary) {
   const block = ['home.jsonld-1', 'home.jsonld-2']
     .map((key) => dictionary[key])
@@ -168,6 +198,7 @@ function render(locale, page) {
     if (key === '@alternates') return alternatesFor(page.file) + `\n  <link rel="canonical" href="${pageUrl(locale, page.file)}">`;
     if (key === '@og-url') return `<meta property="og:url" content="${pageUrl(locale, page.file)}">`;
     if (key === '@faq') return faqSection(dictionary);
+    if (key === '@db-assertions') return databaseAssertions();
     // A German visitor got an English draft in their mail app. Subject and body
     // are locale text like everything else, encoded here so the template stays
     // readable.
