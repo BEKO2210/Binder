@@ -37,7 +37,7 @@ test('a failed voice take keeps its length, so the retry can succeed', () => {
   // Without the duration the retry sent zero, the server refused anything under
   // a second, and the recording sat there with a retry button that could never
   // work.
-  const store = addUnsent({}, 'm-voice', { clientId: 'v1', body: '', localUri: 'file:///take.m4a', durationMs: 4200 });
+  const store = addUnsent({}, 'm-voice', { clientId: 'v1', body: '', localUri: 'file:///take.m4a', durationMs: 4200, createdAt: 1 });
   const [entry] = store['m-voice'] ?? [];
   assert.equal(entry?.durationMs, 4200);
   assert.equal(entry?.localUri, 'file:///take.m4a');
