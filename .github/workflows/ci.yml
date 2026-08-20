@@ -14,10 +14,10 @@ jobs:
     timeout-minutes: 18
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Use Node.js 22
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: '22.13.1'
           package-manager-cache: false
@@ -36,77 +36,11 @@ jobs:
           npm audit --omit=dev --json > npm-audit.json || true
           node scripts/verify-audit-baseline.mjs npm-audit.json
 
-      - name: Verify app entrypoint
-        run: node scripts/verify-entrypoint.mjs
-
-      - name: Verify native Binder branding
-        run: npm run verify:brand
-
-      - name: Verify public policy site
-        run: node scripts/verify-site.mjs
-
-      - name: Verify branded email templates
-        run: npm run verify:mail-templates
-
-      - name: Verify site language page matches bundled locales
-        run: npm run verify:site-languages
-
-      - name: Verify the site matches its templates and language files
-        run: node scripts/build-site-i18n.mjs --check
-
-      - name: Verify the site's language switch
-        run: node scripts/verify-site-language-switch.mjs
-
-      - name: Verify the site's direct download
-        run: node scripts/verify-site-download.mjs
-
-      - name: Verify the data safety declaration still matches the schema
-        run: npm run verify:data-safety
-
-      - name: Verify admin dashboard authorization boundary
-        run: npm run verify:admin
-
-      - name: Verify Phase 4 safety contract
-        run: node scripts/verify-safety-contract.mjs
-
-      - name: Verify Phase 5 beta contract
-        run: node scripts/verify-phase5-contract.mjs
-
-      - name: Verify Phase 6 visual system
-        run: npm run verify:phase6-design
-
-      - name: Verify Phase 6 settings
-        run: npm run verify:phase6-settings
-
-      - name: Verify Phase 6 media path
-        run: npm run verify:phase6-media
-
-      - name: Verify Phase 7 push and communication reliability
-        run: npm run verify:phase7-push
-
-      - name: Verify auditable design contract
-        run: npm run verify:design-contract
-
-      # These four are documented gates in AGENTS.md and ran only locally until
-      # 2026-08-18 — which is how a crash-causing worklet violation and the
-      # English tab bar could sit on main with a green pipeline.
-      - name: Verify worklet contract
-        run: node scripts/verify-worklet-contract.mjs
-
-      - name: Verify every request carries a deadline
-        run: node scripts/verify-request-deadlines.mjs
-
-      - name: Verify locale registry
-        run: node scripts/verify-i18n.mjs
-
-      - name: Verify localization coverage
-        run: node scripts/verify-i18n-coverage.mjs
-
-      - name: Verify push copy matches the locales
-        run: node scripts/build-push-copy.mjs --check
+      - name: Quality gate (the same list a release runs)
+        run: node scripts/quality-gate.mjs
 
       - name: Setup Deno
-        uses: denoland/setup-deno@v2
+        uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
         with:
           deno-version: v2.x
           cache: true
@@ -117,14 +51,6 @@ jobs:
           deno check --config supabase/functions/delete-account/deno.json supabase/functions/delete-account/index.ts
           deno check --config supabase/functions/dispatch-push/deno.json supabase/functions/dispatch-push/index.ts
           deno check --config supabase/functions/invite-moderator/deno.json supabase/functions/invite-moderator/index.ts
-
-      - name: TypeScript
-        run: |
-          npm run typecheck
-          npm run typecheck:tests
-
-      - name: Unit tests
-        run: npm test
 
       - name: Verify Android native config
         run: npx expo prebuild --platform android --no-install --clean

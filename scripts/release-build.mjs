@@ -64,6 +64,14 @@ if (!existsSync(keystoreProperties)) {
   process.exit(1);
 }
 
+// The same checks CI runs, before anything is built. A release that skips them
+// is a release nobody checked; the shorter list this replaces is exactly how
+// "CI is green" and "this candidate was checked" drifted apart.
+if (!flags.has('--skip-gate')) {
+  console.log('Quality gate: the same list CI runs.');
+  execFileSync(process.execPath, [join(root, 'scripts/quality-gate.mjs')], { stdio: 'inherit' });
+}
+
 // Gradle kept a JavaScript bundle it should have rebuilt: a release built
 // minutes after a locale file changed still shipped the old German strings, and
 // the phone proved it while the source said otherwise. The bundle is a few

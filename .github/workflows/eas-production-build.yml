@@ -20,10 +20,10 @@ jobs:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
     steps:
       - name: Checkout exact candidate
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Use Node.js 22
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: '22.13.1'
           package-manager-cache: false
@@ -41,15 +41,12 @@ jobs:
       - name: Materialize production branding
         run: npm run brand:assets
 
-      - name: Verify Phase 7 candidate
-        run: |
-          npm run verify:phase7-push
-          npm run verify:brand
-          npm run verify:phase6-design
-          npm run verify:phase6-settings
-          npm run verify:phase6-media
-          npm run typecheck
-          npm test
+      # The same list CI runs. There used to be a shorter one here, and the
+      # shorter one was what stood between a mistake and the Play Store.
+      - name: Quality gate
+        run: node scripts/quality-gate.mjs
 
       - name: Build Android production bundle on EAS
-        run: npx --yes eas-cli@latest build --platform android --profile production --non-interactive
+        # Pinned: a production build may not depend on what was published to
+        # npm this morning. Raising this is a decision, visible in a diff.
+        run: npx --yes eas-cli@16.19.3 build --platform android --profile production --non-interactive
