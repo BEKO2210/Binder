@@ -1,0 +1,19 @@
+# Get into the conversation while there is still a network.
+#
+# Launching the app with no network lands on a full-screen offline state — the
+# deck cannot load, so there is no tab bar to reach a conversation with. That is
+# defensible product behaviour, and it means the offline journey has to start
+# the way a person's evening does: already in the chat when the signal goes.
+appId: de.beko2210.binder
+name: Open the conversation
+---
+- tapOn: 'Binds'
+- extendedWaitUntil:
+    visible: 'Deine Binds'
+    timeout: 20000
+- tapOn:
+    text: 'Unterhaltung mit .*'
+    index: 0
+- extendedWaitUntil:
+    visible: 'Nachricht an .*'
+    timeout: 20000

@@ -1,0 +1,40 @@
+# A decision has to stick.
+#
+# Bind the card on top, and the person behind it must not come back — not on
+# this screen, and not after a restart. "Asked twice about the same person" is
+# the failure this journey exists for; it was a real one, found by a reviewer
+# in the offline queue.
+appId: de.beko2210.binder
+name: Discovery — a bind sticks across a restart
+---
+- launchApp:
+    clearState: true
+- tapOn: 'du@beispiel.de'
+- inputText: ${MAESTRO_EMAIL}
+- hideKeyboard
+- tapOn: 'Mindestens 8 Zeichen'
+- inputText: ${MAESTRO_PASSWORD}
+- hideKeyboard
+- tapOn: 'Anmelden'
+- runFlow:
+    when:
+      visible: 'Bei Nutzung der App'
+    commands:
+      - tapOn: 'Bei Nutzung der App'
+- extendedWaitUntil:
+    visible: 'Deine Suche'
+    timeout: 30000
+
+# Whoever is on top gets bound.
+- tapOn: 'Profil binden'
+- waitForAnimationToEnd:
+    timeout: 5000
+
+# Restart the app entirely: the queue lives on disk, and this is where a
+# decision that was only in memory used to disappear.
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible: 'Deine Suche'
+    timeout: 30000
+- assertVisible: 'Entdecken'

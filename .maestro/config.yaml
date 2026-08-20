@@ -1,0 +1,10 @@
+# Black-box journeys against a built release candidate.
+#
+# These do not import the app's code. They open the package the way a person
+# does, tap what a person sees, and assert what a person would notice. That is
+# deliberately the opposite of every other test here: the unit tests know the
+# invariants, and this layer knows nothing except the screen.
+#
+# The device is expected to run in German — the labels below are the ones a
+# German phone shows, because that is what the app follows.
+appId: de.beko2210.binder

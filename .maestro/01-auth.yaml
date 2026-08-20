@@ -1,0 +1,41 @@
+# Signing in and out, and the deck actually arriving.
+#
+# A login that "works" but leaves an empty deck behind is the failure people
+# report as "the app is broken", so the journey ends on a card, not on a
+# navigation bar.
+appId: de.beko2210.binder
+name: Auth — sign in, see the deck, sign out
+---
+- clearState
+- launchApp
+- assertVisible: 'Willkommen zurück.'
+
+- tapOn: 'du@beispiel.de'
+- inputText: ${MAESTRO_EMAIL}
+- hideKeyboard
+- tapOn: 'Mindestens 8 Zeichen'
+- inputText: ${MAESTRO_PASSWORD}
+- hideKeyboard
+- tapOn: 'Anmelden'
+
+# The location prompt belongs to Android, not to us; it may or may not appear.
+- runFlow:
+    when:
+      visible: 'Bei Nutzung der App'
+    commands:
+      - tapOn: 'Bei Nutzung der App'
+
+- extendedWaitUntil:
+    visible: 'Entdecken'
+    timeout: 30000
+- assertVisible: 'Deine Suche'
+
+- tapOn: 'Menü'
+- scrollUntilVisible:
+    element: 'Abmelden'
+    direction: DOWN
+- tapOn: 'Abmelden'
+- tapOn: 'ABMELDEN'
+- extendedWaitUntil:
+    visible: 'Willkommen zurück.'
+    timeout: 20000

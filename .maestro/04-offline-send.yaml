@@ -1,0 +1,15 @@
+# Part one of the offline journey: write a message with no network.
+#
+# The app is already in the conversation — the runner cut the network a moment
+# ago, the way it goes when a train enters a tunnel. What matters here is that
+# the app took the message and said it is waiting, not that it delivered it.
+appId: de.beko2210.binder
+name: Offline — a message written with no network waits
+---
+- tapOn: 'Nachricht an .*'
+- inputText: ${MAESTRO_OFFLINE_TEXT}
+- hideKeyboard
+- tapOn: 'Nachricht an .* senden'
+- extendedWaitUntil:
+    visible: 'Warten auf Verbindung'
+    timeout: 30000

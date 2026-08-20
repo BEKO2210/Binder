@@ -1,0 +1,25 @@
+# Just the way in. Other journeys build on this one; the auth journey itself
+# still signs out at the end, which is why that one cannot be reused here.
+appId: de.beko2210.binder
+name: Sign in
+---
+- launchApp
+- runFlow:
+    when:
+      visible: 'du@beispiel.de'
+    commands:
+      - tapOn: 'du@beispiel.de'
+      - inputText: ${MAESTRO_EMAIL}
+      - hideKeyboard
+      - tapOn: 'Mindestens 8 Zeichen'
+      - inputText: ${MAESTRO_PASSWORD}
+      - hideKeyboard
+      - tapOn: 'Anmelden'
+- runFlow:
+    when:
+      visible: 'Bei Nutzung der App'
+    commands:
+      - tapOn: 'Bei Nutzung der App'
+- extendedWaitUntil:
+    visible: 'Deine Suche'
+    timeout: 40000

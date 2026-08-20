@@ -1,0 +1,45 @@
+# A message that was sent is a message that is there.
+#
+# The journey opens the conversation from the list, writes, sends, and requires
+# the app itself to say it went out. Nothing here inspects the database — if the
+# screen says "Gesendet" while the server never heard of it, that is exactly the
+# lie this layer is meant to catch.
+appId: de.beko2210.binder
+name: Chat — write a message and see it sent
+---
+- launchApp:
+    clearState: true
+- tapOn: 'du@beispiel.de'
+- inputText: ${MAESTRO_EMAIL}
+- hideKeyboard
+- tapOn: 'Mindestens 8 Zeichen'
+- inputText: ${MAESTRO_PASSWORD}
+- hideKeyboard
+- tapOn: 'Anmelden'
+- runFlow:
+    when:
+      visible: 'Bei Nutzung der App'
+    commands:
+      - tapOn: 'Bei Nutzung der App'
+- extendedWaitUntil:
+    visible: 'Deine Suche'
+    timeout: 30000
+
+- tapOn: 'Binds'
+- extendedWaitUntil:
+    visible: 'Deine Binds'
+    timeout: 20000
+- tapOn:
+    text: 'Unterhaltung mit .*'
+    index: 0
+- extendedWaitUntil:
+    visible: 'Nachricht an .*'
+    timeout: 20000
+
+- tapOn: 'Nachricht an .*'
+- inputText: 'E2E'
+- hideKeyboard
+- tapOn: 'Nachricht an .* senden'
+- extendedWaitUntil:
+    visible: '.*Gesendet.*'
+    timeout: 20000
