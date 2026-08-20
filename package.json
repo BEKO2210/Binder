@@ -54,7 +54,8 @@
     "coverage:record": "node scripts/verify-coverage-floors.mjs --record",
     "device:matrix": "node scripts/device-matrix.mjs",
     "perf": "node scripts/performance.mjs",
-    "perf:record": "node scripts/performance.mjs --record"
+    "perf:record": "node scripts/performance.mjs --record",
+    "lint": "eslint src --max-warnings=9999"
   },
   "dependencies": {
     "@expo-google-fonts/manrope": "0.4.2",
@@ -92,6 +93,8 @@
   "devDependencies": {
     "@types/node": "^26.2.0",
     "@types/react": "~19.2.2",
+    "eslint": "9.36.0",
+    "eslint-config-expo": "10.0.0",
     "pngjs": "3.4.0",
     "typescript": "~6.0.3",
     "wawoff2": "2.0.1"

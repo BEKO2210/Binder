@@ -53,6 +53,10 @@ const CHECKS = [
   ['locale registry', 'node', ['scripts/verify-i18n.mjs']],
   ['localization coverage', 'node', ['scripts/verify-i18n-coverage.mjs']],
   ['push copy', 'node', ['scripts/build-push-copy.mjs', '--check']],
+  // Behaviour rules only (hooks, shadowing); the four AST verifiers above cover
+  // what is specific to Binder, and TypeScript covers types. Warnings do not
+  // fail the build, errors do — see eslint.config.mjs for why each rule is on.
+  ['lint (behaviour rules)', 'npx', ['eslint', 'src', '--max-warnings=9999']],
   ['typescript (app)', 'npm', ['run', 'typecheck']],
   ['typescript (tests)', 'npm', ['run', 'typecheck:tests']],
   ['unit tests', 'npm', ['test']],

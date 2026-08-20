@@ -140,7 +140,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
       // a second time — the same person, asked twice, the first answer quietly
       // replaced by the second.
       const waiting = new Set((await loadPending()).map((entry) => entry.targetUserId));
-      const fresh = waiting.size === 0 ? batch : batch.filter((profile) => !waiting.has(profile.id));
+      const fresh = waiting.size === 0 ? batch : batch.filter((candidate) => !waiting.has(candidate.id));
       if (!current()) return;
       setProfiles(fresh);
       if (fresh.length === 0) {

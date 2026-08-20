@@ -13,7 +13,9 @@ const media = existsSync('src/lib/media.ts') ? readFileSync('src/lib/media.ts', 
 if (!media.includes('uploadPreparedImage') || !media.includes("register_profile_media")) failures.push('gallery does not upload prepared media before server registration');
 if (!media.includes("remove([uploaded.path])")) failures.push('failed media registration does not clean the just-uploaded storage object');
 const profileSettings = existsSync('src/screens/ProfileSettingsScreen.tsx') ? readFileSync('src/screens/ProfileSettingsScreen.tsx', 'utf8') : '';
-for (const contract of ['media.length >= 6','pickAndPrepareProfileImage','addProfileImage','setPrimaryProfileMedia','reorderProfileMedia','removeProfileMedia']) if (!profileSettings.includes(contract)) failures.push(`gallery UI contract missing: ${contract}`);
+// The six-photo limit moved into src/lib/photoGallery.ts, where it is tested;
+// the screen must go through that rule rather than counting again itself.
+for (const contract of ['canAddPhoto(media.length','pickAndPrepareProfileImage','addProfileImage','setPrimaryProfileMedia','reorderProfileMedia','removeProfileMedia']) if (!profileSettings.includes(contract)) failures.push(`gallery UI contract missing: ${contract}`);
 const onboarding = existsSync('src/screens/OnboardingScreen.tsx') ? readFileSync('src/screens/OnboardingScreen.tsx','utf8') : '';
 if (!onboarding.includes('addProfileImage') || onboarding.includes('replaceProfileImage')) failures.push('onboarding must use the same atomic prepared-image gallery path');
 if (failures.length) { console.error(failures.join('\n')); process.exit(1); }

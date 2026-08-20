@@ -55,19 +55,19 @@ export default function ProfileScreen({ userId, onEditProfile, onPreviewProfile,
       // none of them fails — they wait, and the screen waits with them. The
       // diagnostics showed this as an 8.7-second "error" that was really the
       // system giving up, with nothing on screen but a spinner until then.
-      const [profile, media, notice] = await withDeadline(Promise.all([
+      const [profileRow, galleryMedia, notice] = await withDeadline(Promise.all([
         supabase.from('profiles').select('first_name,bio,interests,height_cm,smoking,drinking,drugs,activity,diet,spirituality,children_has,children_wants,car').eq('user_id', userId).abortSignal(signal ?? new AbortController().signal).single(),
         listMyProfileMedia(),
         fetchMySafetyNotice({ signal }),
       ]), PROFILE_DEADLINE_MS);
-      if (profile.error) throw profile.error;
-      setFirstName(profile.data.first_name);
-      setBio(profile.data.bio);
-      setAttributes(rowsFromProfile(profile.data));
-      setPhotoUrls(media.map((item) => item.signedUrl).filter(Boolean));
-      setMedia(media.map((item) => ({ position: item.position, moderationStatus: item.moderationStatus })));
-      setPhotoCount(media.length);
-      setInterestCount(profile.data.interests?.length ?? 0);
+      if (profileRow.error) throw profileRow.error;
+      setFirstName(profileRow.data.first_name);
+      setBio(profileRow.data.bio);
+      setAttributes(rowsFromProfile(profileRow.data));
+      setPhotoUrls(galleryMedia.map((item) => item.signedUrl).filter(Boolean));
+      setMedia(galleryMedia.map((item) => ({ position: item.position, moderationStatus: item.moderationStatus })));
+      setPhotoCount(galleryMedia.length);
+      setInterestCount(profileRow.data.interests?.length ?? 0);
       setSafetyNotice(notice);
       void recordBetaEvent('profile_load', 'profile', { durationMs: Date.now() - startedAt, outcome: 'ok' });
     } catch (error) {

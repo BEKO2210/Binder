@@ -200,14 +200,14 @@ function BinderApp() {
         // answer arrives. The check gets a deadline of its own, because an
         // unanswered question must not leave this hanging either.
         void withDeadline(supabase.auth.getSession(), STARTUP_DEADLINE_MS)
-          .then(({ data, error }) => {
+          .then(({ data: startupSession, error }) => {
             if (!active) return;
             const decision = sessionEndDecision({
               intentional: false,
-              hasServerSession: Boolean(data.session),
+              hasServerSession: Boolean(startupSession.session),
               unreachable: Boolean(error) && isLikelyOffline(error),
             });
-            if (decision === 'keep') { if (data.session) applySession(data.session); return; }
+            if (decision === 'keep') { if (startupSession.session) applySession(startupSession.session); return; }
             setSessionExpired(true);
             applySession(null);
           })

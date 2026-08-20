@@ -10,7 +10,7 @@ import { MotionPressable as Pressable } from '../components/ui';
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderInput, BinderScreenHeader, BinderText, ScreenState, SectionHeader } from '../components/ui';
 import { pickAndPrepareProfileImage, type PreparedImage } from '../lib/images';
 import { addProfileImage, listMyProfileMedia, removeProfileMedia, reorderProfileMedia, setPrimaryProfileMedia, type GalleryMedia } from '../lib/media';
-import { replacementOrder } from '../lib/photoReplacement';
+import { canAddPhoto, canMakePrimary, canReplacePhoto, canRetryUpload, moveTarget, orderForReplacement } from '../lib/photoGallery';
 import { hasErrors, validateDiscovery, validateIdentity } from '../lib/onboardingFlow';
 import { classifyError, withDeadline } from '../lib/reliability';
 import { supabase } from '../lib/supabase';
@@ -135,7 +135,7 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
   }
 
   async function addPhoto() {
-    if (media.length >= 6 || busy || uploadLockedRef.current) return;
+    if (!canAddPhoto(media.length, { busy, uploadLocked: uploadLockedRef.current })) return;
     uploadLockedRef.current = true;
     setUpload({ phase: 'preparing', image: null });
     setMessage('');
@@ -168,14 +168,15 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
   }
 
   async function retryUpload() {
-    if (uploadLockedRef.current || upload?.phase !== 'error' || !upload.image) return;
+    if (!canRetryUpload(upload && { phase: upload.phase, hasImage: upload.image !== null }, { busy: false, uploadLocked: uploadLockedRef.current })) return;
+    if (!upload?.image) return;
     uploadLockedRef.current = true;
     await uploadPhoto(upload.image);
     uploadLockedRef.current = false;
   }
 
   async function replacePhoto(item: GalleryMedia) {
-    if (busy || uploadLockedRef.current) return;
+    if (!canReplacePhoto({ busy, uploadLocked: uploadLockedRef.current })) return;
     uploadLockedRef.current = true;
     setMessage('');
     try {
@@ -186,7 +187,7 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
       // full gallery is the one case where there is no free slot to hold both,
       // so it still has to make room first — and if that upload then fails, the
       // prepared image stays in the error state with its retry.
-      if (replacementOrder(media.length) === 'upload-first') {
+      if (orderForReplacement(media.length) === 'upload-first') {
         setBusy(false);
         if (!await uploadPhoto(image)) return;
         setBusy(true);
@@ -207,8 +208,8 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
   }
 
   async function movePhoto(index: number, delta: -1 | 1) {
-    const target = index + delta;
-    if (target < 0 || target >= media.length || busy) return;
+    const target = moveTarget(index, delta, media.length, { busy, uploadLocked: uploadLockedRef.current });
+    if (target === null) return;
     const next = [...media];
     const currentItem = next[index];
     const targetItem = next[target];
@@ -226,7 +227,7 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
   }
 
   async function makePrimary(item: GalleryMedia) {
-    if (item.position === 0 || item.moderationStatus !== 'approved' || busy) return;
+    if (!canMakePrimary(item, { busy, uploadLocked: uploadLockedRef.current })) return;
     setBusy(true);
     setMessage('');
     try {

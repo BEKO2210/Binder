@@ -29,7 +29,8 @@ test('the screen deletes only after a confirmed upload', () => {
   // is checked for is unchanged.
   assert.match(source, /if \(!await uploadPhoto\(image\)\) return;\s*\n\s*setBusy\(true\);\s*\n\s*await withDeadline\(removeProfileMedia/);
   // And the order is decided by the tested rule, not by a hand-written check.
-  assert.match(source, /replacementOrder\(media\.length\) === 'upload-first'/);
+  // The rule moved into photoGallery, which re-exports it as orderForReplacement.
+  assert.match(source, /orderForReplacement\(media\.length\) === 'upload-first'/);
 });
 
 test('the profile viewer never shows one person under another person\'s name', () => {
