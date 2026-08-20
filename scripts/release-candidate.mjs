@@ -45,7 +45,23 @@ const device = read(join(root, 'artifacts/device-evidence.json'));
 const performance = read(join(root, 'artifacts/performance-evidence.json'));
 const performanceBaseline = read(join(root, 'artifacts/performance-baseline.json'));
 
-const sameCommit = (record) => Boolean(record && record.commit === release.commit);
+// Evidence may be recorded at a different commit than the one the artefacts
+// were built from — writing the evidence file down is itself a commit. That is
+// only acceptable when nothing the app is built from moved in between: the
+// difference has to be inside artifacts/, which no build reads.
+function sameSourceTree(recordCommit) {
+  if (recordCommit === release.commit) return true;
+  try {
+    const changed = execFileSync('git', ['diff', '--name-only', release.commit, recordCommit], { cwd: root, encoding: 'utf8' })
+      .split('\n').map((line) => line.trim()).filter(Boolean);
+    return changed.length > 0 && changed.every((path) => path.startsWith('artifacts/'));
+  } catch {
+    // An unknown commit is not evidence for this one.
+    return false;
+  }
+}
+
+const sameCommit = (record) => Boolean(record && sameSourceTree(record.commit));
 // A record from another commit is not a failure of the product — it is simply
 // not evidence for this candidate, and saying "FAIL" would blame the wrong
 // thing.
@@ -69,7 +85,7 @@ ask('black-box journeys', ...verdictFor(e2e, 'run npm run e2e'));
 ask('offline and kill journey', ...verdictFor(offline, 'run npm run e2e:offline'));
 ask('export size budget', size ? 'PASS' : 'MISSING', size ? `${(size.jsBytes / 1048576).toFixed(2)} MiB JS` : 'no size report');
 ask('device performance', performance && performanceBaseline
-  ? (performance.commit === release.commit
+  ? (sameSourceTree(performance.commit)
       ? (performance.coldStartMs <= performanceBaseline.coldStartMs * 1.35 && performance.memoryMb <= performanceBaseline.memoryMb * 1.3 ? 'PASS' : 'FAIL')
       : 'STALE')
   : 'MISSING',

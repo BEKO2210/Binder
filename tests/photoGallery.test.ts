@@ -72,3 +72,15 @@ test('back leaves the full photo before it leaves the screen behind it', () => {
     assert.match(source, /setViewerIndex\(null\); return true;|setViewerIndex\(null\);\s*\n\s*return true;/, `${screen} does not close the viewer on back`);
   }
 });
+
+test('evidence counts across a commit that only wrote evidence down', () => {
+  // Writing the evidence file is itself a commit, so every device run after a
+  // build lands one commit later than the artefacts. That made a fully checked
+  // candidate read NOT READY. The rule is the source tree, not the hash: the
+  // difference between the two commits has to live entirely in artifacts/.
+  const source = readFileSync(new URL('../scripts/release-candidate.mjs', import.meta.url), 'utf8');
+  assert.match(source, /changed\.length > 0 && changed\.every\(\(path\) => path\.startsWith\('artifacts\/'\)\)/);
+  // And both places that compare commits go through it.
+  assert.equal(source.match(/sameSourceTree\(/g)?.length, 3);
+  assert.doesNotMatch(source, /performance\.commit === release\.commit/);
+});
