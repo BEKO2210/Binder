@@ -22,3 +22,18 @@ test('a refusal from the server leaves the file alone', () => {
   const remove = removal.indexOf('.remove(');
   assert.ok(guard > rpc && guard < remove, 'the error is thrown before anything is deleted');
 });
+
+test('signed photo URLs stay short-lived', () => {
+  // A signed URL is a bearer token: it keeps working until it expires, whatever
+  // happens to the block list behind it. Stretching it to four hours to spare
+  // people a stale picture handed a blocked person four hours of access — the
+  // same hole that was just closed for voice messages.
+  assert.match(source, /const SIGNED_URL_SECONDS = 60 \* 30;/);
+});
+
+test('the media library throws codes, not English sentences', () => {
+  // These reach a screen that speaks fifteen languages.
+  assert.match(source, /binder\/photo-too-large/);
+  assert.doesNotMatch(source, /Choose another photo/);
+  assert.doesNotMatch(source, /could not register the prepared profile photo/);
+});

@@ -498,7 +498,9 @@
       "makePrimary": "Dieses Foto konnte nicht zum Hauptfoto gemacht werden.",
       "removePhoto": "Das Foto konnte nicht entfernt werden.",
       "replacePhoto": "Das Foto konnte nicht ersetzt werden.",
-      "save": "Die Profileinstellungen konnten nicht gespeichert werden."
+      "save": "Die Profileinstellungen konnten nicht gespeichert werden.",
+      "photoTooLarge": "Das Bild ist auch komprimiert größer als 3 MB. Wähle ein anderes Foto.",
+      "photoNotRegistered": "Das Foto konnte nicht registriert werden. Versuche es noch einmal."
     },
     "messages": {
       "photoAdded": "Das Foto wurde optimiert, hochgeladen und zur Sicherheitsprüfung eingereicht.",

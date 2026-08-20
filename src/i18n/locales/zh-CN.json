@@ -498,7 +498,9 @@
       "makePrimary": "无法将此照片设为主照片。",
       "removePhoto": "无法移除照片。",
       "replacePhoto": "无法替换照片。",
-      "save": "无法保存个人资料设置。"
+      "save": "无法保存个人资料设置。",
+      "photoTooLarge": "即使压缩后，图片仍超过 3 MB。请换一张照片。",
+      "photoNotRegistered": "照片未能登记，请重试。"
     },
     "messages": {
       "photoAdded": "照片已优化、上传并送交安全审核。",

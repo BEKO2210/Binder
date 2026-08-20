@@ -498,7 +498,9 @@
       "makePrimary": "Could not make this photo primary.",
       "removePhoto": "Could not remove photo.",
       "replacePhoto": "Could not replace photo.",
-      "save": "Could not save profile settings."
+      "save": "Could not save profile settings.",
+      "photoTooLarge": "Even compressed, this image is larger than 3 MB. Choose another photo.",
+      "photoNotRegistered": "The photo could not be registered. Try again."
     },
     "messages": {
       "photoAdded": "Photo optimized, uploaded and sent for safety review.",

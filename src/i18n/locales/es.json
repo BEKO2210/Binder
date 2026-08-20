@@ -498,7 +498,9 @@
       "makePrimary": "No se pudo establecer esta foto como principal.",
       "removePhoto": "No se pudo eliminar la foto.",
       "replacePhoto": "No se pudo reemplazar la foto.",
-      "save": "No se pudieron guardar los ajustes del perfil."
+      "save": "No se pudieron guardar los ajustes del perfil.",
+      "photoTooLarge": "Incluso comprimida, la imagen supera 3 MB. Elige otra foto.",
+      "photoNotRegistered": "No se pudo registrar la foto. Inténtalo de nuevo."
     },
     "messages": {
       "photoAdded": "Foto optimizada, subida y enviada para revisión de seguridad.",

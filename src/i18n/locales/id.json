@@ -498,7 +498,9 @@
       "makePrimary": "Tidak dapat menjadikan foto ini sebagai utama.",
       "removePhoto": "Tidak dapat menghapus foto.",
       "replacePhoto": "Tidak dapat mengganti foto.",
-      "save": "Tidak dapat menyimpan pengaturan profil."
+      "save": "Tidak dapat menyimpan pengaturan profil.",
+      "photoTooLarge": "Setelah dikompresi pun gambar ini lebih dari 3 MB. Pilih foto lain.",
+      "photoNotRegistered": "Foto tidak dapat didaftarkan. Coba lagi."
     },
     "messages": {
       "photoAdded": "Foto dioptimalkan, diunggah, dan dikirim untuk tinjauan keselamatan.",

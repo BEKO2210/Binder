@@ -498,7 +498,9 @@
       "makePrimary": "Bu fotoğraf birincil yapılamadı.",
       "removePhoto": "Fotoğraf kaldırılamadı.",
       "replacePhoto": "Fotoğraf değiştirilemedi.",
-      "save": "Profil ayarları kaydedilemedi."
+      "save": "Profil ayarları kaydedilemedi.",
+      "photoTooLarge": "Sıkıştırılsa bile görsel 3 MB’tan büyük. Başka bir fotoğraf seç.",
+      "photoNotRegistered": "Fotoğraf kaydedilemedi. Tekrar dene."
     },
     "messages": {
       "photoAdded": "Fotoğraf optimize edildi, yüklendi ve güvenlik incelemesine gönderildi.",

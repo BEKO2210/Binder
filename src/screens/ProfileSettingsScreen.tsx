@@ -60,9 +60,18 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
 
   useEffect(() => { void load(); }, [userId]);
 
+  // Codes thrown by the media library get a sentence in the reader's language;
+  // an English sentence thrown from there used to appear verbatim in all
+  // fifteen.
+  const CODED_ERRORS: Record<string, string> = {
+    'binder/photo-too-large': 'profileSettings.errors.photoTooLarge',
+    'binder/photo-not-registered': 'profileSettings.errors.photoNotRegistered',
+  };
+
   function errorMessage(error: unknown, fallback: string) {
     const failure = classifyError(error);
     if (failure.kind === 'permission-denied') onSessionExpired();
+    if (error instanceof Error && CODED_ERRORS[error.message]) return t(CODED_ERRORS[error.message]!);
     return error instanceof Error ? error.message : fallback;
   }
 

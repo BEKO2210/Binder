@@ -498,7 +498,9 @@
       "makePrimary": "Nie udało się ustawić tego zdjęcia jako głównego.",
       "removePhoto": "Nie udało się usunąć zdjęcia.",
       "replacePhoto": "Nie udało się zastąpić zdjęcia.",
-      "save": "Nie udało się zapisać ustawień profilu."
+      "save": "Nie udało się zapisać ustawień profilu.",
+      "photoTooLarge": "Nawet po kompresji zdjęcie ma ponad 3 MB. Wybierz inne.",
+      "photoNotRegistered": "Nie udało się zarejestrować zdjęcia. Spróbuj ponownie."
     },
     "messages": {
       "photoAdded": "Zdjęcie zoptymalizowano, przesłano i wysłano do kontroli bezpieczeństwa.",

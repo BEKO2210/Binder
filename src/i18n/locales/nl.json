@@ -498,7 +498,9 @@
       "makePrimary": "Deze foto kon niet als primair worden ingesteld.",
       "removePhoto": "Foto kon niet worden verwijderd.",
       "replacePhoto": "Foto kon niet worden vervangen.",
-      "save": "Profielinstellingen konden niet worden opgeslagen."
+      "save": "Profielinstellingen konden niet worden opgeslagen.",
+      "photoTooLarge": "Ook gecomprimeerd is deze afbeelding groter dan 3 MB. Kies een andere foto.",
+      "photoNotRegistered": "De foto kon niet worden geregistreerd. Probeer het opnieuw."
     },
     "messages": {
       "photoAdded": "Foto geoptimaliseerd, geüpload en verzonden voor veiligheidsbeoordeling.",

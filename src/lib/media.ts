@@ -44,7 +44,10 @@ function parseModerationStatus(value: string): ModerationStatus {
 async function payloadFor(image: PreparedImage): Promise<ArrayBuffer> {
   const file = new File(image.uri);
   const payload = await file.arrayBuffer();
-  if (payload.byteLength > MAX_UPLOAD_BYTES) throw new Error('Compressed image is still larger than 3 MB. Choose another photo.');
+  // A code, not a sentence: this reaches the screen, and the screen speaks
+  // fifteen languages. An English sentence thrown from here appeared verbatim
+  // in all of them.
+  if (payload.byteLength > MAX_UPLOAD_BYTES) throw new Error('binder/photo-too-large');
   return payload;
 }
 
@@ -69,7 +72,7 @@ export async function addProfileImage(userId: string, image: PreparedImage, onUp
   if (error || !data?.[0]) {
     await supabase.storage.from('profile-media').remove([uploaded.path]);
     if (error) throw error;
-    throw new Error('Binder could not register the prepared profile photo.');
+    throw new Error('binder/photo-not-registered');
   }
   return data[0];
 }
@@ -129,10 +132,16 @@ export async function removeProfileMedia(mediaId: string): Promise<void> {
   await supabase.storage.from('profile-media').remove(paths);
 }
 
-// Long enough that a screen left open does not turn its photos into empty
-// rectangles. Half an hour expired while somebody was still looking at a
-// profile, and the retry inside the pager re-mounted the very same dead URL.
-const SIGNED_URL_SECONDS = 60 * 60 * 4;
+// Half an hour, deliberately short.
+//
+// A signed URL is a bearer token: it keeps working until it expires, whatever
+// happens to the block list or the moderation state behind it. Stretching it to
+// four hours to spare people a stale photo also gave a blocked person four
+// hours of access to pictures their app had already fetched — the same hole
+// this week closed for voice messages. A picture that goes blank after half an
+// hour is a nuisance; the other way round is a safety promise that does not
+// hold.
+const SIGNED_URL_SECONDS = 60 * 30;
 
 export async function signedProfileImageUrl(path: string): Promise<string> {
   const { data, error } = await supabase.storage.from('profile-media').createSignedUrl(path, SIGNED_URL_SECONDS);
