@@ -206,7 +206,22 @@ Commit: `236b2d2`
 
 ## P3
 
-- [ ] OPEN — Controlled decoupling of the four orchestrators
+- [~] ACTIVE — Controlled decoupling of the four orchestrators
+  - First one done, as the pattern for the rest: the decision table left
+    `DiscoveryScreen` for `src/lib/decisionOutcome.ts`. Five outcomes —
+    confirmed, matched, no network, session gone, refused — each with an answer
+    to "does the card leave", "does anything get stored", "does the deck
+    reload", "is the person told". Seven tests, 100% of branches; the screen
+    keeps the effects.
+  - Why this one first: both bugs this path ever had were in the table, not in
+    the animation, and both were invisible while the two were tangled.
+  - Evidence that nothing changed: journeys and the offline-and-kill scenario
+    pass on the rebuilt app, the source-level order test still guards that the
+    write happens before the dismissal, coverage floors hold, and the graph
+    shows no new import cycles (1688 nodes, 3371 edges).
+  - Commit: `eeb38b0`
+  - Next, in order: ChatScreen's transport and retry, Root's session and route
+    state, ProfileSettings' media pipeline.
 - [ ] OPEN — Observability decision (`[!] BLOCKED_OWNER` before any telemetry SDK)
 
 ---
