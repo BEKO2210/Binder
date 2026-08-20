@@ -32,7 +32,14 @@ export function certificateOf(apkPath, apksigner, environment) {
 
 export function writeEvidence({ root, version, versionCode, artefacts, certificate, sbomPath }) {
   const commit = git(['rev-parse', 'HEAD']);
-  const dirty = git(['status', '--porcelain']).length > 0;
+  // The evidence file this build is about to write does not count as a dirty
+  // tree — that would make every clean build report itself unclean.
+  const dirty = git(['status', '--porcelain'])
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .filter((line) => !line.includes('artifacts/'))
+    .length > 0;
   const gateReportPath = join(root, 'artifacts/quality-gate.json');
   const gate = existsSync(gateReportPath) ? JSON.parse(readFileSync(gateReportPath, 'utf8')) : null;
 
