@@ -85,15 +85,5 @@
   "83": "aes-js.d.ts",
   "84": "index.ts",
   "85": "googleAuth.test.ts",
-  "86": "prepare-site.mjs",
-  "87": "birthdate.ts",
-  "88": "images.ts",
-  "89": "supabase",
-  "90": "verify-data-safety.mjs",
-  "91": "confirmDestructive.ts",
-  "92": "BinderErrorBoundary",
-  "93": "verify-site-language-switch.mjs",
-  "94": "conversationKeyboardPadding",
-  "95": "presetChips.test.ts",
-  "96": "discoveryScreenReader.test.ts"
+  "86": "prepare-site.mjs"
 }
