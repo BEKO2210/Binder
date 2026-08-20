@@ -211,6 +211,21 @@ Commit: `236b2d2`
 
 ---
 
+## The first READY
+
+Commit `ad69dec3`, Binder 1.0.4 (versionCode 101), AAB `c2804702cb7049c7…` —
+every answer PASS, each from a record written for that commit:
+
+```json
+{"quality":"PASS","database":"PASS","security":"PASS","e2e":"PASS",
+ "performance":"PASS","signature":"PASS","device":"PASS","verdict":"READY"}
+```
+
+It took four attempts to get there, and none of them involved lowering a bar:
+the first build came from a dirty tree, the second had no database record, the
+third had journeys from a neighbouring commit. Evidence that does not belong to
+the artefact being judged reads STALE and the verdict falls back.
+
 ## The release candidate gate
 
 `npm run release:candidate` answers twelve questions about one commit and one
@@ -237,9 +252,28 @@ names what is missing instead of rounding up.
 
 ## Still open
 
-- [ ] OPEN — Device matrix (the only thing between this candidate and READY)
-- [ ] OPEN — Android MASVS matrix with evidence per item
-- [ ] OPEN — Performance regression gates beyond bundle size
+- [x] PROVEN — Device matrix
+  - Protection: `scripts/device-matrix.mjs` — every condition set through adb,
+    the journeys run against the installed build, the result written per
+    condition. A harness failure gets one retry after an adb reset and the
+    retry is recorded rather than hidden.
+  - Evidence: PASS on all four conditions (light, dark, 200% font, animations
+    off) on the Galaxy A15 under Android 16, three journeys each.
+  - Commit: `ad69dec`
+
+- [x] PROVEN — Branch coverage floors
+  - Evidence: 44 modules in `src/lib` carry a floor measured from a real run;
+    decisionQueue, sessionEnd and photoPager at 100% of branches. Part of the
+    quality gate.
+  - Commit: `4d6a0cb`
+
+- [x] PROVEN — Android security posture (`docs/ANDROID_SECURITY.md`)
+  - Evidence: flags read out of the shipped AAB rather than the source —
+    `allowBackup=false`, no debuggable flag, R8 on, no cleartext, one deep-link
+    scheme with `autoVerify` off, no `console.log` in `src/`. Three controls
+    deliberately not added, each with its reason.
+  - Commit: `c4f41e7`
+- [ ] OPEN — Performance regression gates beyond bundle size (cold start, gesture frames, gallery memory)
 - [ ] OPEN — Branch coverage floors for the critical modules
 - [ ] OPEN — Controlled decoupling of the four orchestrators
 ### Decided — observability without a new data recipient
