@@ -13,10 +13,11 @@ import { formatVoiceDuration } from '../lib/voiceMessage';
 import { announce } from '../lib/announce';
 import { confirmDestructive } from '../lib/confirmDestructive';
 import { conversationKeyboardPadding } from '../lib/chatKeyboardLayout';
+import { outcomeForSendFailure, type MessageOutcome } from '../lib/messageOutcome';
 import { composerBody, conversationErrorSurface, conversationListContentStyle, shouldShowConnectionNotice, unsentMessageNote } from '../lib/conversationPresentation';
 import { addUnsent, forgetUnsentMatch, loadUnsent, removeUnsent, saveUnsent, unsentInOrder } from '../lib/unsentMessages';
 import { resolveStaggerDelay } from '../lib/motionPolicy';
-import { classifyRequestFailure, isAbortError, isConversationEndedError, withDeadline, withRetry, type ReliabilityError } from '../lib/reliability';
+import { classifyRequestFailure, isAbortError, withDeadline, withRetry, type ReliabilityError } from '../lib/reliability';
 
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import { MotionPressable as Pressable } from '../components/ui';
@@ -443,6 +444,37 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     void loadUnsent().then((store) => saveUnsent(addUnsent(store, match.matchId, { ...entry, createdAt: Date.now() })));
   }
 
+  // The table lives in src/lib/messageOutcome.ts and has no side effects; this
+  // is what its answers mean on screen. Written out three times before — text,
+  // voice, voice retry — and drifted between them, which is how a failed voice
+  // upload became impossible to retry.
+  function applyOutcome(outcome: MessageOutcome, entry: { clientId: string; body: string; localUri?: string; durationMs?: number; voice?: { audioPath: string; durationMs: number } }) {
+    if (outcome.ignore) return;
+    announce(t('chat.accessibility.messageFailed'));
+
+    if (outcome.conversationEnded) {
+      setConversationEnded(true);
+      forgetChat(match.matchId);
+      // Nothing may keep waiting for a conversation that is over.
+      void loadUnsent().then((store) => saveUnsent(forgetUnsentMatch(store, match.matchId)));
+      discardAttempt(entry.clientId);
+      return;
+    }
+
+    if (outcome.sessionExpired) {
+      discardAttempt(entry.clientId);
+      onSessionExpired();
+      return;
+    }
+
+    if (outcome.keepAsFailed) {
+      setAttempts((current) => current.map((attempt) => attempt.clientId === entry.clientId
+        ? { ...attempt, status: 'failed' as const, error: outcome.error ?? attempt.error, durationMs: entry.durationMs ?? attempt.durationMs }
+        : attempt));
+    }
+    if (outcome.persist) keepUnsent(entry);
+  }
+
   async function submitMessage(retryClientId?: string) {
     const retried = retryClientId ? attempts.find((attempt) => attempt.clientId === retryClientId) : null;
     const body = retried ? retried.body : validComposer;
@@ -464,25 +496,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
       announce(t('chat.accessibility.messageSent'));
       await haptic('selection');
     } catch (nextError) {
-      if (mountedRef.current && !isAbortError(nextError)) {
-        announce(t('chat.accessibility.messageFailed'));
-        if (isConversationEndedError(nextError)) {
-          setConversationEnded(true);
-          forgetChat(match.matchId);
-          // Nothing left to deliver into a conversation that has ended.
-          void loadUnsent().then((store) => saveUnsent(forgetUnsentMatch(store, match.matchId)));
-          discardAttempt(clientId);
-          return;
-        }
-        const failure = classifyRequestFailure(nextError);
-        if (failure.kind === 'permission-denied') {
-          discardAttempt(clientId);
-          onSessionExpired();
-          return;
-        }
-        setAttempts((current) => current.map((attempt) => attempt.clientId === clientId ? { ...attempt, status: 'failed' as const, error: failure } : attempt));
-        keepUnsent({ clientId, body });
-      }
+      applyOutcome(outcomeForSendFailure(nextError, { mounted: mountedRef.current }), { clientId, body });
     } finally { sendingRef.current = false; if (mountedRef.current) setSending(false); }
   }
 
@@ -503,14 +517,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
       announce(t('chat.accessibility.messageSent'));
       await haptic('selection');
     } catch (nextError) {
-      if (mountedRef.current && !isAbortError(nextError)) {
-        announce(t('chat.accessibility.messageFailed'));
-        if (isConversationEndedError(nextError)) { setConversationEnded(true); discardAttempt(clientId); return; }
-        const failure = classifyRequestFailure(nextError);
-        if (failure.kind === 'permission-denied') { discardAttempt(clientId); onSessionExpired(); return; }
-        setAttempts((current) => current.map((attempt) => attempt.clientId === clientId ? { ...attempt, status: 'failed' as const, error: failure, durationMs } : attempt));
-        keepUnsent({ clientId, body: '', localUri, durationMs });
-      }
+      applyOutcome(outcomeForSendFailure(nextError, { mounted: mountedRef.current }), { clientId, body: '', localUri, durationMs });
     } finally { sendingRef.current = false; if (mountedRef.current) setSending(false); }
   }
 
@@ -533,11 +540,15 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
       mergeMessage(confirmed);
       discardAttempt(attempt.clientId);
     } catch (nextError) {
-      if (mountedRef.current && !isAbortError(nextError)) {
-        const failure = classifyRequestFailure(nextError);
-        setAttempts((current) => current.map((entry) => entry.clientId === attempt.clientId ? { ...entry, status: 'failed' as const, error: failure } : entry));
-        keepUnsent({ clientId: attempt.clientId, body: attempt.body, localUri: attempt.localUri, voice: attempt.voice });
-      }
+      // The retry used to have its own, shorter version of this table — which
+      // is where the recording's length went missing.
+      applyOutcome(outcomeForSendFailure(nextError, { mounted: mountedRef.current }), {
+        clientId: attempt.clientId,
+        body: attempt.body,
+        localUri: attempt.localUri,
+        durationMs: attempt.durationMs ?? attempt.voice?.durationMs,
+        voice: attempt.voice,
+      });
     } finally { sendingRef.current = false; if (mountedRef.current) setSending(false); }
   }
 
