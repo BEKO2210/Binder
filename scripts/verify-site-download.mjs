@@ -28,10 +28,15 @@ function run({ release, fails = false }) {
   const fallbackLink = element();
   fallbackLink.hidden = true;
   const box = element();
+  const checksumRow = element();
+  checksumRow.hidden = true;
+  const checksumValue = element();
   box.children = {
     '[data-download-button]': button,
     '[data-download-meta]': meta,
     '[data-download-fallback-link]': fallbackLink,
+    '[data-download-checksum]': checksumRow,
+    '[data-download-checksum-value]': checksumValue,
   };
   const confirmButton = element();
   const cancelButton = element();
@@ -59,7 +64,7 @@ function run({ release, fails = false }) {
   };
   vm.createContext(context);
   vm.runInContext(source, context);
-  return { button, meta, dialog, confirmButton, created };
+  return { button, meta, dialog, confirmButton, created, checksumRow, checksumValue };
 }
 
 const release = {
@@ -67,7 +72,7 @@ const release = {
   published_at: '2026-08-20T00:00:00Z',
   assets: [
     { name: 'mapping.txt', size: 10, browser_download_url: 'https://example.invalid/mapping.txt' },
-    { name: 'Binder-v1.0.1-vc98.apk', size: 127146638, browser_download_url: 'https://example.invalid/binder.apk' },
+    { name: 'Binder-v1.0.1-vc98.apk', size: 127146638, digest: 'sha256:2f1c9a', browser_download_url: 'https://example.invalid/binder.apk' },
   ],
 };
 
@@ -77,8 +82,16 @@ const ok = [];
 {
   const { button, meta } = run({ release });
   await settle();
-  ok.push(['The page shows the newest release instead of a typed version', button.hidden === false && /v1\.0\.1/.test(meta.textContent) && /121 MB/.test(meta.textContent)]);
+  ok.push(['The page shows the newest release instead of a typed version', button.hidden === false && /v1\.0\.1/.test(meta.textContent) && /121\.3 MB/.test(meta.textContent)]);
 }
+
+{
+  // The copy calls the file signed; the digest is what makes that checkable.
+  const { checksumRow, checksumValue } = run({ release });
+  await settle();
+  ok.push(['The page shows the release checksum when the release carries one', checksumRow.hidden === false && checksumValue.textContent === '2f1c9a']);
+}
+
 {
   const { button, dialog, confirmButton, created } = run({ release });
   await settle();

@@ -29,7 +29,9 @@
   }
 
   function megabytes(bytes) {
-    return (bytes / (1024 * 1024)).toFixed(0);
+    // One decimal: a whole-number 47 MB for a 47.9 MB file is a claim the page
+    // does not have to make wrong.
+    return (bytes / (1024 * 1024)).toFixed(1);
   }
 
   function fill(release) {
@@ -45,6 +47,17 @@
       .replace('{version}', release.tag_name || release.name || '')
       .replace('{size}', megabytes(asset.size))
       .replace('{date}', stamp));
+
+    // The copy calls this a signed package. The release digest is the one thing
+    // that lets a visitor check that claim against the file they just got.
+    var digest = typeof asset.digest === 'string' ? asset.digest.replace(/^sha256:/, '') : '';
+    var checksumRow = root.querySelector('[data-download-checksum]');
+    var checksumValue = root.querySelector('[data-download-checksum-value]');
+    if (digest && checksumRow && checksumValue) {
+      text(checksumValue, digest);
+      checksumRow.hidden = false;
+    }
+
     button.hidden = false;
   }
 
