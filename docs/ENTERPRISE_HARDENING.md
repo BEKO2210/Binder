@@ -242,13 +242,39 @@ names what is missing instead of rounding up.
 - [ ] OPEN — Performance regression gates beyond bundle size
 - [ ] OPEN — Branch coverage floors for the critical modules
 - [ ] OPEN — Controlled decoupling of the four orchestrators
-- [!] BLOCKED_OWNER — Observability: no telemetry SDK before the data question
-      is answered (what is sent, to whom, for how long, and what the privacy
-      policy and the Play data safety form would have to say)
-- [!] BLOCKED_OWNER — Firebase Test Lab or any paid device farm
+### Decided — observability without a new data recipient
 
-## Product observations for the owner
+No third-party telemetry SDK. Sentry or Crashlytics would mean stack traces,
+device identifiers, breadcrumbs and an IP address leaving the phone to a company
+that is not us, for a dating app, requiring a processing agreement, an entry in
+the privacy policy and a new answer in the Play data safety form — in exchange
+for crash reports.
 
-- Launching with no network shows a full-screen offline state, so an existing
-  conversation cannot be opened at all. Defensible, but it is a decision.
-- `zz_chat_backup` still holds six message bodies with no purpose.
+Google Play already provides those. Android Vitals reports crashes and ANRs for
+every published build, with deobfuscated stack traces from the mapping file each
+release already uploads, and it collects nothing the store does not collect
+anyway. That is the better trade, not the easier one: the same signal, no new
+data flow, nothing to declare, nothing to explain to a user.
+
+Revisit only if Vitals proves too coarse for a specific fault, and then with a
+named question rather than an SDK.
+
+### Decided — device coverage on hardware we own
+
+Firebase Test Lab's free tier is real but small (a handful of device-minutes a
+day, and the physical devices are the part that runs out first), and beyond it
+it is billed per device-hour. The matrix that matters — light, dark, doubled
+font, reduced motion, offline, killed process — runs on the Galaxy A15 here for
+nothing and on every commit we choose. Test Lab is worth revisiting when there
+is a *specific* device we suspect, not as a subscription to breadth.
+
+## Product observations — both decided and done
+
+- Launching with no network showed a full-screen offline state, so a
+  conversation already on the phone could not be opened. Fixed: the acceptance
+  this phone already gave is remembered and used while nobody answers, so the
+  app opens and each screen says for itself what it cannot reach. New terms
+  still stop everything, and a server answer always wins. (`45f6b0d`)
+- `zz_chat_backup` is dropped — six message bodies, outside every policy that
+  protects the real table and outside account deletion, read by nothing.
+  (`45f6b0d`)
