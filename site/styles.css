@@ -85,3 +85,15 @@ main:focus{outline:none}
    visitor cannot argue with belong above the fold, not seven sections down. */
 .herostatus{margin:18px 0 0;color:var(--muted);font-size:14px;max-width:62ch}
 .downloadbox code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;word-break:break-all;color:var(--muted)}
+
+/* Under 780px the header links go away — except the one that leads to the
+   download. Somebody who arrives already convinced should not have to scroll
+   the whole page to find the way in. Below 600px the account-control button
+   steps aside for it instead of wrapping onto two lines: that path is in the
+   footer of every page and on the account page itself. */
+.links a[href="#download"]{display:inline-flex}
+.navin .btn{white-space:nowrap}
+@media(max-width:599px){.links .btn.secondary{display:none}
+/* As the only item left in the header it should look like the control it is,
+   not like leftover text. */
+.links a[href="#download"]{background:rgba(255,255,255,.035);border:1px solid var(--line);color:var(--text)}}
