@@ -159,9 +159,43 @@ Commit: `236b2d2`
     key in `google-services.json`, allowlisted with its reason (it ships inside
     every APK by design and is restricted to package and certificate).
   - Commit: `0e5ea72`
-- [ ] OPEN — Black-box E2E on the built release candidate (Maestro)
-- [ ] OPEN — Failure, kill and offline journeys
-- [ ] OPEN — Adversarial RLS matrix (anon, A, B, blocked, former match, active match, moderator, admin, service role)
+- [x] PROVEN — Black-box E2E on the built release candidate (Maestro)
+  - Protection: `.maestro/` — four journeys driven by `scripts/e2e.mjs`, which
+    stages a labelled account, a demo deck and one conversation and removes all
+    three afterwards. Maestro 2.8.0, pinned; credentials passed through the
+    environment.
+  - Evidence: all four green against 1.0.4 on the Galaxy A15 — sign in and the
+    deck arriving, sign out, a bind surviving a process restart, a message the
+    app confirms as sent.
+  - Commit: `180fce0`
+
+- [x] PROVEN — Failure, kill and offline journeys
+  - Reproducible defect: the failure this app was rebuilt around — a message
+    typed with no signal and an app closed before the signal came back.
+  - Protection: `scripts/e2e-offline.mjs` owns the sequence Maestro cannot:
+    sign in online, open the conversation, cut wifi and mobile data, write and
+    send, force-stop the process while the message is still waiting, restore the
+    network, relaunch.
+  - Evidence: run on the device — "Warten auf Verbindung" observed while
+    offline, and after the kill and reconnect the same text appeared as
+    "Gesendet" without anybody tapping retry.
+  - Observation for the owner: launching with **no** network lands on a
+    full-screen offline state, so existing conversations cannot be reached at
+    all. Defensible; worth a decision rather than a discovery.
+  - Commit: `180fce0`
+
+- [x] PROVEN — Adversarial RLS matrix
+  - Protection: `supabase/tests/phase12_rls_matrix_test.sql` — 26 questions
+    asked as somebody trying: anon, an active match, somebody who unmatched,
+    somebody who blocked, and the blocked person from the other side.
+  - Evidence: green in the pgTAP suite. Two assertions had to be rewritten to
+    stay honest — an UPDATE a policy filters away raises nothing, so it is
+    asserted on the row afterwards; and `authenticated` genuinely needs USAGE on
+    the private schema, so the assertion is that no private table answers.
+  - The last assumption — that PostgREST does not serve that schema — is now
+    asked over HTTP by `scripts/verify-api-surface.mjs` in the database
+    workflow: three private helpers unreachable, seven tables silent for anon.
+  - Commit: `6b4a05a`
 
 ## P2
 
