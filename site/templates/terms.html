@@ -12,8 +12,9 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<a class="skip" href="#main">{{common.skip-to-content}}</a>
 <header class="nav"><div class="wrap navin"><a class="brand" href="./" aria-label="{{terms.a-aria-label-binder-home}}"><img src="assets/binder-icon-72.png" alt="" width="36" height="36" decoding="async"><span class="brand-word">{{terms.binder}}</span></a><nav class="links"><a class="navlink" href="privacy.html">{{terms.privacy}}</a><a class="btn secondary" href="delete-account.html">{{terms.account-control}}</a></nav></div></header>
-<main class="legal">
+<main id="main" tabindex="-1" class="legal">
   <div class="kicker">{{terms.terms-community-rules}}</div>
   <h1>{{terms.mutual-interest-does-not-remove}}</h1>
   <p class="intro">{{terms.these-rules-apply-before-you}}</p>

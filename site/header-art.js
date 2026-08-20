@@ -1,6 +1,41 @@
 (() => {
   'use strict';
 
+  // The looping phone clip is decoration that never stops. Anyone who asked the
+  // system for less motion gets the poster frame instead, and everyone else
+  // gets a way out: clicking the clip pauses it.
+  const loopVideo = document.querySelector('video.phone');
+  if (loopVideo) {
+    const stillQuery = matchMedia('(prefers-reduced-motion: reduce)');
+    const applyMotionPreference = () => {
+      if (stillQuery.matches) {
+        loopVideo.removeAttribute('autoplay');
+        loopVideo.pause();
+        loopVideo.currentTime = 0;
+      } else if (loopVideo.paused && !loopVideo.dataset.pausedByVisitor) {
+        loopVideo.play().catch(() => { /* autoplay policy, poster stays */ });
+      }
+    };
+    applyMotionPreference();
+    stillQuery.addEventListener('change', applyMotionPreference);
+    // Reachable by keyboard too, since the pause is the only control it has.
+    loopVideo.tabIndex = 0;
+    loopVideo.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      loopVideo.click();
+    });
+    loopVideo.addEventListener('click', () => {
+      if (loopVideo.paused) {
+        delete loopVideo.dataset.pausedByVisitor;
+        loopVideo.play().catch(() => {});
+      } else {
+        loopVideo.dataset.pausedByVisitor = 'true';
+        loopVideo.pause();
+      }
+    });
+  }
+
   const canvas = document.querySelector('.hero-art');
   if (!canvas) return;
 

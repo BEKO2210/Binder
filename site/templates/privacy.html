@@ -12,8 +12,9 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<a class="skip" href="#main">{{common.skip-to-content}}</a>
 <header class="nav"><div class="wrap navin"><a class="brand" href="./" aria-label="{{privacy.a-aria-label-binder-home}}"><img src="assets/binder-icon-72.png" alt="" width="36" height="36" decoding="async"><span class="brand-word">{{privacy.binder}}</span></a><nav class="links"><a class="navlink" href="terms.html">{{privacy.terms}}</a><a class="btn secondary" href="delete-account.html">{{privacy.account-control}}</a></nav></div></header>
-<main class="legal">
+<main id="main" tabindex="-1" class="legal">
   <div class="kicker">{{privacy.privacy}}</div>
   <h1>{{privacy.what-binder-needs-and-what}}</h1>
   <p class="intro">{{privacy.this-policy-describes-binder-s}}</p>

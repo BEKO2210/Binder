@@ -17,8 +17,9 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<a class="skip" href="#main">{{common.skip-to-content}}</a>
 <header class="nav"><div class="wrap navin"><a class="brand" href="./" aria-label="{{languages.a-aria-label-binder-home}}"><img src="assets/binder-icon-72.png" alt="" width="36" height="36" decoding="async"><span class="brand-word">{{languages.binder}}</span></a><nav class="links" aria-label="{{languages.nav-aria-label-primary}}"><a class="navlink" href="./#principles">{{languages.how-it-works}}</a><a class="navlink" href="./#safety">{{languages.safety}}</a><a class="navlink" href="privacy.html">{{languages.privacy}}</a><a class="btn secondary" href="delete-account.html">{{languages.account-control}}</a></nav></div></header>
-<main class="legal langpage">
+<main id="main" tabindex="-1" class="legal langpage">
   <div class="kicker">{{languages.languages}}</div>
   <h1>{{languages.binder-speaks-15-languages}}</h1>
   <p class="intro">{{languages.binder-follows-the-language-your}} <strong>{{languages.settings-app-settings-language}}</strong>{{languages.text}}</p>

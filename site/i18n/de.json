@@ -5,6 +5,7 @@
     "htmlLang": "de",
     "dir": "ltr"
   },
+  "common.skip-to-content": "Zum Inhalt springen",
   "delete-account.2026-binder-independent-product": "© 2026 Binder · Unabhängiges Produkt",
   "delete-account.a-aria-label-binder-home": "Binder Startseite",
   "delete-account.account-associated-product-data-and": "Kontobezogene Produktdaten und die Authentifizierungsidentität werden im Löschablauf entfernt.",

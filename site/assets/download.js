@@ -93,7 +93,20 @@
   if (confirm) confirm.addEventListener('click', function () { closeDialog(); start(); });
   if (dialog) {
     dialog.addEventListener('click', function (event) { if (event.target === dialog) closeDialog(); });
-    document.addEventListener('keydown', function (event) { if (event.key === 'Escape' && !dialog.hidden) closeDialog(); });
+    document.addEventListener('keydown', function (event) {
+      if (dialog.hidden) return;
+      if (event.key === 'Escape') { closeDialog(); return; }
+      // aria-modal promises the rest of the page is out of reach. Without this
+      // Tab walks straight out of the warning and into the page behind it.
+      if (event.key !== 'Tab') return;
+      var stops = dialog.querySelectorAll('a[href],button,[tabindex]:not([tabindex="-1"])');
+      if (!stops.length) return;
+      var first = stops[0];
+      var last = stops[stops.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      else if (!dialog.contains(document.activeElement)) { event.preventDefault(); first.focus(); }
+    });
   }
 
   fetch('https://api.github.com/repos/' + REPO + '/releases/latest', { headers: { Accept: 'application/vnd.github+json' } })
