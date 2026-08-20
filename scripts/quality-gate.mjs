@@ -30,6 +30,7 @@ const PREPARE = [
 const CHECKS = [
   ['entrypoint', 'node', ['scripts/verify-entrypoint.mjs']],
   ['pinned toolchain', 'node', ['scripts/verify-pinned-toolchain.mjs']],
+  ['no credentials in the index', 'node', ['scripts/verify-no-secrets.mjs']],
   ['guards catch their own fixtures', 'node', ['scripts/verify-gate-selftests.mjs']],
   ['native branding', 'npm', ['run', 'verify:brand']],
   ['public site', 'node', ['scripts/verify-site.mjs']],

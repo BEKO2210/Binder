@@ -9,7 +9,8 @@
 // file asserts two things about it: the gate finds it, and the legitimate
 // variants beside it stay clean. A gate that stops catching its own fixture
 // fails here, loudly, before it can hand out false confidence.
-import { readFileSync, readdirSync } from 'node:fs';
+import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { findViolations } from './lib/deadline-gate.mjs';
@@ -88,6 +89,36 @@ for (const fixture of readdirSync('scripts/gate-fixtures/design').filter((entry)
   if (fixture.includes('.bad.')) check(`design gate catches ${fixture}`, hits > 0);
   else check(`design gate leaves ${fixture} alone`, hits === 0);
 }
+
+// ── The secret gate ──────────────────────────────────────────────────────────
+// The samples are assembled here rather than stored: a file full of
+// credential-shaped strings is exactly what should not live in a repository,
+// even when every value in it is invented. None of these unlock anything.
+const { scan } = await import('./verify-no-secrets.mjs');
+const planted = [
+  ['private key block', ['-----BEGIN', 'PRIVATE KEY-----'].join(' ') + '\nMIIEvQIBADANBgkqhkiG9w0BAQ\n'],
+  ['Google API key', 'GOOGLE_KEY=' + 'AIza' + 'Sy' + 'D'.repeat(35 - 2)],
+  ['GitHub token', 'token=' + 'gh' + 'p_' + 'A'.repeat(36)],
+  ['Stripe live key', 'stripe=' + 'sk_' + 'live_' + 'B'.repeat(24)],
+  ['Supabase secret key', 'key=' + 'sb_' + 'secret_' + 'C'.repeat(24)],
+  ['assigned secret', "password: '" + 'D'.repeat(32) + "'"],
+];
+const temporary = mkdtempSync(join(tmpdir(), 'binder-secret-gate-'));
+for (const [name, sample] of planted) {
+  const file = join(temporary, `${name.replace(/\W+/g, '-')}.txt`);
+  writeFileSync(file, sample);
+  check(`secret gate catches a planted ${name}`, scan([file]).length > 0);
+}
+// And the things that are meant to be public stay quiet.
+const publicFile = join(temporary, 'public.txt');
+writeFileSync(publicFile, [
+  'EXPO_PUBLIC_SUPABASE_URL=https://example.supabase.co',
+  'EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=' + 'sb_' + 'publishable_EXAMPLE',
+  'GOOGLE_WEB_CLIENT_ID=1234567890-abcdefg.apps.googleusercontent.com',
+  "password: '<set in the vault>'",
+].join('\n'));
+check('secret gate leaves public identifiers alone', scan([publicFile]).length === 0);
+rmSync(temporary, { recursive: true, force: true });
 
 let failed = 0;
 for (const [name, passed] of cases) {
