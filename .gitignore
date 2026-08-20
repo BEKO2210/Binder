@@ -33,7 +33,10 @@ site/assets/
 # EAS keystore credentials (Klartext-Passwoerter) — Repo ist public
 credentials.json
 supabase/.temp/
-artifacts/
+artifacts/*
+# …except the record of what was actually released. It is small, contains no
+# secrets, and is the only thing tying a shipped file to the commit it came from.
+!artifacts/release-evidence/
 
 # The code map belongs in the repo so any agent can find its way; the browser
 # view and the extractor's cache do not — one is a megabyte of generated HTML,

@@ -9,6 +9,7 @@
 //        npm run release -- --keep-version
 import { execFileSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { certificateOf, writeEvidence } from './lib/release-evidence.mjs';
 import { join } from 'node:path';
 
 const root = process.cwd();
@@ -123,6 +124,36 @@ if (withBundle) stage(join(root, 'android/app/build/outputs/bundle/release/app-r
 // android/app/build/ does not survive the next build.
 const mappingFile = join(root, 'android/app/build/outputs/mapping/release/mapping.txt');
 if (existsSync(mappingFile)) stage(mappingFile, `Binder-v${version}-vc${versionCode}-mapping.txt`);
+
+// The dependency list is generated, never typed: npm knows exactly what went
+// into this tree, and a hand-written list is out of date the day it is written.
+const sbomPath = join(releaseDir, `Binder-v${version}-vc${versionCode}-sbom.cdx.json`);
+try {
+  const sbom = execFileSync('npm', ['sbom', '--sbom-format', 'cyclonedx', '--omit', 'dev'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+  writeFileSync(sbomPath, sbom);
+  staged.push(`${(statSync(sbomPath).size / 1024).toFixed(0)} KB  ${sbomPath}`);
+} catch (error) {
+  console.error(`Could not produce an SBOM: ${error instanceof Error ? error.message : error}`);
+  process.exit(1);
+}
+
+// The artefact is the evidence: hashes, the certificate the file actually
+// carries, the lockfile it was built from, and the gate that ran for it.
+const { target: evidencePath, evidence } = writeEvidence({
+  root,
+  version,
+  versionCode,
+  artefacts: [
+    join(releaseDir, `Binder-v${version}-vc${versionCode}.apk`),
+    join(releaseDir, `Binder-v${version}-vc${versionCode}.aab`),
+    join(releaseDir, `Binder-v${version}-vc${versionCode}-mapping.txt`),
+    sbomPath,
+  ],
+  certificate: certificateOf(builtApk, apksigner, { ...process.env, JAVA_HOME: javaHome, PATH: `${javaHome}/bin:${process.env.PATH}` }),
+  sbomPath,
+});
+console.log(`\nRelease evidence: ${evidencePath}`);
+console.log(`  commit ${evidence.commit.slice(0, 8)}${evidence.treeClean ? '' : ' (working tree not clean)'} · gate ${evidence.qualityGate?.status ?? 'not run'} · ${evidence.artefacts.length} artefacts hashed`);
 
 console.log('\nStaged in the release folder:');
 for (const line of staged) console.log(`  ${line}`);
