@@ -1,0 +1,86 @@
+{
+  "commit": "f94463fcca9904ff5f61ed86c370c69f07233b2d",
+  "version": "1.0.5",
+  "versionCode": 102,
+  "artifactSha256": "5964f759047e840384186d499ee7b2a15dd4220f19aa76757d8d9e9410073687",
+  "quality": "PASS",
+  "database": "PASS",
+  "security": "PASS",
+  "e2e": "PASS",
+  "performance": "PASS",
+  "signature": "PASS",
+  "device": "PASS",
+  "answers": [
+    {
+      "name": "quality gate",
+      "verdict": "PASS",
+      "detail": "33 checks at 2026-08-20T21:52:26.632Z"
+    },
+    {
+      "name": "release artefacts hashed",
+      "verdict": "PASS",
+      "detail": "4 artefacts"
+    },
+    {
+      "name": "signature verified",
+      "verdict": "PASS",
+      "detail": "16dfdf3e283076be74f8a9e6750ec8b82dadd2df"
+    },
+    {
+      "name": "mapping kept",
+      "verdict": "PASS",
+      "detail": "R8 mapping for this build"
+    },
+    {
+      "name": "SBOM produced",
+      "verdict": "PASS",
+      "detail": "Binder-v1.0.5-vc102-sbom.cdx.json"
+    },
+    {
+      "name": "dependency lock recorded",
+      "verdict": "PASS",
+      "detail": "package-lock.json hash"
+    },
+    {
+      "name": "tree clean at build time",
+      "verdict": "PASS",
+      "detail": "no uncommitted changes"
+    },
+    {
+      "name": "database suites",
+      "verdict": "PASS",
+      "detail": "PASS at 2026-08-20T22:18:25.980Z"
+    },
+    {
+      "name": "black-box journeys",
+      "verdict": "PASS",
+      "detail": "PASS at 2026-08-20T22:10:15.490Z"
+    },
+    {
+      "name": "offline and kill journey",
+      "verdict": "PASS",
+      "detail": "PASS at 2026-08-20T22:17:49.308Z"
+    },
+    {
+      "name": "export size budget",
+      "verdict": "PASS",
+      "detail": "5.18 MiB JS"
+    },
+    {
+      "name": "device performance",
+      "verdict": "PASS",
+      "detail": "1023 ms cold start, 0.27% janky, 327.6 MB"
+    },
+    {
+      "name": "branch coverage floors",
+      "verdict": "PASS",
+      "detail": "floors recorded for src/lib"
+    },
+    {
+      "name": "device evidence",
+      "verdict": "PASS",
+      "detail": "PASS at 2026-08-20T22:10:16.070Z"
+    }
+  ],
+  "verdict": "READY"
+}
