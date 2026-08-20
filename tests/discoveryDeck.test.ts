@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { advanceDeck, decideSwipe, discoveryDeckPhysics, isUndoWindowOpen, projectedTranslation, resistedTranslation } from '../src/lib/discoveryDeck.ts';
+import { advanceDeck, decideSwipe, discoveryDeckPhysics, isUndoWindowOpen, projectedTranslation, resistedTranslation, stampProgress, stampReveal, stampScale } from '../src/lib/discoveryDeck.ts';
 
 test('swipe commits when distance reaches either side of the threshold', () => {
   const width = 400;
@@ -61,4 +61,26 @@ test('undo window includes its boundaries and rejects invalid timestamps', () =>
   assert.equal(isUndoWindowOpen(1_000, 6_000), true);
   assert.equal(isUndoWindowOpen(1_000, 6_001), false);
   assert.equal(isUndoWindowOpen(1_000, 999), false);
+});
+
+test('the verdict is readable while the card can still come back', () => {
+  const width = 1080;
+  const decision = width * discoveryDeckPhysics.distanceRatio; // where the card leaves
+  // Nothing at rest, and nothing for a twitch.
+  assert.equal(stampProgress(0, width, 'right'), 0);
+  assert.equal(stampProgress(20, width, 'right'), 0);
+  // Solid well before the card commits — half the decision distance.
+  assert.equal(stampProgress(width * stampReveal.fullRatio, width, 'right'), 1);
+  assert.ok(width * stampReveal.fullRatio < decision / 2 + 1);
+  // A swipe one way never shows the other verdict.
+  assert.equal(stampProgress(200, width, 'left'), 0);
+  assert.equal(stampProgress(-200, width, 'left'), 1);
+  assert.equal(stampProgress(-200, width, 'right'), 0);
+});
+
+test('the stamp grows into place and stops at full size', () => {
+  assert.equal(stampScale(0), stampReveal.restingScale);
+  assert.equal(stampScale(1), 1);
+  assert.equal(stampScale(2), 1);
+  assert.ok(stampScale(0.5) > stampReveal.restingScale && stampScale(0.5) < 1);
 });

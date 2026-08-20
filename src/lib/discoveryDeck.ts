@@ -69,3 +69,38 @@ export function isUndoWindowOpen(
   const elapsed = nowMs - passedAtMs;
   return elapsed >= 0 && elapsed <= windowMs;
 }
+
+/**
+ * How far into a swipe the verdict has to be readable.
+ *
+ * The stamp used to fade in across the whole decision distance, so it reached
+ * half its opacity at 12% of the screen and full only at the point where the
+ * card leaves anyway — you saw what you had chosen after it was gone. A
+ * decision has to be visible while there is still time to change it: the stamp
+ * starts at a thumb's twitch and is solid at half the decision distance, so the
+ * whole second half of the gesture is spent looking at a verdict you can still
+ * take back by letting go.
+ */
+export const stampReveal = {
+  startRatio: 0.03,
+  fullRatio: 0.12,
+  restingScale: 0.86,
+} as const;
+
+/** 0 before the gesture means anything, 1 once the verdict stands. */
+export function stampProgress(intentX: number, viewportWidth: number, direction: SwipeDirection): number {
+  'worklet';
+  const signed = direction === 'right' ? intentX : -intentX;
+  if (signed <= 0 || viewportWidth <= 0) return 0;
+  const start = viewportWidth * stampReveal.startRatio;
+  const full = viewportWidth * stampReveal.fullRatio;
+  if (signed <= start) return 0;
+  if (signed >= full) return 1;
+  return (signed - start) / (full - start);
+}
+
+/** The stamp grows into place rather than appearing at full size. */
+export function stampScale(progress: number): number {
+  'worklet';
+  return stampReveal.restingScale + (1 - stampReveal.restingScale) * Math.max(0, Math.min(1, progress));
+}

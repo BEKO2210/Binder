@@ -16,7 +16,7 @@ import { announce } from '../lib/announce';
 import { countDiscoveryCandidates, fetchDiscoveryBatch, loadAttributeFilterCount, loadDiscoveryPreferences, recordDecision, refreshDiscoveryLocation, type DiscoveryProfile } from '../lib/discovery';
 import { classifyEmptyDiscovery, filterValuesToCountWith, type EmptyDiscoveryKind } from '../lib/discoveryAvailability';
 import { deckIsCovered, discoveryLoadingVisible } from '../lib/discoveryOverlays';
-import { advanceDeck, decideSwipe, discoveryDeckPhysics, resistedTranslation, type SwipeDirection } from '../lib/discoveryDeck';
+import { advanceDeck, decideSwipe, discoveryDeckPhysics, resistedTranslation, stampProgress, stampScale, type SwipeDirection } from '../lib/discoveryDeck';
 import { formatCount, formatDistanceKm } from '../lib/format';
 import { listMyProfileMedia } from '../lib/media';
 import { matchCelebrationPhotoUrls } from '../lib/matchCelebrationAssets';
@@ -225,8 +225,18 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
       { translateY: -HINGE_OFFSET },
     ],
   }));
-  const bindStampStyle = useAnimatedStyle(() => ({ opacity: Math.max(reduceMotion ? (intentX.value >= SWIPE_THRESHOLD ? 1 : 0) : interpolate(intentX.value, [0, SWIPE_THRESHOLD], [0, 1], Extrapolation.CLAMP), Math.max(0, buttonStamp.value)) }));
-  const passStampStyle = useAnimatedStyle(() => ({ opacity: Math.max(reduceMotion ? (intentX.value <= -SWIPE_THRESHOLD ? 1 : 0) : interpolate(intentX.value, [-SWIPE_THRESHOLD, 0], [1, 0], Extrapolation.CLAMP), Math.max(0, -buttonStamp.value)) }));
+  // The verdict has to be legible while the thumb can still take it back, so
+  // the stamp is solid at half the distance that commits the card — not at the
+  // moment the card leaves, which is what "I only see it once it is gone"
+  // means.
+  const bindStampStyle = useAnimatedStyle(() => {
+    const progress = Math.max(reduceMotion ? (intentX.value >= SWIPE_THRESHOLD ? 1 : 0) : stampProgress(intentX.value, SCREEN_WIDTH, 'right'), Math.max(0, buttonStamp.value));
+    return { opacity: progress, transform: [{ scale: stampScale(progress) }] };
+  });
+  const passStampStyle = useAnimatedStyle(() => {
+    const progress = Math.max(reduceMotion ? (intentX.value <= -SWIPE_THRESHOLD ? 1 : 0) : stampProgress(intentX.value, SCREEN_WIDTH, 'left'), Math.max(0, -buttonStamp.value));
+    return { opacity: progress, transform: [{ scale: stampScale(progress) }] };
+  });
   // The card underneath grows toward full size as the top card leaves.
   const backCardStyle = useAnimatedStyle(() => {
     const progress = interpolate(Math.abs(x.value), [0, SWIPE_THRESHOLD * 1.6], [0, 1], Extrapolation.CLAMP);
