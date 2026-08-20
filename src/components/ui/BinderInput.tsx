@@ -69,7 +69,7 @@ export function BinderInput({ label, error, helper, style, editable = true, inpu
               borderRadius: theme.radii.pill,
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: pressed ? theme.colors.surfacePressed : 'transparent',
+              backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.transparent,
             })}
           >
             <BinderIcon name={revealed ? 'conceal' : 'reveal'} size={20} color={revealed ? theme.accent.onSurface : theme.colors.textSecondary} />

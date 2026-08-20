@@ -16,8 +16,30 @@ const allowlist = new Map([
   ]],
 ]);
 
+// Every colour literal React Native accepts, not just the two the first
+// version knew. `rgb(255,255,255)`, `#fff` and `'white'` all walked past it —
+// fixtures under scripts/gate-fixtures/design, all three green before this
+// line changed. A colour that ignores the theme is how light mode breaks in one
+// corner nobody looks at.
+const NAMED_COLOURS = 'white|black|red|green|blue|gray|grey|silver|maroon|olive|lime|aqua|teal|navy|fuchsia|purple|orange|yellow|pink|brown|beige|ivory|gold|coral|salmon|khaki|violet|indigo|turquoise|tan|crimson|lavender|plum|orchid|azure|transparent';
+// A named colour only counts where a colour is expected. `{ id: 'lime' }` is a
+// theme's name, not a paint — flagging it would have been the same mistake in
+// the other direction as missing `rgb()` was.
+const COLOUR_PROPERTY = String.raw`(?:color|Color|tintColor|shadowColor)\s*:[^,\n}]*`;
+
 const rules = [
-  { name: 'literal colour', pattern: /#[\da-f]{6}\b|rgba\s*\(/gi },
+  {
+    name: 'literal colour',
+    // #rgb through #rrggbbaa, every functional form, and a named colour that
+    // sits where a colour belongs. All three were invisible to the first
+    // version — fixtures under scripts/gate-fixtures/design.
+    pattern: new RegExp(
+      String.raw`#[\da-f]{3,8}\b`
+      + String.raw`|\b(?:rgba?|hsla?)\s*\(`
+      + `|${COLOUR_PROPERTY}['"\`](?:${NAMED_COLOURS})['"\`]`,
+      'gi',
+    ),
+  },
   { name: 'literal fontSize', pattern: /\bfontSize\s*:[^,\n}]*\b\d+(?:\.\d+)?\b/g },
   { name: 'literal borderRadius', pattern: /\bborderRadius\s*:[^,\n}]*\b\d+(?:\.\d+)?\b/g },
   { name: 'literal animation duration', pattern: /(?:\bduration\s*:\s*|\.duration\(\s*)\d+(?:\.\d+)?\b/g },

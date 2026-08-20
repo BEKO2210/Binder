@@ -38,7 +38,7 @@ export function BinderButton({ label, variant = 'primary', loading = false, icon
       ? theme.semantic.destructive
       : variant === 'secondary'
         ? theme.colors.surfaceElevated
-        : 'transparent';
+        : theme.colors.transparent;
   const borderColor = variant === 'secondary'
     ? (overMedia ? darkPalette.borderStrong : theme.colors.borderStrong)
     : variant === 'ghost'

@@ -9,7 +9,7 @@
 // file asserts two things about it: the gate finds it, and the legitimate
 // variants beside it stay clean. A gate that stops catching its own fixture
 // fails here, loudly, before it can hand out false confidence.
-import { readdirSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { findViolations } from './lib/deadline-gate.mjs';
@@ -59,6 +59,35 @@ for (const fixture of readdirSync(workletDir).filter((entry) => entry.endsWith('
 // crashes this gate exists for are recognised as worklets.
 check('a marked worklet is recognised', knownWorklets.has('resistedTranslation'));
 check('the chat padding is a worklet', knownWorklets.has('conversationKeyboardPadding'));
+
+// ── The i18n gate ────────────────────────────────────────────────────────────
+const { findEnglish } = await import('./lib/i18n-gate.mjs');
+const i18nDir = 'scripts/gate-fixtures/i18n';
+for (const fixture of readdirSync(i18nDir).filter((entry) => entry.endsWith('.tsx'))) {
+  const found = findEnglish(join(i18nDir, fixture));
+  if (fixture.includes('.bad.')) check(`i18n gate catches ${fixture}`, found.length > 0);
+  else check(`i18n gate leaves ${fixture} alone`, found.length === 0);
+}
+
+// ── The design gate ──────────────────────────────────────────────────────────
+// The colour rule lives inside the verifier, so it is read back from there
+// rather than copied — a copy would drift and this file would stop meaning
+// anything.
+const designSource = readFileSync('scripts/verify-design-contract.mjs', 'utf8');
+const colourRule = designSource.slice(designSource.indexOf("name: 'literal colour'"), designSource.indexOf("{ name: 'literal fontSize'"));
+check('the colour rule knows rgb()', /rgba\?/.test(colourRule));
+check('the colour rule knows short hex', /3,8/.test(colourRule));
+check('the colour rule knows named colours', /NAMED_COLOURS/.test(colourRule));
+for (const fixture of readdirSync('scripts/gate-fixtures/design').filter((entry) => entry.endsWith('.tsx'))) {
+  const text = readFileSync(join('scripts/gate-fixtures/design', fixture), 'utf8');
+  const pattern = new RegExp(
+    String.raw`#[\da-f]{3,8}\b|\b(?:rgba?|hsla?)\s*\(|(?:color|Color)\s*:[^,\n}]*['"\`](?:white|black|lime|transparent)['"\`]`,
+    'gi',
+  );
+  const hits = [...text.matchAll(pattern)].length;
+  if (fixture.includes('.bad.')) check(`design gate catches ${fixture}`, hits > 0);
+  else check(`design gate leaves ${fixture} alone`, hits === 0);
+}
 
 let failed = 0;
 for (const [name, passed] of cases) {

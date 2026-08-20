@@ -8,6 +8,8 @@
 import { readFileSync, readdirSync, statSync, writeFileSync, existsSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 
+import { findEnglish } from './lib/i18n-gate.mjs';
+
 const root = process.cwd();
 // Everything under src/ that renders, not just the two screen folders. The
 // narrow scan is how the tab bar shipped reading "Discover / Matches / Profile"
@@ -42,29 +44,17 @@ function filesUnder(directory) {
   });
 }
 
-function findingsIn(source) {
-  const findings = [];
-  // <Tag ...>Some words</Tag>
-  for (const match of source.matchAll(/>([^<>{}\n]{2,})</g)) {
-    const text = match[1].trim();
-    if (!text || notLanguage.test(text) || !/\p{L}/u.test(text) || looksLikeCode.test(text)) continue;
-    if (!/^\p{L}/u.test(text)) continue;
-    findings.push(text);
-  }
-  // prop="Some words"
-  const propPattern = new RegExp(`\\b(${userFacingProps.join('|')})=\\{?["'\`]([^"'\`\\n]{2,})["'\`]`, 'g');
-  for (const match of source.matchAll(propPattern)) {
-    const text = match[2].trim();
-    if (!text || notLanguage.test(text) || !/\p{L}/u.test(text) || text.includes('${')) continue;
-    findings.push(text);
-  }
-  return findings;
+// The finding itself comes from the syntax tree: literals in user-facing props,
+// text between tags, and — the two holes the old text rule had — a literal that
+// was moved into a local binding or into a ternary inside the attribute. Both
+// are fixtures under scripts/gate-fixtures/i18n, both were green before.
+function findingsIn(file) {
+  return findEnglish(file).map((finding) => finding.text);
 }
 
 const perFile = new Map();
 for (const file of scanRoots.flatMap(filesUnder)) {
-  const source = readFileSync(file, 'utf8');
-  const findings = legalExceptions.has(relative(root, file)) ? [] : findingsIn(source);
+  const findings = legalExceptions.has(relative(root, file)) ? [] : findingsIn(file);
   if (findings.length) perFile.set(relative(root, file), findings.length);
 }
 

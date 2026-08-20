@@ -48,7 +48,7 @@ export default function LegalGateScreen({ gate, onAccepted }: Props) {
         <PolicyCard index="02" icon="privacy" title={t('legalGate.policies.privacy.title')} copy={t('legalGate.policies.privacy.copy')} version={gate.privacy_version} onPress={openPrivacy} />
       </View>
       <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: confirmed }} onPress={() => setConfirmed((value) => !value)} style={({ pressed }) => ({ marginTop: theme.spacing.x5, flexDirection: 'row', gap: theme.spacing.x3, padding: theme.spacing.x4, borderRadius: theme.radii.control, borderWidth: 1, borderColor: confirmed ? theme.accent.accent : theme.colors.borderStrong, backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface })}>
-        <View style={{ width: 24, height: 24, borderRadius: 8, borderWidth: 1, borderColor: confirmed ? theme.accent.accent : theme.colors.borderStrong, backgroundColor: confirmed ? theme.accent.accent : 'transparent', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <View style={{ width: 24, height: 24, borderRadius: 8, borderWidth: 1, borderColor: confirmed ? theme.accent.accent : theme.colors.borderStrong, backgroundColor: confirmed ? theme.accent.accent : theme.colors.transparent, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           {confirmed ? <BinderIcon name="check" size={17} color={theme.accent.foreground} /> : null}
         </View>
         <BinderText variant="label" tone="secondary" style={{ flex: 1 }}>{t('legalGate.confirmation')}</BinderText>
