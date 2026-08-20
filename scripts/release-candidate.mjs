@@ -42,6 +42,8 @@ const database = read(join(root, 'artifacts/database-evidence.json'));
 const size = read(join(root, 'artifacts/bundle-size-report.json'));
 const offline = read(join(root, 'artifacts/e2e-offline-evidence.json'));
 const device = read(join(root, 'artifacts/device-evidence.json'));
+const performance = read(join(root, 'artifacts/performance-evidence.json'));
+const performanceBaseline = read(join(root, 'artifacts/performance-baseline.json'));
 
 const sameCommit = (record) => Boolean(record && record.commit === release.commit);
 // A record from another commit is not a failure of the product — it is simply
@@ -66,6 +68,12 @@ ask('database suites', ...verdictFor(database, 'run npm run db:evidence'));
 ask('black-box journeys', ...verdictFor(e2e, 'run npm run e2e'));
 ask('offline and kill journey', ...verdictFor(offline, 'run npm run e2e:offline'));
 ask('export size budget', size ? 'PASS' : 'MISSING', size ? `${(size.jsBytes / 1048576).toFixed(2)} MiB JS` : 'no size report');
+ask('device performance', performance && performanceBaseline
+  ? (performance.commit === release.commit
+      ? (performance.coldStartMs <= performanceBaseline.coldStartMs * 1.35 && performance.memoryMb <= performanceBaseline.memoryMb * 1.3 ? 'PASS' : 'FAIL')
+      : 'STALE')
+  : 'MISSING',
+  performance ? `${performance.coldStartMs} ms cold start, ${performance.jankyPercent}% janky, ${performance.memoryMb} MB` : 'run npm run perf');
 ask('branch coverage floors', existsSync(join(root, 'artifacts/coverage-floors.json')) ? 'PASS' : 'MISSING', 'floors recorded for src/lib');
 ask('device evidence', ...verdictFor(device, 'run npm run device:matrix'));
 
@@ -86,7 +94,7 @@ const report = {
   database: verdictOf(['database suites']),
   security: verdictOf(['SBOM produced', 'dependency lock recorded']),
   e2e: verdictOf(['black-box journeys', 'offline and kill journey']),
-  performance: verdictOf(['export size budget']),
+  performance: verdictOf(['export size budget', 'device performance']),
   signature: verdictOf(['signature verified', 'mapping kept', 'release artefacts hashed']),
   device: verdictOf(['device evidence']),
   answers,

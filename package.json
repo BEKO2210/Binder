@@ -52,7 +52,9 @@
     "release:candidate": "node scripts/release-candidate.mjs",
     "coverage": "node scripts/verify-coverage-floors.mjs",
     "coverage:record": "node scripts/verify-coverage-floors.mjs --record",
-    "device:matrix": "node scripts/device-matrix.mjs"
+    "device:matrix": "node scripts/device-matrix.mjs",
+    "perf": "node scripts/performance.mjs",
+    "perf:record": "node scripts/performance.mjs --record"
   },
   "dependencies": {
     "@expo-google-fonts/manrope": "0.4.2",

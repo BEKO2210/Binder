@@ -42,6 +42,9 @@ artifacts/*
 !artifacts/coverage-floors.json
 # The verdict itself: which artefact was judged ready, on what evidence.
 !artifacts/release-candidate/
+# The performance baseline is a promise, like the coverage floors: raising it
+# has to be arguable in a diff.
+!artifacts/performance-baseline.json
 
 # The code map belongs in the repo so any agent can find its way; the browser
 # view and the extractor's cache do not — one is a megabyte of generated HTML,

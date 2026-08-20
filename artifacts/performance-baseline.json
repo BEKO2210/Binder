@@ -1,0 +1,11 @@
+{
+  "ranAt": "2026-08-20T17:15:27.944Z",
+  "commit": "34fb495826cf87b8eaffb37f9224d92180d78c9b",
+  "device": "SM-A156B",
+  "android": "16",
+  "coldStartMs": 980,
+  "jankyPercent": 0.61,
+  "p95Ms": 25,
+  "totalFrames": 8851,
+  "memoryMb": 338.7
+}

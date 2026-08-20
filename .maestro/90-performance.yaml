@@ -1,0 +1,51 @@
+# The interactions the performance run measures.
+#
+# Nothing is asserted here: the point is to move the app the way a person does
+# while dumpsys watches. Assertions live in the measurement script, against
+# numbers rather than screens.
+appId: de.beko2210.binder
+tags:
+  - scenario
+name: Performance — deck swipes and photo paging
+---
+# The app is already signed in — the runner does that first, so this flow is
+# only the movement.
+- launchApp
+- extendedWaitUntil:
+    visible: 'Deine Suche'
+    timeout: 40000
+
+# The deck: half-swipes that spring back, so the same card can be moved over and
+# over without running the deck out.
+- repeat:
+    times: 12
+    commands:
+      # Deliberately short of the decision distance: this is about moving the
+      # card, not about emptying the deck. A longer swipe here decided twelve
+      # profiles and then measured an empty state.
+      - swipe:
+          start: 50%, 55%
+          end: 62%, 55%
+          duration: 350
+      - swipe:
+          start: 50%, 55%
+          end: 38%, 55%
+          duration: 350
+
+# The photo pager on a full profile: the surface that decodes images.
+- tapOn:
+    point: 50%, 45%
+- extendedWaitUntil:
+    visible: 'Vollständiges Profil schließen'
+    timeout: 20000
+- repeat:
+    times: 10
+    commands:
+      - swipe:
+          start: 80%, 35%
+          end: 20%, 35%
+          duration: 250
+      - swipe:
+          start: 20%, 35%
+          end: 80%, 35%
+          duration: 250
