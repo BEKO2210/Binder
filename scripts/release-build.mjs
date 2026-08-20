@@ -49,6 +49,11 @@ if (!keepVersion) {
     .replace(/versionCode\s+\d+/, `versionCode ${versionCode}`)
     .replace(/versionName\s+"[^"]+"/, `versionName "${version}"`);
   writeFileSync(gradlePath, gradle);
+  // The README carries the version, and the gate below refuses a README that
+  // no longer matches its sources. Regenerating it here keeps the bump one
+  // step instead of a build that fails on its own first act.
+  execFileSync(process.execPath, ['scripts/build-readme.mjs'], { stdio: 'inherit' });
+
   console.log(`Version ${currentVersion} (code ${currentCode}) → ${version} (code ${versionCode})`);
 } else console.log(`Keeping version ${version} (code ${versionCode})`);
 

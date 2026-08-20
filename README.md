@@ -7,7 +7,7 @@
   <a href="https://github.com/BEKO2210/Binder/actions/workflows/database-tests.yml"><img src="https://github.com/BEKO2210/Binder/actions/workflows/database-tests.yml/badge.svg" alt="Database Tests"></a>
   <img src="https://img.shields.io/badge/price-no%20paid%20tier-C7FF4A" alt="No paid tier">
   <img src="https://img.shields.io/badge/audience-18%2B-critical" alt="18+">
-  <img src="https://img.shields.io/badge/android-1.0.5-3DDC84" alt="Android 1.0.5">
+  <img src="https://img.shields.io/badge/android-1.0.6-3DDC84" alt="Android 1.0.6">
 </p>
 
 **Binder is dating with one rule: both people choose each other before a conversation can begin.** No paywall, no blurred likes, no boosts, no ads, no data brokers — one free product, built like infrastructure.
