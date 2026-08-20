@@ -41,6 +41,7 @@ const e2e = read(join(root, 'artifacts/e2e-evidence.json'));
 const database = read(join(root, 'artifacts/database-evidence.json'));
 const size = read(join(root, 'artifacts/bundle-size-report.json'));
 const offline = read(join(root, 'artifacts/e2e-offline-evidence.json'));
+const device = read(join(root, 'artifacts/device-evidence.json'));
 
 const sameCommit = (record) => Boolean(record && record.commit === release.commit);
 // A record from another commit is not a failure of the product — it is simply
@@ -65,7 +66,8 @@ ask('database suites', ...verdictFor(database, 'run npm run db:evidence'));
 ask('black-box journeys', ...verdictFor(e2e, 'run npm run e2e'));
 ask('offline and kill journey', ...verdictFor(offline, 'run npm run e2e:offline'));
 ask('export size budget', size ? 'PASS' : 'MISSING', size ? `${(size.jsBytes / 1048576).toFixed(2)} MiB JS` : 'no size report');
-ask('device evidence', 'MISSING', 'device matrix is not automated yet');
+ask('branch coverage floors', existsSync(join(root, 'artifacts/coverage-floors.json')) ? 'PASS' : 'MISSING', 'floors recorded for src/lib');
+ask('device evidence', ...verdictFor(device, 'run npm run device:matrix'));
 
 const verdictOf = (names) => {
   const relevant = answers.filter((answer) => names.includes(answer.name));
