@@ -79,10 +79,12 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
     setLoading(true);
     setMessage('');
     try {
+      // Each of the three carries the ceiling: one stalled socket used to hold
+      // the whole screen in its loading state with no error and no retry.
       const [profile, preferences, gallery] = await Promise.all([
-        supabase.from('profiles').select('first_name,bio,gender,interests,height_cm,smoking,drinking,drugs,activity,diet,spirituality,children_has,children_wants,car,zodiac_public').eq('user_id', userId).single(),
-        supabase.from('user_preferences').select('interested_in,min_age,max_age,max_distance_km').eq('user_id', userId).single(),
-        listMyProfileMedia(),
+        withDeadline(supabase.from('profiles').select('first_name,bio,gender,interests,height_cm,smoking,drinking,drugs,activity,diet,spirituality,children_has,children_wants,car,zodiac_public').eq('user_id', userId).single(), PROFILE_SETTINGS_DEADLINE_MS),
+        withDeadline(supabase.from('user_preferences').select('interested_in,min_age,max_age,max_distance_km').eq('user_id', userId).single(), PROFILE_SETTINGS_DEADLINE_MS),
+        withDeadline(listMyProfileMedia(), PROFILE_SETTINGS_DEADLINE_MS),
       ]);
       if (profile.error) throw profile.error;
       if (preferences.error) throw preferences.error;
@@ -188,10 +190,10 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
         setBusy(false);
         if (!await uploadPhoto(image)) return;
         setBusy(true);
-        await removeProfileMedia(item.id);
+        await withDeadline(removeProfileMedia(item.id), PROFILE_SETTINGS_DEADLINE_MS);
         setMedia(await withDeadline(listMyProfileMedia(), PROFILE_SETTINGS_DEADLINE_MS));
       } else {
-        await removeProfileMedia(item.id);
+        await withDeadline(removeProfileMedia(item.id), PROFILE_SETTINGS_DEADLINE_MS);
         setBusy(false);
         await uploadPhoto(image);
       }
@@ -228,7 +230,7 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
     setBusy(true);
     setMessage('');
     try {
-      await setPrimaryProfileMedia(item.id);
+      await withDeadline(setPrimaryProfileMedia(item.id), PROFILE_SETTINGS_DEADLINE_MS);
       await haptic('selection');
       setMedia(await withDeadline(listMyProfileMedia(), PROFILE_SETTINGS_DEADLINE_MS));
     } catch (error) { setMessageKind('error'); setMessage(errorMessage(error, t('profileSettings.errors.makePrimary'))); }
@@ -243,7 +245,7 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
     setBusy(true);
     setMessage('');
     try {
-      await removeProfileMedia(item.id);
+      await withDeadline(removeProfileMedia(item.id), PROFILE_SETTINGS_DEADLINE_MS);
       await haptic('destructive');
       setMedia(await withDeadline(listMyProfileMedia(), PROFILE_SETTINGS_DEADLINE_MS));
       announce(t('profileSettings.accessibility.photoRemoved'));

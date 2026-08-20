@@ -495,7 +495,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     try {
       const audioPath = await withDeadline(uploadVoiceRecording(match.matchId, currentUserId, localUri, { signal: lifecycleControllerRef.current.signal }), CHAT_UPLOAD_DEADLINE_MS);
       setAttempts((current) => current.map((attempt) => attempt.clientId === clientId ? { ...attempt, voice: { audioPath, durationMs } } : attempt));
-      const confirmed = await sendVoiceMessage(match.matchId, clientId, audioPath, durationMs, { signal: lifecycleControllerRef.current.signal });
+      const confirmed = await withDeadline(sendVoiceMessage(match.matchId, clientId, audioPath, durationMs, { signal: lifecycleControllerRef.current.signal }), CHAT_DEADLINE_MS);
       if (!mountedRef.current) return;
       mergeMessage(confirmed);
       discardAttempt(clientId);
@@ -528,7 +528,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     try {
       // The object is already uploaded; the same client id and path converge
       // on the one message the first try meant.
-      const confirmed = await sendVoiceMessage(match.matchId, attempt.clientId, attempt.voice.audioPath, attempt.voice.durationMs, { signal: lifecycleControllerRef.current.signal });
+      const confirmed = await withDeadline(sendVoiceMessage(match.matchId, attempt.clientId, attempt.voice.audioPath, attempt.voice.durationMs, { signal: lifecycleControllerRef.current.signal }), CHAT_DEADLINE_MS);
       if (!mountedRef.current) return;
       mergeMessage(confirmed);
       discardAttempt(attempt.clientId);

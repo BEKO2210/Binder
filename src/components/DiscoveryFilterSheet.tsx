@@ -46,10 +46,12 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
       const { data: userData } = await withDeadline(supabase.auth.getUser(), FILTER_SHEET_DEADLINE_MS);
       const uid = userData.user?.id;
       if (!uid) throw new Error(t('discoveryFilterSheet.errors.authentication'));
+      // Each read carries the ceiling: the sheet holds a loading state until
+      // all three answer, and one stalled socket used to hold it forever.
       const [profileResult, storedFilters, preferencesResult] = await Promise.all([
-        supabase.from('profiles').select('first_name,gender,bio,interests').eq('user_id', uid).single(),
-        supabase.from('user_preferences').select('attribute_filters').eq('user_id', uid).single(),
-        initialValues ? Promise.resolve(null) : loadDiscoveryPreferences(),
+        withDeadline(supabase.from('profiles').select('first_name,gender,bio,interests').eq('user_id', uid).single(), FILTER_SHEET_DEADLINE_MS),
+        withDeadline(supabase.from('user_preferences').select('attribute_filters').eq('user_id', uid).single(), FILTER_SHEET_DEADLINE_MS),
+        initialValues ? Promise.resolve(null) : withDeadline(loadDiscoveryPreferences(), FILTER_SHEET_DEADLINE_MS),
       ]);
       if (profileResult.error) throw new Error(t('discoveryFilterSheet.errors.load'));
       // The sheet's apply replaces the whole filter object, so it must never

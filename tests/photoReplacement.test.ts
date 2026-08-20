@@ -25,7 +25,9 @@ test('the screen deletes only after a confirmed upload', () => {
   // delete the old photo after the new one never arrived.
   const source = readFileSync(new URL('../src/screens/ProfileSettingsScreen.tsx', import.meta.url), 'utf8');
   assert.match(source, /async function uploadPhoto\(image: PreparedImage\): Promise<boolean>/);
-  assert.match(source, /if \(!await uploadPhoto\(image\)\) return;\s*\n\s*setBusy\(true\);\s*\n\s*await removeProfileMedia/);
+  // The removal carries a deadline now, so the call is wrapped — the order it
+  // is checked for is unchanged.
+  assert.match(source, /if \(!await uploadPhoto\(image\)\) return;\s*\n\s*setBusy\(true\);\s*\n\s*await withDeadline\(removeProfileMedia/);
   // And the order is decided by the tested rule, not by a hand-written check.
   assert.match(source, /replacementOrder\(media\.length\) === 'upload-first'/);
 });

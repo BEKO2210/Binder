@@ -97,7 +97,7 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
     setPushState('busy');
     setPushError(null);
     try {
-      const result = await enablePushNotifications(t, controller.signal);
+      const result = await withDeadline(enablePushNotifications(t, controller.signal), MATCHES_DEADLINE_MS);
       if (!mountedRef.current || controller.signal.aborted) return;
       const next = bannerStateAfterRegistration(result.status);
       setPushState(next);

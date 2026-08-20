@@ -60,7 +60,9 @@ export default function AuthScreen({ recovery = false, onRecoveryHandled }: { re
     if (googleBusy || busy) return;
     setGoogleBusy(true);
     setMessage('');
-    const outcome = await signInWithGoogle();
+    // The Google sheet can be dismissed in ways that never come back to us;
+    // without a ceiling the button stays busy for the rest of the session.
+    const outcome = await withDeadline(signInWithGoogle(), AUTH_DEADLINE_MS);
     setGoogleBusy(false);
     // A cancel is a decision, not an error: saying nothing is the right answer.
     if (outcome.status === 'signed-in' || outcome.status === 'cancelled') return;

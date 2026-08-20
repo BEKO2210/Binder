@@ -10,53 +10,23 @@
 //   // no-deadline: <reason>
 //
 // which is a decision somebody wrote down, not an omission.
-import { readdirSync, readFileSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+//
+// The rule is read from the syntax tree. The line-based version this replaces
+// could be walked past by renaming a function in its import, and the set of
+// network functions was a hand-written list that a new wrapper in src/lib was
+// invisible to. Both are fixtures now, under scripts/gate-fixtures/deadlines,
+// and scripts/verify-gate-selftests.mjs proves this gate catches them.
+import { findViolations, filesUnder } from './lib/deadline-gate.mjs';
 
 const ROOTS = ['src/screens', 'src/components'];
-
-// What counts as a call that leaves the phone. Everything here either talks to
-// Supabase directly or is a thin wrapper in src/lib that does.
-const NETWORK_CALLS = [
-  /\bsupabase\.(from|rpc|auth|storage|functions)\b/,
-  /\b(fetchDiscoveryBatch|countDiscoveryCandidates|loadDiscoveryPreferences|loadAttributeFilterCount|recordDecision|refreshDiscoveryLocation)\s*\(/,
-  /\b(fetchMatches|fetchMessagesPage|sendMessage|markMatchRead|unmatch|blockUser|reportMessage|reportUser)\s*\(/,
-  /\b(listMyProfileMedia|addProfileImage|removeProfileImage|reorderProfileMedia|uploadVoiceRecording|signedVoiceUrl)\s*\(/,
-  /\b(fetchPartnerProfile|reportAndBlockDiscoveryProfile|loadSafetyNotice|acceptCurrentLegalGate|loadLegalGateWithDeadline)\s*\(/,
-  /\b(getBetaSettings|setBetaDiagnostics|submitBetaFeedback|deleteCurrentAccount)\s*\(/,
-  /\b(saveVoiceIntro|removeVoiceIntro|refreshPushRegistration|updateNotificationPreferences)\s*\(/,
-];
-
-function sourceFiles(directory) {
-  const entries = readdirSync(directory);
-  return entries.flatMap((entry) => {
-    const path = join(directory, entry);
-    if (statSync(path).isDirectory()) return sourceFiles(path);
-    return path.endsWith('.tsx') || path.endsWith('.ts') ? [path] : [];
-  });
-}
-
-const violations = [];
-
-for (const root of ROOTS) {
-  for (const file of sourceFiles(root)) {
-    const lines = readFileSync(file, 'utf8').split('\n');
-    lines.forEach((line, index) => {
-      if (!line.includes('await ')) return;
-      if (!NETWORK_CALLS.some((pattern) => pattern.test(line))) return;
-      if (line.includes('withDeadline(')) return;
-      const previous = lines[index - 1] ?? '';
-      if (previous.includes('no-deadline:')) return;
-      violations.push(`${file}:${index + 1}  ${line.trim().slice(0, 120)}`);
-    });
-  }
-}
+const files = ROOTS.flatMap((root) => filesUnder(root));
+const violations = findViolations(files);
 
 if (violations.length > 0) {
   console.error(`Requests without a deadline (${violations.length}):`);
-  for (const violation of violations) console.error(`  ${violation}`);
+  for (const violation of violations) console.error(`  ${violation.file}:${violation.line}  ${violation.name}()`);
   console.error('\nWrap the call in withDeadline(...), or write "// no-deadline: <reason>" above it.');
   process.exit(1);
 }
 
-console.log('Every awaited request in a screen or component carries a deadline.');
+console.log(`Every awaited request in a screen or component carries a deadline (${files.length} files).`);

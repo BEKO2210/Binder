@@ -115,12 +115,12 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
     setPushBusy(true);
     try {
       if (!next) {
-        await disablePushNotifications();
+        await withDeadline(disablePushNotifications(), SETTINGS_DEADLINE_MS);
         await updateNotifications({ enabled: false });
         showMessage(t('appSettings.messages.pushOff'), 'success');
         return;
       }
-      const result = await enablePushNotifications(t);
+      const result = await withDeadline(enablePushNotifications(t), SETTINGS_DEADLINE_MS);
       if (result.status === 'registered') {
         await updateNotifications({ enabled: true });
         showMessage(t('appSettings.messages.pushActive'), 'success');
