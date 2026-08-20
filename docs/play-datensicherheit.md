@@ -145,3 +145,39 @@ Nutzer-Token von `gcloud auth login` hat den Play-Scope nicht.
 
 Was die API **nicht** kann: Inhaltseinstufung, Zielgruppe, App-Zugriff und
 Datenschutz-URL bleiben Formulare in der Console.
+
+## 5. Was am hochgeladenen Stand falsch war
+
+Der CSV-Export aus der Console (`docs/play-data-safety-export.csv`) enthielt
+Antworten, die die App nicht deckt. `scripts/play-data-safety-csv.mjs` erzeugt
+aus den Belegen oben die korrigierte Datei `docs/play-data-safety.csv`
+(84 Änderungen). Die wichtigsten:
+
+| War | Ist | Grund |
+|---|---|---|
+| Ethnische Zugehörigkeit: ja | nein | Es gibt keine solche Spalte |
+| Standort: ungefähr | genau | `Accuracy.Balanced` ist rund 100 m, Play zählt ab 3 km² als „ungefähr" |
+| E-Mails (Inhalte): ja | nein, dafür „Andere In-App-Mitteilungen" | Die App liest keine E-Mails, sie speichert Chatnachrichten |
+| Name: gesammelt **und** geteilt | nur gesammelt | Nichts geht an Dritte; Google, Supabase, Brevo verarbeiten im Auftrag |
+| Flüchtig verarbeitet: ja | nein | Alles steht auf dem Server, nicht nur im Speicher |
+| Kontoerstellung: vier Methoden | zwei | E-Mail mit Passwort und Google-Anmeldung, sonst nichts |
+| Fehlend | Sonstige personenbezogene Daten, App-Interaktionen, Nutzerinhalte, andere Aktionen, Geräte-IDs, Diagnosedaten | Geburtsdatum, Lebensstil, Entscheidungen, Bio, Meldungen, FCM-Token, Beta-Diagnose |
+
+Einspielen: App-Inhalte → Datensicherheit → *Aus CSV importieren*, danach die
+Zusammenfassung noch einmal lesen.
+
+## 6. FOREGROUND_SERVICE_MEDIA_PLAYBACK
+
+Die Console verlangte für vc97 eine Erklärung samt Demo-Video für diese
+Berechtigung. Die App spielt aber nichts im Hintergrund ab: `expo-audio` bringt
+die Berechtigung mit, `shouldPlayInBackground` wird nirgends gesetzt.
+
+Statt eine Nutzung zu erklären, die es nicht gibt, ist die Berechtigung raus —
+`blockedPermissions` in `app.json`, Version 1.0.1 (versionCode 98). Im
+gemergten Manifest des neuen Bundles steht sie nicht mehr, und auf dem Gerät
+meldet `dumpsys package` sie nicht unter den angeforderten Berechtigungen.
+
+Auf dem Galaxy A15 mit 1.0.1 geprüft: Sprachaufnahme starten, 59 Sekunden
+aufnehmen, speichern, abspielen. `dumpsys audio` zeigt den laufenden Player
+(`package:de.beko2210.binder … state:started`), im Logcat keine
+`SecurityException`. Aufnehmen und Abspielen brauchen die Berechtigung nicht.
