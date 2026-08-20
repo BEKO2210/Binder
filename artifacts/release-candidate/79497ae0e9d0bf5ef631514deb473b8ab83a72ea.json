@@ -1,0 +1,81 @@
+{
+  "commit": "79497ae0e9d0bf5ef631514deb473b8ab83a72ea",
+  "version": "1.0.4",
+  "versionCode": 101,
+  "artifactSha256": "80bfd5ed3520294e4189505b2709ea6e505c6be794f6f364bf6b0c747c304175",
+  "quality": "PASS",
+  "database": "PASS",
+  "security": "PASS",
+  "e2e": "INCOMPLETE",
+  "performance": "PASS",
+  "signature": "PASS",
+  "device": "INCOMPLETE",
+  "answers": [
+    {
+      "name": "quality gate",
+      "verdict": "PASS",
+      "detail": "30 checks at 2026-08-20T14:59:15.499Z"
+    },
+    {
+      "name": "release artefacts hashed",
+      "verdict": "PASS",
+      "detail": "4 artefacts"
+    },
+    {
+      "name": "signature verified",
+      "verdict": "PASS",
+      "detail": "16dfdf3e283076be74f8a9e6750ec8b82dadd2df"
+    },
+    {
+      "name": "mapping kept",
+      "verdict": "PASS",
+      "detail": "R8 mapping for this build"
+    },
+    {
+      "name": "SBOM produced",
+      "verdict": "PASS",
+      "detail": "Binder-v1.0.4-vc101-sbom.cdx.json"
+    },
+    {
+      "name": "dependency lock recorded",
+      "verdict": "PASS",
+      "detail": "package-lock.json hash"
+    },
+    {
+      "name": "tree clean at build time",
+      "verdict": "PASS",
+      "detail": "no uncommitted changes"
+    },
+    {
+      "name": "database suites",
+      "verdict": "PASS",
+      "detail": "PASS at 2026-08-20T15:00:51.745Z"
+    },
+    {
+      "name": "black-box journeys",
+      "verdict": "STALE",
+      "detail": "PASS but for c4f41e73"
+    },
+    {
+      "name": "offline and kill journey",
+      "verdict": "PASS",
+      "detail": "PASS at 2026-08-20T15:08:08.392Z"
+    },
+    {
+      "name": "export size budget",
+      "verdict": "PASS",
+      "detail": "5.18 MiB JS"
+    },
+    {
+      "name": "branch coverage floors",
+      "verdict": "PASS",
+      "detail": "floors recorded for src/lib"
+    },
+    {
+      "name": "device evidence",
+      "verdict": "STALE",
+      "detail": "PASS but for c4f41e73"
+    }
+  ],
+  "verdict": "NOT READY"
+}

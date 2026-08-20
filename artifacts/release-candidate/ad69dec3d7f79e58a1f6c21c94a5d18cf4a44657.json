@@ -1,0 +1,81 @@
+{
+  "commit": "ad69dec3d7f79e58a1f6c21c94a5d18cf4a44657",
+  "version": "1.0.4",
+  "versionCode": 101,
+  "artifactSha256": "c2804702cb7049c72325fc857e4a37e67b01dd6d88b561003125f7b4dd612265",
+  "quality": "PASS",
+  "database": "PASS",
+  "security": "PASS",
+  "e2e": "PASS",
+  "performance": "PASS",
+  "signature": "PASS",
+  "device": "PASS",
+  "answers": [
+    {
+      "name": "quality gate",
+      "verdict": "PASS",
+      "detail": "31 checks at 2026-08-20T16:29:29.524Z"
+    },
+    {
+      "name": "release artefacts hashed",
+      "verdict": "PASS",
+      "detail": "4 artefacts"
+    },
+    {
+      "name": "signature verified",
+      "verdict": "PASS",
+      "detail": "16dfdf3e283076be74f8a9e6750ec8b82dadd2df"
+    },
+    {
+      "name": "mapping kept",
+      "verdict": "PASS",
+      "detail": "R8 mapping for this build"
+    },
+    {
+      "name": "SBOM produced",
+      "verdict": "PASS",
+      "detail": "Binder-v1.0.4-vc101-sbom.cdx.json"
+    },
+    {
+      "name": "dependency lock recorded",
+      "verdict": "PASS",
+      "detail": "package-lock.json hash"
+    },
+    {
+      "name": "tree clean at build time",
+      "verdict": "PASS",
+      "detail": "no uncommitted changes"
+    },
+    {
+      "name": "database suites",
+      "verdict": "PASS",
+      "detail": "PASS at 2026-08-20T16:33:02.250Z"
+    },
+    {
+      "name": "black-box journeys",
+      "verdict": "PASS",
+      "detail": "PASS at 2026-08-20T16:48:13.799Z"
+    },
+    {
+      "name": "offline and kill journey",
+      "verdict": "PASS",
+      "detail": "PASS at 2026-08-20T16:52:19.953Z"
+    },
+    {
+      "name": "export size budget",
+      "verdict": "PASS",
+      "detail": "5.18 MiB JS"
+    },
+    {
+      "name": "branch coverage floors",
+      "verdict": "PASS",
+      "detail": "floors recorded for src/lib"
+    },
+    {
+      "name": "device evidence",
+      "verdict": "PASS",
+      "detail": "PASS at 2026-08-20T16:48:14.469Z"
+    }
+  ],
+  "verdict": "READY"
+}

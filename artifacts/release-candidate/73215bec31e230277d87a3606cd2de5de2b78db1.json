@@ -1,0 +1,76 @@
+{
+  "commit": "73215bec31e230277d87a3606cd2de5de2b78db1",
+  "version": "1.0.4",
+  "versionCode": 101,
+  "artifactSha256": "80bfd5ed3520294e4189505b2709ea6e505c6be794f6f364bf6b0c747c304175",
+  "quality": "FAIL",
+  "database": "INCOMPLETE",
+  "security": "PASS",
+  "e2e": "FAIL",
+  "performance": "PASS",
+  "signature": "PASS",
+  "device": "INCOMPLETE",
+  "answers": [
+    {
+      "name": "quality gate",
+      "verdict": "PASS",
+      "detail": "30 checks at 2026-08-20T13:14:37.988Z"
+    },
+    {
+      "name": "release artefacts hashed",
+      "verdict": "PASS",
+      "detail": "4 artefacts"
+    },
+    {
+      "name": "signature verified",
+      "verdict": "PASS",
+      "detail": "16dfdf3e283076be74f8a9e6750ec8b82dadd2df"
+    },
+    {
+      "name": "mapping kept",
+      "verdict": "PASS",
+      "detail": "R8 mapping for this build"
+    },
+    {
+      "name": "SBOM produced",
+      "verdict": "PASS",
+      "detail": "Binder-v1.0.4-vc101-sbom.cdx.json"
+    },
+    {
+      "name": "dependency lock recorded",
+      "verdict": "PASS",
+      "detail": "package-lock.json hash"
+    },
+    {
+      "name": "tree clean at build time",
+      "verdict": "FAIL",
+      "detail": "built from a dirty tree"
+    },
+    {
+      "name": "database suites",
+      "verdict": "MISSING",
+      "detail": "run npm run db:evidence"
+    },
+    {
+      "name": "black-box journeys",
+      "verdict": "FAIL",
+      "detail": "PASS, app 1.0.4 (101)"
+    },
+    {
+      "name": "offline and kill journey",
+      "verdict": "MISSING",
+      "detail": "npm run e2e:offline — records no file yet"
+    },
+    {
+      "name": "export size budget",
+      "verdict": "PASS",
+      "detail": "5.18 MiB JS"
+    },
+    {
+      "name": "device evidence",
+      "verdict": "MISSING",
+      "detail": "device matrix is not automated yet"
+    }
+  ],
+  "verdict": "NOT READY"
+}

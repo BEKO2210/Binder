@@ -40,6 +40,8 @@ artifacts/*
 # The coverage floors are a promise about the code, not an output: they belong
 # in the diff where raising or lowering one can be argued about.
 !artifacts/coverage-floors.json
+# The verdict itself: which artefact was judged ready, on what evidence.
+!artifacts/release-candidate/
 
 # The code map belongs in the repo so any agent can find its way; the browser
 # view and the extractor's cache do not — one is a megabyte of generated HTML,
