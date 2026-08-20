@@ -285,7 +285,8 @@
     },
     "profile": {
       "away": "{distance}km 거리",
-      "photosReviewed": "· 사진 검토 완료"
+      "photosReviewed": "· 사진 검토 완료",
+      "photosReviewedBadge": "사진 검토 완료"
     },
     "pending": {
       "one": "결정 1개가 연결을 기다리는 중",

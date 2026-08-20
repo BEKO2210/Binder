@@ -285,7 +285,8 @@
     },
     "profile": {
       "away": "Berjarak {distance} km",
-      "photosReviewed": "· Foto ditinjau"
+      "photosReviewed": "· Foto ditinjau",
+      "photosReviewedBadge": "Foto ditinjau"
     },
     "pending": {
       "one": "1 keputusan menunggu koneksi",

@@ -285,7 +285,8 @@
     },
     "profile": {
       "away": "يبعد {distance} كم",
-      "photosReviewed": "· تمت مراجعة الصور"
+      "photosReviewed": "· تمت مراجعة الصور",
+      "photosReviewedBadge": "تمت مراجعة الصور"
     },
     "pending": {
       "one": "قرار واحد ينتظر الاتصال",

@@ -285,7 +285,8 @@
     },
     "profile": {
       "away": "{distance} km先",
-      "photosReviewed": "· 写真確認済み"
+      "photosReviewed": "· 写真確認済み",
+      "photosReviewedBadge": "写真確認済み"
     },
     "pending": {
       "one": "1 件の判断が接続を待っています",

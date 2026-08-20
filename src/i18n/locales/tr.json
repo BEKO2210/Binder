@@ -285,7 +285,8 @@
     },
     "profile": {
       "away": "{distance} km uzakta",
-      "photosReviewed": "· Fotoğraflar incelendi"
+      "photosReviewed": "· Fotoğraflar incelendi",
+      "photosReviewedBadge": "Fotoğraflar incelendi"
     },
     "pending": {
       "one": "1 karar bağlantı bekliyor",

@@ -3,6 +3,7 @@ import { BackHandler, ScrollView, View, useWindowDimensions } from 'react-native
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { FadeIn, runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
+import { VerifiedBadge } from '../components/VerifiedBadge';
 import { PhotoPager } from '../components/PhotoPager';
 import { BinderIcon, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import type { DiscoveryProfile } from '../lib/discovery';
@@ -96,7 +97,7 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose, in
               <View style={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x5 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3, flexWrap: 'wrap' }}>
                   <BinderText variant="displayL">{profile.name} <BinderText variant="heading">{formatCount(profile.age, locale)}</BinderText></BinderText>
-                  <View accessibilityLabel={t('partnerProfile.accessibility.photosReviewed')} style={{ minHeight: theme.layout.minimumTouchTarget, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, paddingHorizontal: theme.spacing.x3, borderRadius: theme.radii.pill, backgroundColor: theme.colors.surfaceElevated }}><BinderIcon name="check" color={theme.accent.onSurface} /><BinderText variant="caption" tone="secondary">{t('partnerProfile.photosReviewed')}</BinderText></View>
+                  <VerifiedBadge label={t('partnerProfile.photosReviewed')} accessibilityLabel={t('partnerProfile.accessibility.photosReviewed')} />
                 </View>
                 {profile.distanceKm !== null && !viewingSelf ? <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>{t('partnerProfile.away', { distance: formatDistanceKm(profile.distanceKm, locale) })}</BinderText> : null}
                 {profile.bio ? <BinderText variant="bodyL" tone="secondary" style={{ marginTop: theme.spacing.x4 }}>{profile.bio}</BinderText> : null}

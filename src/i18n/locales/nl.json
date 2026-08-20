@@ -285,7 +285,8 @@
     },
     "profile": {
       "away": "{distance} km verderop",
-      "photosReviewed": "· Foto's beoordeeld"
+      "photosReviewed": "· Foto's beoordeeld",
+      "photosReviewedBadge": "Foto's beoordeeld"
     },
     "pending": {
       "one": "1 keuze wacht op verbinding",

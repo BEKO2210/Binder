@@ -285,7 +285,8 @@
     },
     "profile": {
       "away": "距离 {distance} 公里",
-      "photosReviewed": "· 照片已审核"
+      "photosReviewed": "· 照片已审核",
+      "photosReviewedBadge": "照片已审核"
     },
     "pending": {
       "one": "1 个选择正在等待联网",

@@ -285,7 +285,8 @@
     },
     "profile": {
       "away": "A {distance} km",
-      "photosReviewed": "· Fotos revisadas"
+      "photosReviewed": "· Fotos revisadas",
+      "photosReviewedBadge": "Fotos revisadas"
     },
     "pending": {
       "one": "1 decisión espera conexión",

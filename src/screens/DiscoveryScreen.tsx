@@ -9,6 +9,7 @@ import { DiscoveryLoading } from '../components/DiscoveryLoading';
 import { discoveryDefaults, type DiscoveryPreferenceValues } from '../components/DiscoveryPreferences';
 import { MatchCelebration } from '../components/MatchCelebration';
 import { PhotoPager } from '../components/PhotoPager';
+import { VerifiedBadge } from '../components/VerifiedBadge';
 import { MotionPressable as Pressable } from '../components/ui';
 import { BinderBrand, BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import { fetchMatches, type MatchSummary } from '../lib/conversation';
@@ -589,7 +590,7 @@ function ProfileCard({ profile, back = false, behind = false, onOpenProfile }: {
 
       <View pointerEvents="none" style={{ position: 'absolute', left: theme.spacing.x5, right: theme.spacing.x5, bottom: theme.spacing.x5 }}>
         <BinderText variant="displayL" style={{ color: onMedia.textPrimary }} numberOfLines={1}>{profile.name} <BinderText variant="heading" style={{ color: onMedia.textPrimary }}>{formatCount(profile.age, locale)}</BinderText></BinderText>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, marginTop: theme.spacing.x2 }}><BinderText variant="caption" style={{ color: onMedia.textSecondary }}>{t('discovery.profile.away', { distance: formatDistanceKm(profile.distanceKm, locale) })}</BinderText><BinderText variant="caption" style={{ color: onMedia.textMuted }}>{t('discovery.profile.photosReviewed')}</BinderText></View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, marginTop: theme.spacing.x2, flexWrap: 'wrap' }}><BinderText variant="caption" style={{ color: onMedia.textSecondary }}>{t('discovery.profile.away', { distance: formatDistanceKm(profile.distanceKm, locale) })}</BinderText><VerifiedBadge onMedia label={t('discovery.profile.photosReviewedBadge')} accessibilityLabel={t('discovery.profile.photosReviewedBadge')} /></View>
         {profile.bio ? <BinderText variant="body" style={{ color: onMedia.textPrimary, marginTop: theme.spacing.x2 }} numberOfLines={2}>{profile.bio}</BinderText> : null}
         <View style={{ flexDirection: 'row', gap: theme.spacing.x2, marginTop: theme.spacing.x3, overflow: 'hidden' }}>
           {profile.tags.slice(0, 3).map((tag) => <View key={tag} style={{ maxWidth: '32%', backgroundColor: theme.colors.overlay, borderWidth: 1, borderColor: theme.colors.borderStrong, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x1 }}><BinderText variant="caption" style={{ color: onMedia.textPrimary }} numberOfLines={1} ellipsizeMode="tail">{interestLabel(t, tag)}</BinderText></View>)}
