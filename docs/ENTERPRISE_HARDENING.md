@@ -138,8 +138,27 @@ Commit: `236b2d2`
 
 ## P1
 
-- [ ] OPEN — CodeQL and dependency review
-- [ ] OPEN — Secret scanning that catches a planted test secret
+- [x] PROVEN — CodeQL and dependency review
+  - Protection: `.github/workflows/security.yml` — CodeQL over
+    JavaScript/TypeScript with `security-extended`, dependency review on pull
+    requests failing at high severity, weekly schedule so an advisory published
+    after a merge still lands.
+  - Evidence: workflow green on `1799ed9`; every action pinned to a commit.
+  - Commit: `0e5ea72`, `1799ed9`
+
+- [x] PROVEN — Secret scanning that catches a planted test secret
+  - Risk: a firebase-debug log has already ridden into the public repository
+    carrying the owner's address and every project id on the account.
+  - Protection: `scripts/verify-no-secrets.mjs` over every tracked file, part of
+    the quality gate and of the security workflow.
+  - Evidence: six planted shapes — private key block, Google API key, GitHub
+    token, Stripe live key, Supabase secret key, an assigned secret — are all
+    caught, and public identifiers stay quiet. The samples are assembled at
+    runtime, never stored, because a file full of credential-shaped strings is
+    the thing this gate exists to prevent. One real finding: the Firebase client
+    key in `google-services.json`, allowlisted with its reason (it ships inside
+    every APK by design and is restricted to package and certificate).
+  - Commit: `0e5ea72`
 - [ ] OPEN — Black-box E2E on the built release candidate (Maestro)
 - [ ] OPEN — Failure, kill and offline journeys
 - [ ] OPEN — Adversarial RLS matrix (anon, A, B, blocked, former match, active match, moderator, admin, service role)
