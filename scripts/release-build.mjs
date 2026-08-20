@@ -79,9 +79,35 @@ execFileSync('./gradlew', tasks, {
   env: { ...process.env, JAVA_HOME: javaHome, ANDROID_HOME: androidHome },
 });
 
+// Trust the artefact, not the configuration: read the certificate out of the
+// APK that was just produced and compare it with the upload key. This runs
+// before anything is copied into the release folder — the check used to happen
+// afterwards, so a wrongly signed build was already lying there under its
+// final name when the script exited, ready for somebody to upload. An APK
+// signed with the wrong key is rejected by Play at best and breaks Google
+// sign-in for every existing install at worst.
+const uploadKeySha1 = '16dfdf3e283076be74f8a9e6750ec8b82dadd2df';
+const builtApk = join(root, 'android/app/build/outputs/apk/release/app-release.apk');
+const apksigner = `${androidHome}/build-tools/36.0.0/apksigner`;
+if (!existsSync(apksigner)) {
+  console.error(`apksigner not found at ${apksigner}. A release is not staged without verifying its signature.`);
+  process.exit(1);
+}
+const certs = execFileSync(apksigner, ['verify', '--print-certs', builtApk], {
+  encoding: 'utf8',
+  env: { ...process.env, JAVA_HOME: javaHome, PATH: `${javaHome}/bin:${process.env.PATH}` },
+});
+const sha1 = certs.match(/Signer #1 certificate SHA-1 digest:\s*([0-9a-f]+)/)?.[1];
+if (sha1 !== uploadKeySha1) {
+  console.error(`The APK is signed with ${sha1 ?? 'an unreadable certificate'}, not the upload key ${uploadKeySha1}.`);
+  console.error('Nothing was staged. Check android/keystore.properties and the .jks it points at.');
+  process.exit(1);
+}
+console.log(`Signature verified against the upload key (${sha1.slice(0, 12)}…).`);
+
 mkdirSync(releaseDir, { recursive: true });
 const staged = [];
-stage(join(root, 'android/app/build/outputs/apk/release/app-release.apk'), `Binder-v${version}-vc${versionCode}.apk`);
+stage(builtApk, `Binder-v${version}-vc${versionCode}.apk`);
 if (withBundle) stage(join(root, 'android/app/build/outputs/bundle/release/app-release.aab'), `Binder-v${version}-vc${versionCode}.aab`);
 // R8 renames everything, so a stack trace from the wild is unreadable without
 // the map that was used for exactly this build. Play reads it out of the AAB
@@ -89,26 +115,6 @@ if (withBundle) stage(join(root, 'android/app/build/outputs/bundle/release/app-r
 // android/app/build/ does not survive the next build.
 const mappingFile = join(root, 'android/app/build/outputs/mapping/release/mapping.txt');
 if (existsSync(mappingFile)) stage(mappingFile, `Binder-v${version}-vc${versionCode}-mapping.txt`);
-
-// Trust the artefact, not the configuration: read the certificate out of the
-// APK that was just produced and compare it with the upload key. This is the
-// same check that found the Play signing mismatch — the answer lives in the
-// file, not in a settings screen.
-const uploadKeySha1 = '16dfdf3e283076be74f8a9e6750ec8b82dadd2df';
-const apkPath = join(releaseDir, `Binder-v${version}-vc${versionCode}.apk`);
-const apksigner = `${androidHome}/build-tools/36.0.0/apksigner`;
-if (existsSync(apksigner)) {
-  const certs = execFileSync(apksigner, ['verify', '--print-certs', apkPath], {
-    encoding: 'utf8',
-    env: { ...process.env, JAVA_HOME: javaHome, PATH: `${javaHome}/bin:${process.env.PATH}` },
-  });
-  const sha1 = certs.match(/Signer #1 certificate SHA-1 digest:\s*([0-9a-f]+)/)?.[1];
-  if (sha1 !== uploadKeySha1) {
-    console.error(`The APK is signed with ${sha1 ?? 'an unreadable certificate'}, not the upload key ${uploadKeySha1}.`);
-    process.exit(1);
-  }
-  console.log(`Signature verified against the upload key (${sha1.slice(0, 12)}…).`);
-} else console.warn(`apksigner not found at ${apksigner} — signature not verified.`);
 
 console.log('\nStaged in the release folder:');
 for (const line of staged) console.log(`  ${line}`);

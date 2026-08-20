@@ -110,25 +110,23 @@ export async function setPrimaryProfileMedia(mediaId: string): Promise<void> {
 }
 
 export async function removeProfileMedia(mediaId: string): Promise<void> {
-  // The storage object goes first and the row second, because that order is
-  // the only one a retry can finish: removing an object that is already gone
-  // succeeds, while the row still carries the path the retry needs. The other
-  // way round, a failed cleanup left an orphan in the bucket that nothing
-  // could ever address again.
-  const { data: rows, error: lookupError } = await supabase
-    .from('profile_media')
-    .select('storage_path')
-    .eq('id', mediaId)
-    .limit(1);
-  if (lookupError) throw lookupError;
-  const path = rows?.[0]?.storage_path;
-  if (!path) throw new Error('That photo is no longer in your gallery.');
-
-  const { error: cleanupError } = await supabase.storage.from('profile-media').remove([path]);
-  if (cleanupError) throw new Error('Binder could not remove the photo file. Try again.');
-
-  const { error } = await phase6Rpc<RemovedMediaRow[]>('remove_my_profile_media', { p_media_id: mediaId });
+  // The server decides first, the file goes second.
+  //
+  // The old order deleted the object and then asked. When the server refused —
+  // it refuses to remove the last approved photo, which is the case a person
+  // is most likely to try — the row stayed and pointed at a file that no
+  // longer existed. A profile with a permanently broken photo, and no way back.
+  //
+  // Doing it the other way can leave an object in the bucket that no row
+  // addresses. That costs storage and is invisible to the person; the RPC
+  // returns the paths it detached, so the cleanup below removes them, and a
+  // cleanup that fails is not worth failing the whole operation over.
+  const { data, error } = await phase6Rpc<RemovedMediaRow[]>('remove_my_profile_media', { p_media_id: mediaId });
   if (error) throw error;
+
+  const paths = (data ?? []).map((row) => row.storage_path).filter(Boolean);
+  if (paths.length === 0) return;
+  await supabase.storage.from('profile-media').remove(paths);
 }
 
 export async function signedProfileImageUrl(path: string): Promise<string> {

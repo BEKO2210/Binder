@@ -342,7 +342,20 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
       // leaves as it would have, and the queue delivers it when the phone is
       // back. Only a refusal — which will refuse again — brings the card back.
       if (shouldKeepAfterFailure(failure.kind)) {
-        void queueDecision({ targetUserId: current.id, decision: direction === 'right' ? 'bind' : 'pass', decidedAt: Date.now() });
+        // The card may only leave once the decision is on disk. Queuing it
+        // without waiting meant an app closed in the same second lost the
+        // decision entirely — the card was gone from the deck and the person
+        // was never asked about it again, or the profile came back as if they
+        // had never decided.
+        try {
+          await queueDecision({ targetUserId: current.id, decision: direction === 'right' ? 'bind' : 'pass', decidedAt: Date.now() });
+        } catch (queueFailure) {
+          // Nothing was stored, so nothing may be thrown away: the card comes
+          // back and the person can decide again.
+          setError(classifyError(queueFailure));
+          springBack();
+          return;
+        }
         finishDismiss(current, false);
         if (profiles.length === 1) void loadDiscovery(false);
         return;
