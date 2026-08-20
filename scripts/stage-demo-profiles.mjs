@@ -54,6 +54,19 @@ async function createUser(profile) {
     }),
   });
   const body = await response.json();
+  // An interrupted run leaves its demo users behind, and the next run used to
+  // fail on the leftover rather than on anything about the app. These carry the
+  // demo marker, so replacing one can only ever remove something this script
+  // made.
+  if (body.error_code === 'email_exists') {
+    const existing = (await listDemoUsers()).find((user) => user.email === profile.email);
+    if (existing) {
+      console.log(`${profile.email} was still here from an earlier run — replacing it.`);
+      await fetch(`${url}/auth/v1/admin/users/${existing.id}`, { method: 'DELETE', headers });
+      await fetch(`${url}/storage/v1/object/profile-media`, { method: 'DELETE', headers, body: JSON.stringify({ prefixes: [`${existing.id}/`] }) });
+      return createUser(profile);
+    }
+  }
   if (!body.id) throw new Error(`Could not create ${profile.email}: ${JSON.stringify(body).slice(0, 200)}`);
   return body.id;
 }

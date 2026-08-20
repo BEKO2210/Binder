@@ -34,3 +34,9 @@ test('a deletion that runs into its deadline is not called a failure', () => {
   // Only a real refusal takes the intent back.
   assert.match(deletion, /if \(!isDeadlineError\(error\)\) forgetIntentionalSignOut\(\)/);
 });
+
+test('signing out forgets what this phone agreed to', () => {
+  // The acceptance is remembered so a tunnel cannot lock the app out of its own
+  // conversations. It belongs to the person who gave it, and leaves with them.
+  assert.match(source, /forgetAcceptance\(\)/);
+});

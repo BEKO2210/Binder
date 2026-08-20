@@ -28,6 +28,7 @@ import {
   type PushRegistrationResult,
 } from './lib/notifications';
 import { getLegalGate, type LegalGate } from './lib/safety';
+import { recallAcceptance, rememberAcceptance } from './lib/legalGateCache';
 import { safeLog } from './lib/safeLog';
 import { classifyError, isDeadlineError, isLikelyOffline, withDeadline } from './lib/reliability';
 import { supabase } from './lib/supabase';
@@ -250,7 +251,42 @@ function BinderApp() {
   useEffect(() => {
     if (!session) { setLegalGate(undefined); return; }
     let active = true; const startedAt = Date.now(); setLegalGate(undefined); setLoadError(''); setLoadOffline(false); void initializeBetaDiagnostics();
-    getLegalGate().then((gate) => { if (!active) return; setLegalGate(gate); void recordBetaEvent('legal_gate_load', 'legal', { durationMs: Date.now() - startedAt, outcome: 'ok' }); }).catch((error: unknown) => { if (!active) return; const timedOut = isDeadlineError(error); const offline = !timedOut && isLikelyOffline(error); setLoadOffline(offline); setLoadError(offline ? t('root.offline.message') : timedOut || !(error instanceof Error) ? t('root.legalGate.failedMessage') : error.message); setLegalGate(null); void recordBetaEvent('legal_gate_load', 'legal', { durationMs: Date.now() - startedAt, outcome: 'error' }); });
+    getLegalGate().then((gate) => {
+      if (!active) return;
+      setLegalGate(gate);
+      // Remember what this phone agreed to, so a tunnel does not lock the app.
+      if (gate.accepted && session?.user.id) {
+        void rememberAcceptance({ userId: session.user.id, termsVersion: gate.terms_version, privacyVersion: gate.privacy_version, acceptedAt: Date.now() });
+      }
+      void recordBetaEvent('legal_gate_load', 'legal', { durationMs: Date.now() - startedAt, outcome: 'ok' });
+    }).catch((error: unknown) => {
+      if (!active) return;
+      const timedOut = isDeadlineError(error);
+      const offline = !timedOut && isLikelyOffline(error);
+      void recordBetaEvent('legal_gate_load', 'legal', { durationMs: Date.now() - startedAt, outcome: 'error' });
+      // No answer is not a refusal. If this phone already agreed to exactly
+      // these versions, the app opens and every screen says for itself what it
+      // cannot reach — instead of one wall in front of conversations that are
+      // already on the device.
+      if (offline && session?.user.id) {
+        void recallAcceptance().then((cached) => {
+          if (!active) return;
+          if (cached && cached.userId === session.user.id) {
+            setLegalGate({ terms_version: cached.termsVersion, privacy_version: cached.privacyVersion, accepted: true });
+            setLoadOffline(true);
+            setLoadError('');
+            return;
+          }
+          setLoadOffline(true);
+          setLoadError(t('root.offline.message'));
+          setLegalGate(null);
+        });
+        return;
+      }
+      setLoadOffline(offline);
+      setLoadError(offline ? t('root.offline.message') : timedOut || !(error instanceof Error) ? t('root.legalGate.failedMessage') : error.message);
+      setLegalGate(null);
+    });
     return () => { active = false; };
   }, [session?.user.id, legalRefreshKey]);
 
@@ -454,7 +490,15 @@ function BinderApp() {
       onAction={() => setLegalRefreshKey((value) => value + 1)}
     />
   );
-  if (!legalGate.accepted) return <LegalGateScreen gate={legalGate} onAccepted={() => { setLegalGate((current) => current ? { ...current, accepted: true } : current); setLoadError(''); }} />;
+  if (!legalGate.accepted) return <LegalGateScreen gate={legalGate} onAccepted={() => {
+    setLegalGate((current) => {
+      if (current && session?.user.id) {
+        void rememberAcceptance({ userId: session.user.id, termsVersion: current.terms_version, privacyVersion: current.privacy_version, acceptedAt: Date.now() });
+      }
+      return current ? { ...current, accepted: true } : current;
+    });
+    setLoadError('');
+  }} />;
   const profilePhase = startupPhase(onboardingComplete !== undefined, startFailed);
   if (profilePhase === 'failed') return startupFailure;
   if (profilePhase === 'loading') return <ScreenState kind="loading" message={loadError || t('root.loading.profile')} />;

@@ -1,0 +1,11 @@
+-- A backup table with six message bodies and no purpose left.
+--
+-- It was made during the phase 11 voice work as a safety net for a migration
+-- that has long since landed. What stayed behind is the most private data the
+-- app holds — what two people wrote each other — sitting in a table nothing
+-- reads, outside every policy that protects the real messages table, and
+-- outside account deletion: deleting an account never touched it.
+--
+-- Keeping data that nothing reads is not caution, it is exposure with no
+-- upside.
+drop table if exists public.zz_chat_backup;

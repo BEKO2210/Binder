@@ -6,6 +6,7 @@ import { MotionPressable as Pressable } from '../components/ui';
 import { DELETE_ACCOUNT_URL, PRIVACY_URL, TERMS_URL, deleteCurrentAccount, openBinderUrl } from '../lib/safety';
 import { forgetAllChats } from '../lib/chatDrafts';
 import { clearUnsent } from '../lib/unsentMessages';
+import { forgetAcceptance } from '../lib/legalGateCache';
 import { disablePushNotifications } from '../lib/notifications';
 import { isDeadlineError, withDeadline } from '../lib/reliability';
 import { confirmDestructive } from '../lib/confirmDestructive';
@@ -73,6 +74,8 @@ export default function MenuScreen({ onOpenSettings, onOpenBeta, onOpenAbout }: 
     // app on this phone must not find a half-written message to somebody.
     forgetAllChats();
     await clearUnsent();
+    // The next person on this phone agreed to nothing.
+    await forgetAcceptance();
   }
 
   function confirmDeletion() {

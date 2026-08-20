@@ -66,9 +66,15 @@ if (mode === 'remove') {
   process.exit(0);
 }
 
-if (await findAccount()) {
-  console.error(`${email} already exists — run "remove" first.`);
-  process.exit(1);
+// A run that was interrupted leaves its account behind, and a whole device
+// matrix used to fail on that leftover rather than on anything about the app.
+// The account carries the demo marker, so replacing it can only ever remove
+// something this script made.
+const leftover = await findAccount();
+if (leftover) {
+  console.log(`${email} was still here from an earlier run — replacing it.`);
+  await fetch(`${url}/auth/v1/admin/users/${leftover.id}`, { method: 'DELETE', headers });
+  await fetch(`${url}/storage/v1/object/profile-media`, { method: 'DELETE', headers, body: JSON.stringify({ prefixes: [`${leftover.id}/`] }) });
 }
 
 const password = `Testlauf-${randomUUID().slice(0, 12)}`;
