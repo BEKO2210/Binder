@@ -26,7 +26,33 @@ const BASELINE = 'artifacts/performance-baseline.json';
 // How much worse than the baseline is still the same app on a busier phone.
 const MARGIN = { coldStartMs: 1.35, jankyPercent: 1.6, memoryMb: 1.30 };
 
-const shell = (...args) => execFileSync(adb, ['shell', ...args], { encoding: 'utf8' });
+
+// With two phones on the desk, every adb call fails with "more than one
+// device/emulator" halfway through a run. The evidence has to say which phone
+// it came from anyway, so the serial is chosen here, once, and passed to every
+// call — adb and Maestro alike.
+function chosenSerial() {
+  const attached = execFileSync(adb, ['devices'], { encoding: 'utf8' })
+    .split('\n').slice(1)
+    .map((line) => line.split('\t'))
+    .filter(([, state]) => state?.trim() === 'device')
+    .map(([serial]) => serial.trim());
+  if (attached.length === 0) { console.error('No device is attached.'); process.exit(1); }
+  const wanted = process.env.ANDROID_SERIAL;
+  if (wanted) {
+    if (!attached.includes(wanted)) { console.error(`ANDROID_SERIAL=${wanted} is not attached (${attached.join(', ')}).`); process.exit(1); }
+    return wanted;
+  }
+  if (attached.length > 1) {
+    console.error(`More than one device is attached (${attached.join(', ')}).\nPick one: ANDROID_SERIAL=<serial> ${process.argv[1].split('/').pop()}`);
+    process.exit(1);
+  }
+  return attached[0];
+}
+
+const serial = chosenSerial();
+
+const shell = (...args) => execFileSync(adb, ['-s', serial, 'shell', ...args], { encoding: 'utf8' });
 const sleep = (seconds) => execFileSync('sleep', [String(seconds)]);
 
 function coldStartMs(samples = 5) {
@@ -51,7 +77,7 @@ function memoryMb() {
 }
 
 function flow(file, account) {
-  execFileSync(maestro, ['test', '--include-tags=scenario', join('.maestro', file)], {
+  execFileSync(maestro, ['--device', serial, 'test', '--include-tags=scenario', join('.maestro', file)], {
     stdio: 'inherit',
     env: { ...process.env, JAVA_HOME: javaHome, PATH: `${javaHome}/bin:${process.env.PATH}`, MAESTRO_EMAIL: account.email, MAESTRO_PASSWORD: account.password },
   });

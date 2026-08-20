@@ -45,7 +45,7 @@ try {
   // The offline scenario's steps carry the `scenario` tag: they assume a
   // network state and a screen that only their runner sets up, so a plain
   // folder run must not pick them up.
-  execFileSync(maestro, ['test', '--exclude-tags=scenario', target], {
+  execFileSync(maestro, [...(process.env.ANDROID_SERIAL ? ['--device', process.env.ANDROID_SERIAL] : []), 'test', '--exclude-tags=scenario', target], {
     stdio: 'inherit',
     env: {
       ...process.env,
@@ -70,7 +70,7 @@ writeFileSync('artifacts/e2e-evidence.json', `${JSON.stringify({
   commit: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
   installedVersion: (() => {
     try {
-      const dump = execFileSync(process.env.ADB ?? `${process.env.HOME}/Android/Sdk/platform-tools/adb`, ['shell', 'dumpsys', 'package', 'de.beko2210.binder'], { encoding: 'utf8' });
+      const dump = execFileSync(process.env.ADB ?? `${process.env.HOME}/Android/Sdk/platform-tools/adb`, [...(process.env.ANDROID_SERIAL ? ['-s', process.env.ANDROID_SERIAL] : []), 'shell', 'dumpsys', 'package', 'de.beko2210.binder'], { encoding: 'utf8' });
       return {
         versionName: /versionName=(\S+)/.exec(dump)?.[1] ?? null,
         versionCode: Number(/versionCode=(\d+)/.exec(dump)?.[1] ?? 0) || null,

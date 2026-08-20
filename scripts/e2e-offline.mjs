@@ -23,14 +23,37 @@ if (!existsSync(maestro) || !existsSync(adb)) {
   process.exit(1);
 }
 
-const device = (...args) => execFileSync(adb, args, { encoding: 'utf8' });
+
+// One phone per run, chosen once: with two attached, adb answers "more than one
+// device/emulator" and the run dies halfway through. ANDROID_SERIAL picks.
+function chosenSerial() {
+  const attached = execFileSync(adb, ['devices'], { encoding: 'utf8' })
+    .split('\n').slice(1)
+    .map((line) => line.split('\t'))
+    .filter(([, state]) => state?.trim() === 'device')
+    .map(([serial]) => serial.trim());
+  if (attached.length === 0) { console.error('No device is attached.'); process.exit(1); }
+  const wanted = process.env.ANDROID_SERIAL;
+  if (wanted) {
+    if (!attached.includes(wanted)) { console.error(`ANDROID_SERIAL=${wanted} is not attached (${attached.join(', ')}).`); process.exit(1); }
+    return wanted;
+  }
+  if (attached.length > 1) {
+    console.error(`More than one device is attached (${attached.join(', ')}). Pick one with ANDROID_SERIAL=<serial>.`);
+    process.exit(1);
+  }
+  return attached[0];
+}
+const serial = chosenSerial();
+
+const device = (...args) => execFileSync(adb, ['-s', serial, ...args], { encoding: 'utf8' });
 const network = (state) => {
   device('shell', 'svc', 'wifi', state ? 'enable' : 'disable');
   device('shell', 'svc', 'data', state ? 'enable' : 'disable');
 };
 
 function flow(file, account) {
-  execFileSync(maestro, ['test', '--include-tags=scenario', join('.maestro', file)], {
+  execFileSync(maestro, ['--device', serial, 'test', '--include-tags=scenario', join('.maestro', file)], {
     stdio: 'inherit',
     env: {
       ...process.env,
