@@ -93,26 +93,46 @@ still passes.
     hand-written `'transparent'` values became tokens.
   - Commit: `7310598`
 
-### [ ] OPEN — One release gate
+### [x] PROVEN — One release gate
 
-Risk: "CI is green" and "this artefact was checked" are two different sentences
-today. Two lists drift.
+Risk: "CI is green" and "this artefact was checked" were two different
+sentences. CI ran about twenty-five checks; the production build ran five plus
+the tests, and the shorter list was the one standing between a mistake and the
+store.
 Invariant: production and CI run the same checks from one definition.
-Evidence: —
+Protection: `scripts/quality-gate.mjs` — 29 checks in one ordered list, called
+by `ci.yml`, by `eas-production-build.yml` and by `scripts/release-build.mjs`
+before it stages anything.
+Evidence: full run green locally (29/29) and in CI on `236b2d2`; the release
+build refuses to stage without it, and its result is recorded in the release
+evidence file.
+Commit: `73215be`
 
-### [ ] OPEN — A build that does not depend on the day
+### [x] PROVEN — A build that does not depend on the day
 
-Risk: `eas-cli@latest` means a production build depends on what was published
-this morning.
+Risk: `eas-cli@latest` meant the artefact people install was built by whichever
+version npm served that morning — not chosen, not visible in a diff. A moving
+action tag has the same problem: it can be repointed at other code.
 Invariant: build tooling is pinned and verifiable.
-Evidence: —
+Protection: eas-cli pinned to 16.19.3; all seven workflows use action commits
+with the tag as a comment; `scripts/verify-pinned-toolchain.mjs` fails on any
+`@latest` or non-commit `uses:` and runs inside the quality gate.
+Evidence: gate green with the check in place; CI green on `236b2d2`.
+Commit: `73215be`
 
-### [ ] OPEN — The artefact is the evidence
+### [x] PROVEN — The artefact is the evidence
 
-Risk: a green commit and a shipped file are only connected by a story.
+Risk: a green commit and a shipped file were connected by a story.
 Invariant: commit, version, versionCode, artefact SHA-256, signing certificate,
-mapping, lock hash and test evidence sit in one machine-readable record.
-Evidence: —
+mapping, lock hash, SBOM and gate result sit in one machine-readable record.
+Protection: `scripts/lib/release-evidence.mjs`, written by every release into
+`artifacts/release-evidence/<commit>.json`; `npm sbom` produces a CycloneDX list
+of 507 components per build, hashed into the same record. Signature verification
+already runs before anything is staged and fails closed without apksigner.
+Evidence: `artifacts/release-evidence/73215bec…json` from a real build — four
+artefacts hashed, certificate `16dfdf3e…` read out of the file, gate PASS across
+29 checks, and the record correctly reporting an unclean tree.
+Commit: `236b2d2`
 
 ---
 
