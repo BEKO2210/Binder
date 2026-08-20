@@ -10,8 +10,18 @@
 import { execFileSync } from 'node:child_process';
 
 function localCredentials() {
-  const status = JSON.parse(execFileSync('supabase', ['status', '-o', 'json'], { encoding: 'utf8' }));
-  return { url: status.API_URL, key: status.ANON_KEY };
+  // `-o env` rather than JSON: the CLI prints service notices alongside the
+  // JSON in some versions, which is how this failed in CI while passing here.
+  const output = execFileSync('supabase', ['status', '-o', 'env'], { encoding: 'utf8' });
+  const read = (name) => new RegExp(`^${name}="?([^"\n]+)"?$`, 'm').exec(output)?.[1];
+  const url = read('API_URL');
+  const key = read('ANON_KEY');
+  if (!url || !key) {
+    console.error('Could not read the local API URL and anon key from `supabase status`.');
+    console.error('Start the stack first, or pass BINDER_API_URL and BINDER_ANON_KEY.');
+    process.exit(1);
+  }
+  return { url, key };
 }
 
 const { url, key } = process.env.BINDER_API_URL && process.env.BINDER_ANON_KEY
