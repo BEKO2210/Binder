@@ -27,7 +27,7 @@ the gate go red.
 
 ## P0
 
-### [~] The guards need guards of their own
+### [x] The guards need guards of their own — PROVEN
 
 An external review found that several verifiers check a spelling rather than a
 fact. A gate that can be walked past with a rename is worse than no gate: it
@@ -38,7 +38,7 @@ current gate calls it clean, replace the check with one that reads the code
 instead of the text, prove the same fixture now fails, and prove legitimate code
 still passes.
 
-- [ ] OPEN — `verify-request-deadlines.mjs`
+- [x] PROVEN — `verify-request-deadlines.mjs`
   - Risk: a network call without a deadline hangs a screen forever behind its
     own loading state; that is how the deck once sat under a spinner with no way
     out.
@@ -46,37 +46,52 @@ still passes.
     wrapped in `withDeadline`.
   - Reproducible defect: a multi-line `await sendMessage(\n  matchId,\n  text,\n)`,
     or `import { sendMessage as transmitMessage }` and then `await transmitMessage(...)`.
-  - Protection: AST, import bindings resolved, `AwaitExpression` inspected.
-  - Evidence: —
-  - Commit: —
+  - Protection: AST, import bindings resolved, `AwaitExpression` inspected, and
+    the set of network functions derived from `src/lib` instead of typed out.
+  - Evidence: `scripts/gate-fixtures/deadlines/*.bad.tsx` — the old rule called
+    `alias.bad.tsx` clean, the new one fails it; `wrapped.good.tsx` and
+    `documented.good.tsx` stay green. Running the new rule on the app found
+    **sixteen real awaited requests without a ceiling**, all fixed in the same
+    commit. `scripts/verify-gate-selftests.mjs` runs the fixtures in CI.
+  - Commit: `ac93e02`
 
-- [ ] OPEN — `verify-worklet-contract.mjs`
+- [x] PROVEN — `verify-worklet-contract.mjs`
   - Risk: a worklet calling a JS-runtime function kills the process. It has done
     so twice in this repository.
   - Invariant: everything a worklet calls is itself a worklet.
   - Reproducible defect: `import * as helpers from '../lib/motionPolicy';` then
     `helpers.resolveSpring()` inside a gesture callback or `useAnimatedStyle`.
-  - Protection: AST, namespace imports resolved.
-  - Evidence: —
-  - Commit: —
+  - Protection: AST; worklet bodies found by directive and by the callbacks
+    Reanimated runs on the UI runtime; named, aliased and namespace imports
+    resolved.
+  - Evidence: `namespace.bad.tsx` was green under the old rule and fails now;
+    the old rule also flagged `useAnimatedStyle(` itself, which the new one does
+    not. `resolved-outside.good.tsx` stays green.
+  - Commit: `969a43c`
 
-- [ ] OPEN — `verify-i18n-coverage.mjs`
+- [x] PROVEN — `verify-i18n-coverage.mjs`
   - Risk: an English sentence reaches a reader in one of fifteen languages.
   - Invariant: user-facing text comes from the locale files.
   - Reproducible defect: `const deleteLabel = 'Delete account';` passed to a
     component prop.
-  - Protection: local bindings and simple string flows followed to user-facing props.
-  - Evidence: —
-  - Commit: —
+  - Protection: AST; local literal bindings, ternaries and `??` chains followed
+    into user-facing props.
+  - Evidence: `binding.bad.tsx` and `conditional.bad.tsx` were both green under
+    the old rule and fail now; `translated.good.tsx` stays green.
+  - Commit: `7310598`
 
-- [ ] OPEN — `verify-design-contract.mjs`
+- [x] PROVEN — `verify-design-contract.mjs`
   - Risk: a colour that ignores the theme, so light mode or high contrast breaks
     in one corner nobody looks at.
   - Invariant: user-facing colour comes from tokens.
   - Reproducible defect: `rgb(255,255,255)`, `#fff`, `'white'`.
-  - Protection: every literal colour form React Native accepts.
-  - Evidence: —
-  - Commit: —
+  - Protection: `#rgb`…`#rrggbbaa`, `rgb()`, `rgba()`, `hsl()`, `hsla()`, and
+    named colours where a colour is expected — a theme id called `'lime'` is not
+    a paint.
+  - Evidence: `rgb.bad.tsx`, `shorthex.bad.tsx`, `named.bad.tsx` were all green
+    under the old rule and fail now; `token.good.tsx` stays green. Four
+    hand-written `'transparent'` values became tokens.
+  - Commit: `7310598`
 
 ### [ ] OPEN — One release gate
 
