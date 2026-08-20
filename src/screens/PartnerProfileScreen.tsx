@@ -5,6 +5,7 @@ import Animated, { FadeIn, runOnJS, useAnimatedStyle, useSharedValue, withSpring
 
 import { VerifiedBadge } from '../components/VerifiedBadge';
 import { PhotoPager } from '../components/PhotoPager';
+import { backClosesViewer } from '../lib/photoGallery';
 import { BinderIcon, BinderScreenHeader, BinderText, ScreenState } from '../components/ui';
 import type { DiscoveryProfile } from '../lib/discovery';
 import { discoveryDeckPhysics } from '../lib/discoveryDeck';
@@ -40,10 +41,18 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose, in
   const dismissY = useSharedValue(0);
   const dismissThreshold = height * discoveryDeckPhysics.distanceRatio;
 
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
+
   useEffect(() => {
-    const subscription = BackHandler.addEventListener('hardwareBackPress', () => { onClose(); return true; });
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      // One step at a time: out of the full photo first, out of the profile only
+      // when there is no photo open.
+      if (backClosesViewer(viewerIndex)) { setViewerIndex(null); return true; }
+      onClose();
+      return true;
+    });
     return () => subscription.remove();
-  }, [onClose]);
+  }, [onClose, viewerIndex]);
 
   useEffect(() => {
     let active = true;
@@ -63,7 +72,6 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose, in
   // Tapping a photograph opens it on its own, the way every gallery works.
   // Until now a tap did nothing here: the picture was decoration under a
   // profile instead of something you could actually look at.
-  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
 
   const heroHeight = Math.min(theme.layout.contentMaxWidth, width + theme.spacing.x12);
   // Resolved here, not inside the gesture. Calling a plain function from a

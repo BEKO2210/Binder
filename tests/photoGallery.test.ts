@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 import {
-  canAddPhoto, canMakePrimary, canReplacePhoto, canRetryUpload, moveTarget, orderForReplacement,
+  backClosesViewer, canAddPhoto, canMakePrimary, canReplacePhoto, canRetryUpload, moveTarget, orderForReplacement,
 } from '../src/lib/photoGallery.ts';
 
 const free = { busy: false, uploadLocked: false };
@@ -56,4 +57,18 @@ test('replacing runs an upload, so it takes the same lock as adding', () => {
 test('the replacement order still comes from the one module that decides it', () => {
   assert.equal(orderForReplacement(5), 'upload-first');
   assert.equal(orderForReplacement(6), 'remove-first');
+});
+
+test('back leaves the full photo before it leaves the screen behind it', () => {
+  assert.equal(backClosesViewer(0), true);
+  assert.equal(backClosesViewer(3), true);
+  assert.equal(backClosesViewer(null), false);
+
+  // Both screens with a full-photo viewer have to honour it, or back still
+  // costs the whole screen on one of them.
+  for (const screen of ['PartnerProfileScreen', 'ProfileSettingsScreen']) {
+    const source = readFileSync(new URL(`../src/screens/${screen}.tsx`, import.meta.url), 'utf8');
+    assert.match(source, /backClosesViewer\(viewerIndex\)/, `${screen} ignores the viewer on back`);
+    assert.match(source, /setViewerIndex\(null\); return true;|setViewerIndex\(null\);\s*\n\s*return true;/, `${screen} does not close the viewer on back`);
+  }
 });

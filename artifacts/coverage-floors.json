@@ -33,6 +33,7 @@
   "src/lib/motionPolicy.ts": 100,
   "src/lib/onboardingDraft.ts": 100,
   "src/lib/onboardingFlow.ts": 100,
+  "src/lib/photoCrop.ts": 100,
   "src/lib/photoGallery.ts": 100,
   "src/lib/photoPager.ts": 100,
   "src/lib/photoReplacement.ts": 100,

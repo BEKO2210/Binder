@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Image, RefreshControl, Switch, View } from 'react-native';
+import { BackHandler, Image, RefreshControl, Switch, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { PhotoPager } from '../components/PhotoPager';
@@ -10,7 +10,7 @@ import { MotionPressable as Pressable } from '../components/ui';
 import { BinderButton, BinderCard, BinderChip, BinderIcon, BinderIconButton, BinderInput, BinderScreenHeader, BinderText, ScreenState, SectionHeader } from '../components/ui';
 import { pickAndPrepareProfileImage, type PreparedImage } from '../lib/images';
 import { addProfileImage, listMyProfileMedia, removeProfileMedia, reorderProfileMedia, setPrimaryProfileMedia, type GalleryMedia } from '../lib/media';
-import { canAddPhoto, canMakePrimary, canReplacePhoto, canRetryUpload, moveTarget, orderForReplacement } from '../lib/photoGallery';
+import { backClosesViewer, canAddPhoto, canMakePrimary, canReplacePhoto, canRetryUpload, moveTarget, orderForReplacement } from '../lib/photoGallery';
 import { hasErrors, validateDiscovery, validateIdentity } from '../lib/onboardingFlow';
 import { classifyError, withDeadline } from '../lib/reliability';
 import { supabase } from '../lib/supabase';
@@ -57,6 +57,19 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
   const [upload, setUpload] = useState<{ phase: 'preparing' | 'uploading' | 'error'; image: PreparedImage | null; error?: string } | null>(null);
   const uploadLockedRef = useRef(false);
   const [profileErrors, setProfileErrors] = useState<ReturnType<typeof validateIdentity>>({ firstName: undefined, gender: undefined });
+
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
+
+  // Back closes the full photo first. It used to leave the whole screen, so a
+  // look at one photo cost the settings the person was in the middle of.
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (!backClosesViewer(viewerIndex)) return false;
+      setViewerIndex(null);
+      return true;
+    });
+    return () => subscription.remove();
+  }, [viewerIndex]);
 
   useEffect(() => { void load(); }, [userId]);
 
@@ -274,7 +287,6 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
     finally { setBusy(false); }
   }
 
-  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
 
   if (loading) return <ScreenState kind="loading" message={t('profileSettings.states.loading')} />;
 

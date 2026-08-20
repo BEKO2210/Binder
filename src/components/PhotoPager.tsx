@@ -3,6 +3,7 @@ import { Image, View, type DimensionValue } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, type SharedValue, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 
+import { coverCrop } from '../lib/photoCrop';
 import { adjacentPhotoIndex, clampPhotoIndex, nextPhotoPage, photoCounterDurations, photoCounterLabel, photoLoadDeadlineMs, photosToPreload, photoStatusAfter, resistedPhotoTranslation, type PhotoLoadEvent, type PhotoLoadStatus } from '../lib/photoPager';
 import { resolveSpring } from '../lib/motionPolicy';
 import { useBinderHaptics } from '../theme/haptics';
@@ -33,6 +34,10 @@ export function PhotoPager({ photos, name, height = '100%', onOpen, interactive 
   const haptic = useBinderHaptics();
   const [index, setIndex] = useState(() => clampPhotoIndex(initialIndex, photos.length));
   const [width, setWidth] = useState(0);
+  const [boxHeight, setBoxHeight] = useState(0);
+  // What the photo itself measures, reported by the first successful load. A
+  // crop cannot be placed before that is known.
+  const [natural, setNatural] = useState<Record<number, { width: number; height: number }>>({});
   const [status, setStatus] = useState<Record<number, PhotoLoadStatus>>({});
   // Part of the Image's key: a retry has to build a new native view, or it
   // shows the same cached failure.
@@ -122,10 +127,21 @@ export function PhotoPager({ photos, name, height = '100%', onOpen, interactive 
   const counterStyle = useAnimatedStyle(() => ({ opacity: counter.value, transform: [{ scale: 0.94 + counter.value * 0.06 }] }));
   const measured = width > 0;
 
+  // Only cards crop: a full-screen viewer shows the whole photo, so there is
+  // nothing to place.
+  const cropFor = (position: number) => {
+    if (fit !== 'cover') return null;
+    const size = natural[position];
+    if (!size) return null;
+    const crop = coverCrop(size, { width, height: boxHeight });
+    return crop ? { width: crop.width, height: crop.height, transform: [{ translateY: crop.translateY }] } : null;
+  };
+
   const content = (
     <View
       onLayout={(event) => {
         const next = event.nativeEvent.layout.width;
+        setBoxHeight(event.nativeEvent.layout.height);
         setWidth((current) => {
           if (current === next) return current;
           // Keep the visible page pinned when the window changes size.
@@ -141,7 +157,7 @@ export function PhotoPager({ photos, name, height = '100%', onOpen, interactive 
       {measured ? (
         <Animated.View style={[{ flexDirection: 'row', width: width * Math.max(count, 1), height: '100%' }, trackStyle]}>
           {photos.map((photo, position) => (
-            <View key={`${position}-${photo}`} style={{ width, height: '100%', backgroundColor: fit === 'contain' ? theme.colors.canvas : theme.colors.surfaceElevated }}>
+            <View key={`${position}-${photo}`} style={{ width, height: '100%', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', backgroundColor: fit === 'contain' ? theme.colors.canvas : theme.colors.surfaceElevated }}>
               {(status[position] ?? 'pending') === 'failed' ? (
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: theme.spacing.x5, gap: theme.spacing.x3 }}>
                   <BinderText variant="caption" tone="muted" align="center">{t('photoPager.errors.load')}</BinderText>
@@ -156,9 +172,18 @@ export function PhotoPager({ photos, name, height = '100%', onOpen, interactive 
                     accessibilityIgnoresInvertColors
                     source={{ uri: photo }}
                     resizeMode={fit}
-                    onLoad={() => markPhoto(position, 'loaded')}
+                    onLoad={(event) => {
+                      const source = event.nativeEvent?.source;
+                      if (source?.width && source?.height) {
+                        setNatural((current) => (current[position] ? current : { ...current, [position]: { width: source.width, height: source.height } }));
+                      }
+                      markPhoto(position, 'loaded');
+                    }}
                     onError={() => markPhoto(position, 'error')}
-                    style={{ width: '100%', height: '100%' }}
+                    // A card crops, and where it crops decides whether a face
+                    // survives. Until the photo has reported its size the plain
+                    // centred cover is used, which is what this replaces.
+                    style={cropFor(position) ?? { width: '100%', height: '100%' }}
                   />
                   {/* The wait is visible. An empty rectangle reads as a broken
                       profile, and a card nobody can see is still decidable. */}

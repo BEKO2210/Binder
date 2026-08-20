@@ -60,3 +60,12 @@ export function canReplacePhoto(state: GalleryBusy): boolean {
 export function orderForReplacement(count: number): ReplacementOrder {
   return replacementOrder(count);
 }
+
+/**
+ * What the back gesture means while a photo is open full screen: the way out of
+ * the viewer, not out of the profile behind it. Back used to leave both at
+ * once, so a look at one photo cost the whole screen.
+ */
+export function backClosesViewer(viewerIndex: number | null): boolean {
+  return viewerIndex !== null;
+}
