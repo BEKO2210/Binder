@@ -273,7 +273,15 @@ names what is missing instead of rounding up.
     scheme with `autoVerify` off, no `console.log` in `src/`. Three controls
     deliberately not added, each with its reason.
   - Commit: `c4f41e7`
-- [ ] OPEN — Performance regression gates beyond bundle size (cold start, gesture frames, gallery memory)
+- [x] PROVEN — Performance regression gates
+  - Protection: `scripts/performance.mjs` — cold start as the median of five
+    force-stopped launches, frame statistics from `gfxinfo` while Maestro moves
+    the deck and the photo pager, and total PSS after ten photos have been
+    decoded. Budgets are the measured baseline plus a margin for a busier phone.
+  - Evidence: baseline on the Galaxy A15 under Android 16 — 980 ms, 0.61% janky
+    frames of 8851, 338.7 MB. A second run measured 0.66% and 345.8 MB and
+    passed: that is what noise looks like, and a regression looks different.
+  - Commit: `87168f2`
 - [ ] OPEN — Branch coverage floors for the critical modules
 - [ ] OPEN — Controlled decoupling of the four orchestrators
 ### Decided — observability without a new data recipient
