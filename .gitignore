@@ -49,3 +49,6 @@ graphify-out/cache/
 firebase-debug.log
 firebase-debug.*.log
 *-debug.log
+
+# The audit report the gate reads: generated per run, never committed.
+npm-audit.json
