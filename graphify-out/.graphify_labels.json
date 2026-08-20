@@ -95,5 +95,18 @@
   "93": "verify-site-language-switch.mjs",
   "94": "conversationKeyboardPadding",
   "95": "presetChips.test.ts",
-  "96": "discoveryScreenReader.test.ts"
+  "96": "discoveryScreenReader.test.ts",
+  "97": "BinderButton",
+  "98": "header-art.js",
+  "99": "MatchesScreen.tsx",
+  "100": "motionPolicy.ts",
+  "101": "ChatScreen",
+  "102": "chatTimeline.ts",
+  "103": "verify-site-download.mjs",
+  "104": "package.json",
+  "105": "devDependencies",
+  "106": "menuSessionEnd.test.ts",
+  "107": "mediaRemoval.test.ts",
+  "108": "discoveryDecisionOrder.test.ts",
+  "109": "releaseSignatureGate.test.ts"
 }
