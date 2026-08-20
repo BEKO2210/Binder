@@ -1,0 +1,47 @@
+{
+  "commit": "595ac07540781a666dd569129be96b82dc9ff6fc",
+  "treeClean": true,
+  "version": "1.0.5",
+  "versionCode": 102,
+  "builtAt": "2026-08-20T19:49:02.099Z",
+  "node": "v24.11.1",
+  "artefacts": [
+    {
+      "name": "Binder-v1.0.5-vc102.apk",
+      "bytes": 127170330,
+      "sha256": "03d951abddf823eed611287c891962a26da705204019f3ee4d0f2c0495c1fbbf"
+    },
+    {
+      "name": "Binder-v1.0.5-vc102.aab",
+      "bytes": 100718445,
+      "sha256": "2c05db343339c0db8c1cf4983a04e71b30cb70daa68824ebe9df52d09ab1d9f6"
+    },
+    {
+      "name": "Binder-v1.0.5-vc102-mapping.txt",
+      "bytes": 39515198,
+      "sha256": "3a27f3cb8d6e83db0fd43a594ae79d2432a1443de65eb0e8dce1115adee90da1"
+    },
+    {
+      "name": "Binder-v1.0.5-vc102-sbom.cdx.json",
+      "bytes": 401915,
+      "sha256": "5d4935ff1c5b3b52262a629888029c2e5e1fdfc478052fd1104013810d95efaf"
+    }
+  ],
+  "signature": {
+    "sha1": "16dfdf3e283076be74f8a9e6750ec8b82dadd2df",
+    "sha256": "58cfb5c8c2a6bdcb5dfe1fdcd9560d178a191f0b1f056ed774a1ffb89a320ec5"
+  },
+  "dependencies": {
+    "lockfileSha256": "7c32eeb0dabd6c9f2edcfe08530ddcaab4e2737a37aba29b5b188fcadfacd1db",
+    "sbom": {
+      "name": "Binder-v1.0.5-vc102-sbom.cdx.json",
+      "sha256": "5d4935ff1c5b3b52262a629888029c2e5e1fdfc478052fd1104013810d95efaf"
+    }
+  },
+  "qualityGate": {
+    "status": "PASS",
+    "checks": 32,
+    "ranAt": "2026-08-20T19:47:42.814Z",
+    "android": false
+  }
+}

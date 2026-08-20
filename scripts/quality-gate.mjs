@@ -17,17 +17,18 @@
 // release gate records their result rather than running them here.
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const REPORT = 'artifacts/quality-gate.json';
 
 /** Generators first: several checks compare against what these produce. */
-const PREPARE = [
+export const PREPARE = [
   ['brand assets', 'npm', ['run', 'brand:assets']],
   ['site assets', 'npm', ['run', 'site:prepare']],
 ];
 
-const CHECKS = [
+export const CHECKS = [
   ['entrypoint', 'node', ['scripts/verify-entrypoint.mjs']],
   ['pinned toolchain', 'node', ['scripts/verify-pinned-toolchain.mjs']],
   ['no credentials in the index', 'node', ['scripts/verify-no-secrets.mjs']],
@@ -61,13 +62,22 @@ const CHECKS = [
   ['typescript (tests)', 'npm', ['run', 'typecheck:tests']],
   ['unit tests', 'npm', ['test']],
   ['branch coverage floors', 'node', ['scripts/verify-coverage-floors.mjs']],
+  // Last, because it reads the numbers the checks above just proved.
+  ['readme matches its sources', 'node', ['scripts/build-readme.mjs', '--check']],
 ];
 
-const ANDROID_CHECKS = [
+export const ANDROID_CHECKS = [
   ['android prebuild', 'npx', ['expo', 'prebuild', '--platform', 'android', '--no-install', '--clean']],
   ['android bundle', 'npm', ['run', 'bundlecheck']],
   ['export size budget', 'node', ['scripts/report-bundle-size.mjs']],
 ];
+
+// scripts/build-readme.mjs imports this list so the README can describe the
+// gate that actually runs. Importing must not run it.
+const invokedDirectly = process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (!invokedDirectly) {
+  // Nothing else to do: the lists above are the export.
+} else {
 
 const withAndroid = process.argv.includes('--android');
 const plan = [...CHECKS, ...(withAndroid ? ANDROID_CHECKS : [])];
@@ -112,3 +122,5 @@ for (const result of results) console.log(`  ${result.status === 'PASS' ? 'ok  '
 console.log(`\n${results.length} checks, ${failed.length} failed. Report: ${REPORT}`);
 
 if (failed.length > 0) process.exit(1);
+
+}

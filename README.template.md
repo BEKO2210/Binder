@@ -7,7 +7,7 @@
   <a href="https://github.com/BEKO2210/Binder/actions/workflows/database-tests.yml"><img src="https://github.com/BEKO2210/Binder/actions/workflows/database-tests.yml/badge.svg" alt="Database Tests"></a>
   <img src="https://img.shields.io/badge/price-no%20paid%20tier-C7FF4A" alt="No paid tier">
   <img src="https://img.shields.io/badge/audience-18%2B-critical" alt="18+">
-  <img src="https://img.shields.io/badge/android-1.0.5-3DDC84" alt="Android 1.0.5">
+  <img src="https://img.shields.io/badge/android-{{androidBadgeVersion}}-3DDC84" alt="Android {{version}}">
 </p>
 
 **Binder is dating with one rule: both people choose each other before a conversation can begin.** No paywall, no blurred likes, no boosts, no ads, no data brokers — one free product, built like infrastructure.
@@ -35,19 +35,19 @@
 | Chat | Inverted timeline pinned to the newest message, grouped bubbles, day separators, idempotent send retry, voice messages up to one minute |
 | Profiles | Six moderated photos, full-photo viewer, optional voice intro, partner profile fed strictly by server-side visibility |
 | Push | Expo/FCM v1 pipeline with outbox, per-device deliveries, tickets and receipts, bounded retry, dead-letter state, quiet hours enforced server-side |
-| Languages | 15 bundled languages, 1078 keys each, following the device and overridable in the app |
+| Languages | {{languages}} bundled languages, {{localeKeys}} keys each, following the device and overridable in the app |
 | Legal | In-app Impressum and policies, public [policy site](https://beko2210.github.io/Binder/) incl. [child-safety standards](https://beko2210.github.io/Binder/safety-standards.html) |
 
 ## Engineering proof
 
 **Automated, on every push**
 
-- 274 node tests over pure product logic — deck physics, chat timeline shaping, reliability classification, dial geometry, unsent-message queue, design-token contrast in both schemes
-- 391 pgTAP assertions in 18 suites across identity, matching, conversation, safety, moderation and push, replayed from an empty database
+- {{nodeTests}} node tests over pure product logic — deck physics, chat timeline shaping, reliability classification, dial geometry, unsent-message queue, design-token contrast in both schemes
+- {{databaseAssertions}} pgTAP assertions in {{databaseSuites}} suites across identity, matching, conversation, safety, moderation and push, replayed from an empty database
 - Concurrency suites: reciprocal likes, send-versus-unmatch races, sender-wide rate limits, gallery races, dispatcher claims
-- One release gate with 34 checks — the same list for CI, for the production workflow and for a local release build:
+- One release gate with {{gateChecks}} checks — the same list for CI, for the production workflow and for a local release build:
 
-  `entrypoint` · `pinned toolchain` · `no credentials in the index` · `guards catch their own fixtures` · `native branding` · `public site` · `mail templates` · `site language page` · `site matches templates` · `site language switch` · `site download` · `data safety declaration` · `admin authorization` · `safety contract` · `beta contract` · `visual system` · `settings contract` · `media path` · `push and communication` · `design contract` · `worklet contract` · `request deadlines` · `locale registry` · `localization coverage` · `push copy` · `lint (behaviour rules)` · `typescript (app)` · `typescript (tests)` · `unit tests` · `branch coverage floors` · `readme matches its sources` · `android prebuild` · `android bundle` · `export size budget`
+  {{gateList}}
 
 **On real devices, because a screenshot or it did not happen**
 
@@ -63,24 +63,19 @@ Every path above was walked on the 1.0 build, minification included.
 
 ## Stack
 
-Expo SDK 57.0.8 / React Native 0.86.2 (Android-first) · Supabase (Postgres 17, Auth, Storage, Realtime, Edge Functions) · Expo Push + FCM v1 · Skia and Reanimated for motion · GitHub Actions with mandatory gates · R8 minification with the mapping file inside the AAB.
+Expo SDK {{expo}} / React Native {{reactNative}} (Android-first) · Supabase (Postgres 17, Auth, Storage, Realtime, Edge Functions) · Expo Push + FCM v1 · Skia and Reanimated for motion · GitHub Actions with mandatory gates · R8 minification with the mapping file inside the AAB.
 
 ## Working on it
 
 | Command | What it runs |
 |---|---|
-| `npm run start` | `expo start` |
-| `npm run typecheck` | `tsc --noEmit` |
-| `npm run test` | `node --experimental-strip-types --test 'tests/*.test.ts'` |
-| `npm run lint` | `eslint src --max-warnings=9999` |
-| `npm run gate` | `node scripts/quality-gate.mjs` |
-| `npm run release` | `node scripts/release-build.mjs` |
+{{commandRows}}
 
 `npm run gate` is the same list CI runs, so a green terminal and a green badge
-mean the same thing. Workflows: `ci.yml` · `database-tests.yml` · `eas-preview-build.yml` · `eas-production-build.yml` · `pages.yml` · `scheduled-health.yml` · `security.yml` · `site-i18n.yml`.
+mean the same thing. Workflows: {{workflows}}.
 
-The repository is 45 migrations, 63 modules under
-`src/lib`, and 15 languages deep. This README is generated by
+The repository is {{migrations}} migrations, {{libModules}} modules under
+`src/lib`, and {{languages}} languages deep. This README is generated by
 `node scripts/build-readme.mjs` from `README.template.md` — edit the template,
 never README.md, and the gate refuses a README that has drifted.
 
