@@ -46,6 +46,7 @@ entschieden ist, wohin sie gehört.
 | `profiles` | `first_name` | Personenbezogen · Name |
 | `profiles` | `gender`, `interests`, `bio` | Personenbezogen · Andere Angaben (Geschlecht zusammen mit `interested_in` außerdem: sexuelle Orientierung) |
 | `profiles` | `spirituality` | Personenbezogen · Politische oder religiöse Ansichten (Art. 9 DSGVO) |
+| `profiles` | `zodiac_public` | App-Aktivität · App-Einstellungen (Schalter: Sternzeichen auf dem Profil zeigen. Das Sternzeichen selbst wird aus dem Geburtsdatum berechnet und nie gespeichert.) |
 | `profiles` | `height_cm`, `smoking`, `drinking`, `drugs`, `activity`, `diet`, `children_has`, `children_wants`, `car` | Personenbezogen · Andere Angaben (Lebensstil, freiwillig, feste Auswahl) |
 | `user_private` | `birth_date` | Personenbezogen · Andere Angaben (Altersnachweis, wird nie an andere Nutzer gegeben) |
 | `user_private` | `location` | Standort · Genauer Standort (andere sehen nur gerundete Kilometer) |
