@@ -1,0 +1,86 @@
+{
+  "commit": "595ac07540781a666dd569129be96b82dc9ff6fc",
+  "version": "1.0.5",
+  "versionCode": 102,
+  "artifactSha256": "2c05db343339c0db8c1cf4983a04e71b30cb70daa68824ebe9df52d09ab1d9f6",
+  "quality": "PASS",
+  "database": "INCOMPLETE",
+  "security": "PASS",
+  "e2e": "INCOMPLETE",
+  "performance": "PASS",
+  "signature": "PASS",
+  "device": "PASS",
+  "answers": [
+    {
+      "name": "quality gate",
+      "verdict": "PASS",
+      "detail": "33 checks at 2026-08-20T20:15:10.867Z"
+    },
+    {
+      "name": "release artefacts hashed",
+      "verdict": "PASS",
+      "detail": "4 artefacts"
+    },
+    {
+      "name": "signature verified",
+      "verdict": "PASS",
+      "detail": "16dfdf3e283076be74f8a9e6750ec8b82dadd2df"
+    },
+    {
+      "name": "mapping kept",
+      "verdict": "PASS",
+      "detail": "R8 mapping for this build"
+    },
+    {
+      "name": "SBOM produced",
+      "verdict": "PASS",
+      "detail": "Binder-v1.0.5-vc102-sbom.cdx.json"
+    },
+    {
+      "name": "dependency lock recorded",
+      "verdict": "PASS",
+      "detail": "package-lock.json hash"
+    },
+    {
+      "name": "tree clean at build time",
+      "verdict": "PASS",
+      "detail": "no uncommitted changes"
+    },
+    {
+      "name": "database suites",
+      "verdict": "STALE",
+      "detail": "PASS but for 89a477bc"
+    },
+    {
+      "name": "black-box journeys",
+      "verdict": "PASS",
+      "detail": "PASS at 2026-08-20T20:05:06.876Z"
+    },
+    {
+      "name": "offline and kill journey",
+      "verdict": "STALE",
+      "detail": "PASS but for 89a477bc"
+    },
+    {
+      "name": "export size budget",
+      "verdict": "PASS",
+      "detail": "5.18 MiB JS"
+    },
+    {
+      "name": "device performance",
+      "verdict": "PASS",
+      "detail": "986 ms cold start, 0.31% janky, 327.6 MB"
+    },
+    {
+      "name": "branch coverage floors",
+      "verdict": "PASS",
+      "detail": "floors recorded for src/lib"
+    },
+    {
+      "name": "device evidence",
+      "verdict": "PASS",
+      "detail": "PASS at 2026-08-20T20:05:07.562Z"
+    }
+  ],
+  "verdict": "NOT READY"
+}
