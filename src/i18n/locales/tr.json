@@ -189,12 +189,17 @@
     },
     "accessibility": {
       "close": "Tam profili kapat",
-      "photosReviewed": "Fotoğraflar Keşfet bölümünde görünmeden önce incelenir"
+      "photosReviewed": "Fotoğraflar Keşfet bölümünde görünmeden önce incelenir",
+      "closePhoto": "Fotoğrafı kapat"
     },
     "loading": "Profil açılıyor…",
     "photosReviewedOne": "Fotoğraf incelendi",
     "photosReviewedOther": "Fotoğraflar incelendi",
-    "away": "{distance} km uzakta"
+    "away": "{distance} km uzakta",
+    "gallery": {
+      "photoOf": "Fotoğraf {current} / {total}",
+      "photo": "Fotoğraf"
+    }
   },
   "discovery": {
     "errors": {

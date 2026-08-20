@@ -60,6 +60,11 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose, in
     return () => { active = false; };
   }, [initialProfile, userId]);
 
+  // Tapping a photograph opens it on its own, the way every gallery works.
+  // Until now a tap did nothing here: the picture was decoration under a
+  // profile instead of something you could actually look at.
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
+
   const heroHeight = Math.min(theme.layout.contentMaxWidth, width + theme.spacing.x12);
   // Resolved here, not inside the gesture. Calling a plain function from a
   // worklet kills the process — the spring-back branch did exactly that, which
@@ -84,6 +89,31 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose, in
       } else dismissY.value = withSpring(0, dismissSpring);
     });
 
+  if (profile && viewerIndex !== null && profile.photoUrls.length > 0) {
+    const safeIndex = Math.min(Math.max(viewerIndex, 0), profile.photoUrls.length - 1);
+    return (
+      <View style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
+        <BinderScreenHeader
+          title={profile.photoUrls.length > 1 ? t('partnerProfile.gallery.photoOf', { current: formatCount(safeIndex + 1, locale), total: formatCount(profile.photoUrls.length, locale) }) : t('partnerProfile.gallery.photo')}
+          leading={{ icon: 'close', accessibilityLabel: t('partnerProfile.accessibility.closePhoto'), onPress: () => setViewerIndex(null) }}
+        />
+        <PhotoPager
+          photos={profile.photoUrls}
+          name={profile.name}
+          height="100%"
+          fit="contain"
+          swipeable
+          initialIndex={safeIndex}
+          onPageChange={setViewerIndex}
+        />
+        {/* One photograph, on its own: the round mark, and the singular. */}
+        <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, bottom: theme.spacing.x8, alignItems: 'center' }}>
+          <VerifiedBadge onMedia mark="disc" label={t('partnerProfile.photosReviewedOne')} accessibilityLabel={t('partnerProfile.photosReviewedOne')} />
+        </View>
+      </View>
+    );
+  }
+
   return (
     <GestureDetector gesture={dismissGesture}>
       <Animated.View style={[{ flex: 1, backgroundColor: theme.colors.canvas }, dismissStyle]}>
@@ -91,7 +121,7 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose, in
         {error ? <ScreenState kind="error" icon="retry" title={t('partnerProfile.errors.title')} message={error} actionLabel={t('partnerProfile.actions.back')} onAction={onClose} /> : !profile ? <ScreenState kind="loading" message={t('partnerProfile.loading')} /> : (
           <Animated.View entering={reduceMotion ? undefined : FadeIn.duration(theme.motion.standard)} style={{ flex: 1 }}>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: theme.spacing.x12 }}>
-              {profile.photoUrls.length > 0 ? <PhotoPager photos={profile.photoUrls} name={profile.name} height={heroHeight} swipeable /> : (
+              {profile.photoUrls.length > 0 ? <PhotoPager photos={profile.photoUrls} name={profile.name} height={heroHeight} swipeable onOpen={(index) => setViewerIndex(index)} /> : (
                 <View style={{ height: heroHeight, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.surfaceElevated }}><BinderText variant="heading" tone="accent">{(profile.name || fallbackName).slice(0, 1)}</BinderText></View>
               )}
               <View style={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x5 }}>

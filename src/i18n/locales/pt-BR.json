@@ -189,12 +189,17 @@
     },
     "accessibility": {
       "close": "Fechar perfil completo",
-      "photosReviewed": "As fotos são analisadas antes de aparecerem em Descobrir"
+      "photosReviewed": "As fotos são analisadas antes de aparecerem em Descobrir",
+      "closePhoto": "Fechar foto"
     },
     "loading": "Abrindo perfil…",
     "photosReviewedOne": "Foto analisada",
     "photosReviewedOther": "Fotos analisadas",
-    "away": "A {distance} km de distância"
+    "away": "A {distance} km de distância",
+    "gallery": {
+      "photoOf": "Foto {current} de {total}",
+      "photo": "Foto"
+    }
   },
   "discovery": {
     "errors": {

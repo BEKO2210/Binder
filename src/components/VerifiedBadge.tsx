@@ -17,9 +17,16 @@ type Props = {
   accessibilityLabel: string;
   /** On a photograph the badge brings its own ground; on a surface it borrows one. */
   onMedia?: boolean;
+  /**
+   * Two marks for two places. The overview — a card standing for a whole
+   * gallery — wears the shield, which is what the promise is about. A single
+   * photograph open on its own gets the round tick: it is about this one
+   * picture, and the round form reads at a glance over any image.
+   */
+  mark?: 'shield' | 'disc';
 };
 
-export function VerifiedBadge({ label, accessibilityLabel, onMedia = false }: Props) {
+export function VerifiedBadge({ label, accessibilityLabel, onMedia = false, mark = 'shield' }: Props) {
   const { theme } = useBinderTheme();
   const size = theme.spacing.x6;
 
@@ -40,13 +47,18 @@ export function VerifiedBadge({ label, accessibilityLabel, onMedia = false }: Pr
         backgroundColor: onMedia ? theme.colors.scrim : theme.colors.surfaceElevated,
       }}
     >
-      {/* A filled disc, not an outlined shield: at 24px an outline leaves the
-          tick sitting on whatever is behind the badge, and on a photograph
-          that is nothing you control. Solid accent with the tick in the colour
-          that reads on it — the same pairing as the primary button. */}
-      <View style={{ width: size, height: size, borderRadius: theme.radii.pill, backgroundColor: theme.accent.accent, alignItems: 'center', justifyContent: 'center' }}>
-        <BinderIcon name="check" size={Math.round(size * 0.62)} color={theme.accent.foreground} />
-      </View>
+      {/* Both marks are solid: at 24px an outline leaves the tick sitting on
+          whatever is behind the badge, and on a photograph that is nothing
+          anybody controls. */}
+      {mark === 'shield' ? (
+        <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+          <BinderIcon name="safety" size={size} color={theme.accent.accent} />
+        </View>
+      ) : (
+        <View style={{ width: size, height: size, borderRadius: theme.radii.pill, backgroundColor: theme.accent.accent, alignItems: 'center', justifyContent: 'center' }}>
+          <BinderIcon name="check" size={Math.round(size * 0.62)} color={theme.accent.foreground} />
+        </View>
+      )}
       <BinderText variant="caption" tone={onMedia ? 'primary' : 'secondary'}>{label}</BinderText>
     </View>
   );

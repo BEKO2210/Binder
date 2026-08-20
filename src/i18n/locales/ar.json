@@ -189,12 +189,17 @@
     },
     "accessibility": {
       "close": "إغلاق الملف الشخصي الكامل",
-      "photosReviewed": "تتم مراجعة الصور قبل ظهورها في اكتشف"
+      "photosReviewed": "تتم مراجعة الصور قبل ظهورها في اكتشف",
+      "closePhoto": "إغلاق الصورة"
     },
     "loading": "جارٍ فتح الملف الشخصي…",
     "photosReviewedOne": "تمت مراجعة الصورة",
     "photosReviewedOther": "تمت مراجعة الصور",
-    "away": "يبعد {distance} كم"
+    "away": "يبعد {distance} كم",
+    "gallery": {
+      "photoOf": "صورة {current} من {total}",
+      "photo": "صورة"
+    }
   },
   "discovery": {
     "errors": {

@@ -189,12 +189,17 @@
     },
     "accessibility": {
       "close": "पूरी प्रोफ़ाइल बंद करें",
-      "photosReviewed": "खोजें में दिखने से पहले फ़ोटो की समीक्षा की जाती है"
+      "photosReviewed": "खोजें में दिखने से पहले फ़ोटो की समीक्षा की जाती है",
+      "closePhoto": "फ़ोटो बंद करें"
     },
     "loading": "प्रोफ़ाइल खोली जा रही है…",
     "photosReviewedOne": "फ़ोटो की समीक्षा की गई",
     "photosReviewedOther": "फ़ोटो की समीक्षा की गई",
-    "away": "{distance} किमी दूर"
+    "away": "{distance} किमी दूर",
+    "gallery": {
+      "photoOf": "फ़ोटो {current} / {total}",
+      "photo": "फ़ोटो"
+    }
   },
   "discovery": {
     "errors": {

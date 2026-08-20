@@ -267,7 +267,7 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
             whole set, says it in the plural. */}
         {media[safeIndex]?.moderationStatus === 'approved' ? (
           <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, bottom: theme.spacing.x8, alignItems: 'center' }}>
-            <VerifiedBadge onMedia label={t('profileSettings.photos.reviewedOne')} accessibilityLabel={t('profileSettings.photos.reviewedOne')} />
+            <VerifiedBadge onMedia mark="disc" label={t('profileSettings.photos.reviewedOne')} accessibilityLabel={t('profileSettings.photos.reviewedOne')} />
           </View>
         ) : null}
       </View>

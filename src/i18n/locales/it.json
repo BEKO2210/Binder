@@ -189,12 +189,17 @@
     },
     "accessibility": {
       "close": "Chiudi il profilo completo",
-      "photosReviewed": "Le foto vengono verificate prima di apparire in Scopri"
+      "photosReviewed": "Le foto vengono verificate prima di apparire in Scopri",
+      "closePhoto": "Chiudi foto"
     },
     "loading": "Apertura del profilo…",
     "photosReviewedOne": "Foto verificata",
     "photosReviewedOther": "Foto verificate",
-    "away": "A {distance} km di distanza"
+    "away": "A {distance} km di distanza",
+    "gallery": {
+      "photoOf": "Foto {current} di {total}",
+      "photo": "Foto"
+    }
   },
   "discovery": {
     "errors": {

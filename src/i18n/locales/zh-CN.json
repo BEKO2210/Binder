@@ -189,12 +189,17 @@
     },
     "accessibility": {
       "close": "关闭完整个人资料",
-      "photosReviewed": "照片通过审核后才会出现在发现中"
+      "photosReviewed": "照片通过审核后才会出现在发现中",
+      "closePhoto": "关闭照片"
     },
     "loading": "正在打开个人资料…",
     "photosReviewedOne": "照片已审核",
     "photosReviewedOther": "照片已审核",
-    "away": "距离 {distance} 公里"
+    "away": "距离 {distance} 公里",
+    "gallery": {
+      "photoOf": "第 {current} / {total} 张照片",
+      "photo": "照片"
+    }
   },
   "discovery": {
     "errors": {

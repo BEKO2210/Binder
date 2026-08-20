@@ -189,12 +189,17 @@
     },
     "accessibility": {
       "close": "Zamknij pełny profil",
-      "photosReviewed": "Zdjęcia są sprawdzane, zanim pojawią się w Odkrywaj"
+      "photosReviewed": "Zdjęcia są sprawdzane, zanim pojawią się w Odkrywaj",
+      "closePhoto": "Zamknij zdjęcie"
     },
     "loading": "Otwieranie profilu…",
     "photosReviewedOne": "Zdjęcie sprawdzone",
     "photosReviewedOther": "Zdjęcia sprawdzone",
-    "away": "{distance} km stąd"
+    "away": "{distance} km stąd",
+    "gallery": {
+      "photoOf": "Zdjęcie {current} z {total}",
+      "photo": "Zdjęcie"
+    }
   },
   "discovery": {
     "errors": {
