@@ -33,6 +33,10 @@ jobs:
       # over HTTP rather than assumed.
       - name: Check what the API actually exposes
         run: |
+          # `db start` brings up Postgres alone, and a later `start` reports
+          # "already running" while Kong, PostgREST and Auth stay down — which
+          # is why this asked an API that was not there.
+          supabase stop --no-backup >/dev/null 2>&1 || true
           supabase start >/dev/null
           node scripts/verify-api-surface.mjs
       - name: Stress atomic mutual matches
