@@ -576,6 +576,11 @@
       "eyebrow": "PRÉFÉRENCES DE DÉCOUVERTE",
       "title": "Zone de découverte",
       "copy": "Détermine qui peut apparaître dans votre sélection Découvrir."
+    },
+    "zodiac": {
+      "title": "Ton signe astrologique",
+      "label": "Afficher ton signe sur ton profil",
+      "copy": "Il est calculé à partir de ta date de naissance. Désactivé, il disparaît de ton profil et une recherche par signe ne te trouve plus."
     }
   },
   "reliability": {

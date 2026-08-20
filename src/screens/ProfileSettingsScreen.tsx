@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Image, RefreshControl, View } from 'react-native';
+import { Image, RefreshControl, Switch, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { PhotoPager } from '../components/PhotoPager';
@@ -43,6 +43,12 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
   const [minAge, setMinAge] = useState(18);
   const [maxAge, setMaxAge] = useState(45);
   const [distance, setDistance] = useState(50);
+  // The star sign is derived from the birth date, which the app otherwise never
+  // gives out. Together with the age it narrows that date to the thirty days of
+  // the sign, so publishing it is the person's decision — on by default,
+  // because that is what every profile already looked like.
+  const [zodiacPublic, setZodiacPublic] = useState(true);
+  const [zodiacBusy, setZodiacBusy] = useState(false);
   const [media, setMedia] = useState<GalleryMedia[]>([]);
   const [attributes, setAttributes] = useState<ProfileAttributes>(EMPTY_ATTRIBUTES);
   // The delta baseline: what the server currently holds. Sending only what
@@ -65,7 +71,7 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
     setMessage('');
     try {
       const [profile, preferences, gallery] = await Promise.all([
-        supabase.from('profiles').select('first_name,bio,gender,interests,height_cm,smoking,drinking,drugs,activity,diet,spirituality,children_has,children_wants,car').eq('user_id', userId).single(),
+        supabase.from('profiles').select('first_name,bio,gender,interests,height_cm,smoking,drinking,drugs,activity,diet,spirituality,children_has,children_wants,car,zodiac_public').eq('user_id', userId).single(),
         supabase.from('user_preferences').select('interested_in,min_age,max_age,max_distance_km').eq('user_id', userId).single(),
         listMyProfileMedia(),
       ]);
@@ -82,9 +88,27 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
       setMinAge(preferences.data.min_age);
       setMaxAge(preferences.data.max_age);
       setDistance(preferences.data.max_distance_km);
+      setZodiacPublic(profile.data.zodiac_public ?? true);
       setMedia(gallery);
     } catch (error) { setMessageKind('error'); setMessage(errorMessage(error, t('profileSettings.errors.load'))); }
     finally { setLoading(false); }
+  }
+
+  async function toggleZodiac(next: boolean) {
+    const previous = zodiacPublic;
+    setZodiacPublic(next);
+    setZodiacBusy(true);
+    setMessage('');
+    try {
+      const { error } = await withDeadline(supabase.rpc('set_my_zodiac_visibility', { p_public: next }), PROFILE_SETTINGS_DEADLINE_MS);
+      if (error) throw error;
+    } catch (error) {
+      // A switch that says one thing while the server holds another is worse
+      // than a switch that refuses: it goes back and says why.
+      setZodiacPublic(previous);
+      setMessageKind('error');
+      setMessage(errorMessage(error, t('profileSettings.errors.save')));
+    } finally { setZodiacBusy(false); }
   }
 
   async function refreshGallery() {
@@ -291,6 +315,31 @@ export default function ProfileSettingsScreen({ userId, onClose, onSessionExpire
       </View>
       <BinderCard style={{ marginTop: theme.spacing.x5 }}>
         <VoiceIntroEditor userId={userId} />
+      </BinderCard>
+
+      {/* The sign is computed from the birth date, which nobody else ever
+          gets. Age plus sign narrows that date to thirty days, so this is a
+          decision, not a detail — and the copy says what turning it off costs:
+          nobody can search for the sign either. */}
+      <BinderCard style={{ marginTop: theme.spacing.x5 }}>
+        <BinderText variant="title">{t('profileSettings.zodiac.title')}</BinderText>
+        <View style={{ minHeight: theme.layout.controlHeight + theme.spacing.x1, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3, marginTop: theme.spacing.x3, opacity: zodiacBusy ? theme.feedback.disabledOpacity : 1 }}>
+          <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ flex: 1 }}>
+            <BinderText variant="label">{t('profileSettings.zodiac.label')}</BinderText>
+            <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1 }}>{t('profileSettings.zodiac.copy')}</BinderText>
+          </View>
+          <Switch
+            accessibilityRole="switch"
+            accessibilityLabel={t('profileSettings.zodiac.label')}
+            accessibilityHint={t('profileSettings.zodiac.copy')}
+            accessibilityState={{ checked: zodiacPublic, disabled: zodiacBusy }}
+            disabled={zodiacBusy}
+            value={zodiacPublic}
+            onValueChange={(next) => void toggleZodiac(next)}
+            trackColor={{ false: theme.colors.borderStrong, true: theme.accent.accent }}
+            thumbColor={theme.colors.textPrimary}
+          />
+        </View>
       </BinderCard>
 
       <BinderCard style={{ gap: theme.spacing.x5, marginTop: theme.spacing.x8 }}>

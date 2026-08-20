@@ -576,6 +576,11 @@
       "eyebrow": "DISCOVERY 환경설정",
       "title": "Discovery 범위",
       "copy": "Discovery 카드에 누가 표시될 수 있는지 결정합니다."
+    },
+    "zodiac": {
+      "title": "별자리",
+      "label": "프로필에 별자리 표시",
+      "copy": "생년월일로 계산됩니다. 끄면 프로필에서 사라지고 별자리 검색에도 나타나지 않습니다."
     }
   },
   "reliability": {

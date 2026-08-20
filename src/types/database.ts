@@ -334,6 +334,7 @@ export type Database = {
         Row: {
           activity: string | null
           car: string | null
+          zodiac_public: boolean
           children_has: string | null
           children_wants: string | null
           diet: string | null
@@ -354,6 +355,7 @@ export type Database = {
         Insert: {
           activity?: string | null
           car?: string | null
+          zodiac_public?: boolean
           children_has?: string | null
           children_wants?: string | null
           diet?: string | null
@@ -374,6 +376,7 @@ export type Database = {
         Update: {
           activity?: string | null
           car?: string | null
+          zodiac_public?: boolean
           children_has?: string | null
           children_wants?: string | null
           diet?: string | null
@@ -717,6 +720,7 @@ export type Database = {
       unmatch: { Args: { p_match_id: string }; Returns: boolean }
       unregister_push_token: { Args: { p_token: string }; Returns: undefined }
       unregister_push_installation: { Args: { p_installation_id: string }; Returns: undefined }
+      set_my_zodiac_visibility: { Args: { p_public: boolean }; Returns: boolean }
       update_my_profile: {
         Args: {
           p_attributes?: Json | null

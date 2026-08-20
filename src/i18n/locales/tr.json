@@ -576,6 +576,11 @@
       "eyebrow": "KEŞİF TERCİHLERİ",
       "title": "Keşif aralığı",
       "copy": "Keşfet listenizde kimlerin görünebileceğini belirler."
+    },
+    "zodiac": {
+      "title": "Burcun",
+      "label": "Burcunu profilinde göster",
+      "copy": "Doğum tarihinden hesaplanır. Kapalıyken profilinde görünmez ve burca göre aramada da çıkmazsın."
     }
   },
   "reliability": {

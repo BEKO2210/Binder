@@ -576,6 +576,11 @@
       "eyebrow": "DISCOVERY PREFERENCES",
       "title": "Discovery range",
       "copy": "Controls who can appear in your Discovery deck."
+    },
+    "zodiac": {
+      "title": "Your star sign",
+      "label": "Show your star sign on your profile",
+      "copy": "It is worked out from your birth date. Off means it is gone from your profile, and a search by sign will not find you."
     }
   },
   "reliability": {

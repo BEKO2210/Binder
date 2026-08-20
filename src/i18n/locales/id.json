@@ -576,6 +576,11 @@
       "eyebrow": "PREFERENSI DISCOVERY",
       "title": "Rentang Discovery",
       "copy": "Mengatur siapa yang dapat muncul di pilihan Discovery Anda."
+    },
+    "zodiac": {
+      "title": "Zodiakmu",
+      "label": "Tampilkan zodiak di profil",
+      "copy": "Dihitung dari tanggal lahirmu. Jika dimatikan, zodiak hilang dari profil dan pencarian berdasarkan zodiak tidak menemukanmu."
     }
   },
   "reliability": {

@@ -576,6 +576,11 @@
       "eyebrow": "PREFERENZE DI SCOPERTA",
       "title": "Intervallo di scoperta",
       "copy": "Controlla chi può comparire nella tua selezione Scopri."
+    },
+    "zodiac": {
+      "title": "Il tuo segno",
+      "label": "Mostra il segno sul profilo",
+      "copy": "Viene calcolato dalla tua data di nascita. Disattivato sparisce dal profilo e chi cerca per segno non ti trova."
     }
   },
   "reliability": {

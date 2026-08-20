@@ -576,6 +576,11 @@
       "eyebrow": "ONTDEKKINGSVOORKEUREN",
       "title": "Ontdekkingsbereik",
       "copy": "Bepaalt wie in je Ontdekken-selectie kan verschijnen."
+    },
+    "zodiac": {
+      "title": "Je sterrenbeeld",
+      "label": "Sterrenbeeld op je profiel tonen",
+      "copy": "Wordt berekend uit je geboortedatum. Uit betekent: het staat niet meer op je profiel en zoeken op sterrenbeeld vindt je niet."
     }
   },
   "reliability": {

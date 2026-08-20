@@ -576,6 +576,11 @@
       "eyebrow": "DISCOVERY-EINSTELLUNGEN",
       "title": "Bereich „Entdecken“",
       "copy": "Legt fest, wer in deinem Stapel unter „Entdecken“ erscheinen kann."
+    },
+    "zodiac": {
+      "title": "Dein Sternzeichen",
+      "label": "Sternzeichen auf dem Profil zeigen",
+      "copy": "Wird aus deinem Geburtsdatum berechnet. Aus heißt: es steht nicht mehr auf deinem Profil, und wer nach Sternzeichen sucht, findet dich nicht darüber."
     }
   },
   "reliability": {

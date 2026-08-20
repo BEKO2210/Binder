@@ -576,6 +576,11 @@
       "eyebrow": "PREFERENCJE ODKRYWANIA",
       "title": "Zakres odkrywania",
       "copy": "Określa, kto może pojawić się w Twojej talii Odkrywaj."
+    },
+    "zodiac": {
+      "title": "Twój znak zodiaku",
+      "label": "Pokazuj znak zodiaku w profilu",
+      "copy": "Wyliczany z daty urodzenia. Wyłączony znika z profilu, a wyszukiwanie po znaku Cię nie znajdzie."
     }
   },
   "reliability": {

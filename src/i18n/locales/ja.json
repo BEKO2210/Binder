@@ -576,6 +576,11 @@
       "eyebrow": "DISCOVERY設定",
       "title": "Discoveryの範囲",
       "copy": "Discoveryの候補に誰が表示されるかを設定します。"
+    },
+    "zodiac": {
+      "title": "星座",
+      "label": "プロフィールに星座を表示",
+      "copy": "生年月日から計算されます。オフにするとプロフィールから消え、星座での検索でも表示されません。"
     }
   },
   "reliability": {

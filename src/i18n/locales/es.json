@@ -576,6 +576,11 @@
       "eyebrow": "PREFERENCIAS DE DESCUBRIMIENTO",
       "title": "Rango de descubrimiento",
       "copy": "Controla quién puede aparecer en tu selección de Descubrir."
+    },
+    "zodiac": {
+      "title": "Tu signo",
+      "label": "Mostrar tu signo en el perfil",
+      "copy": "Se calcula a partir de tu fecha de nacimiento. Si lo desactivas, desaparece de tu perfil y nadie te encuentra buscando por signo."
     }
   },
   "reliability": {
