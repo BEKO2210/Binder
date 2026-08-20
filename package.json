@@ -40,7 +40,8 @@
     "verify:i18n": "node scripts/verify-i18n.mjs",
     "i18n:coverage": "node scripts/verify-i18n-coverage.mjs",
     "verify:i18n-coverage": "node scripts/verify-i18n-coverage.mjs",
-    "site:i18n": "node scripts/build-site-i18n.mjs"
+    "site:i18n": "node scripts/build-site-i18n.mjs",
+    "verify:site-download": "node scripts/verify-site-download.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/manrope": "0.4.2",

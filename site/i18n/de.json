@@ -423,5 +423,19 @@
   "impressum.child-safety": "Kinderschutz",
   "impressum.delete-account": "Konto löschen",
   "impressum.impressum-2": "Impressum",
-  "impressum.contact": "Kontakt"
+  "impressum.contact": "Kontakt",
+  "home.download-kicker": "Direkter Download",
+  "home.download-title": "Binder ohne Store installieren.",
+  "home.download-copy": "Das signierte Paket — derselbe Build, der zu Google Play geht — direkt von dieser Seite.",
+  "home.download-meta-template": "{version} · {size} MB · {date}",
+  "home.download-loading": "Neuester Build wird gesucht…",
+  "home.download-unavailable": "Zurzeit ist kein direkter Download verfügbar.",
+  "home.download-button": "APK herunterladen",
+  "home.download-fallback-link": "Zur Release-Seite",
+  "home.download-note": "Android fragt einmal, ob Installationen aus dieser Quelle erlaubt sind. Das Paket ist mit demselben Schlüssel signiert wie die Play-Store-Version.",
+  "home.download-warning-title": "Vor der Installation lesen",
+  "home.download-warning-play": "Wenn Binder aus dem Google Play Store auf diesem Handy ist, deinstalliere es zuerst. Android installiert kein Paket über eine Version aus einer anderen Quelle.",
+  "home.download-warning-updates": "Danach wird diese App nur noch hier von Hand aktualisiert. Google Play aktualisiert sie nicht — für jede neue Version zurück auf diese Seite.",
+  "home.download-warning-confirm": "Verstanden, herunterladen",
+  "home.download-warning-cancel": "Abbrechen"
 }

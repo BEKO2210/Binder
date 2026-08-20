@@ -422,5 +422,19 @@
   "impressum.child-safety": "Child safety",
   "impressum.delete-account": "Delete account",
   "impressum.impressum-2": "Impressum",
-  "impressum.contact": "Contact"
+  "impressum.contact": "Contact",
+  "home.download-kicker": "Direct download",
+  "home.download-title": "Install Binder without a store.",
+  "home.download-copy": "The signed package, the same build that goes to Google Play, straight from this page.",
+  "home.download-meta-template": "{version} · {size} MB · {date}",
+  "home.download-loading": "Looking up the newest build…",
+  "home.download-unavailable": "No direct download is available right now.",
+  "home.download-button": "Download the APK",
+  "home.download-fallback-link": "Open the releases page",
+  "home.download-note": "Android will ask you to allow installations from this source. The package is signed with the same key as the Play Store build.",
+  "home.download-warning-title": "Read this before you install",
+  "home.download-warning-play": "If Binder from Google Play is on this phone, uninstall it first. Android refuses to install a package over a version installed from a different source.",
+  "home.download-warning-updates": "From then on this app updates only here, by hand. Google Play will not update it — come back to this page for every new version.",
+  "home.download-warning-confirm": "Understood, download",
+  "home.download-warning-cancel": "Cancel"
 }

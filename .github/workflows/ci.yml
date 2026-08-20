@@ -57,6 +57,9 @@ jobs:
       - name: Verify the site's language switch
         run: node scripts/verify-site-language-switch.mjs
 
+      - name: Verify the site's direct download
+        run: node scripts/verify-site-download.mjs
+
       - name: Verify the data safety declaration still matches the schema
         run: npm run verify:data-safety
 
