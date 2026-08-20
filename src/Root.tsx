@@ -280,7 +280,11 @@ function BinderApp() {
       // these versions, the app opens and every screen says for itself what it
       // cannot reach — instead of one wall in front of conversations that are
       // already on the device.
-      if (offline && session?.user.id) {
+      // A timeout is also no answer. The phone that already agreed to exactly
+      // these versions was being shown a wall whenever the check was merely
+      // slow — five cold starts in a row were enough to produce it — which is
+      // the same defect the cache exists to prevent.
+      if ((offline || timedOut) && session?.user.id) {
         void recallAcceptance().then((cached) => {
           if (!active) return;
           if (cached && cached.userId === session.user.id) {
