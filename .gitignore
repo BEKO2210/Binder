@@ -40,3 +40,9 @@ artifacts/
 # the other is scratch.
 graphify-out/graph.html
 graphify-out/cache/
+
+# Local tool logs: a firebase-debug.log carried the owner's address and every
+# project id in the account into a public repository.
+firebase-debug.log
+firebase-debug.*.log
+*-debug.log
