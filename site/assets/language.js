@@ -63,10 +63,10 @@
   for (var position = 0; position < preferred.length; position += 1) {
     var code = String(preferred[position]).toLowerCase().split('-')[0];
     if (available.indexOf(code) === -1) continue;
-    if (code !== current) {
-      store(code);
-      window.location.replace(urlFor(code));
-    }
+    // Deliberately not stored: following the device is not the visitor
+    // choosing. If they later switch their phone to another language the site
+    // follows along, and the switcher still wins the moment it is clicked.
+    if (code !== current) window.location.replace(urlFor(code));
     return;
   }
 })();

@@ -101,6 +101,23 @@ function languageStrip() {
   return `<ul class="langstrip">${items}</ul>`;
 }
 
+// The FAQ people read and the FAQ search engines read are the same text, taken
+// from the same source: the structured data block. Google only honours FAQ
+// markup whose answers are visible on the page, and a second copy of these
+// sentences in the locale files would drift apart within two edits.
+function faqSection(dictionary) {
+  const block = ['home.jsonld-1', 'home.jsonld-2']
+    .map((key) => dictionary[key])
+    .find((value) => typeof value === 'string' && value.includes('"FAQPage"'));
+  if (!block) return '';
+  const entries = JSON.parse(block).mainEntity ?? [];
+  const escape = (value) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const items = entries
+    .map((entry) => `<details class="faqitem"><summary>${escape(entry.name)}</summary><p>${escape(entry.acceptedAnswer.text)}</p></details>`)
+    .join('');
+  return `<div class="faqlist">${items}</div>`;
+}
+
 function pageUrl(locale, file) {
   const path = file === 'index.html' ? '' : file;
   return locale === SOURCE_LOCALE ? `${baseUrl}${path}` : `${baseUrl}${locale}/${path}`;
@@ -150,6 +167,15 @@ function render(locale, page) {
     const key = rawKey.trim();
     if (key === '@alternates') return alternatesFor(page.file) + `\n  <link rel="canonical" href="${pageUrl(locale, page.file)}">`;
     if (key === '@og-url') return `<meta property="og:url" content="${pageUrl(locale, page.file)}">`;
+    if (key === '@faq') return faqSection(dictionary);
+    // A German visitor got an English draft in their mail app. Subject and body
+    // are locale text like everything else, encoded here so the template stays
+    // readable.
+    if (key === '@deletion-mailto') {
+      const subject = encodeURIComponent(dictionary['delete-account.mailto-subject'] ?? source['delete-account.mailto-subject']);
+      const body = encodeURIComponent(dictionary['delete-account.mailto-body'] ?? source['delete-account.mailto-body']);
+      return `mailto:nullmesh@protonmail.com?subject=${subject}&amp;body=${body}`;
+    }
     if (key === '@language-switcher') return switcherFor(locale, page.file);
     if (key === '@language-table') return languageTable(locale);
     if (key === '@language-strip') return languageStrip();
@@ -164,6 +190,53 @@ function render(locale, page) {
   html = html.replace(/\{\{@language-(count|complete)\}\}/g, (whole, kind) =>
     String(kind === 'count' ? appLocales.length : completeLocales));
 
+  // One WebSite node per page, in the page's own language: without it the two
+  // language trees look like unrelated documents that happen to share a host.
+  const site = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Binder',
+    url: pageUrl(locale, 'index.html'),
+    inLanguage: meta.htmlLang ?? locale,
+    publisher: { '@type': 'Person', name: 'Belkis Aslani' },
+  };
+  html = html.replace('</head>', `  <script type="application/ld+json">\n${JSON.stringify(site, null, 2)}\n  </script>\n</head>`);
+
+  // The two weights used above the fold are fetched in parallel with the
+  // stylesheet instead of after it — otherwise the first paint waits for CSS to
+  // parse before it even learns the fonts exist.
+  const preload = ['Manrope-Regular', 'Manrope-ExtraBold']
+    .map((font) => `  <link rel="preload" as="font" type="font/woff2" href="assets/${font}.woff2" crossorigin>\n`)
+    .join('');
+  html = html.replace('  <link rel="stylesheet"', `${preload}  <link rel="stylesheet"`);
+
+  // The legal pages carried no preview card, so a link to them in a chat came
+  // up as a bare URL while the home page came up with a picture. The card is
+  // built from the page's own title and description, which are already
+  // translated — no second set of keys to keep in sync.
+  if (!html.includes('property="og:title"')) {
+    const escape = (value) => value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+    const title = /<title>([^<]*)<\/title>/.exec(html)?.[1] ?? '';
+    const description = /<meta name="description" content="([^"]*)"/.exec(html)?.[1] ?? '';
+    const image = `${baseUrl}media/og-image.jpg`;
+    const card = [
+      `  <meta property="og:title" content="${escape(title)}">`,
+      `  <meta property="og:description" content="${escape(description)}">`,
+      '  <meta property="og:type" content="website">',
+      `  <meta property="og:url" content="${pageUrl(locale, page.file)}">`,
+      `  <meta property="og:image" content="${image}">`,
+      '  <meta property="og:image:width" content="1280">',
+      '  <meta property="og:image:height" content="640">',
+      `  <meta property="og:locale" content="${meta.htmlLang ?? locale}">`,
+      '  <meta name="twitter:card" content="summary_large_image">',
+      `  <meta name="twitter:title" content="${escape(title)}">`,
+      `  <meta name="twitter:description" content="${escape(description)}">`,
+      `  <meta name="twitter:image" content="${image}">`,
+      '',
+    ].join('\n');
+    html = html.replace('</head>', `${card}</head>`);
+  }
+
   html = html.replace(/<html lang="[^"]*"/, `<html lang="${meta.htmlLang ?? locale}"${meta.dir === 'rtl' ? ' dir="rtl"' : ''}`);
 
   // The page tells the script which languages exist and which page this is, so
@@ -175,8 +248,20 @@ function render(locale, page) {
 }
 
 function sitemap() {
-  const today = new Date().toISOString().slice(0, 10);
+  // The date a page last changed, taken from the history of the files it is
+  // made of. Stamping today on every URL at every deploy taught search engines
+  // that this signal means nothing here, which is worse than sending none.
+  const lastChanged = (id) => {
+    try {
+      // The page's own template, not the whole locale folder: every page
+      // shares that folder, so including it would give them all the same date
+      // again — which is the signal this replaces.
+      const output = execFileSync('git', ['log', '-1', '--format=%cs', '--', `site/templates/${id}.html`], { encoding: 'utf8' }).trim();
+      return output || null;
+    } catch { return null; }
+  };
   const entries = PAGES.filter((page) => !page.noindex).flatMap((page) => locales.map((locale) => {
+    const changed = lastChanged(page.id) ?? new Date().toISOString().slice(0, 10);
     const alternates = locales
       .map((code) => `    <xhtml:link rel="alternate" hreflang="${code}" href="${pageUrl(code, page.file)}"/>`)
       .join('\n');
@@ -184,7 +269,7 @@ function sitemap() {
     <loc>${pageUrl(locale, page.file)}</loc>
 ${alternates}
     <xhtml:link rel="alternate" hreflang="x-default" href="${pageUrl(SOURCE_LOCALE, page.file)}"/>
-    <lastmod>${today}</lastmod>
+    <lastmod>${changed}</lastmod>
     <priority>${page.priority}</priority>
   </url>`;
   }));

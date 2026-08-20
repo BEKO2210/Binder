@@ -92,7 +92,9 @@
   "devDependencies": {
     "@types/node": "^26.2.0",
     "@types/react": "~19.2.2",
-    "typescript": "~6.0.3"
+    "pngjs": "3.4.0",
+    "typescript": "~6.0.3",
+    "wawoff2": "2.0.1"
   },
   "license": "SEE LICENSE IN LICENSE",
   "author": "Belkis Aslani"

@@ -1,4 +1,14 @@
+# Crawlers read robots.txt from the origin root, and this file lives at
+# /Binder/robots.txt — so nothing here is binding. It is kept as a signpost for
+# people reading the repository, not as a control:
+#
+#   - The admin surface is kept out of search by <meta name="robots"
+#     content="noindex,nofollow,noarchive"> in site/admin/index.html, which is
+#     the part that actually works.
+#   - The sitemap is submitted once in Search Console:
+#     https://beko2210.github.io/Binder/sitemap.xml
+#
+# If Binder ever moves to its own domain, this file belongs at that domain's
+# root and starts meaning something.
 User-agent: *
 Allow: /
-Disallow: /Binder/admin/
-Sitemap: https://beko2210.github.io/Binder/sitemap.xml
