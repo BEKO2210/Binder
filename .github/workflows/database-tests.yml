@@ -20,13 +20,21 @@ jobs:
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@46f7f98c7f948ad727d22c1e67fab04c223a0520 # v3
         with:
-          version: latest
+          version: 2.114.0
       - name: Initialize local Supabase config
         run: supabase init --force
       - name: Start local Postgres
         run: supabase db start
       - name: Run pgTAP database tests
         run: supabase test db
+
+      # The argument that the internal helpers are safe rests on PostgREST not
+      # serving their schema. That is configuration, not law, so it is asked
+      # over HTTP rather than assumed.
+      - name: Check what the API actually exposes
+        run: |
+          supabase start >/dev/null
+          node scripts/verify-api-surface.mjs
       - name: Stress atomic mutual matches
         run: bash supabase/tests/phase2_concurrency.sh
       - name: Stress conversation races
@@ -49,7 +57,7 @@ jobs:
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@46f7f98c7f948ad727d22c1e67fab04c223a0520 # v3
         with:
-          version: latest
+          version: 2.114.0
       - name: Initialize local Supabase config
         run: supabase init --force
       - name: Exercise Auth + Storage + Edge deletion end-to-end

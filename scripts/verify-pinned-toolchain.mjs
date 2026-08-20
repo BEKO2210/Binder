@@ -29,6 +29,11 @@ for (const name of workflows) {
   for (const match of text.matchAll(/(\S+)@latest/g)) {
     problems.push(`${name}: ${match[1]}@latest — a release must not depend on the day it was built`);
   }
+
+  // `with: version: latest` is the same problem wearing a different hat.
+  for (const match of text.matchAll(/version:\s*latest/g)) {
+    problems.push(`${name}: "version: latest" at offset ${match.index} — pin the tool`);
+  }
 }
 
 if (problems.length > 0) {
