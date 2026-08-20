@@ -189,10 +189,11 @@
     },
     "accessibility": {
       "close": "전체 프로필 닫기",
-      "photosReviewed": "Discovery에 표시되기 전에 사진 검토 완료"
+      "photosReviewed": "탐색에 표시되기 전에 사진을 검토합니다"
     },
     "loading": "프로필을 여는 중…",
-    "photosReviewed": "사진 검토 완료",
+    "photosReviewedOne": "사진 검토 완료",
+    "photosReviewedOther": "사진 검토 완료",
     "away": "{distance}km 거리"
   },
   "discovery": {
@@ -286,7 +287,8 @@
     "profile": {
       "away": "{distance}km 거리",
       "photosReviewed": "· 사진 검토 완료",
-      "photosReviewedBadge": "사진 검토 완료"
+      "photosReviewedBadgeOne": "사진 검토 완료",
+      "photosReviewedBadgeOther": "사진 검토 완료"
     },
     "pending": {
       "one": "결정 1개가 연결을 기다리는 중",

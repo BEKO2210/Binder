@@ -97,7 +97,7 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose, in
               <View style={{ paddingHorizontal: theme.spacing.screen, paddingTop: theme.spacing.x5 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3, flexWrap: 'wrap' }}>
                   <BinderText variant="displayL">{profile.name} <BinderText variant="heading">{formatCount(profile.age, locale)}</BinderText></BinderText>
-                  <VerifiedBadge label={t('partnerProfile.photosReviewed')} accessibilityLabel={t('partnerProfile.accessibility.photosReviewed')} />
+                  <VerifiedBadge label={t(profile.photoUrls.length === 1 ? 'partnerProfile.photosReviewedOne' : 'partnerProfile.photosReviewedOther')} accessibilityLabel={t('partnerProfile.accessibility.photosReviewed')} />
                 </View>
                 {profile.distanceKm !== null && !viewingSelf ? <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>{t('partnerProfile.away', { distance: formatDistanceKm(profile.distanceKm, locale) })}</BinderText> : null}
                 {profile.bio ? <BinderText variant="bodyL" tone="secondary" style={{ marginTop: theme.spacing.x4 }}>{profile.bio}</BinderText> : null}

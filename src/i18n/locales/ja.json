@@ -189,10 +189,11 @@
     },
     "accessibility": {
       "close": "プロフィール全体を閉じる",
-      "photosReviewed": "Discoveryに表示される前に写真を確認済み"
+      "photosReviewed": "見つけるに表示される前に写真を確認しています"
     },
     "loading": "プロフィールを開いています…",
-    "photosReviewed": "写真確認済み",
+    "photosReviewedOne": "写真確認済み",
+    "photosReviewedOther": "写真確認済み",
     "away": "{distance} km先"
   },
   "discovery": {
@@ -286,7 +287,8 @@
     "profile": {
       "away": "{distance} km先",
       "photosReviewed": "· 写真確認済み",
-      "photosReviewedBadge": "写真確認済み"
+      "photosReviewedBadgeOne": "写真確認済み",
+      "photosReviewedBadgeOther": "写真確認済み"
     },
     "pending": {
       "one": "1 件の判断が接続を待っています",

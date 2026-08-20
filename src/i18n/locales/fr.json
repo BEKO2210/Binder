@@ -189,10 +189,11 @@
     },
     "accessibility": {
       "close": "Fermer le profil complet",
-      "photosReviewed": "Photos vérifiées avant d’apparaître dans Découvrir"
+      "photosReviewed": "Les photos sont vérifiées avant d’apparaître dans Découvrir"
     },
     "loading": "Ouverture du profil…",
-    "photosReviewed": "Photos vérifiées",
+    "photosReviewedOne": "Photo vérifiée",
+    "photosReviewedOther": "Photos vérifiées",
     "away": "À {distance} km"
   },
   "discovery": {
@@ -286,7 +287,8 @@
     "profile": {
       "away": "À {distance} km",
       "photosReviewed": "· Photos vérifiées",
-      "photosReviewedBadge": "Photos vérifiées"
+      "photosReviewedBadgeOne": "Photo vérifiée",
+      "photosReviewedBadgeOther": "Photos vérifiées"
     },
     "pending": {
       "one": "1 décision attend une connexion",

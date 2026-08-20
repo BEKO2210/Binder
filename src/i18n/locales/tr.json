@@ -189,10 +189,11 @@
     },
     "accessibility": {
       "close": "Tam profili kapat",
-      "photosReviewed": "Fotoğraflar Keşfet'te görünmeden önce incelenir"
+      "photosReviewed": "Fotoğraflar Keşfet bölümünde görünmeden önce incelenir"
     },
     "loading": "Profil açılıyor…",
-    "photosReviewed": "Fotoğraflar incelendi",
+    "photosReviewedOne": "Fotoğraf incelendi",
+    "photosReviewedOther": "Fotoğraflar incelendi",
     "away": "{distance} km uzakta"
   },
   "discovery": {
@@ -286,7 +287,8 @@
     "profile": {
       "away": "{distance} km uzakta",
       "photosReviewed": "· Fotoğraflar incelendi",
-      "photosReviewedBadge": "Fotoğraflar incelendi"
+      "photosReviewedBadgeOne": "Fotoğraf incelendi",
+      "photosReviewedBadgeOther": "Fotoğraflar incelendi"
     },
     "pending": {
       "one": "1 karar bağlantı bekliyor",

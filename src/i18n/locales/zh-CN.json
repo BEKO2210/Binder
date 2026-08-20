@@ -192,7 +192,8 @@
       "photosReviewed": "照片通过审核后才会出现在发现中"
     },
     "loading": "正在打开个人资料…",
-    "photosReviewed": "照片已审核",
+    "photosReviewedOne": "照片已审核",
+    "photosReviewedOther": "照片已审核",
     "away": "距离 {distance} 公里"
   },
   "discovery": {
@@ -286,7 +287,8 @@
     "profile": {
       "away": "距离 {distance} 公里",
       "photosReviewed": "· 照片已审核",
-      "photosReviewedBadge": "照片已审核"
+      "photosReviewedBadgeOne": "照片已审核",
+      "photosReviewedBadgeOther": "照片已审核"
     },
     "pending": {
       "one": "1 个选择正在等待联网",

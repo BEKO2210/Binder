@@ -42,7 +42,7 @@
     },
     "quietHours": {
       "title": "Ruhezeiten",
-      "copy": "Benachrichtigungen zu Matches, Nachrichten, Moderation und Produktneuigkeiten warten bis zum Ende der lokalen Ruhezeit. Dringende Sicherheitshinweise kommen sofort.",
+      "copy": "Benachrichtigungen zu Binds, Nachrichten, Moderation und Produktneuigkeiten warten bis zum Ende der lokalen Ruhezeit. Dringende Sicherheitshinweise kommen sofort.",
       "label": "Ruhezeiten verwenden",
       "start": "Beginn",
       "end": "Ende",
@@ -140,7 +140,7 @@
       "failedCopy": "Binder konnte die Benachrichtigungen auf diesem Gerät nicht einrichten. Du kannst es erneut versuchen.",
       "blockedCopy": "Android blockiert Benachrichtigungen von Binder. Erlaube sie in den Systemeinstellungen.",
       "enabledCopy": "Benachrichtigungskategorien kannst du in den App-Einstellungen anpassen.",
-      "copy": "Aktiviere Hinweise zu neuen Matches und Nachrichten."
+      "copy": "Aktiviere Hinweise zu neuen Binds und Nachrichten."
     },
     "actions": {
       "refresh": "Aktualisieren",
@@ -148,17 +148,17 @@
       "enable": "Aktivieren",
       "openSettings": "Einstellungen öffnen",
       "tryAgain": "Erneut versuchen",
-      "goToDiscovery": "Zur Discovery"
+      "goToDiscovery": "Zu „Entdecken“"
     },
     "states": {
-      "loading": "Deine Matches werden geladen…",
+      "loading": "Deine Binds werden geladen…",
       "offlineTitle": "Du bist offline",
-      "offlineMessage": "Prüfe deine Verbindung und lade deine Matches erneut.",
-      "errorTitle": "Matches konnten nicht geladen werden"
+      "offlineMessage": "Prüfe deine Verbindung und lade deine Binds erneut.",
+      "errorTitle": "Binds konnten nicht geladen werden"
     },
     "empty": {
       "title": "Ein Bind entsteht gemeinsam",
-      "message": "Wenn ihr euch in der Discovery beide für Bind entscheidet, erscheint die Person hier und ihr könnt beide das Gespräch beginnen.",
+      "message": "Wenn ihr euch unter „Entdecken“ beide für Bind entscheidet, erscheint die Person hier und ihr könnt beide das Gespräch beginnen.",
       "conversations": "Nach der ersten Nachricht erscheinen deine Unterhaltungen hier."
     },
     "newMatches": {
@@ -189,21 +189,22 @@
     },
     "accessibility": {
       "close": "Vollständiges Profil schließen",
-      "photosReviewed": "Fotos werden vor der Anzeige in der Discovery geprüft"
+      "photosReviewed": "Fotos werden geprüft, bevor sie unter „Entdecken“ erscheinen"
     },
     "loading": "Profil wird geöffnet…",
-    "photosReviewed": "Fotos geprüft",
+    "photosReviewedOne": "Foto geprüft",
+    "photosReviewedOther": "Fotos geprüft",
     "away": "{distance} km entfernt"
   },
   "discovery": {
     "errors": {
-      "load": "Die Discovery konnte nicht geladen werden.",
-      "openConversation": "Die Unterhaltung konnte nicht geöffnet werden. Du findest sie unter Matches.",
+      "load": "Die Vorschläge konnten nicht geladen werden.",
+      "openConversation": "Die Unterhaltung konnte nicht geöffnet werden. Du findest sie unter „Binds“.",
       "saveDecision": "Deine Entscheidung konnte nicht gespeichert werden.",
       "safetyReport": "Die Sicherheitsmeldung konnte nicht gesendet werden."
     },
     "states": {
-      "loadErrorTitle": "Discovery konnte nicht geladen werden",
+      "loadErrorTitle": "Vorschläge konnten nicht geladen werden",
       "offlineTitle": "Du bist offline",
       "offlineMessage": "Keine Verbindung. Prüfe deine Internetverbindung und versuche es erneut.",
       "saving": "Wird gespeichert…"
@@ -228,7 +229,7 @@
       "filteredMessage": "Mit den Standardfiltern von Binder sind Personen verfügbar. Passe deine Filter an, um passende Menschen zu sehen.",
       "genuineEyebrow": "DU BIST AUF DEM NEUESTEN STAND",
       "genuineTitle": "Dein Deck ist vorerst leer.",
-      "genuineMessage": "Derzeit gibt es keine neuen freigegebenen Profile, die zu beiden Seiten passen. Neue Matches erscheinen hier automatisch."
+      "genuineMessage": "Derzeit gibt es keine neuen freigegebenen Profile, die zu beiden Seiten passen. Neue Binds erscheinen hier automatisch."
     },
     "actions": {
       "tryAgain": "Erneut versuchen",
@@ -240,7 +241,7 @@
       "cancel": "Abbrechen"
     },
     "accessibility": {
-      "openFilters": "Discovery-Filter öffnen",
+      "openFilters": "Filter für „Entdecken“ öffnen",
       "matchCreated": "Du hast ein Match mit {name}.",
       "safetyOptions": "Sicherheitsoptionen für {name}",
       "closeSafetyOptions": "Sicherheitsoptionen schließen",
@@ -286,7 +287,8 @@
     "profile": {
       "away": "{distance} km entfernt",
       "photosReviewed": "· Fotos geprüft",
-      "photosReviewedBadge": "Fotos geprüft"
+      "photosReviewedBadgeOne": "Foto geprüft",
+      "photosReviewedBadgeOther": "Fotos geprüft"
     },
     "pending": {
       "one": "1 Entscheidung wartet auf Verbindung",
@@ -322,7 +324,7 @@
       "loadEarlierMessages": "Frühere Nachrichten laden",
       "retry": "Wiederholen",
       "discard": "Verwerfen",
-      "backToMatches": "Zurück zu Matches"
+      "backToMatches": "Zurück zu „Binds“"
     },
     "ended": {
       "title": "Diese Unterhaltung ist beendet",
@@ -363,7 +365,7 @@
       "waitingForConnection": "Warten auf Verbindung"
     },
     "accessibility": {
-      "backToMatches": "Zurück zu Matches",
+      "backToMatches": "Zurück zu „Binds“",
       "openProfile": "Profil von {name} öffnen",
       "safetyControls": "Sicherheitsoptionen der Unterhaltung",
       "closeSafetyControls": "Sicherheitsoptionen schließen",
@@ -373,8 +375,8 @@
       "messageSent": "Nachricht gesendet.",
       "messageFailed": "Nachricht nicht gesendet.",
       "scrollToNewMessage": "Zur neuen Nachricht scrollen",
-      "retrySending": "Senden von \"{message}\" wiederholen",
-      "discardUnsent": "Nicht gesendete Nachricht \"{message}\" verwerfen",
+      "retrySending": "Senden von „{message}“ wiederholen",
+      "discardUnsent": "Nicht gesendete Nachricht „{message}“ verwerfen",
       "messagePerson": "Nachricht an {name}",
       "sendingMessage": "Nachricht wird gesendet",
       "sendMessageTo": "Nachricht an {name} senden"
@@ -407,7 +409,7 @@
       "deleteTitle": "Binder-Konto löschen?",
       "deleteMessage": "Dadurch werden dein Binder-Konto und die regulären Produktdaten dauerhaft gelöscht. Dies kann nicht rückgängig gemacht werden.",
       "signOutTitle": "Von Binder abmelden?",
-      "signOutMessage": "Bis zur nächsten Anmeldung erhältst du auf diesem Gerät keine Aktualisierungen in der App. Dein Profil, deine Matches und Nachrichten bleiben in Binder erhalten."
+      "signOutMessage": "Bis zur nächsten Anmeldung erhältst du auf diesem Gerät keine Aktualisierungen in der App. Dein Profil, deine Binds und Nachrichten bleiben in Binder erhalten."
     },
     "actions": {
       "cancel": "Abbrechen",
@@ -438,7 +440,7 @@
       "suspendedTitle": "Dein Konto ist gesperrt",
       "reasonUnavailable": "Es sind keine weiteren Einzelheiten verfügbar.",
       "warnedOn": "Ausgestellt am {date}",
-      "suspendedEffect": "Während der Sperre sind Discovery und Nachrichten pausiert."
+      "suspendedEffect": "Während der Sperre sind „Entdecken“ und Nachrichten pausiert."
     },
     "empty": {
       "addFirstPhoto": "Füge dein erstes Foto hinzu",
@@ -456,7 +458,7 @@
     },
     "hub": {
       "profileTitle": "Profil und Fotos",
-      "profileCopy": "Bearbeite dein Profil, deine Discovery-Einstellungen und bis zu sechs moderierte Fotos.",
+      "profileCopy": "Bearbeite dein Profil, deine Sucheinstellungen und bis zu sechs moderierte Fotos.",
       "settingsTitle": "App-Einstellungen",
       "settingsCopy": "Darstellung, Haptik, Animationen, Benachrichtigungen und Ruhezeiten.",
       "betaTitle": "Betaprogramm",
@@ -474,13 +476,13 @@
       "eyebrow": "KONTOAKTIONEN",
       "irreversible": "UNWIDERRUFLICH",
       "deleteTitle": "Binder-Konto löschen",
-      "deleteCopy": "Beendet Discovery und Unterhaltungen, entfernt Profilmedien und löscht deine Anmeldeidentität."
+      "deleteCopy": "Beendet Vorschläge und Unterhaltungen, entfernt Profilmedien und löscht deine Anmeldeidentität."
     },
     "visibility": {
       "pendingTitle": "Deine Fotos werden noch geprüft",
-      "pendingCopy": "Bis dein erstes Foto freigegeben ist, erscheinst du nicht in Discovery. Das dauert meist ein paar Stunden.",
+      "pendingCopy": "Bis dein erstes Foto freigegeben ist, erscheinst du nicht unter „Entdecken“. Das dauert meist ein paar Stunden.",
       "blockedTitle": "Dein erstes Foto wurde nicht freigegeben",
-      "blockedCopy": "Wähle ein anderes Foto als erstes, damit du in Discovery erscheinst."
+      "blockedCopy": "Wähle ein anderes Foto als erstes, damit du unter „Entdecken“ erscheinst."
     }
   },
   "profileSettings": {
@@ -522,7 +524,7 @@
     "header": {
       "title": "Profileinstellungen",
       "sectionTitle": "Gestalte dein sichtbares Profil.",
-      "sectionCopy": "Dein Geburtsdatum bleibt gesperrt. Jedes Foto wird einzeln geprüft, bevor es in Discovery erscheinen kann."
+      "sectionCopy": "Dein Geburtsdatum bleibt gesperrt. Jedes Foto wird einzeln geprüft, bevor es unter „Entdecken“ erscheinen kann."
     },
     "accessibility": {
       "closeFullPhoto": "Vollbildfoto schließen",
@@ -566,8 +568,8 @@
     },
     "discovery": {
       "eyebrow": "DISCOVERY-EINSTELLUNGEN",
-      "title": "Discovery-Bereich",
-      "copy": "Legt fest, wer in deinem Discovery-Stapel erscheinen kann."
+      "title": "Bereich „Entdecken“",
+      "copy": "Legt fest, wer in deinem Stapel unter „Entdecken“ erscheinen kann."
     }
   },
   "reliability": {
@@ -603,7 +605,7 @@
   "discoveryFilterSheet": {
     "errors": {
       "authentication": "Anmeldung erforderlich.",
-      "load": "Deine Discovery-Einstellungen konnten nicht geladen werden.",
+      "load": "Deine Sucheinstellungen konnten nicht geladen werden.",
       "audience": "Wähle mindestens eine Personengruppe aus, die du kennenlernen möchtest.",
       "age": "Wähle eine Altersspanne von mindestens einem Jahr.",
       "distance": "Wähle eine Entfernung zwischen 1 und 500 km.",
@@ -624,7 +626,7 @@
       "reset": "Zurücksetzen"
     },
     "accessibility": {
-      "close": "Discovery-Filter schließen",
+      "close": "Filter für „Entdecken“ schließen",
       "filtersApplied": "Filter angewendet."
     },
     "count": {
@@ -675,7 +677,7 @@
       "discovery": {
         "eyebrow": "DISCOVERY",
         "title": "Wähle, wer zu dir passen könnte.",
-        "copy": "Diese Einstellungen bestimmen deine Discovery und lassen sich später ändern.",
+        "copy": "Diese Einstellungen bestimmen deine Vorschläge und lassen sich später ändern.",
         "next": "Weiter: Dein erstes Foto"
       },
       "photo": {
@@ -1367,7 +1369,7 @@
       "title": "Benachrichtigungen",
       "copy": "Die Berechtigung gilt für diese Installation. Kategorien, Ton und Vibration gehören zu deinem Binder-Konto und werden vor jeder Zustellung serverseitig erneut geprüft.",
       "remotePush": "Push-Nachrichten",
-      "newMatches": "Neue Matches",
+      "newMatches": "Neue Binds",
       "messages": "Nachrichten",
       "moderation": "Moderation",
       "safety": "Sicherheit",
@@ -1378,7 +1380,7 @@
     },
     "quietHours": {
       "title": "Ruhezeiten",
-      "copy": "Push-Nachrichten zu Matches, Nachrichten, Moderation und Produktneuigkeiten warten bis zum lokalen Ende der Ruhezeit. Dringende Sicherheitswarnungen kommen sofort.",
+      "copy": "Push-Nachrichten zu Binds, Nachrichten, Moderation und Produktneuigkeiten warten bis zum lokalen Ende der Ruhezeit. Dringende Sicherheitswarnungen kommen sofort.",
       "use": "Ruhezeiten verwenden",
       "start": "Beginn",
       "end": "Ende",
@@ -1515,7 +1517,7 @@
   },
   "notifications": {
     "channels": {
-      "newMatch": "Neue Matches",
+      "newMatch": "Neue Binds",
       "newMessage": "Nachrichten",
       "moderationStatus": "Foto-Prüfung",
       "safetyAlert": "Sicherheit und Konto",

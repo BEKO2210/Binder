@@ -189,10 +189,11 @@
     },
     "accessibility": {
       "close": "Volledig profiel sluiten",
-      "photosReviewed": "Foto's worden beoordeeld voordat ze in Ontdekken verschijnen"
+      "photosReviewed": "Foto’s worden beoordeeld voordat ze in Ontdekken verschijnen"
     },
     "loading": "Profiel openen…",
-    "photosReviewed": "Foto's beoordeeld",
+    "photosReviewedOne": "Foto beoordeeld",
+    "photosReviewedOther": "Foto's beoordeeld",
     "away": "{distance} km verderop"
   },
   "discovery": {
@@ -286,7 +287,8 @@
     "profile": {
       "away": "{distance} km verderop",
       "photosReviewed": "· Foto's beoordeeld",
-      "photosReviewedBadge": "Foto's beoordeeld"
+      "photosReviewedBadgeOne": "Foto beoordeeld",
+      "photosReviewedBadgeOther": "Foto's beoordeeld"
     },
     "pending": {
       "one": "1 keuze wacht op verbinding",

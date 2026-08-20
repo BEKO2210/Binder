@@ -189,10 +189,11 @@
     },
     "accessibility": {
       "close": "Zamknij pełny profil",
-      "photosReviewed": "Zdjęcia są sprawdzane przed pojawieniem się w Odkrywaj"
+      "photosReviewed": "Zdjęcia są sprawdzane, zanim pojawią się w Odkrywaj"
     },
     "loading": "Otwieranie profilu…",
-    "photosReviewed": "Zdjęcia sprawdzone",
+    "photosReviewedOne": "Zdjęcie sprawdzone",
+    "photosReviewedOther": "Zdjęcia sprawdzone",
     "away": "{distance} km stąd"
   },
   "discovery": {
@@ -286,7 +287,8 @@
     "profile": {
       "away": "{distance} km stąd",
       "photosReviewed": "· Zdjęcia sprawdzone",
-      "photosReviewedBadge": "Zdjęcia sprawdzone"
+      "photosReviewedBadgeOne": "Zdjęcie sprawdzone",
+      "photosReviewedBadgeOther": "Zdjęcia sprawdzone"
     },
     "pending": {
       "one": "1 decyzja czeka na połączenie",

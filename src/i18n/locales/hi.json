@@ -189,10 +189,11 @@
     },
     "accessibility": {
       "close": "पूरी प्रोफ़ाइल बंद करें",
-      "photosReviewed": "Discovery में दिखने से पहले फ़ोटो की समीक्षा की गई"
+      "photosReviewed": "खोजें में दिखने से पहले फ़ोटो की समीक्षा की जाती है"
     },
     "loading": "प्रोफ़ाइल खोली जा रही है…",
-    "photosReviewed": "फ़ोटो की समीक्षा की गई",
+    "photosReviewedOne": "फ़ोटो की समीक्षा की गई",
+    "photosReviewedOther": "फ़ोटो की समीक्षा की गई",
     "away": "{distance} किमी दूर"
   },
   "discovery": {
@@ -286,7 +287,8 @@
     "profile": {
       "away": "{distance} किमी दूर",
       "photosReviewed": "· फ़ोटो की समीक्षा की गई",
-      "photosReviewedBadge": "फ़ोटो की समीक्षा की गई"
+      "photosReviewedBadgeOne": "फ़ोटो की समीक्षा की गई",
+      "photosReviewedBadgeOther": "फ़ोटो की समीक्षा की गई"
     },
     "pending": {
       "one": "1 फ़ैसला कनेक्शन का इंतज़ार कर रहा है",

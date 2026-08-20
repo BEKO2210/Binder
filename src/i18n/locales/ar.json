@@ -189,10 +189,11 @@
     },
     "accessibility": {
       "close": "إغلاق الملف الشخصي الكامل",
-      "photosReviewed": "تمت مراجعة الصور قبل ظهورها في Discovery"
+      "photosReviewed": "تتم مراجعة الصور قبل ظهورها في اكتشف"
     },
     "loading": "جارٍ فتح الملف الشخصي…",
-    "photosReviewed": "تمت مراجعة الصور",
+    "photosReviewedOne": "تمت مراجعة الصورة",
+    "photosReviewedOther": "تمت مراجعة الصور",
     "away": "يبعد {distance} كم"
   },
   "discovery": {
@@ -286,7 +287,8 @@
     "profile": {
       "away": "يبعد {distance} كم",
       "photosReviewed": "· تمت مراجعة الصور",
-      "photosReviewedBadge": "تمت مراجعة الصور"
+      "photosReviewedBadgeOne": "تمت مراجعة الصورة",
+      "photosReviewedBadgeOther": "تمت مراجعة الصور"
     },
     "pending": {
       "one": "قرار واحد ينتظر الاتصال",

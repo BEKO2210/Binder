@@ -189,10 +189,11 @@
     },
     "accessibility": {
       "close": "Close full profile",
-      "photosReviewed": "Photos reviewed before appearing in Discovery"
+      "photosReviewed": "Photos are reviewed before they appear in Discover"
     },
     "loading": "Opening profile…",
-    "photosReviewed": "Photos reviewed",
+    "photosReviewedOne": "Photo reviewed",
+    "photosReviewedOther": "Photos reviewed",
     "away": "{distance} km away"
   },
   "discovery": {
@@ -286,7 +287,8 @@
     "profile": {
       "away": "{distance} km away",
       "photosReviewed": "· Photos reviewed",
-      "photosReviewedBadge": "Photos reviewed"
+      "photosReviewedBadgeOne": "Photo reviewed",
+      "photosReviewedBadgeOther": "Photos reviewed"
     },
     "pending": {
       "one": "1 decision is waiting for a connection",

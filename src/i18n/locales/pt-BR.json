@@ -189,10 +189,11 @@
     },
     "accessibility": {
       "close": "Fechar perfil completo",
-      "photosReviewed": "Fotos analisadas antes de aparecerem em Descobrir"
+      "photosReviewed": "As fotos são analisadas antes de aparecerem em Descobrir"
     },
     "loading": "Abrindo perfil…",
-    "photosReviewed": "Fotos analisadas",
+    "photosReviewedOne": "Foto analisada",
+    "photosReviewedOther": "Fotos analisadas",
     "away": "A {distance} km de distância"
   },
   "discovery": {
@@ -286,7 +287,8 @@
     "profile": {
       "away": "A {distance} km de distância",
       "photosReviewed": "· Fotos analisadas",
-      "photosReviewedBadge": "Fotos analisadas"
+      "photosReviewedBadgeOne": "Foto analisada",
+      "photosReviewedBadgeOther": "Fotos analisadas"
     },
     "pending": {
       "one": "1 decisão aguardando conexão",

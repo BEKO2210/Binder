@@ -21,6 +21,7 @@ import { advanceDeck, decideSwipe, discoveryDeckPhysics, resistedTranslation, st
 import { formatCount, formatDistanceKm } from '../lib/format';
 import { listMyProfileMedia } from '../lib/media';
 import { matchCelebrationPhotoUrls } from '../lib/matchCelebrationAssets';
+import { interestEntry } from '../lib/interestCatalog';
 import { interestLabel } from '../lib/validation';
 import { resolveSpring } from '../lib/motionPolicy';
 import { reportAndBlockDiscoveryProfile, type DiscoveryReportReason } from '../lib/safety';
@@ -590,10 +591,18 @@ function ProfileCard({ profile, back = false, behind = false, onOpenProfile }: {
 
       <View pointerEvents="none" style={{ position: 'absolute', left: theme.spacing.x5, right: theme.spacing.x5, bottom: theme.spacing.x5 }}>
         <BinderText variant="displayL" style={{ color: onMedia.textPrimary }} numberOfLines={1}>{profile.name} <BinderText variant="heading" style={{ color: onMedia.textPrimary }}>{formatCount(profile.age, locale)}</BinderText></BinderText>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, marginTop: theme.spacing.x2, flexWrap: 'wrap' }}><BinderText variant="caption" style={{ color: onMedia.textSecondary }}>{t('discovery.profile.away', { distance: formatDistanceKm(profile.distanceKm, locale) })}</BinderText><VerifiedBadge onMedia label={t('discovery.profile.photosReviewedBadge')} accessibilityLabel={t('discovery.profile.photosReviewedBadge')} /></View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, marginTop: theme.spacing.x2, flexWrap: 'wrap' }}><BinderText variant="caption" style={{ color: onMedia.textSecondary }}>{t('discovery.profile.away', { distance: formatDistanceKm(profile.distanceKm, locale) })}</BinderText>{/* Singular on the card: the badge sits on the one photograph you are
+              looking at, so it speaks about that photograph. The full profile,
+              which lists the whole set, says it in the plural. */}
+          <VerifiedBadge onMedia label={t('discovery.profile.photosReviewedBadgeOne')} accessibilityLabel={t('discovery.profile.photosReviewedBadgeOne')} /></View>
         {profile.bio ? <BinderText variant="body" style={{ color: onMedia.textPrimary, marginTop: theme.spacing.x2 }} numberOfLines={2}>{profile.bio}</BinderText> : null}
         <View style={{ flexDirection: 'row', gap: theme.spacing.x2, marginTop: theme.spacing.x3, overflow: 'hidden' }}>
-          {profile.tags.slice(0, 3).map((tag) => <View key={tag} style={{ maxWidth: '32%', backgroundColor: theme.colors.overlay, borderWidth: 1, borderColor: theme.colors.borderStrong, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x1 }}><BinderText variant="caption" style={{ color: onMedia.textPrimary }} numberOfLines={1} ellipsizeMode="tail">{interestLabel(t, tag)}</BinderText></View>)}
+          {/* The same chips as on the full profile, emoji included — the card was
+              the one place that dropped them, so the deck and the profile read
+              as two different apps. The emoji never scales with the system font
+              here: it sits in a pill on a photograph, and a doubled glyph would
+              push the label out of it. */}
+          {profile.tags.slice(0, 3).map((tag) => <View key={tag} style={{ maxWidth: '32%', flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x1, backgroundColor: theme.colors.overlay, borderWidth: 1, borderColor: theme.colors.borderStrong, borderRadius: theme.radii.pill, paddingHorizontal: theme.spacing.x3, paddingVertical: theme.spacing.x1 }}>{interestEntry(tag)?.emoji ? <BinderText variant="caption" maxFontSizeMultiplier={1} importantForAccessibility="no" accessibilityElementsHidden>{interestEntry(tag)?.emoji}</BinderText> : null}<BinderText variant="caption" style={{ color: onMedia.textPrimary, flexShrink: 1 }} numberOfLines={1} ellipsizeMode="tail">{interestLabel(t, tag)}</BinderText></View>)}
         </View>
       </View>
     </View>

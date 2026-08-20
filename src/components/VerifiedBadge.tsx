@@ -44,7 +44,7 @@ export function VerifiedBadge({ label, accessibilityLabel, onMedia = false }: Pr
           tick sitting on whatever is behind the badge, and on a photograph
           that is nothing you control. Solid accent with the tick in the colour
           that reads on it — the same pairing as the primary button. */}
-      <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: theme.accent.accent, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ width: size, height: size, borderRadius: theme.radii.pill, backgroundColor: theme.accent.accent, alignItems: 'center', justifyContent: 'center' }}>
         <BinderIcon name="check" size={Math.round(size * 0.62)} color={theme.accent.foreground} />
       </View>
       <BinderText variant="caption" tone={onMedia ? 'primary' : 'secondary'}>{label}</BinderText>

@@ -189,10 +189,11 @@
     },
     "accessibility": {
       "close": "Tutup profil lengkap",
-      "photosReviewed": "Foto ditinjau sebelum muncul di Discovery"
+      "photosReviewed": "Foto ditinjau sebelum muncul di Jelajahi"
     },
     "loading": "Membuka profil…",
-    "photosReviewed": "Foto ditinjau",
+    "photosReviewedOne": "Foto ditinjau",
+    "photosReviewedOther": "Foto ditinjau",
     "away": "Berjarak {distance} km"
   },
   "discovery": {
@@ -286,7 +287,8 @@
     "profile": {
       "away": "Berjarak {distance} km",
       "photosReviewed": "· Foto ditinjau",
-      "photosReviewedBadge": "Foto ditinjau"
+      "photosReviewedBadgeOne": "Foto ditinjau",
+      "photosReviewedBadgeOther": "Foto ditinjau"
     },
     "pending": {
       "one": "1 keputusan menunggu koneksi",
