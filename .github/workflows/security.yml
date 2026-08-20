@@ -70,5 +70,10 @@ jobs:
       - name: Scan tracked files
         run: node scripts/verify-no-secrets.mjs
 
-      - name: Prove the scanner still catches planted samples
+      # The self-tests parse the app with the TypeScript compiler, so they need
+      # the dependencies installed.
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Prove the guards still catch planted defects
         run: node scripts/verify-gate-selftests.mjs
