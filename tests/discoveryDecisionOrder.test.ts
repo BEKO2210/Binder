@@ -23,3 +23,11 @@ test('a card only leaves after its decision is on disk', () => {
 test('the queue write itself is awaited, not fired and forgotten', () => {
   assert.doesNotMatch(source, /void queueDecision\(/);
 });
+
+test('the first deck load survives a cold start', () => {
+  // Twice on a freshly installed app the very first request took longer than
+  // the deadline, and somebody who had just signed up was told Binder had
+  // taken too long before they saw a single card. One silent second attempt
+  // covers the wake-up; an unreachable server still fails.
+  assert.match(source, /withRetry\(\(\) => withDeadline\(fetchDiscoveryBatch\(20\), DISCOVERY_DEADLINE_MS\), \{ attempts: 2/);
+});

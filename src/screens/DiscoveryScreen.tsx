@@ -26,7 +26,7 @@ import { interestLabel } from '../lib/validation';
 import { resolveSpring } from '../lib/motionPolicy';
 import { reportAndBlockDiscoveryProfile, type DiscoveryReportReason } from '../lib/safety';
 import { supabase } from '../lib/supabase';
-import { classifyError, withDeadline, type ReliabilityError } from '../lib/reliability';
+import { classifyError, withDeadline, withRetry, type ReliabilityError } from '../lib/reliability';
 import { askFor, openGate, stillWaitingFor, stopWaiting } from '../lib/lateAnswer';
 import { addPending, loadPending, nextToSend, removePending, savePending, shouldKeepAfterFailure, type PendingDecision } from '../lib/decisionQueue';
 import PartnerProfileScreen from './PartnerProfileScreen';
@@ -126,7 +126,13 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
         if (current()) setLocationPermissionDenied(true);
         return;
       }
-      const batch = await withDeadline(fetchDiscoveryBatch(20), DISCOVERY_DEADLINE_MS);
+      // The first request after a cold start has to wake the server as well as
+      // answer, and twice on a freshly installed app that took longer than the
+      // deadline — a person who had just signed up was told Binder had taken
+      // too long before they had seen a single card. One silent second attempt
+      // covers the wake-up; a server that is genuinely unreachable still fails,
+      // just as loudly and only a moment later.
+      const batch = await withRetry(() => withDeadline(fetchDiscoveryBatch(20), DISCOVERY_DEADLINE_MS), { attempts: 2, baseDelayMs: 400 });
       if (!current()) return;
       setProfiles(batch);
       if (batch.length === 0) {
