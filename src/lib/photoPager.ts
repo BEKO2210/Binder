@@ -85,3 +85,33 @@ export function photoStatusAfter(current: PhotoLoadStatus, event: PhotoLoadEvent
   // arrived must never be thrown away by a timer that was already running.
   return current === 'pending' ? 'failed' : current;
 }
+
+/**
+ * Which photo of how many, shown in the middle of the picture while paging.
+ *
+ * The thin segments along the top edge say the same thing, but they sit at the
+ * very top of a card the thumb is covering, are two pixels tall, and are the
+ * first thing to disappear against a bright photo. On a phone held one-handed
+ * nobody sees which picture they just moved to. The counter answers that in the
+ * one place the eye is already looking — the centre — and then gets out of the
+ * way again.
+ */
+export function photoCounterLabel(index: number, count: number): string {
+  return `${clampPhotoIndex(index, count) + 1} / ${Math.max(count, 1)}`;
+}
+
+/** How the counter appears and leaves: quick in, a beat to read, slow out. */
+export const photoCounterTiming = {
+  fadeInMs: 120,
+  holdMs: 900,
+  fadeOutMs: 260,
+} as const;
+
+/**
+ * Reduced motion keeps the information and drops the movement: the counter is
+ * simply there while paging and gone afterwards, without a fade.
+ */
+export function photoCounterDurations(reduceMotion: boolean): { fadeInMs: number; holdMs: number; fadeOutMs: number } {
+  if (!reduceMotion) return { ...photoCounterTiming };
+  return { fadeInMs: 0, holdMs: photoCounterTiming.holdMs, fadeOutMs: 0 };
+}

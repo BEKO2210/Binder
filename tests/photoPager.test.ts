@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { adjacentPhotoIndex, clampPhotoIndex, nextPhotoPage, photoPagerPhysics, photosToPreload, photoStatusAfter, resistedPhotoTranslation } from '../src/lib/photoPager.ts';
+import { adjacentPhotoIndex, clampPhotoIndex, nextPhotoPage, photoCounterDurations, photoCounterLabel, photoPagerPhysics, photosToPreload, photoStatusAfter, resistedPhotoTranslation } from '../src/lib/photoPager.ts';
 
 test('pager navigation clamps at both ends', () => {
   assert.equal(adjacentPhotoIndex(0, 'previous', 3), 0);
@@ -55,4 +55,23 @@ test('a deadline that fires late cannot undo a photo that arrived', () => {
 
 test('a retry puts the photo back into waiting', () => {
   assert.equal(photoStatusAfter('failed', 'retry'), 'pending');
+});
+
+test('the photo counter names the page a person is on, one-based', () => {
+  assert.equal(photoCounterLabel(0, 3), '1 / 3');
+  assert.equal(photoCounterLabel(2, 3), '3 / 3');
+  // Out of range cannot print "0 / 3" or "4 / 3": the pager clamps first.
+  assert.equal(photoCounterLabel(-1, 3), '1 / 3');
+  assert.equal(photoCounterLabel(9, 3), '3 / 3');
+  assert.equal(photoCounterLabel(0, 0), '1 / 1');
+});
+
+test('reduced motion keeps the counter and drops the fade', () => {
+  const moving = photoCounterDurations(false);
+  const still = photoCounterDurations(true);
+  assert.ok(moving.fadeInMs > 0 && moving.fadeOutMs > 0);
+  assert.equal(still.fadeInMs, 0);
+  assert.equal(still.fadeOutMs, 0);
+  // The reading time is the same either way — that is the information, not decoration.
+  assert.equal(still.holdMs, moving.holdMs);
 });

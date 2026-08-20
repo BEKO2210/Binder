@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Image, View, type DimensionValue } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { runOnJS, type SharedValue, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { runOnJS, type SharedValue, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 
-import { adjacentPhotoIndex, clampPhotoIndex, nextPhotoPage, photoLoadDeadlineMs, photosToPreload, photoStatusAfter, resistedPhotoTranslation, type PhotoLoadEvent, type PhotoLoadStatus } from '../lib/photoPager';
+import { adjacentPhotoIndex, clampPhotoIndex, nextPhotoPage, photoCounterDurations, photoCounterLabel, photoLoadDeadlineMs, photosToPreload, photoStatusAfter, resistedPhotoTranslation, type PhotoLoadEvent, type PhotoLoadStatus } from '../lib/photoPager';
 import { resolveSpring } from '../lib/motionPolicy';
 import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
@@ -38,6 +38,8 @@ export function PhotoPager({ photos, name, height = '100%', onOpen, interactive 
   // shows the same cached failure.
   const [attempt, setAttempt] = useState<Record<number, number>>({});
   const page = useSharedValue(clampPhotoIndex(initialIndex, photos.length));
+  // The counter in the middle of the photo: up on a page change, then away.
+  const counter = useSharedValue(0);
   const offset = useSharedValue(0);
   const spring = resolveSpring(reduceMotion, 'professional');
   const count = photos.length;
@@ -76,10 +78,20 @@ export function PhotoPager({ photos, name, height = '100%', onOpen, interactive 
     offset.value = animated ? withSpring(-next * width, spring) : -next * width;
   }
 
+  function showCounter() {
+    if (count < 2) return;
+    const timing = photoCounterDurations(reduceMotion);
+    counter.value = withSequence(
+      withTiming(1, { duration: timing.fadeInMs }),
+      withDelay(timing.holdMs, withTiming(0, { duration: timing.fadeOutMs })),
+    );
+  }
+
   function commit(next: number) {
     if (next === index) return;
     setIndex(next);
     onPageChange?.(next);
+    showCounter();
     void haptic('selection');
   }
 
@@ -107,6 +119,7 @@ export function PhotoPager({ photos, name, height = '100%', onOpen, interactive 
     });
 
   const trackStyle = useAnimatedStyle(() => ({ transform: [{ translateX: offset.value }] }));
+  const counterStyle = useAnimatedStyle(() => ({ opacity: counter.value, transform: [{ scale: 0.94 + counter.value * 0.06 }] }));
   const measured = width > 0;
 
   const content = (
@@ -165,6 +178,17 @@ export function PhotoPager({ photos, name, height = '100%', onOpen, interactive 
         <View pointerEvents="none" accessibilityElementsHidden style={{ position: 'absolute', top: theme.spacing.x3, left: theme.spacing.x3, right: theme.spacing.x3, flexDirection: 'row', gap: theme.spacing.x1 }}>
           {photos.map((photo, segment) => <PhotoProgressSegment key={`${segment}-${photo}`} segment={segment} index={index} offset={offset} width={width} reduceMotion={reduceMotion} />)}
         </View>
+      ) : null}
+
+      {/* Which picture of how many, where the eye already is. The segments
+          along the top say it too, but they are two pixels tall and under the
+          thumb. */}
+      {count > 1 ? (
+        <Animated.View pointerEvents="none" accessibilityElementsHidden style={[{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, alignItems: 'center', justifyContent: 'center' }, counterStyle]}>
+          <View style={{ paddingHorizontal: theme.spacing.x4, paddingVertical: theme.spacing.x2, borderRadius: theme.radii.pill, backgroundColor: theme.colors.scrim }}>
+            <BinderText variant="label" style={{ color: theme.colors.textPrimary }}>{photoCounterLabel(index, count)}</BinderText>
+          </View>
+        </Animated.View>
       ) : null}
 
       {/* Hot zones over a photo carry no surface and no scale: the photo is the
