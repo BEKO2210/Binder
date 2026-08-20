@@ -208,3 +208,47 @@ Commit: `236b2d2`
 
 - [ ] OPEN — Controlled decoupling of the four orchestrators
 - [ ] OPEN — Observability decision (`[!] BLOCKED_OWNER` before any telemetry SDK)
+
+---
+
+## The release candidate gate
+
+`npm run release:candidate` answers twelve questions about one commit and one
+file, each from a record on disk, and refuses to guess. Evidence from another
+commit is `STALE`, evidence that does not exist is `MISSING`, and either one
+makes the verdict `NOT READY`.
+
+Proven on commit `79497ae0` (1.0.4, versionCode 101, AAB
+`80bfd5ed3520294e…`):
+
+| Answer | From |
+|---|---|
+| quality gate PASS | 30 checks, one list shared by CI, the production workflow and the release script |
+| artefacts hashed, signature, mapping, SBOM, lock | the release record written by the build itself |
+| tree clean | `git status` at build time |
+| database PASS | 18 pgTAP suites, recorded for this commit |
+| journeys PASS | three black-box flows on the installed build |
+| offline and kill PASS | message written with no network, process killed, delivered after reconnect |
+| export size PASS | 5.18 MiB JS against the 5.5 MiB ceiling |
+| device evidence MISSING | no device matrix yet |
+
+Verdict: **NOT READY**, for one honest reason. That is the gate working: it
+names what is missing instead of rounding up.
+
+## Still open
+
+- [ ] OPEN — Device matrix (the only thing between this candidate and READY)
+- [ ] OPEN — Android MASVS matrix with evidence per item
+- [ ] OPEN — Performance regression gates beyond bundle size
+- [ ] OPEN — Branch coverage floors for the critical modules
+- [ ] OPEN — Controlled decoupling of the four orchestrators
+- [!] BLOCKED_OWNER — Observability: no telemetry SDK before the data question
+      is answered (what is sent, to whom, for how long, and what the privacy
+      policy and the Play data safety form would have to say)
+- [!] BLOCKED_OWNER — Firebase Test Lab or any paid device farm
+
+## Product observations for the owner
+
+- Launching with no network shows a full-screen offline state, so an existing
+  conversation cannot be opened at all. Defensible, but it is a decision.
+- `zz_chat_backup` still holds six message bodies with no purpose.
