@@ -106,11 +106,11 @@ function languageTable(locale) {
 }
 
 // The short strip on the home page is a sample, not the list. Fifteen flags
-// read as a wall of decoration; five read as a fact, and the button underneath
+// read as a wall of decoration; six read as a fact, and the button underneath
 // leads to all of them. The visitor's own language comes first — that is the
 // one they check for — then the widest-reaching of the rest.
-const STRIP_PRIORITAET = ['en', 'es', 'fr', 'tr', 'de', 'pt-BR'];
-const STRIP_MAX = 5;
+const STRIP_PRIORITAET = ['en', 'es', 'fr', 'it', 'tr', 'de'];
+const STRIP_MAX = 6;
 
 function stripAuswahl(locale) {
   const nachCode = new Map(appLocales.map((entry) => [entry.code, entry]));
