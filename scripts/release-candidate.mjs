@@ -52,7 +52,7 @@ const performanceBaseline = read(join(root, 'artifacts/performance-baseline.json
 function sameSourceTree(recordCommit) {
   if (recordCommit === release.commit) return true;
   try {
-    const changed = execFileSync('git', ['diff', '--name-only', release.commit, recordCommit], { cwd: root, encoding: 'utf8' })
+    const changed = execFileSync('git', ['diff', '--name-only', release.commit, recordCommit], { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] })
       .split('\n').map((line) => line.trim()).filter(Boolean);
     return changed.length > 0 && changed.every((path) => path.startsWith('artifacts/'));
   } catch {
@@ -73,7 +73,20 @@ const verdictFor = (record, label) => {
 const answers = [];
 const ask = (name, verdict, detail) => answers.push({ name, verdict, detail });
 
-ask('quality gate', gate?.status === 'PASS' ? 'PASS' : gate ? 'FAIL' : 'MISSING', gate ? `${gate.checks.length} checks at ${gate.ranAt}` : 'no gate report');
+// The gate was the one belief taken on faith: its report carried no commit, so
+// a PASS from another tree — or from a build that skipped the gate entirely —
+// counted as this candidate's. It is judged like every other piece of evidence
+// now.
+const gateCommit = gate?.commit ?? release.qualityGate?.commit ?? null;
+ask('quality gate',
+  !gate ? 'MISSING'
+    : !gateCommit ? 'STALE'
+    : !sameSourceTree(gateCommit) ? 'STALE'
+    : gate.status === 'PASS' ? 'PASS' : 'FAIL',
+  !gate ? 'no gate report'
+    : !gateCommit ? `${gate.checks.length} checks, but the report does not say which tree`
+    : !sameSourceTree(gateCommit) ? `${gate.status} but for ${gateCommit.slice(0, 8)}`
+    : `${gate.checks.length} checks at ${gate.ranAt}`);
 ask('release artefacts hashed', release.artefacts?.length >= 2 ? 'PASS' : 'FAIL', `${release.artefacts?.length ?? 0} artefacts`);
 ask('signature verified', release.signature?.sha256 ? 'PASS' : 'FAIL', release.signature?.sha1 ?? 'no certificate read');
 ask('mapping kept', release.artefacts?.some((a) => a.name.includes('mapping')) ? 'PASS' : 'FAIL', 'R8 mapping for this build');

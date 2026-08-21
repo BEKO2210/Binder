@@ -3,8 +3,8 @@
   "version": "1.0.6",
   "versionCode": 103,
   "artifactSha256": "0dfabeda0c77ea5493045b419e5349c1e5e7c379ab1b2e972b7e5a2a8ab5e7a6",
-  "quality": "PASS",
-  "database": "PASS",
+  "quality": "INCOMPLETE",
+  "database": "INCOMPLETE",
   "security": "PASS",
   "e2e": "PASS",
   "performance": "PASS",
@@ -13,8 +13,8 @@
   "answers": [
     {
       "name": "quality gate",
-      "verdict": "PASS",
-      "detail": "33 checks at 2026-08-20T22:44:13.788Z"
+      "verdict": "STALE",
+      "detail": "PASS but for f06bb664"
     },
     {
       "name": "release artefacts hashed",
@@ -48,8 +48,8 @@
     },
     {
       "name": "database suites",
-      "verdict": "PASS",
-      "detail": "PASS at 2026-08-20T22:56:42.726Z"
+      "verdict": "STALE",
+      "detail": "PASS but for 8e4c94b5"
     },
     {
       "name": "black-box journeys",
@@ -82,5 +82,5 @@
       "detail": "PASS at 2026-08-20T23:12:01.894Z"
     }
   ],
-  "verdict": "READY"
+  "verdict": "NOT READY"
 }

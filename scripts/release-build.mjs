@@ -76,6 +76,12 @@ if (!existsSync(keystoreProperties)) {
 if (!flags.has('--skip-gate')) {
   console.log('Quality gate: the same list CI runs.');
   execFileSync(process.execPath, [join(root, 'scripts/quality-gate.mjs')], { stdio: 'inherit' });
+} else {
+  // Skipping the gate must not inherit the last run's verdict. The report from
+  // whatever ran before is still lying in artifacts/, and without this line the
+  // evidence file would quote its PASS as if this build had earned it.
+  rmSync(join(root, 'artifacts/quality-gate.json'), { force: true });
+  console.log('Quality gate skipped — this build carries no gate evidence.');
 }
 
 // Gradle kept a JavaScript bundle it should have rebuilt: a release built

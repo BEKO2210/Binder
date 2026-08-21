@@ -80,7 +80,12 @@ test('evidence counts across a commit that only wrote evidence down', () => {
   // difference between the two commits has to live entirely in artifacts/.
   const source = readFileSync(new URL('../scripts/release-candidate.mjs', import.meta.url), 'utf8');
   assert.match(source, /changed\.length > 0 && changed\.every\(\(path\) => path\.startsWith\('artifacts\/'\)\)/);
-  // And both places that compare commits go through it.
-  assert.equal(source.match(/sameSourceTree\(/g)?.length, 3);
+  // Every place that compares a record's commit goes through it — counting the
+  // calls was the brittle way to say that, and it broke the first time a fifth
+  // caller was right to exist.
+  assert.match(source, /sameSourceTree\(record\.commit\)/);
+  assert.match(source, /sameSourceTree\(performance\.commit\)/);
+  assert.match(source, /sameSourceTree\(gateCommit\)/);
   assert.doesNotMatch(source, /performance\.commit === release\.commit/);
+  assert.doesNotMatch(source, /gate\?\.status === 'PASS' \? 'PASS' : gate \? 'FAIL'/);
 });

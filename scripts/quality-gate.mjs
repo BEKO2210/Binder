@@ -108,8 +108,18 @@ for (const [name, command, args] of plan) {
 }
 
 const failed = results.filter((result) => result.status === 'FAIL');
+// The report says which tree it judged. Without that, a PASS from last week is
+// indistinguishable from a PASS from this build — and the release candidate had
+// no way to notice, because it was the one belief it took on faith.
+const commitOf = (revision) => {
+  try { return execFileSync('git', ['rev-parse', revision], { encoding: 'utf8' }).trim(); }
+  catch { return null; }
+};
+
 const report = {
   ranAt: new Date().toISOString(),
+  commit: commitOf('HEAD'),
+  tree: commitOf('HEAD^{tree}'),
   android: withAndroid,
   status: failed.length === 0 ? 'PASS' : 'FAIL',
   checks: results,

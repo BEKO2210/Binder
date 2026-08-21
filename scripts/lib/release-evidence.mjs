@@ -60,7 +60,10 @@ export function writeEvidence({ root, version, versionCode, artefacts, certifica
       lockfileSha256: existsSync(join(root, 'package-lock.json')) ? sha256(join(root, 'package-lock.json')) : null,
       sbom: sbomPath && existsSync(sbomPath) ? { name: basename(sbomPath), sha256: sha256(sbomPath) } : null,
     },
-    qualityGate: gate ? { status: gate.status, checks: gate.checks.length, ranAt: gate.ranAt, android: gate.android } : null,
+    // The gate's own commit travels with it. A report that does not say which
+    // tree it judged is not evidence for this artefact, and the candidate is
+    // the one who gets to decide that — not this writer.
+    qualityGate: gate ? { status: gate.status, checks: gate.checks.length, ranAt: gate.ranAt, android: gate.android, commit: gate.commit ?? null, tree: gate.tree ?? null } : null,
   };
 
   const target = join(root, 'artifacts/release-evidence', `${commit || 'unknown'}.json`);
