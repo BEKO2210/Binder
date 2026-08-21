@@ -7,6 +7,11 @@
 //
 //   node scripts/e2e.mjs                 every journey under .maestro
 //   node scripts/e2e.mjs 01-auth.yaml    one of them
+//
+// BINDER_STAGED=1 says the caller has already created the account and the demo
+// profiles and will remove them itself. The device matrix runs these journeys
+// four times in a row; staging four accounts to throw away three of them cost
+// more wall-clock than two of the journeys together.
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
@@ -39,8 +44,11 @@ function unstage() {
   try { execFileSync(process.execPath, ['scripts/stage-test-account.mjs', 'remove'], { stdio: 'ignore' }); } catch { /* keep going */ }
 }
 
+const preStaged = process.env.BINDER_STAGED === '1' && process.env.MAESTRO_EMAIL && process.env.MAESTRO_PASSWORD;
 let failure = null;
-const account = stage();
+const account = preStaged
+  ? { email: process.env.MAESTRO_EMAIL, password: process.env.MAESTRO_PASSWORD }
+  : stage();
 try {
   // The offline scenario's steps carry the `scenario` tag: they assume a
   // network state and a screen that only their runner sets up, so a plain
@@ -58,7 +66,7 @@ try {
 } catch (error) {
   failure = error;
 } finally {
-  unstage();
+  if (!preStaged) unstage();
 }
 
 // The record the release gate reads: which journeys ran, on which build, with

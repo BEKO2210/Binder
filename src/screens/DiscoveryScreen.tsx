@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { BackHandler, Image, ScrollView, useWindowDimensions, View } from 'react-native';
+import { BackHandler, Image, PixelRatio, ScrollView, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { Extrapolation, FadeIn, FadeOut, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 
@@ -46,6 +46,15 @@ import { useBinderTheme } from '../theme/ThemeProvider';
 // socket stayed quiet — measured at over seventy seconds on a stalled network,
 // with no way out and no error. Every await here that holds a blocking state
 // gets the same ceiling the profile screen already has.
+// At a doubled system font the two supporting lines above the deck took a third
+// of the screen: five lines of "people who suit both sides", four of the filter
+// summary, and the card underneath squeezed until the interest chips read
+// "Fotog…". Supporting text may grow, but not without end — and the sentence
+// that only explains what the screen already shows steps aside entirely when
+// the font is large enough that it would cost a card.
+const HEADER_TEXT_CAP = 1.3;
+const HEADER_COPY_MAX_FONT_SCALE = 1.5;
+
 const DISCOVERY_DEADLINE_MS = 12_000;
 // Refreshing the location is not a query: it asks for a permission and then
 // waits for a position fix, and a cold fix on a phone that has just been
@@ -55,6 +64,10 @@ const DISCOVERY_LOCATION_DEADLINE_MS = 30_000;
 
 export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onOpenMatch?: (match: MatchSummary) => void; onSessionExpired: () => void }) {
   const { theme, reduceMotion, locale, t } = useBinderTheme();
+  // The system font scale decides whether the explaining sentence still earns
+  // its space. PixelRatio reads the live value, so it follows a change in
+  // Android's settings without a restart.
+  const headerCopyFits = PixelRatio.getFontScale() < HEADER_COPY_MAX_FONT_SCALE;
   const reportReasons: { value: DiscoveryReportReason; label: string; detail: string }[] = [
     { value: 'underage', label: t('discovery.safety.reasons.underage.label'), detail: t('discovery.safety.reasons.underage.detail') },
     { value: 'harassment', label: t('discovery.safety.reasons.harassment.label'), detail: t('discovery.safety.reasons.harassment.detail') },
@@ -505,7 +518,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
       {/* Everything the sheets cover. A screen reader used to keep reading the
           deck and its header while a sheet was open on top of them. */}
       <View style={{ flex: 1 }} accessibilityElementsHidden={deckCovered} importantForAccessibility={deckCovered ? 'no-hide-descendants' : 'auto'}>
-      <BinderScreenHeader title={t('discovery.header.title')} titleVisual={<View><BinderBrand compact /><BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>{t('discovery.header.copy')}</BinderText>{filterValues ? <BinderText variant="caption" tone="accent" style={{ marginTop: theme.spacing.x2, marginBottom: theme.spacing.x1 }}>{t('discovery.filters.summary', { minAge: formatCount(filterValues.minAge, locale), maxAge: formatCount(filterValues.maxAge, locale), distance: formatDistanceKm(filterValues.distance, locale) })}{attributeFilterCount > 0 ? ` · ${t(attributeFilterCount === 1 ? 'discovery.filters.moreOne' : 'discovery.filters.moreOther', { count: formatCount(attributeFilterCount, locale) })}` : ''}</BinderText> : null}{pendingCount > 0 ? <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1 }}>{t(pendingCount === 1 ? 'discovery.pending.one' : 'discovery.pending.other', { count: formatCount(pendingCount, locale) })}</BinderText> : null}</View>} trailing={<View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
+      <BinderScreenHeader title={t('discovery.header.title')} titleVisual={<View><BinderBrand compact />{headerCopyFits ? <BinderText variant="caption" tone="muted" maxFontSizeMultiplier={HEADER_TEXT_CAP} style={{ marginTop: theme.spacing.x2 }}>{t('discovery.header.copy')}</BinderText> : null}{filterValues ? <BinderText variant="caption" tone="accent" maxFontSizeMultiplier={HEADER_TEXT_CAP} style={{ marginTop: theme.spacing.x2, marginBottom: theme.spacing.x1 }}>{t('discovery.filters.summary', { minAge: formatCount(filterValues.minAge, locale), maxAge: formatCount(filterValues.maxAge, locale), distance: formatDistanceKm(filterValues.distance, locale) })}{attributeFilterCount > 0 ? ` · ${t(attributeFilterCount === 1 ? 'discovery.filters.moreOne' : 'discovery.filters.moreOther', { count: formatCount(attributeFilterCount, locale) })}` : ''}</BinderText> : null}{pendingCount > 0 ? <BinderText variant="caption" tone="muted" maxFontSizeMultiplier={HEADER_TEXT_CAP} style={{ marginTop: theme.spacing.x1 }}>{t(pendingCount === 1 ? 'discovery.pending.one' : 'discovery.pending.other', { count: formatCount(pendingCount, locale) })}</BinderText> : null}</View>} trailing={<View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2 }}>
           {decisionPending ? <BinderText accessibilityLiveRegion="polite" variant="caption" tone="accent">{t('discovery.states.saving')}</BinderText> : null}
           <Animated.View key={filterValues ? `${filterValues.minAge}-${filterValues.maxAge}-${filterValues.distance}` : 'filters'} entering={reduceMotion ? undefined : FadeIn.duration(theme.motion.standard)} exiting={reduceMotion ? undefined : FadeOut.duration(theme.motion.fast)}><BinderChip icon="settings" label={t('discovery.filters.label')} selected={filtersOpen} disabled={decisionPending} accessibilityLabel={t('discovery.accessibility.openFilters')} onPress={() => setFiltersOpen(true)} /></Animated.View>
         </View>} />

@@ -24,6 +24,9 @@ name: Discovery — a bind sticks across a restart
 - extendedWaitUntil:
     visible: 'Deine Suche'
     timeout: 30000
+# A picture of the deck as it really looks under this condition. The assertions
+# above prove the words are there; only a person can see that they fit.
+- takeScreenshot: shots/deck
 
 # Whoever is on top gets bound.
 - tapOn: 'Profil binden'

@@ -46,6 +46,7 @@ artifacts/*
 # has to be arguable in a diff.
 !artifacts/performance-baseline.json
 
+
 # The code map belongs in the repo so any agent can find its way; the browser
 # view and the extractor's cache do not — one is a megabyte of generated HTML,
 # the other is scratch.

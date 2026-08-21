@@ -14,7 +14,7 @@
 //   node scripts/device-matrix.mjs                 every condition
 //   node scripts/device-matrix.mjs dark 200-font   a subset
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
@@ -97,9 +97,35 @@ const CONDITIONS = {
 // The child's output is captured rather than inherited: a run started in the
 // background inherits no terminal, and the first version of this recorded four
 // failures whose reason existed only in a stream nobody kept.
+// One account and one set of demo profiles for the whole matrix. Every
+// condition used to stage its own and throw it away again — four round trips to
+// the database to create the same three profiles, which cost more time than two
+// of the journeys.
+function stageOnce() {
+  const output = execFileSync(process.execPath, ['scripts/stage-test-account.mjs', 'create'], { encoding: 'utf8' });
+  const email = /E-Mail:\s*(\S+)/.exec(output)?.[1];
+  const password = /Passwort:\s*(\S+)/.exec(output)?.[1];
+  if (!email || !password) throw new Error('Could not read the staged account');
+  execFileSync(process.execPath, ['scripts/stage-demo-profiles.mjs', 'create', 'docs/demo-profiles.json'], { stdio: 'inherit' });
+  execFileSync(process.execPath, ['scripts/stage-test-match.mjs', 'create'], { stdio: 'inherit' });
+  return { email, password };
+}
+
+function unstageOnce() {
+  for (const args of [['scripts/stage-test-match.mjs', 'remove'],
+    ['scripts/stage-demo-profiles.mjs', 'remove', 'docs/demo-profiles.json'],
+    ['scripts/stage-test-account.mjs', 'remove']]) {
+    try { execFileSync(process.execPath, args, { stdio: 'ignore' }); } catch { /* keep going */ }
+  }
+}
+
 function runJourneys() {
   try {
-    const output = execFileSync(process.execPath, ['scripts/e2e.mjs'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+    const output = execFileSync(process.execPath, ['scripts/e2e.mjs'], {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: { ...process.env, BINDER_STAGED: '1', MAESTRO_EMAIL: account.email, MAESTRO_PASSWORD: account.password },
+    });
     process.stdout.write(output);
     return output;
   } catch (error) {
@@ -111,16 +137,75 @@ function runJourneys() {
   }
 }
 
+// Where a person looks afterwards. The assertions prove the words are there;
+// only somebody looking at a picture can see that they fit on the screen — which
+// is exactly how a doubled system font broke the discovery header while every
+// journey stayed green.
+const runStamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+const runCommit = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim().slice(0, 8);
+// This repository is public. Screenshots of a run show the staged demo profiles
+// and whatever the phone had on screen, so they land outside it by default —
+// next to the roadmap, where a person reviews them. BINDER_PUBLISH_RUNS=1 puts
+// them under artifacts/ instead, for the day that is a deliberate choice.
+const runRoot = process.env.BINDER_PUBLISH_RUNS === '1'
+  ? 'artifacts/device-runs'
+  : join(homedir(), 'Binder-Roadmap/device-runs');
+const runDir = `${runRoot}/${runStamp}-${runCommit}`;
+// Maestro 2.8 keeps what a flow captured under its own run folder, one level
+// deeper than the name in the yaml suggests:
+//   ~/.maestro/tests/<run>/<flow name>/takeScreenshot/shots/deck.png
+// so the pictures are fetched from there rather than from the working directory.
+const MAESTRO_RUNS = join(homedir(), '.maestro/tests');
+
+function newestMaestroRun(since) {
+  if (!existsSync(MAESTRO_RUNS)) return null;
+  const runs = readdirSync(MAESTRO_RUNS)
+    .map((name) => ({ name, at: statSync(join(MAESTRO_RUNS, name)).mtimeMs }))
+    .filter((run) => run.at >= since)
+    .sort((a, b) => b.at - a.at);
+  return runs[0] ? join(MAESTRO_RUNS, runs[0].name) : null;
+}
+
+function pngsUnder(directory, found = []) {
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    const path = join(directory, entry.name);
+    if (entry.isDirectory()) pngsUnder(path, found);
+    else if (entry.name.endsWith('.png')) found.push(path);
+  }
+  return found;
+}
+
+function collectShots(condition, startedAt) {
+  const target = `${runDir}/${condition}`;
+  mkdirSync(target, { recursive: true });
+  const run = newestMaestroRun(startedAt);
+  if (run) {
+    for (const png of pngsUnder(run)) {
+      const flow = png.split('/').slice(-4, -3)[0]?.split(' ')[0]?.toLowerCase() ?? 'flow';
+      cpSync(png, `${target}/${flow}-${png.split('/').pop()}`);
+    }
+  }
+  // Maestro writes what the flows asked for; the last screen is captured here
+  // so a failure leaves a picture of where it stopped.
+  try {
+    const png = execFileSync(adb, ['-s', serial, 'exec-out', 'screencap', '-p'], { encoding: 'buffer', maxBuffer: 64 * 1024 * 1024 });
+    writeFileSync(`${target}/zz-last-screen.png`, png);
+  } catch { /* the phone may be mid-restart */ }
+  return readdirSync(target);
+}
+
 const wanted = process.argv.slice(2).filter((argument) => argument in CONDITIONS);
 const plan = wanted.length > 0 ? wanted : Object.keys(CONDITIONS);
 const hardware = device();
 const results = [];
+const account = stageOnce();
 
 console.log(`Device: ${hardware.model}, Android ${hardware.android} (API ${hardware.api}), ${hardware.screen} @ ${hardware.density}\n`);
 
 for (const name of plan) {
   const condition = CONDITIONS[name];
   console.log(`── ${name}: ${condition.why} ──`);
+  const startedAt = Date.now() - 1000;
   let status = 'PASS';
   let detail = '';
   let retried = false;
@@ -148,9 +233,12 @@ for (const name of plan) {
   } finally {
     try { condition.reset(); } catch { detail += ' (condition could not be reset)'; }
   }
-  results.push({ condition: name, why: condition.why, status, retried, detail });
-  console.log(`   ${status}\n`);
+  const shots = collectShots(name, startedAt);
+  results.push({ condition: name, why: condition.why, status, retried, detail, shots });
+  console.log(`   ${status} — ${shots.length} screenshot(s)\n`);
 }
+
+unstageOnce();
 
 mkdirSync('artifacts', { recursive: true });
 const evidence = {
@@ -169,6 +257,31 @@ const evidence = {
 };
 writeFileSync('artifacts/device-evidence.json', `${JSON.stringify(evidence, null, 2)}\n`);
 
+// The page a person opens. Markdown, because GitHub renders it: four
+// conditions, the pictures underneath each, and what the machine thought.
+const review = [
+  `# Gerätelauf ${runStamp} · ${runCommit}`,
+  '',
+  `${hardware.model}, Android ${hardware.android} (API ${hardware.api}), ${hardware.screen} @ ${hardware.density}`,
+  `App: ${evidence.installed.versionName} (${evidence.installed.versionCode}) · Urteil der Maschine: **${evidence.status}**`,
+  '',
+  'Die Zusicherungen beweisen, dass die Worte da sind. Ob sie auf den Bildschirm',
+  'passen, sieht nur ein Mensch — deshalb diese Seite.',
+  '',
+  ...results.flatMap((result) => [
+    `## ${result.condition} — ${result.status}${result.retried ? ' (Wiederholung)' : ''}`,
+    '',
+    result.why,
+    result.detail ? `\n\`${result.detail}\`` : '',
+    '',
+    ...result.shots.map((shot) => `![${result.condition} ${shot}](${result.condition}/${shot})`),
+    '',
+  ]),
+].join('\n');
+writeFileSync(`${runDir}/REVIEW.md`, `${review}\n`);
+cpSync('artifacts/device-evidence.json', `${runDir}/device-evidence.json`);
+
 console.log(`Device matrix: ${evidence.status} — ${results.filter((r) => r.status === 'PASS').length}/${results.length} conditions`);
 console.log('Written to artifacts/device-evidence.json');
+console.log(`For a human: ${runDir}/REVIEW.md`);
 if (evidence.status !== 'PASS') process.exit(1);
