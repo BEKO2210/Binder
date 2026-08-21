@@ -69,8 +69,22 @@ for (const locale of siteLocales) {
   for (const language of languages) {
     if (!languagesHtml.includes(`<code>${language.code}</code>`)) problems.push(`${label}/languages.html does not list ${language.code}.`);
     if (!languagesHtml.includes(language.endonym)) problems.push(`${label}/languages.html is missing the endonym ${language.endonym} (${language.code}).`);
-    if (!homeHtml.includes(`lang="${language.code}"`)) problems.push(`${label}/index.html is missing ${language.code} in the language strip.`);
   }
+
+  // Die Startseite zeigt eine Auswahl, nicht die Liste — fuenfzehn Flaggen
+  // lesen sich als Dekoration. Geprueft wird deshalb nicht Vollstaendigkeit
+  // (die gehoert auf languages.html und steht direkt darueber), sondern dass
+  // die Auswahl nichts erfindet, hoechstens fuenf zeigt und mit der Sprache
+  // der Seite beginnt: das ist die, nach der ein Besucher sucht.
+  const strip = homeHtml.slice(homeHtml.indexOf('<ul class="langstrip"'), homeHtml.indexOf('</ul>', homeHtml.indexOf('<ul class="langstrip"')));
+  const gezeigt = [...strip.matchAll(/lang="([A-Za-z-]+)"/g)].map((treffer) => treffer[1]);
+  if (gezeigt.length === 0) problems.push(`${label}/index.html has no language strip at all.`);
+  if (gezeigt.length > 5) problems.push(`${label}/index.html shows ${gezeigt.length} languages on the home page; five is the limit.`);
+  for (const code of gezeigt) {
+    if (!codes.includes(code)) problems.push(`${label}/index.html advertises ${code}, which is not a locale that ships.`);
+  }
+  const eigene = locale || source;
+  if (gezeigt.length && gezeigt[0] !== eigene) problems.push(`${label}/index.html starts its language strip with ${gezeigt[0]} instead of ${eigene}.`);
 
   // Nothing invented: every code in the list has to be a locale that ships.
   // Only the list — the prose quotes tags like `de-DE` as examples.
