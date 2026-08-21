@@ -25,7 +25,10 @@ if (!['create', 'remove'].includes(mode)) {
 const projectRef = process.env.BINDER_PROJECT_REF ?? 'sbohsxtzitqhyswznhec';
 const url = `https://${projectRef}.supabase.co`;
 const email = process.env.BINDER_TEST_EMAIL ?? 'belkis.aslani+binder.testlauf@gmail.com';
-const displayName = 'Testlauf (Testkonto)';
+// Two phones testing at once need two accounts with two names: the match
+// staging finds its account by this name, and with one name it would pick
+// whichever row came first and hand both runs the same conversation.
+const displayName = process.env.BINDER_TEST_NAME ?? 'Testlauf (Testkonto)';
 const portrait = process.env.BINDER_TEST_PORTRAIT ?? '/home/belkis/Binder-Roadmap/demo-portraits/lena-1.webp';
 // Freiberg am Neckar, the same place the demo profiles stand in, so the deck
 // has somebody in it without widening anybody's search radius.

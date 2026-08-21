@@ -177,10 +177,15 @@ function pngsUnder(directory, found = []) {
   return found;
 }
 
+// With two phones running, the newest folder under ~/.maestro/tests belongs to
+// whichever run wrote last — not necessarily this one. So each run gets its own
+// output folder and reads only from there.
+const debugRoot = process.env.BINDER_DEBUG_OUTPUT ?? null;
+
 function collectShots(condition, startedAt) {
   const target = `${runDir}/${condition}`;
   mkdirSync(target, { recursive: true });
-  const run = newestMaestroRun(startedAt);
+  const run = debugRoot && existsSync(debugRoot) ? debugRoot : newestMaestroRun(startedAt);
   if (run) {
     for (const png of pngsUnder(run)) {
       const flow = png.split('/').slice(-4, -3)[0]?.split(' ')[0]?.toLowerCase() ?? 'flow';
@@ -198,6 +203,19 @@ function collectShots(condition, startedAt) {
 
 const wanted = process.argv.slice(2).filter((argument) => argument in CONDITIONS);
 const plan = wanted.length > 0 ? wanted : Object.keys(CONDITIONS);
+// Samsung Pass offers to save the login the moment a password is typed, and the
+// dialog sits on top of the app: every tap after it lands on the wrong window.
+// The autofill service is switched off for the run and put back afterwards —
+// this is somebody's phone, not a lab device.
+const autofillBefore = (() => {
+  try { return shell('settings', 'get', 'secure', 'autofill_service'); } catch { return null; }
+})();
+try { shell('settings', 'put', 'secure', 'autofill_service', 'null'); } catch { /* not every phone has one */ }
+process.on('exit', () => {
+  if (!autofillBefore || autofillBefore === 'null') return;
+  try { shell('settings', 'put', 'secure', 'autofill_service', autofillBefore); } catch { /* the phone may be gone */ }
+});
+
 const hardware = device();
 const results = [];
 // The suite runner may have staged already; a second account would delete the
@@ -227,9 +245,10 @@ for (const name of plan) {
       // reset, and the retry is written down.
       retried = true;
       console.log('   harness hiccup — resetting adb and trying this condition once more');
-      try { execFileSync(adb, ['kill-server'], { stdio: 'ignore' }); } catch { /* it may already be down */ }
-      execFileSync('sleep', ['3']);
-      execFileSync(adb, ['start-server'], { stdio: 'ignore' });
+      // Never kill-server here: it takes down the connection to every attached
+      // phone, and with two runs in parallel that means killing somebody else's
+      // test. Reconnecting this one device does the same job.
+      try { execFileSync(adb, ['-s', serial, 'reconnect'], { stdio: 'ignore' }); } catch { /* it may already be gone */ }
       execFileSync('sleep', ['5']);
       runJourneys();
       detail = `passed on the second attempt after ${first instanceof Error ? first.message.split('\n')[0] : 'a harness failure'}`;
@@ -262,7 +281,10 @@ const evidence = {
   conditions: results,
   status: results.every((result) => result.status === 'PASS') ? 'PASS' : 'FAIL',
 };
-writeFileSync('artifacts/device-evidence.json', `${JSON.stringify(evidence, null, 2)}\n`);
+// One file per phone when several run at once; the merged one is written by the
+// parallel runner.
+const evidencePath = process.env.BINDER_EVIDENCE_FILE ?? 'artifacts/device-evidence.json';
+writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`);
 
 // The page a person opens. Markdown, because GitHub renders it: four
 // conditions, the pictures underneath each, and what the machine thought.
@@ -286,7 +308,7 @@ const review = [
   ]),
 ].join('\n');
 writeFileSync(`${runDir}/REVIEW.md`, `${review}\n`);
-cpSync('artifacts/device-evidence.json', `${runDir}/device-evidence.json`);
+cpSync(evidencePath, `${runDir}/device-evidence.json`);
 
 console.log(`Device matrix: ${evidence.status} — ${results.filter((r) => r.status === 'PASS').length}/${results.length} conditions`);
 console.log('Written to artifacts/device-evidence.json');

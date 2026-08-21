@@ -53,7 +53,15 @@ try {
   // The offline scenario's steps carry the `scenario` tag: they assume a
   // network state and a screen that only their runner sets up, so a plain
   // folder run must not pick them up.
-  execFileSync(maestro, [...(process.env.ANDROID_SERIAL ? ['--device', process.env.ANDROID_SERIAL] : []), 'test', '--exclude-tags=scenario', target], {
+  // --debug-output puts this run's screenshots in a folder only this run knows.
+  // Without it Maestro writes into ~/.maestro/tests/<timestamp>, and two phones
+  // running at the same time pick up each other's pictures.
+  execFileSync(maestro, [
+    ...(process.env.ANDROID_SERIAL ? ['--device', process.env.ANDROID_SERIAL] : []),
+    'test',
+    ...(process.env.BINDER_DEBUG_OUTPUT ? ['--debug-output', process.env.BINDER_DEBUG_OUTPUT] : []),
+    '--exclude-tags=scenario', target,
+  ], {
     stdio: 'inherit',
     env: {
       ...process.env,
@@ -89,7 +97,11 @@ writeFileSync('artifacts/e2e-evidence.json', `${JSON.stringify({
 }, null, 2)}\n`);
 
 if (failure) {
-  console.error('\nJourneys failed. The staged account and demo profiles were removed.');
+  console.error(preStaged
+    ? '\nJourneys failed. The account stays: whoever staged it takes it away.'
+    : '\nJourneys failed. The staged account and demo profiles were removed.');
   process.exit(1);
 }
-console.log('\nJourneys passed. The staged account and demo profiles were removed.');
+console.log(preStaged
+  ? '\nJourneys passed. The account stays: whoever staged it takes it away.'
+  : '\nJourneys passed. The staged account and demo profiles were removed.');

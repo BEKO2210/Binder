@@ -17,6 +17,14 @@ name: Auth — sign in, see the deck, sign out
 - inputText: ${MAESTRO_PASSWORD}
 - hideKeyboard
 - tapOn: 'Anmelden'
+- runFlow:
+    when:
+      visible: 'Never for this app or website'
+    commands:
+      # Samsung Pass fragt nach dem ersten Passwort. Der Dialog liegt ueber der
+      # App: ohne dieses Wegtippen landet jeder folgende Griff im Systemfenster.
+      - tapOn: 'Never for this app or website'
+
 
 # The location prompt belongs to Android, not to us; it may or may not appear.
 - runFlow:

@@ -18,6 +18,14 @@ name: Discovery — a bind sticks across a restart
 - tapOn: 'Anmelden'
 - runFlow:
     when:
+      visible: 'Never for this app or website'
+    commands:
+      # Samsung Pass fragt nach dem ersten Passwort. Der Dialog liegt ueber der
+      # App: ohne dieses Wegtippen landet jeder folgende Griff im Systemfenster.
+      - tapOn: 'Never for this app or website'
+
+- runFlow:
+    when:
       visible: 'Bei Nutzung der App'
     commands:
       - tapOn: 'Bei Nutzung der App'

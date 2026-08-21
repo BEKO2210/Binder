@@ -17,7 +17,7 @@ if (!['create', 'remove'].includes(mode)) {
 }
 
 const projectRef = process.env.BINDER_PROJECT_REF ?? 'sbohsxtzitqhyswznhec';
-const testName = 'Testlauf (Testkonto)';
+const testName = process.env.BINDER_TEST_NAME ?? 'Testlauf (Testkonto)';
 
 function query(sql) {
   const raw = execFileSync(`${process.env.HOME}/.local/bin/supabase`, ['db', 'query', '--linked', sql], { encoding: 'utf8', env: { ...process.env, SUPABASE_PROJECT_REF: projectRef } });
