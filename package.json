@@ -56,7 +56,8 @@
     "perf": "node scripts/performance.mjs",
     "perf:record": "node scripts/performance.mjs --record",
     "lint": "eslint src --max-warnings=9999",
-    "readme": "node scripts/build-readme.mjs"
+    "readme": "node scripts/build-readme.mjs",
+    "push:alive": "node scripts/verify-push-alive.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/manrope": "0.4.2",
