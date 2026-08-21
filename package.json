@@ -58,7 +58,8 @@
     "lint": "eslint src --max-warnings=9999",
     "readme": "node scripts/build-readme.mjs",
     "push:alive": "node scripts/verify-push-alive.mjs",
-    "device:suite": "node scripts/device-suite.mjs"
+    "device:suite": "node scripts/device-suite.mjs",
+    "backup": "node scripts/backup-database.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/manrope": "0.4.2",
