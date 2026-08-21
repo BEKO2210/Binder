@@ -97,3 +97,33 @@ main:focus{outline:none}
 /* As the only item left in the header it should look like the control it is,
    not like leftover text. */
 .links a[href="#download"]{background:rgba(255,255,255,.035);border:1px solid var(--line);color:var(--text)}}
+/* Der Hinweis vor dem Download ist lang — er muss lang sein, weil er erklaert,
+   dass diese Fassung sich nie selbst aktualisiert. Auf einem 360-px-Telefon
+   war er dadurch 1002 px hoch bei 740 px Bildschirm: oben und unten
+   abgeschnitten, ohne Rollbalken, die Knoepfe unerreichbar. Jetzt rollt der
+   Kasten in sich, die Knoepfe bleiben unten stehen. */
+.modal{overflow-y:auto;overscroll-behavior:contain}
+.modalbox{margin:auto;max-height:calc(100dvh - 48px);overflow-y:auto;overscroll-behavior:contain}
+/* Weicher Uebergang statt harter Kante: sonst sieht der abgeschnittene Text
+   unter den Knoepfen wie ein Fehler aus statt wie 'hier geht es weiter'. */
+.modalbox .actions{position:sticky;bottom:0;margin-top:20px;padding-bottom:2px;background:var(--bg);box-shadow:0 -14px 18px 6px var(--bg)}
+@media(max-width:560px){
+  .modal{padding:16px}
+  .modalbox{padding:20px;max-height:calc(100dvh - 32px)}
+  .modalbox h3{font-size:1.2rem;margin:12px 0 10px}
+  .modalbox p{font-size:.95rem}
+  .modalbox .actions{display:grid;grid-template-columns:1fr;gap:10px}
+  .modalbox .actions .btn{width:100%;min-height:48px}
+}
+/* Am Telefon gilt nicht dieselbe Groesse wie am Bildschirm: 10 px in
+   Grossbuchstaben mit weitem Zeichenabstand liest auf 412 px niemand mehr
+   bequem, und die Fusszeile ist dort die einzige Navigation. Unter 560 px
+   deshalb ueberall mindestens 12 px, Fliesstext 13 px. Das Layout aendert
+   sich dadurch nicht — nur die Groessen der kleinsten Schriften. */
+@media(max-width:560px){
+  .kicker,.card .num{font-size:12px;letter-spacing:.14em}
+  .footer{font-size:13px}
+  .meta{font-size:13px}
+  .langtag{font-size:12px}
+  figcaption{font-size:13px}
+}
