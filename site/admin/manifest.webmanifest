@@ -1,0 +1,41 @@
+{
+  "id": "/Binder/admin/",
+  "name": "Binder Admin – Moderation",
+  "short_name": "Binder Admin",
+  "description": "Moderations-Dashboard von Binder: Fotos prüfen, Meldungen entscheiden, Moderatoren verwalten.",
+  "lang": "de",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#090A0F",
+  "theme_color": "#090A0F",
+  "categories": ["utilities"],
+  "icons": [
+    {
+      "src": "../assets/binder-icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "../assets/binder-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../assets/binder-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../assets/binder-icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
+

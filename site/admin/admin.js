@@ -157,6 +157,28 @@
     byId('summary-suspended').textContent = row.suspended_accounts ?? 0;
     byId('summary-moderators').textContent = row.active_moderators ?? 0;
     byId('summary-audit').textContent = row.audit_actions ?? 0;
+    await refreshPlatformNumbers();
+  }
+
+  // Was der Betrieb ueber die Plattform wissen darf: reine Aggregate. Keine
+  // Zeile, keine Kennung, kein Standort — und Werte unter fuenf weist der
+  // Server als fuenf aus, damit eine kleine Gruppe nicht durch Zusehen beim
+  // Zaehler eingegrenzt werden kann.
+  async function refreshPlatformNumbers() {
+    const host = byId('platform-numbers');
+    if (!host) return;
+    try {
+      const rows = await rpc('admin_platform_overview');
+      const grid = make('div', 'metric-grid');
+      rows.forEach((row) => {
+        const card = make('article', 'metric-card');
+        card.append(make('strong', '', new Intl.NumberFormat('de-DE').format(Number(row.value))), make('span', '', row.detail));
+        grid.append(card);
+      });
+      host.replaceChildren(grid);
+    } catch (error) {
+      empty(host, error instanceof Error ? error.message : 'Zahlen nicht verfügbar.');
+    }
   }
 
   function revokeObjectUrls() {
@@ -284,8 +306,46 @@
     container.removeAttribute('aria-busy');
   }
 
+  // Bei zehntausend Nutzern ist die Fehlerliste eine Wand. Quittieren nimmt
+  // einen Eintrag aus der Arbeitsliste, ohne ihn zu loeschen: die Zeile bleibt,
+  // die Zaehlung bleibt ehrlich.
+  function diagnosticReceipt(row) {
+    const wrapper = make('div', 'case-receipt');
+    if (row.acknowledged_at) {
+      wrapper.append(make('p', 'receipt-note',
+        `Quittiert von ${row.acknowledged_by} am ${formatDate(row.acknowledged_at)}${row.acknowledgement_note ? ` — ${row.acknowledgement_note}` : ''}`));
+    }
+    const button = make('button', 'admin-button ghost', row.acknowledged_at ? 'Erneut quittieren' : 'Quittieren');
+    button.type = 'button';
+    button.addEventListener('click', async () => {
+      const note = window.prompt('Notiz (optional):', '') ?? '';
+      try {
+        await rpc('admin_acknowledge_diagnostic', { p_event_id: row.event_id, p_note: note.trim() || null });
+        toast('Fehler quittiert.', false);
+        await refreshDiagnostics();
+      } catch (error) { toast(error instanceof Error ? error.message : 'Quittung fehlgeschlagen.', true); }
+    });
+    wrapper.append(button);
+    return wrapper;
+  }
+
+  // Zehn Moderatoren, eine Schlange: wer zuerst da ist, hat den Fall fuenfzehn
+  // Minuten. Die anderen sehen wer, und bis wann.
+  async function claimCase(caseId) {
+    try {
+      const [claim] = await rpc('admin_claim_case', { p_case_id: caseId });
+      if (claim.was_free) toast(`Fall ${caseId} gehoert dir bis ${formatDate(claim.claimed_until)}.`, false);
+      else toast(`Fall ${caseId} bearbeitet gerade ${claim.claimed_by} (bis ${formatDate(claim.claimed_until)}).`, true);
+      await refreshReports();
+    } catch (error) { toast(error instanceof Error ? error.message : 'Uebernahme fehlgeschlagen.', true); }
+  }
+
   function receiptRow(row) {
     const wrapper = make('div', 'case-receipt');
+    if (row.claimed_by && new Date(row.claimed_until) > new Date()) {
+      wrapper.append(make('p', 'claim-note claim-taken',
+        `In Bearbeitung von ${row.claimed_by} bis ${formatDate(row.claimed_until)}`));
+    }
     if (row.acknowledged_at) {
       wrapper.append(make('p', 'receipt-note',
         `Quittiert von ${row.acknowledged_by} am ${new Date(row.acknowledged_at).toLocaleString('de-DE')}${row.acknowledgement_note ? ` — ${row.acknowledgement_note}` : ''}`));
@@ -293,6 +353,10 @@
     const acknowledge = make('button', 'admin-button ghost', row.acknowledged_at ? 'Erneut quittieren' : 'Gesehen, quittieren');
     acknowledge.type = 'button';
     acknowledge.addEventListener('click', () => acknowledgeCase(row.case_id));
+    const claim = make('button', 'admin-button ghost', 'Fall übernehmen');
+    claim.type = 'button';
+    claim.addEventListener('click', () => claimCase(row.case_id));
+    wrapper.append(claim);
     const evidence = make('button', 'admin-button secondary-action', 'Beweispaket sichern');
     evidence.type = 'button';
     evidence.addEventListener('click', () => exportEvidence(row.case_id));
@@ -493,6 +557,7 @@
           make('time', '', formatDate(row.created_at)),
           make('strong', '', `${humanize(row.surface)} · ${row.outcome === 'error' ? 'Fehler' : humanize(row.outcome)}`),
           make('span', '', `${row.event_name} · ${row.platform} · App ${row.app_version}${row.duration_ms == null ? '' : ` · ${row.duration_ms} ms`}`),
+          diagnosticReceipt(row),
           make('p', '', `Sitzung ${String(row.session_id).slice(0, 8)}`),
         );
         fragment.append(item);

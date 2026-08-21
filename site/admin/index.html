@@ -10,6 +10,13 @@
   <link rel="icon" type="image/png" sizes="192x192" href="../assets/binder-icon-192.png">
   <link rel="stylesheet" href="../styles.css">
   <link rel="stylesheet" href="admin.css">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Binder Admin">
+  <link rel="apple-touch-icon" href="../assets/binder-icon-192.png">
+  <script src="pwa.js" defer></script>
 </head>
 <body class="admin-body">
   <header class="admin-topbar">
@@ -52,6 +59,11 @@
         <article class="summary-card danger-summary"><span>Gesperrte Konten</span><strong id="summary-suspended">–</strong></article>
         <article class="summary-card"><span>Aktive Moderatoren</span><strong id="summary-moderators">–</strong></article>
         <article class="summary-card"><span>Protokollierte Aktionen</span><strong id="summary-audit">–</strong></article>
+      </section>
+
+      <section class="platform-overview" aria-label="Plattform in Zahlen">
+        <h2 class="admin-kicker">Plattform in Zahlen</h2>
+        <div id="platform-numbers" aria-live="polite"><p class="form-help">Wird geladen …</p></div>
       </section>
 
       <nav class="admin-tabs" aria-label="Dashboard Bereiche">

@@ -7,6 +7,33 @@ import { PNG } from 'pngjs';
 // Box filter: the master is a flat-colour mark at a power-of-two size, so
 // averaging the source pixels that fall inside each target pixel is both exact
 // enough and free of the ringing a sharpening resampler would add.
+function maskablePng(buffer, size) {
+  const inner = PNG.sync.read(resizePng(buffer, Math.round(size * 0.72)));
+  const canvas = new PNG({ width: size, height: size });
+  const offset = Math.round((size - inner.width) / 2);
+  for (let y = 0; y < size; y += 1) {
+    for (let x = 0; x < size; x += 1) {
+      const at = (size * y + x) << 2;
+      // The brand's own dark ground, so the circle a launcher cuts is never a
+      // transparent hole.
+      canvas.data[at] = 0x09; canvas.data[at + 1] = 0x0a; canvas.data[at + 2] = 0x0f; canvas.data[at + 3] = 0xff;
+    }
+  }
+  for (let y = 0; y < inner.height; y += 1) {
+    for (let x = 0; x < inner.width; x += 1) {
+      const from = (inner.width * y + x) << 2;
+      const alpha = inner.data[from + 3] / 255;
+      if (alpha === 0) continue;
+      const to = (size * (y + offset) + (x + offset)) << 2;
+      for (let channel = 0; channel < 3; channel += 1) {
+        canvas.data[to + channel] = Math.round(inner.data[from + channel] * alpha + canvas.data[to + channel] * (1 - alpha));
+      }
+      canvas.data[to + 3] = 0xff;
+    }
+  }
+  return PNG.sync.write(canvas);
+}
+
 function resizePng(buffer, size) {
   const source = PNG.sync.read(buffer);
   const target = new PNG({ width: size, height: size });
@@ -37,9 +64,13 @@ copyFileSync('assets/brand/icon.png', 'site/assets/binder-icon.png');
 // The header shows the mark at 36 CSS pixels but was downloading the 1024px
 // master for it — 39 kB of icon on every page load. This writes the sizes the
 // page actually displays, at 2x for dense screens.
-for (const size of [72, 192]) {
+for (const size of [72, 192, 512]) {
   writeFileSync(`site/assets/binder-icon-${size}.png`, resizePng(readFileSync('assets/brand/icon.png'), size));
 }
+
+// A maskable icon has to survive being cropped to a circle, so the mark sits on
+// a full-bleed background with the safe-zone padding Android expects.
+writeFileSync('site/assets/binder-icon-maskable-512.png', maskablePng(readFileSync('assets/brand/icon.png'), 512));
 // The browser gets WOFF2, which is a third of the TrueType size for exactly the
 // same glyphs. The TrueType files stay because the app bundles those, and both
 // come out of the same pinned package — so the two can never drift apart.
