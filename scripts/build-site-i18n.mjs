@@ -109,7 +109,7 @@ function languageTable(locale) {
 // file appears in both places at once instead of only where somebody remembered.
 function languageStrip() {
   const items = appLocales
-    .map((entry) => `<li><span aria-hidden="true">${escapeHtml(entry.meta.flag ?? '')}</span><span lang="${escapeHtml(entry.code)}">${escapeHtml(entry.meta.endonym ?? entry.code)}</span></li>`)
+    .map((entry) => `<li class="lang"><span class="lang-flag" aria-hidden="true">${escapeHtml(entry.meta.flag ?? '')}</span><span class="lang-name" lang="${escapeHtml(entry.code)}">${escapeHtml(entry.meta.endonym ?? entry.code)}</span></li>`)
     .join('');
   return `<ul class="langstrip">${items}</ul>`;
 }
