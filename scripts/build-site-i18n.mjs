@@ -105,10 +105,26 @@ function languageTable(locale) {
   return `<ul class="langgrid">${cards}</ul>`;
 }
 
-// The short strip on the home page comes from the same list, so a new locale
-// file appears in both places at once instead of only where somebody remembered.
-function languageStrip() {
-  const items = appLocales
+// The short strip on the home page is a sample, not the list. Fifteen flags
+// read as a wall of decoration; five read as a fact, and the button underneath
+// leads to all of them. The visitor's own language comes first — that is the
+// one they check for — then the widest-reaching of the rest.
+const STRIP_PRIORITAET = ['en', 'es', 'fr', 'tr', 'de', 'pt-BR'];
+const STRIP_MAX = 5;
+
+function stripAuswahl(locale) {
+  const nachCode = new Map(appLocales.map((entry) => [entry.code, entry]));
+  const gewaehlt = [];
+  for (const code of [locale, ...STRIP_PRIORITAET]) {
+    const entry = nachCode.get(code);
+    if (entry && !gewaehlt.includes(entry)) gewaehlt.push(entry);
+    if (gewaehlt.length === STRIP_MAX) break;
+  }
+  return gewaehlt;
+}
+
+function languageStrip(locale) {
+  const items = stripAuswahl(locale)
     .map((entry) => `<li class="lang"><span class="lang-flag" aria-hidden="true">${escapeHtml(entry.meta.flag ?? '')}</span><span class="lang-name" lang="${escapeHtml(entry.code)}">${escapeHtml(entry.meta.endonym ?? entry.code)}</span></li>`)
     .join('');
   return `<ul class="langstrip">${items}</ul>`;
@@ -209,7 +225,7 @@ function render(locale, page) {
     }
     if (key === '@language-switcher') return switcherFor(locale, page.file);
     if (key === '@language-table') return languageTable(locale);
-    if (key === '@language-strip') return languageStrip();
+    if (key === '@language-strip') return languageStrip(locale);
     if (key === '@language-count') return String(appLocales.length);
     if (dictionary[key] !== undefined) return dictionary[key];
     missing.push(`${locale}/${page.id}: ${key}`);
