@@ -26,6 +26,7 @@ name: Chat — write a message and see it sent
     timeout: 30000
 
 - tapOn: 'Binds'
+- takeScreenshot: shots/binds
 - extendedWaitUntil:
     visible: 'Deine Binds'
     timeout: 20000
@@ -43,3 +44,4 @@ name: Chat — write a message and see it sent
 - extendedWaitUntil:
     visible: '.*Gesendet.*'
     timeout: 20000
+- takeScreenshot: shots/chat

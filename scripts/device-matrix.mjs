@@ -144,12 +144,14 @@ function runJourneys() {
 const runStamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
 const runCommit = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim().slice(0, 8);
 // This repository is public. Screenshots of a run show the staged demo profiles
-// and whatever the phone had on screen, so they land outside it by default —
-// next to the roadmap, where a person reviews them. BINDER_PUBLISH_RUNS=1 puts
-// them under artifacts/ instead, for the day that is a deliberate choice.
+// and whatever the phone had on screen, so they go to the private one, next to
+// the rest of the evidence: BEKO2210/binder-internal, checked out at
+// ~/binder-internal. BINDER_PUBLISH_RUNS=1 puts them under artifacts/ instead,
+// for the day that is a deliberate choice.
+const INTERNAL_REPO = join(homedir(), 'binder-internal');
 const runRoot = process.env.BINDER_PUBLISH_RUNS === '1'
   ? 'artifacts/device-runs'
-  : join(homedir(), 'Binder-Roadmap/device-runs');
+  : join(INTERNAL_REPO, 'belege/device-runs');
 const runDir = `${runRoot}/${runStamp}-${runCommit}`;
 // Maestro 2.8 keeps what a flow captured under its own run folder, one level
 // deeper than the name in the yaml suggests:
@@ -284,4 +286,18 @@ cpSync('artifacts/device-evidence.json', `${runDir}/device-evidence.json`);
 console.log(`Device matrix: ${evidence.status} — ${results.filter((r) => r.status === 'PASS').length}/${results.length} conditions`);
 console.log('Written to artifacts/device-evidence.json');
 console.log(`For a human: ${runDir}/REVIEW.md`);
+
+// The evidence is only useful if somebody can find it later. Committing it to
+// the private repository is what turns a folder on one laptop into a record.
+if (runRoot.startsWith(INTERNAL_REPO) && existsSync(join(INTERNAL_REPO, '.git'))) {
+  try {
+    execFileSync('git', ['add', 'belege/device-runs'], { cwd: INTERNAL_REPO, stdio: 'ignore' });
+    execFileSync('git', ['-c', 'user.name=Binder device matrix', '-c', 'user.email=nullmesh@protonmail.com',
+      'commit', '-m', `Geraetelauf ${runStamp} · ${runCommit} · ${evidence.status}`], { cwd: INTERNAL_REPO, stdio: 'ignore' });
+    execFileSync('git', ['push'], { cwd: INTERNAL_REPO, stdio: 'ignore' });
+    console.log('Recorded in binder-internal.');
+  } catch {
+    console.log('Could not record the run in binder-internal — the folder is written, the commit is not.');
+  }
+}
 if (evidence.status !== 'PASS') process.exit(1);

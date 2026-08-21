@@ -29,8 +29,10 @@ name: Auth — sign in, see the deck, sign out
     visible: 'Entdecken'
     timeout: 30000
 - assertVisible: 'Deine Suche'
+- takeScreenshot: shots/nach-anmeldung
 
 - tapOn: 'Menü'
+- takeScreenshot: shots/menue
 - scrollUntilVisible:
     element: 'Abmelden'
     direction: DOWN
