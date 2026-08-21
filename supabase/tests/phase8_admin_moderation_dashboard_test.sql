@@ -15,12 +15,17 @@ $$;
 
 select plan(43);
 
+-- Who the owner is comes from Vault in a real deployment, so this suite seeds
+-- its own instead of asserting an address that no longer lives in the code.
+insert into private.admin_members(email, role, status, can_review_media, can_review_reports, can_suspend_accounts)
+values ('owner@binder.test', 'owner', 'invited', true, true, true)
+on conflict (email) do nothing;
 select is(
-  (select email from private.admin_members where role = 'owner'),
-  'belkis.aslani@gmail.com',
-  'Belkis is the only bootstrapped admin email'
+  (select count(*)::integer from private.admin_members where role = 'owner'),
+  1,
+  'There is exactly one owner seat'
 );
-select is((select role from private.admin_members where email = 'belkis.aslani@gmail.com'), 'owner', 'Bootstrap account is owner');
+select is((select role from private.admin_members where email = 'owner@binder.test'), 'owner', 'The seeded owner holds it');
 select ok(not has_table_privilege('authenticated', 'private.admin_members', 'select'), 'Authenticated clients cannot read the admin membership table');
 select ok(not has_function_privilege('anon', 'public.claim_admin_session()', 'execute'), 'Anonymous clients cannot claim an admin session');
 select ok(has_function_privilege('authenticated', 'public.claim_admin_session()', 'execute'), 'Authenticated clients can attempt the guarded session claim');
@@ -29,7 +34,7 @@ insert into auth.users (
   id, aud, role, email, email_confirmed_at,
   raw_app_meta_data, raw_user_meta_data, created_at, updated_at
 ) values
-('81000000-0000-4000-8000-000000000001', 'authenticated', 'authenticated', 'belkis.aslani@gmail.com', now(), '{}', '{}', now(), now()),
+('81000000-0000-4000-8000-000000000001', 'authenticated', 'authenticated', 'owner@binder.test', now(), '{}', '{}', now(), now()),
 ('81000000-0000-4000-8000-000000000003', 'authenticated', 'authenticated', 'subject@binder.test', now(), '{}', '{}', now(), now()),
 ('81000000-0000-4000-8000-000000000004', 'authenticated', 'authenticated', 'reporter@binder.test', now(), '{}', '{}', now(), now()),
 ('81000000-0000-4000-8000-000000000005', 'authenticated', 'authenticated', 'stranger@binder.test', now(), '{}', '{}', now(), now());
@@ -240,7 +245,7 @@ reset role;
 select set_config('request.jwt.claims', '{"sub":"81000000-0000-4000-8000-000000000001","role":"authenticated","session_id":"83000000-0000-4000-8000-000000000001"}', true);
 set local role authenticated;
 select ok(
-  pg_temp.did_error($sql$select * from public.admin_prepare_moderator_invite('belkis.aslani@gmail.com', true, true, true)$sql$),
+  pg_temp.did_error($sql$select * from public.admin_prepare_moderator_invite('owner@binder.test', true, true, true)$sql$),
   'Owner membership cannot be replaced through moderator management'
 );
 reset role;
@@ -252,7 +257,7 @@ delete from auth.users where id = '81000000-0000-4000-8000-000000000001';
 select ok(
   exists (
     select 1 from private.admin_members
-    where email = 'belkis.aslani@gmail.com' and user_id is null and status = 'invited'
+    where email = 'owner@binder.test' and user_id is null and status = 'invited'
   ),
   'Deleting the owner Auth account safely returns the fixed owner membership to invited state'
 );

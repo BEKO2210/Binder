@@ -53,35 +53,41 @@ create trigger admin_members_identity_normalization
 before update of user_id on private.admin_members
 for each row execute function private.normalize_admin_membership_identity();
 
-insert into private.admin_members as current_member (
-  email, user_id, role, status,
-  can_review_media, can_review_reports, can_suspend_accounts,
-  activated_at
-)
-values (
-  'belkis.aslani@gmail.com',
-  (select u.id from auth.users u where lower(u.email) = 'belkis.aslani@gmail.com' and u.email_confirmed_at is not null limit 1),
-  'owner',
-  case when exists (
-    select 1 from auth.users u
-    where lower(u.email) = 'belkis.aslani@gmail.com' and u.email_confirmed_at is not null
-  ) then 'active' else 'invited' end,
-  true, true, true,
-  case when exists (
-    select 1 from auth.users u
-    where lower(u.email) = 'belkis.aslani@gmail.com' and u.email_confirmed_at is not null
-  ) then pg_catalog.clock_timestamp() else null end
-)
-on conflict (email) do update
-set user_id = coalesce(excluded.user_id, current_member.user_id),
-    role = 'owner',
-    status = case when coalesce(excluded.user_id, current_member.user_id) is null then 'invited' else 'active' end,
-    can_review_media = true,
-    can_review_reports = true,
-    can_suspend_accounts = true,
-    activated_at = coalesce(current_member.activated_at, excluded.activated_at),
-    disabled_at = null,
-    updated_at = pg_catalog.clock_timestamp();
+-- Who owns this deployment used to be one email address, spelled out here, in
+-- a public repository. It comes from Vault now (`binder_owner_email`); a
+-- project without that secret simply has no owner row yet, and the dashboard
+-- says so rather than letting a migration decide who is in charge.
+do $bootstrap$
+declare
+  owner_email text;
+begin
+  if to_regclass('vault.decrypted_secrets') is null then
+    raise notice 'No Vault — no owner bootstrapped.';
+    return;
+  end if;
+  select decrypted_secret into owner_email from vault.decrypted_secrets where name = 'binder_owner_email';
+  if owner_email is null then
+    raise notice 'No binder_owner_email in Vault — no owner bootstrapped.';
+    return;
+  end if;
+
+  insert into private.admin_members (
+    email, user_id, role, status,
+    can_review_media, can_review_reports, can_suspend_accounts, activated_at
+  ) values (
+    lower(owner_email),
+    (select u.id from auth.users u where lower(u.email) = lower(owner_email) and u.email_confirmed_at is not null limit 1),
+    'owner',
+    case when exists (select 1 from auth.users u where lower(u.email) = lower(owner_email) and u.email_confirmed_at is not null)
+      then 'active' else 'invited' end,
+    true, true, true,
+    case when exists (select 1 from auth.users u where lower(u.email) = lower(owner_email) and u.email_confirmed_at is not null)
+      then pg_catalog.clock_timestamp() else null end
+  )
+  on conflict (email) do update
+  set role = 'owner', can_review_media = true, can_review_reports = true, can_suspend_accounts = true;
+end;
+$bootstrap$;
 
 create or replace function private.admin_has_permission(p_permission text)
 returns boolean
@@ -452,7 +458,10 @@ declare
   next_status text;
 begin
   perform private.require_admin_permission('manage_moderators');
-  if normalized_email = 'belkis.aslani@gmail.com'
+  -- The owner cannot be invited as a moderator: that seat is taken by
+  -- definition, and inviting it would demote it. Which address that is comes
+  -- from the members table, not from a literal in this file.
+  if exists (select 1 from private.admin_members m where m.role = 'owner' and m.email = normalized_email)
      or char_length(normalized_email) not between 5 and 254
      or normalized_email !~ '^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]+$' then
     raise exception 'A valid moderator email is required.' using errcode = '22023';

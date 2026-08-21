@@ -200,7 +200,12 @@ const wanted = process.argv.slice(2).filter((argument) => argument in CONDITIONS
 const plan = wanted.length > 0 ? wanted : Object.keys(CONDITIONS);
 const hardware = device();
 const results = [];
-const account = stageOnce();
+// The suite runner may have staged already; a second account would delete the
+// first one's demo profiles while the run is using them.
+const preStaged = process.env.BINDER_STAGED === '1' && process.env.MAESTRO_EMAIL && process.env.MAESTRO_PASSWORD;
+const account = preStaged
+  ? { email: process.env.MAESTRO_EMAIL, password: process.env.MAESTRO_PASSWORD }
+  : stageOnce();
 
 console.log(`Device: ${hardware.model}, Android ${hardware.android} (API ${hardware.api}), ${hardware.screen} @ ${hardware.density}\n`);
 
@@ -240,7 +245,7 @@ for (const name of plan) {
   console.log(`   ${status} — ${shots.length} screenshot(s)\n`);
 }
 
-unstageOnce();
+if (!preStaged) unstageOnce();
 
 mkdirSync('artifacts', { recursive: true });
 const evidence = {

@@ -26,3 +26,10 @@
    itself decide, so forgetting is no longer enough to show it. */
 body[data-session="in"] #login-view { display: none; }
 body[data-session="out"] #dashboard-view { display: none; }
+
+/* Quittung und Beweissicherung an jedem Fall. Sie stehen unter den
+   Entscheidungen, weil sie keine Entscheidung sind: "gesehen" und "gesichert"
+   sind Arbeit, die eine Spur hinterlässt. */
+.case-receipt { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line-soft, rgba(255,255,255,.08)); }
+.case-receipt .admin-button { min-height: 44px; }
+.receipt-note { flex-basis: 100%; margin: 0 0 4px; font-size: 13px; color: var(--muted, #9ea4b0); }

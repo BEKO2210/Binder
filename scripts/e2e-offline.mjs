@@ -81,7 +81,13 @@ function unstage() {
   }
 }
 
-const account = stage();
+// The matrix and the suite runner stage once for everything that follows;
+// staging again would create a second account and delete the first one's
+// demo profiles out from under the run that is using them.
+const preStaged = process.env.BINDER_STAGED === '1' && process.env.MAESTRO_EMAIL && process.env.MAESTRO_PASSWORD;
+const account = preStaged
+  ? { email: process.env.MAESTRO_EMAIL, password: process.env.MAESTRO_PASSWORD }
+  : stage();
 let failure = null;
 try {
   // Sign in while there is still a network, so the offline half is only about
@@ -107,7 +113,7 @@ try {
   failure = error;
 } finally {
   network(true);
-  unstage();
+  if (!preStaged) unstage();
 }
 
 mkdirSync('artifacts', { recursive: true });

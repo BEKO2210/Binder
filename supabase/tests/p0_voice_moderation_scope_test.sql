@@ -11,7 +11,7 @@ insert into auth.users (
   id, aud, role, email, email_confirmed_at,
   raw_app_meta_data, raw_user_meta_data, created_at, updated_at
 ) values
-('91000000-0000-4000-8000-000000000001', 'authenticated', 'authenticated', 'belkis.aslani@gmail.com', now(), '{}', '{}', now(), now()),
+('91000000-0000-4000-8000-000000000001', 'authenticated', 'authenticated', 'owner@binder.test', now(), '{}', '{}', now(), now()),
 ('91000000-0000-4000-8000-000000000002', 'authenticated', 'authenticated', 'speaker@binder.test', now(), '{}', '{}', now(), now()),
 ('91000000-0000-4000-8000-000000000003', 'authenticated', 'authenticated', 'listener@binder.test', now(), '{}', '{}', now(), now());
 
@@ -45,6 +45,11 @@ insert into public.messages(id, match_id, sender_id, client_message_id, kind, bo
 ('94000000-0000-4000-8000-000000000002', '93000000-0000-4000-8000-000000000001',
  '91000000-0000-4000-8000-000000000002', '95000000-0000-4000-8000-000000000002',
  'voice', '', '93000000-0000-4000-8000-000000000001/91000000-0000-4000-8000-000000000002/reported.m4a', 4000);
+
+insert into private.admin_members(email, user_id, role, status, can_review_media, can_review_reports, can_suspend_accounts, activated_at)
+select 'owner@binder.test', u.id, 'owner', 'active', true, true, true, now()
+from auth.users u where u.email = 'owner@binder.test'
+on conflict (email) do update set user_id = excluded.user_id, status = 'active';
 
 select set_config('request.jwt.claims', '{"sub":"91000000-0000-4000-8000-000000000001","role":"authenticated","session_id":"92000000-0000-4000-8000-000000000001"}', true);
 set local role authenticated;

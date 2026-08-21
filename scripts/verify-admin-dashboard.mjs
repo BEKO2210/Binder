@@ -16,6 +16,15 @@ const requiredFiles = [
 ];
 
 const failures = [];
+
+// Nobody's address belongs in the source. The dashboard asks who is signing in.
+for (const [file, text] of Object.entries({
+  'site/admin/index.html': readFileSync('site/admin/index.html', 'utf8'),
+  'site/admin/admin.js': readFileSync('site/admin/admin.js', 'utf8'),
+})) {
+  const address = /[\w.+-]+@[\w-]+\.[\w.]+/.exec(text.replace(/[\w.+-]+@example\.com/g, ''));
+  if (address) failures.push(`${file} carries an email address (${address[0]}) — the login field starts empty and the owner comes from Vault.`);
+}
 for (const file of requiredFiles) {
   if (!existsSync(file) || statSync(file).size === 0) failures.push(`${file}: missing or empty`);
 }
@@ -32,7 +41,10 @@ if (!failures.length) {
 
   for (const required of [
     'Content-Security-Policy', 'noindex,nofollow,noarchive', '../assets/supabase.js',
-    'belkis.aslani@gmail.com', 'Fotos', 'Meldungen', 'Moderatoren', 'Aktivitätsprotokoll',
+    // The owner's address used to be checked for here, which is how it stayed
+    // in a public repository. What must be true is the opposite: no address is
+    // baked in, and the login field starts empty.
+    'Fotos', 'Meldungen', 'Moderatoren', 'Aktivitätsprotokoll',
     'Diagnose', 'diagnostics-health', 'diagnostics-summary', 'diagnostics-errors', 'diagnostics-feedback',
   ]) {
     if (!html.includes(required)) failures.push(`admin HTML contract missing: ${required}`);
@@ -58,7 +70,7 @@ if (!failures.length) {
   if (/https:\/\/(cdn|esm|unpkg|jsdelivr)/i.test(publicSurface)) failures.push('admin client loads executable code from a third-party CDN');
 
   for (const required of [
-    'create table private.admin_members', "'belkis.aslani@gmail.com'", 'private.admin_has_permission',
+    'create table private.admin_members', 'binder_owner_email', 'private.admin_has_permission',
     'public.claim_admin_session', 'public.admin_review_media', 'public.admin_review_report',
     'public.admin_prepare_moderator_invite', 'public.admin_update_moderator',
     'profile_media_objects_admin_read', 'private.current_admin_actor()',

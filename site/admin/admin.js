@@ -274,10 +274,61 @@
         }));
       }
       card.append(actions);
+      // Angeschaut und nichts zu tun ist auch Arbeit, und sie hinterlaesst eine
+      // Spur. Daneben das Beweispaket: der Fall in einer Form, die man aus der
+      // Hand geben kann, mit Pruefsumme.
+      card.append(receiptRow(row));
       fragment.append(card);
     });
     container.replaceChildren(fragment);
     container.removeAttribute('aria-busy');
+  }
+
+  function receiptRow(row) {
+    const wrapper = make('div', 'case-receipt');
+    if (row.acknowledged_at) {
+      wrapper.append(make('p', 'receipt-note',
+        `Quittiert von ${row.acknowledged_by} am ${new Date(row.acknowledged_at).toLocaleString('de-DE')}${row.acknowledgement_note ? ` — ${row.acknowledgement_note}` : ''}`));
+    }
+    const acknowledge = make('button', 'admin-button ghost', row.acknowledged_at ? 'Erneut quittieren' : 'Gesehen, quittieren');
+    acknowledge.type = 'button';
+    acknowledge.addEventListener('click', () => acknowledgeCase(row.case_id));
+    const evidence = make('button', 'admin-button secondary-action', 'Beweispaket sichern');
+    evidence.type = 'button';
+    evidence.addEventListener('click', () => exportEvidence(row.case_id));
+    wrapper.append(acknowledge, evidence);
+    return wrapper;
+  }
+
+  async function acknowledgeCase(caseId) {
+    const note = window.prompt('Notiz zur Quittung (optional):', '') ?? '';
+    try {
+      await rpc('admin_acknowledge_case', { p_case_id: caseId, p_note: note.trim() || null });
+      toast(`Fall ${caseId} quittiert.`, false);
+      await refreshReports();
+    } catch (error) {
+      toast(`Quittung fehlgeschlagen: ${error instanceof Error ? error.message : 'unbekannter Fehler'}`, true);
+    }
+  }
+
+  async function exportEvidence(caseId) {
+    try {
+      const [result] = await rpc('admin_export_case_evidence', { p_case_id: caseId });
+      // Die Pruefsumme gilt fuer genau diese Bytes, deshalb wird die Datei aus
+      // demselben Text gebaut, ueber den der Server sie gebildet hat.
+      const text = JSON.stringify(result.bundle, null, 4);
+      const blob = new Blob([text], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `binder-fall-${caseId}-${result.sha256.slice(0, 12)}.json`;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(link.href);
+      toast(`Beweispaket gesichert. SHA-256 ${result.sha256.slice(0, 16)}…`, false);
+    } catch (error) {
+      toast(`Beweispaket fehlgeschlagen: ${error instanceof Error ? error.message : 'unbekannter Fehler'}`, true);
+    }
   }
 
   function permissionToggle(label, checked) {

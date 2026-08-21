@@ -21,7 +21,7 @@ values
   ('11111111-1111-4111-8111-111111111111', 'authenticated', 'authenticated', 'alice@binder.test', '{}', '{}', now(), now()),
   ('22222222-2222-4222-8222-222222222222', 'authenticated', 'authenticated', 'bob@binder.test', '{}', '{}', now(), now());
 insert into auth.users (id, aud, role, email, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at)
-values ('99999999-9999-4999-8999-999999999999', 'authenticated', 'authenticated', 'belkis.aslani@gmail.com', now(), '{}', '{}', now(), now());
+values ('99999999-9999-4999-8999-999999999999', 'authenticated', 'authenticated', 'owner@binder.test', now(), '{}', '{}', now(), now());
 insert into auth.sessions(id, user_id) values ('98000000-0000-4000-8000-000000000001', '99999999-9999-4999-8999-999999999999');
 
 insert into storage.objects (bucket_id, name, owner, owner_id, metadata)
@@ -33,6 +33,11 @@ values
 
 -- Alice and Bob become full discovery-visible accounts (the report path
 -- without a match requires it).
+insert into private.admin_members(email, user_id, role, status, can_review_media, can_review_reports, can_suspend_accounts, activated_at)
+select 'owner@binder.test', u.id, 'owner', 'active', true, true, true, now()
+from auth.users u where u.email = 'owner@binder.test'
+on conflict (email) do update set user_id = excluded.user_id, status = 'active';
+
 select set_config('request.jwt.claims', '{"sub":"11111111-1111-4111-8111-111111111111","role":"authenticated"}', true);
 set local role authenticated;
 select public.accept_legal_terms('2026-08-15','2026-08-15');
