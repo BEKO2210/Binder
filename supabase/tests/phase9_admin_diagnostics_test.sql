@@ -7,12 +7,14 @@ select plan(14);
 -- Shape and reach of the four functions.
 select has_function('public','admin_diagnostics_summary',array['integer'],'Diagnostics summary is exposed to the dashboard');
 select has_function('public','admin_diagnostics_health',array[]::text[],'Diagnostics health is exposed to the dashboard');
-select has_function('public','admin_diagnostics_client_errors',array['integer'],'Client error stream is exposed to the dashboard');
+-- The one-argument overload is gone: over HTTP it was ambiguous with the
+-- acknowledging version, and PostgREST refused to choose.
+select has_function('public','admin_diagnostics_client_errors',array['integer','boolean'],'Client error stream is exposed to the dashboard');
 select has_function('public','admin_diagnostics_feedback',array['integer'],'Feedback list is exposed to the dashboard');
 
 select ok(not has_function_privilege('anon','public.admin_diagnostics_summary(integer)','execute'),'Anonymous visitors cannot read the diagnostics summary');
 select ok(not has_function_privilege('anon','public.admin_diagnostics_health()','execute'),'Anonymous visitors cannot read diagnostics health');
-select ok(not has_function_privilege('anon','public.admin_diagnostics_client_errors(integer)','execute'),'Anonymous visitors cannot read client errors');
+select ok(not has_function_privilege('anon','public.admin_diagnostics_client_errors(integer,boolean)','execute'),'Anonymous visitors cannot read client errors');
 select ok(not has_function_privilege('anon','public.admin_diagnostics_feedback(integer)','execute'),'Anonymous visitors cannot read beta feedback');
 
 -- The raw tables stay unreachable: the bridge is the only way in.
