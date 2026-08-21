@@ -9,6 +9,8 @@
 //   node scripts/release-candidate.mjs            the newest release record
 //   node scripts/release-candidate.mjs <commit>   a specific one
 import { execFileSync } from 'node:child_process';
+
+import { bundleSizeVerdict, performanceVerdict } from './lib/budget-verdicts.mjs';
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -96,13 +98,23 @@ ask('tree clean at build time', release.treeClean ? 'PASS' : 'FAIL', release.tre
 ask('database suites', ...verdictFor(database, 'run npm run db:evidence'));
 ask('black-box journeys', ...verdictFor(e2e, 'run npm run e2e'));
 ask('offline and kill journey', ...verdictFor(offline, 'run npm run e2e:offline'));
-ask('export size budget', size ? 'PASS' : 'MISSING', size ? `${(size.jsBytes / 1048576).toFixed(2)} MiB JS` : 'no size report');
-ask('device performance', performance && performanceBaseline
-  ? (sameSourceTree(performance.commit)
-      ? (performance.coldStartMs <= performanceBaseline.coldStartMs * 1.35 && performance.memoryMb <= performanceBaseline.memoryMb * 1.3 ? 'PASS' : 'FAIL')
-      : 'STALE')
-  : 'MISSING',
-  performance ? `${performance.coldStartMs} ms cold start, ${performance.jankyPercent}% janky, ${performance.memoryMb} MB` : 'run npm run perf');
+// Both reports are written before their own check runs, so a failed run leaves
+// a well-formed file behind. Existence was never the question: the candidate
+// re-derives the verdict from the numbers, with the same function the measuring
+// run uses.
+const sizeVerdict = bundleSizeVerdict(size);
+ask('export size budget', sizeVerdict.status,
+  sizeVerdict.status === 'PASS' ? `${(size.jsBytes / 1048576).toFixed(2)} MiB JS` : sizeVerdict.reasons.join('; '));
+const performanceResult = performanceVerdict(performance, performanceBaseline);
+ask('device performance',
+  performanceResult.status === 'MISSING' ? 'MISSING'
+    : !sameSourceTree(performance.commit) ? 'STALE'
+    : performanceResult.status,
+  performance
+    ? (performanceResult.status === 'PASS'
+        ? `${performance.coldStartMs} ms cold start, ${performance.jankyPercent}% janky, ${performance.memoryMb} MB`
+        : performanceResult.reasons.join('; '))
+    : 'run npm run perf');
 ask('branch coverage floors', existsSync(join(root, 'artifacts/coverage-floors.json')) ? 'PASS' : 'MISSING', 'floors recorded for src/lib');
 ask('device evidence', ...verdictFor(device, 'run npm run device:matrix'));
 

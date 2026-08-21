@@ -2,6 +2,7 @@ import { mkdirSync, mkdtempSync, readFileSync, readdirSync, statSync, writeFileS
 import { execFileSync } from 'node:child_process';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { bundleSizeVerdict } from './lib/budget-verdicts.mjs';
 
 const root = 'dist';
 const reportPath = 'artifacts/bundle-size-report.json';
@@ -122,13 +123,14 @@ function main() {
   writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`);
   console.log(formatBundleReport(report));
   console.log(`Machine-readable report: ${reportPath}`);
-  if (report.jsBytes > report.budgets.maxJsBytes) {
-    console.error(`JS/Hermes budget exceeded: ${mb(report.jsBytes)} MiB > ${maxJsMiB.toFixed(2)} MiB.`);
+  // The same function the release candidate uses, so a failed run cannot read as
+  // a pass one step later.
+  const verdict = bundleSizeVerdict(report);
+  if (verdict.status === 'PASS') console.log('Binder Android export budgets PASS');
+  else {
+    for (const reason of verdict.reasons) console.error(`Budget exceeded: ${reason}.`);
     process.exitCode = 1;
-  } else if (report.totalBytes > report.budgets.maxTotalBytes) {
-    console.error(`Android export budget exceeded: ${mb(report.totalBytes)} MiB > ${maxTotalMiB.toFixed(2)} MiB.`);
-    process.exitCode = 1;
-  } else console.log('Binder Android export budgets PASS');
+  }
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) main();

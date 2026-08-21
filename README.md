@@ -42,7 +42,7 @@
 
 **Automated, on every push**
 
-- 281 node tests over pure product logic — deck physics, chat timeline shaping, reliability classification, dial geometry, unsent-message queue, design-token contrast in both schemes
+- 286 node tests over pure product logic — deck physics, chat timeline shaping, reliability classification, dial geometry, unsent-message queue, design-token contrast in both schemes
 - 407 pgTAP assertions in 20 suites across identity, matching, conversation, safety, moderation and push, replayed from an empty database
 - Concurrency suites: reciprocal likes, send-versus-unmatch races, sender-wide rate limits, gallery races, dispatcher claims
 - One release gate with 34 checks — the same list for CI, for the production workflow and for a local release build:

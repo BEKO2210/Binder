@@ -17,14 +17,16 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
+import { performanceVerdict } from './lib/budget-verdicts.mjs';
+
 const adb = process.env.ADB ?? join(homedir(), 'Android/Sdk/platform-tools/adb');
 const maestro = join(homedir(), '.maestro/maestro/bin/maestro');
 const javaHome = process.env.JAVA_HOME ?? join(homedir(), '.local/jdk/jdk-21.0.12+8');
 const appId = 'de.beko2210.binder';
 const BASELINE = 'artifacts/performance-baseline.json';
 
-// How much worse than the baseline is still the same app on a busier phone.
-const MARGIN = { coldStartMs: 1.35, jankyPercent: 1.6, memoryMb: 1.30 };
+// The margin and the comparison live in scripts/lib/budget-verdicts.mjs, so the
+// release candidate cannot drift into a second definition of "fast enough".
 
 
 // With two phones on the desk, every adb call fails with "more than one
@@ -158,16 +160,7 @@ if (!existsSync(BASELINE)) {
 }
 
 const baseline = JSON.parse(readFileSync(BASELINE, 'utf8'));
-const regressions = [];
-const compare = (key, unit) => {
-  const before = baseline[key];
-  const now = measurement[key];
-  if (typeof before !== 'number' || typeof now !== 'number') return;
-  if (now > before * MARGIN[key]) regressions.push(`${key}: ${before}${unit} → ${now}${unit} (more than ${Math.round((MARGIN[key] - 1) * 100)}% worse)`);
-};
-compare('coldStartMs', ' ms');
-compare('jankyPercent', '%');
-compare('memoryMb', ' MB');
+const regressions = performanceVerdict(measurement, baseline).reasons;
 
 if (regressions.length > 0) {
   console.error('\nPerformance went backwards:');
