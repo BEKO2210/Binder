@@ -309,6 +309,45 @@
   // Bei zehntausend Nutzern ist die Fehlerliste eine Wand. Quittieren nimmt
   // einen Eintrag aus der Arbeitsliste, ohne ihn zu loeschen: die Zeile bleibt,
   // die Zaehlung bleibt ehrlich.
+  // Ein Dialog statt window.prompt: ein Systemfenster laesst sich nicht
+  // beschriften, nicht vorlesen und nicht mit der Tastatur sinnvoll bedienen —
+  // und eine Quittung ist eine Erklaerung, kein Nebenbei-Klick.
+  function askForNote({ title, description, actor }) {
+    const dialog = byId('ack-dialog');
+    if (!dialog || typeof dialog.showModal !== 'function') {
+      const fallback = window.prompt(`${title} — Notiz (optional):`, '') ?? '';
+      return Promise.resolve({ confirmed: true, note: fallback.trim() });
+    }
+    byId('ack-title').textContent = title;
+    const descriptionNode = dialog.querySelector('.dialog-description');
+    if (descriptionNode) descriptionNode.textContent = description;
+    byId('ack-actor').textContent = actor ?? 'dir';
+    const notes = byId('ack-notes');
+    notes.value = '';
+    byId('ack-status').textContent = '';
+    return new Promise((resolve) => {
+      const finish = (confirmed) => {
+        dialog.close();
+        cancel.removeEventListener('click', onCancel);
+        form.removeEventListener('submit', onSubmit);
+        resolve({ confirmed, note: notes.value.trim() });
+      };
+      const form = byId('ack-form');
+      const cancel = byId('ack-cancel');
+      const onCancel = () => finish(false);
+      const onSubmit = (event) => { event.preventDefault(); finish(true); };
+      cancel.addEventListener('click', onCancel);
+      form.addEventListener('submit', onSubmit);
+      dialog.showModal();
+      notes.focus();
+    });
+  }
+
+  function announce(message) {
+    const node = byId('announcer');
+    if (node) node.textContent = message;
+  }
+
   function diagnosticReceipt(row) {
     const wrapper = make('div', 'case-receipt');
     if (row.acknowledged_at) {
@@ -318,9 +357,14 @@
     const button = make('button', 'admin-button ghost', row.acknowledged_at ? 'Erneut quittieren' : 'Quittieren');
     button.type = 'button';
     button.addEventListener('click', async () => {
-      const note = window.prompt('Notiz (optional):', '') ?? '';
+      const { confirmed, note } = await askForNote({
+        title: 'Fehler quittieren',
+        description: 'Du bestätigst, dass du diesen Fehler gesehen hast. Er verlässt die Arbeitsliste, bleibt aber gespeichert.',
+        actor: state.member?.admin_email,
+      });
+      if (!confirmed) return;
       try {
-        await rpc('admin_acknowledge_diagnostic', { p_event_id: row.event_id, p_note: note.trim() || null });
+        await rpc('admin_acknowledge_diagnostic', { p_event_id: row.event_id, p_note: note || null });
         toast('Fehler quittiert.', false);
         await refreshDiagnostics();
       } catch (error) { toast(error instanceof Error ? error.message : 'Quittung fehlgeschlagen.', true); }
@@ -365,9 +409,14 @@
   }
 
   async function acknowledgeCase(caseId) {
-    const note = window.prompt('Notiz zur Quittung (optional):', '') ?? '';
+    const { confirmed, note } = await askForNote({
+      title: 'Fall als gesehen quittieren',
+      description: 'Du bestätigst ausdrücklich, dass du diesen Fall geprüft hast und keine Maßnahme erforderlich ist. Die Quittung steht im Aktivitätsprotokoll.',
+      actor: state.member?.admin_email,
+    });
+    if (!confirmed) return;
     try {
-      await rpc('admin_acknowledge_case', { p_case_id: caseId, p_note: note.trim() || null });
+      await rpc('admin_acknowledge_case', { p_case_id: caseId, p_note: note || null });
       toast(`Fall ${caseId} quittiert.`, false);
       await refreshReports();
     } catch (error) {
@@ -381,18 +430,58 @@
       // Die Pruefsumme gilt fuer genau diese Bytes, deshalb wird die Datei aus
       // demselben Text gebaut, ueber den der Server sie gebildet hat.
       const text = JSON.stringify(result.bundle, null, 4);
-      const blob = new Blob([text], { type: 'application/json' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = `binder-fall-${caseId}-${result.sha256.slice(0, 12)}.json`;
-      document.body.append(link);
-      link.click();
-      link.remove();
-      URL.revokeObjectURL(link.href);
+      const filename = `binder-fall-${caseId}-${result.sha256.slice(0, 12)}.json`;
+      download(text, filename);
       toast(`Beweispaket gesichert. SHA-256 ${result.sha256.slice(0, 16)}…`, false);
+      // Die Pruefsumme ist der Grund, warum das Paket etwas beweist. Sie darf
+      // nicht nur kurz in einer Meldung aufblitzen, sondern muss zum Abschreiben
+      // stehen bleiben und vorgelesen werden.
+      announce(`Beweispaket zu Fall ${caseId} gesichert. Prüfsumme ${result.sha256}`);
+      showEvidence({ caseId, result, text, filename });
     } catch (error) {
       toast(`Beweispaket fehlgeschlagen: ${error instanceof Error ? error.message : 'unbekannter Fehler'}`, true);
     }
+  }
+
+  function download(text, filename) {
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+    link.download = filename;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(link.href);
+  }
+
+  function showEvidence({ caseId, result, text, filename }) {
+    const dialog = byId('evidence-dialog');
+    if (!dialog || typeof dialog.showModal !== 'function') return;
+    const meta = byId('evidence-meta');
+    meta.replaceChildren();
+    const rows = [
+      ['Fall', `#${caseId}`],
+      ['Datei', filename],
+      ['Größe', `${result.bytes} Bytes`],
+      ['Gesichert von', state.member?.admin_email ?? 'dir'],
+    ];
+    for (const [label, value] of rows) {
+      meta.append(make('dt', '', label), make('dd', '', value));
+    }
+    byId('evidence-checksum').textContent = result.sha256;
+    byId('evidence-checksum-box').hidden = false;
+    byId('evidence-status').textContent = 'Die Datei liegt in deinem Download-Ordner.';
+    const close = byId('evidence-close');
+    const again = byId('evidence-download');
+    const onClose = () => {
+      dialog.close();
+      close.removeEventListener('click', onClose);
+      again.removeEventListener('click', onAgain);
+    };
+    const onAgain = () => download(text, filename);
+    close.addEventListener('click', onClose);
+    again.addEventListener('click', onAgain);
+    dialog.showModal();
+    close.focus();
   }
 
   function permissionToggle(label, checked) {

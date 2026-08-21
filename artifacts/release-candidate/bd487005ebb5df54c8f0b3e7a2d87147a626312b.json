@@ -3,18 +3,18 @@
   "version": "1.0.8",
   "versionCode": 105,
   "artifactSha256": "efa68d1db1338bee9ce8ba55b18c878fb3caddace4674f9a7cc7581365c8d7dd",
-  "quality": "PASS",
-  "database": "PASS",
+  "quality": "INCOMPLETE",
+  "database": "INCOMPLETE",
   "security": "PASS",
-  "e2e": "PASS",
+  "e2e": "INCOMPLETE",
   "performance": "PASS",
   "signature": "PASS",
-  "device": "PASS",
+  "device": "INCOMPLETE",
   "answers": [
     {
       "name": "quality gate",
-      "verdict": "PASS",
-      "detail": "33 checks at 2026-08-21T07:21:58.848Z"
+      "verdict": "STALE",
+      "detail": "PASS but for d53fe8c1"
     },
     {
       "name": "release artefacts hashed",
@@ -48,13 +48,13 @@
     },
     {
       "name": "database suites",
-      "verdict": "PASS",
-      "detail": "PASS at 2026-08-21T06:53:20.083Z"
+      "verdict": "STALE",
+      "detail": "PASS but for a7687f38"
     },
     {
       "name": "black-box journeys",
-      "verdict": "PASS",
-      "detail": "PASS at 2026-08-21T07:08:32.607Z"
+      "verdict": "STALE",
+      "detail": "PASS but for d53fe8c1"
     },
     {
       "name": "offline and kill journey",
@@ -78,9 +78,9 @@
     },
     {
       "name": "device evidence",
-      "verdict": "PASS",
-      "detail": "PASS at 2026-08-21T07:08:47.000Z"
+      "verdict": "STALE",
+      "detail": "PASS but for d53fe8c1"
     }
   ],
-  "verdict": "READY"
+  "verdict": "NOT READY"
 }

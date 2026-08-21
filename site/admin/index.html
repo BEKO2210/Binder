@@ -61,11 +61,6 @@
         <article class="summary-card"><span>Protokollierte Aktionen</span><strong id="summary-audit">–</strong></article>
       </section>
 
-      <section class="platform-overview" aria-label="Plattform in Zahlen">
-        <h2 class="admin-kicker">Plattform in Zahlen</h2>
-        <div id="platform-numbers" aria-live="polite"><p class="form-help">Wird geladen …</p></div>
-      </section>
-
       <nav class="admin-tabs" aria-label="Dashboard Bereiche">
         <button class="tab-button" type="button" data-tab="photos">Fotos</button>
         <button class="tab-button" type="button" data-tab="reports">Meldungen</button>
@@ -145,6 +140,11 @@
         </div>
         <div id="audit-list" class="audit-list" aria-live="polite"></div>
       </section>
+
+      <section class="platform-overview" aria-label="Plattform in Zahlen">
+        <h2 class="admin-kicker">Plattform in Zahlen</h2>
+        <div id="platform-numbers" aria-live="polite"><p class="form-help">Wird geladen …</p></div>
+      </section>
     </section>
   </main>
 
@@ -166,5 +166,52 @@
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
   <script src="../assets/supabase.js" defer></script>
   <script src="admin.js" defer></script>
+
+  <!-- Quittung und Beweissicherung als echte Dialoge statt window.prompt:
+       ein Systemfenster laesst sich nicht beschriften, nicht vorlesen und
+       nicht mit der Tastatur sinnvoll bedienen. -->
+  <dialog id="ack-dialog" class="action-dialog" aria-labelledby="ack-title">
+    <form id="ack-form" method="dialog">
+      <span class="admin-kicker">Quittung ohne Maßnahme</span>
+      <h2 id="ack-title">Fall als gesehen quittieren</h2>
+      <p class="dialog-description">
+        Du bestätigst ausdrücklich, dass du diesen Fall geprüft hast und keine Maßnahme erforderlich ist.
+        Die Quittung steht unveränderlich im Aktivitätsprotokoll.
+      </p>
+      <p class="ack-identity">Quittiert wird als <strong id="ack-actor"></strong> mit Datum und Uhrzeit.</p>
+      <label for="ack-notes">Notiz <span>(optional)</span></label>
+      <textarea id="ack-notes" rows="4" maxlength="2000" placeholder="Z. B. „Kein Verstoß erkennbar“"></textarea>
+      <div class="dialog-actions">
+        <button id="ack-cancel" class="admin-button ghost" type="button">Abbrechen</button>
+        <button id="ack-confirm" class="admin-button primary-action" type="submit">Verbindlich quittieren</button>
+      </div>
+      <p id="ack-status" class="form-status" role="status" aria-live="polite"></p>
+    </form>
+  </dialog>
+
+  <dialog id="evidence-dialog" class="action-dialog" aria-labelledby="evidence-title">
+    <div class="evidence-inner">
+      <span class="admin-kicker">Beweissicherung</span>
+      <h2 id="evidence-title">Beweispaket</h2>
+      <p class="dialog-description">
+        Das Paket enthält die Meldung, den Kontext-Schnappschuss, beteiligte Nachrichten,
+        alle getroffenen Maßnahmen und deren Zeitstempel. Der Server berechnet eine
+        SHA-256-Prüfsumme und hinterlegt sie; sie belegt später, dass der Inhalt
+        des heruntergeladenen Pakets unverändert ist.
+      </p>
+      <dl class="meta-list" id="evidence-meta"></dl>
+      <div class="checksum-box" id="evidence-checksum-box" hidden>
+        <span>SHA-256-Prüfsumme</span>
+        <code id="evidence-checksum"></code>
+      </div>
+      <div class="dialog-actions">
+        <button id="evidence-close" class="admin-button ghost" type="button">Schließen</button>
+        <button id="evidence-download" class="admin-button primary-action" type="button">Erneut herunterladen</button>
+      </div>
+      <p id="evidence-status" class="form-status" role="status" aria-live="polite"></p>
+    </div>
+  </dialog>
+
+  <p id="announcer" class="visually-hidden" role="status" aria-live="polite"></p>
 </body>
 </html>
