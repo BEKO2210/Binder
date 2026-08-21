@@ -94,7 +94,7 @@ for (const fixture of readdirSync('scripts/gate-fixtures/design').filter((entry)
 // The samples are assembled here rather than stored: a file full of
 // credential-shaped strings is exactly what should not live in a repository,
 // even when every value in it is invented. None of these unlock anything.
-const { scan } = await import('./verify-no-secrets.mjs');
+const { scan, isSkipped } = await import('./verify-no-secrets.mjs');
 const planted = [
   ['private key block', ['-----BEGIN', 'PRIVATE KEY-----'].join(' ') + '\nMIIEvQIBADANBgkqhkiG9w0BAQ\n'],
   ['Google API key', 'GOOGLE_KEY=' + 'AIza' + 'Sy' + 'D'.repeat(35 - 2)],
@@ -118,6 +118,15 @@ writeFileSync(publicFile, [
   "password: '<set in the vault>'",
 ].join('\n'));
 check('secret gate leaves public identifiers alone', scan([publicFile]).length === 0);
+
+// The scanner skipped whole directories, and `assets/` was one of them. A file
+// is skipped for what it is — generated, or binary — never for where it lives.
+const assetLike = 'assets/planted-config.json';
+writeFileSync(join(temporary, 'planted-config.json'), '{"api_key": "' + 'E'.repeat(32) + '"}');
+check(
+  'secret gate reads a config under assets/ instead of skipping the folder',
+  scan([join(temporary, 'planted-config.json')]).length > 0 && !isSkipped(assetLike),
+);
 rmSync(temporary, { recursive: true, force: true });
 
 let failed = 0;

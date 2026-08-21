@@ -22,7 +22,10 @@ const PATTERNS = [
   { name: 'Slack token', pattern: /\bxox[baprs]-[A-Za-z0-9-]{10,}\b/ },
   { name: 'Stripe live key', pattern: /\bsk_live_[A-Za-z0-9]{16,}\b/ },
   { name: 'Supabase secret key', pattern: /\bsb_secret_[A-Za-z0-9_-]{16,}\b/ },
-  { name: 'assigned secret', pattern: /\b(?:api[_-]?key|secret|token|password)\s*[:=]\s*['"][A-Za-z0-9/+_-]{24,}['"]/i },
+  // The name may carry its own quotes ("api_key": "…" in JSON), and the value
+  // may carry none at all (API_KEY=… in an env file). Both were invisible while
+  // this pattern insisted on a bare name and a quoted value.
+  { name: 'assigned secret', pattern: /\b(?:api[_-]?key|secret|token|password)["']?\s*[:=]\s*['"]?[A-Za-z0-9/+_-]{24,}['"]?/i },
 ];
 
 // Values that are meant to be public, each with the reason it is not a secret.
@@ -34,13 +37,23 @@ const ALLOWED = new Map([
 
 // Generated trees and binaries: nothing here is authored, and a keystore is
 // meant to be a key — it is kept out of the index by .gitignore, not by this.
-const SKIP = /^(?:node_modules|android|ios|artifacts|graphify-out|assets)\//;
+//
+// `assets/` used to be on this list, and it did not belong there. The folder is
+// mostly images, which the binary filter already skips, but it is also a place
+// where a JSON or a config file can quietly appear — and a scanner that skips a
+// whole directory is a scanner that says "clean" about files it never opened.
+const SKIP = /^(?:node_modules|android|ios|artifacts|graphify-out)\//;
 const BINARY = /\.(png|jpg|jpeg|webp|mp3|mp4|ttf|otf|zip|jks|keystore|aab|apk|pdf|ico)$/i;
+
+/** Exported so the self-test can prove which paths are skipped and which are read. */
+export function isSkipped(file) {
+  return SKIP.test(file) || BINARY.test(file);
+}
 
 export function scan(files) {
   const findings = [];
   for (const file of files) {
-    if (SKIP.test(file) || BINARY.test(file)) continue;
+    if (isSkipped(file)) continue;
     let text;
     try {
       if (statSync(file).size > 2_000_000) continue;
