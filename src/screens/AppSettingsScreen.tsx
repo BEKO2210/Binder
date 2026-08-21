@@ -61,7 +61,7 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
 
   useEffect(() => {
     let active = true;
-    getBetaSettings().then((value) => { if (active) setDiagnostics(value.diagnostics_enabled); }).catch(() => { if (active) showMessage(t('appSettings.errors.loadDiagnostics')); }).finally(() => { if (active) setDiagnosticsLoading(false); });
+    withDeadline(getBetaSettings(), SETTINGS_DEADLINE_MS).then((value) => { if (active) setDiagnostics(value.diagnostics_enabled); }).catch(() => { if (active) showMessage(t('appSettings.errors.loadDiagnostics')); }).finally(() => { if (active) setDiagnosticsLoading(false); });
     return () => { active = false; };
   }, [t]);
 
@@ -100,7 +100,7 @@ export default function AppSettingsScreen({ onClose }: { onClose: () => void }) 
         .then((status) => { if (active && ticket === newestRead) setPushPermission(status); })
         .catch(() => undefined);
       if (!settings.notifications.enabled) { setPushHealth(null); return; }
-      void refreshPushRegistration(t)
+      void withDeadline(refreshPushRegistration(t), SETTINGS_DEADLINE_MS)
         .then((result) => { if (active && ticket === newestRead) setPushHealth(result.status); })
         .catch(() => { if (active && ticket === newestRead) setPushHealth('unsupported'); });
     };

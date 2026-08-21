@@ -68,8 +68,25 @@ if (process.argv.includes('--record')) {
   process.exit(0);
 }
 
+// The baseline lives in artifacts/, which is not in the index — so on every
+// fresh checkout, which is every CI run, there was no baseline and this check
+// ended with exit 0. It was in the quality gate the whole time, enforcing
+// nothing at all.
+//
+// The migration is finished: the app has no untranslated user-facing strings
+// left. That makes the stronger rule the simpler one — zero, always, no file to
+// carry along. A baseline, when it exists, is only used to name what regressed.
+if (total > 0 && !previous) {
+  console.error(`${total} untranslated user-facing strings across ${perFile.size} files:`);
+  for (const [file, count] of [...perFile.entries()].sort((a, b) => b[1] - a[1]).slice(0, 20)) {
+    console.error(`  ${count}  ${file}`);
+  }
+  console.error('\nEvery string a person reads belongs in src/i18n/locales. Fifteen languages ship; a hardcoded string ships in one.');
+  process.exit(1);
+}
+
 if (!previous) {
-  console.log(`No baseline yet. ${total} untranslated strings; run with --record to set the baseline.`);
+  console.log('Localization coverage: no untranslated user-facing strings.');
   process.exit(0);
 }
 

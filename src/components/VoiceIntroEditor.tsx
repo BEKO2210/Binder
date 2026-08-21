@@ -32,7 +32,7 @@ export function VoiceIntroEditor({ userId }: Props) {
 
   useEffect(() => {
     let active = true;
-    loadMyVoiceIntro(userId)
+    withDeadline(loadMyVoiceIntro(userId), VOICE_INTRO_DEADLINE_MS)
       .then((loaded) => { if (active) setIntro(loaded); })
       .catch(() => { /* the section simply offers recording */ });
     return () => { active = false; };

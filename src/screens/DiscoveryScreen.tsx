@@ -175,7 +175,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
     let active = true;
     async function loadFilterSummary() {
       const values = await withDeadline(loadDiscoveryPreferences(), DISCOVERY_DEADLINE_MS);
-      void loadAttributeFilterCount().then((count) => { if (active) setAttributeFilterCount(count); }).catch(() => undefined);
+      void withDeadline(loadAttributeFilterCount(), DISCOVERY_DEADLINE_MS).then((count) => { if (active) setAttributeFilterCount(count); }).catch(() => undefined);
       if (active) setFilterValues(values);
     }
     void loadFilterSummary().catch(() => undefined);
@@ -184,7 +184,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
 
   useEffect(() => {
     let active = true;
-    listMyProfileMedia()
+    withDeadline(listMyProfileMedia(), DISCOVERY_DEADLINE_MS)
       .then((media) => { if (active) setMyPhotoUrl(media[0]?.signedUrl ?? null); })
       .catch(() => undefined);
     return () => { active = false; };
@@ -570,7 +570,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
         <DiscoveryFilterSheet
           initialValues={filterValues}
           onClose={() => setFiltersOpen(false)}
-          onApplied={(values) => { setFilterValues(values); setFiltersOpen(false); void loadAttributeFilterCount().then(setAttributeFilterCount).catch(() => undefined); void loadDiscovery(false, values); }}
+          onApplied={(values) => { setFilterValues(values); setFiltersOpen(false); void withDeadline(loadAttributeFilterCount(), DISCOVERY_DEADLINE_MS).then(setAttributeFilterCount).catch(() => undefined); void loadDiscovery(false, values); }}
         />
       ) : null}
 

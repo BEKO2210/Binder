@@ -230,7 +230,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
         // The conversation answered, so the phone is reachable: whatever failed
         // to send while it was not goes out now, without anybody tapping.
         void resendRef.current?.();
-        void markMatchRead(match.matchId, { signal: requestController.signal }).catch(() => undefined);
+        void withDeadline(markMatchRead(match.matchId, { signal: requestController.signal }), CHAT_DEADLINE_MS).catch(() => undefined);
       } catch (nextError) {
         if (active && !isAbortError(nextError)) {
           const failure = classifyRequestFailure(nextError);
@@ -258,7 +258,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
           mergeMessage(message);
           if (nearNewestRef.current) listRef.current?.scrollToOffset({ offset: 0, animated: !reduceMotion });
           else if (message.sender_id !== currentUserId) setShowNewMessage(true);
-          if (message.sender_id !== currentUserId) void markMatchRead(match.matchId, { signal: requestController.signal }).catch(() => undefined);
+          if (message.sender_id !== currentUserId) void withDeadline(markMatchRead(match.matchId, { signal: requestController.signal }), CHAT_DEADLINE_MS).catch(() => undefined);
         },
         (message) => {
           if (!active) return;
@@ -339,7 +339,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
       if (!mountedRef.current) return;
       mergeMessages(page.messages);
       setHasMore(page.hasMore);
-      void markMatchRead(match.matchId, { signal: lifecycleControllerRef.current.signal }).catch(() => undefined);
+      void withDeadline(markMatchRead(match.matchId, { signal: lifecycleControllerRef.current.signal }), CHAT_DEADLINE_MS).catch(() => undefined);
     } catch (error) {
       if (mountedRef.current && !isAbortError(error)) {
         const failure = classifyRequestFailure(error);

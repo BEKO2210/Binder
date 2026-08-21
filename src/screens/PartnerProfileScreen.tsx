@@ -17,8 +17,13 @@ import { formatCount, formatDistanceKm } from '../lib/format';
 import { interestEntry } from '../lib/interestCatalog';
 import { interestLabel } from '../lib/validation';
 import { resolveSpring } from '../lib/motionPolicy';
+import { withDeadline } from '../lib/reliability';
 import { useBinderHaptics } from '../theme/haptics';
 import { useBinderTheme } from '../theme/ThemeProvider';
+
+// The same twelve seconds every read in the app gets: long enough for a slow
+// train, short enough that the spinner ends.
+const PARTNER_PROFILE_DEADLINE_MS = 12_000;
 
 // `viewingSelf` is what the profile tab passes when somebody previews their own
 // profile through this same screen. The only thing that has to change is the
@@ -63,7 +68,7 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose, in
     // from the deck only counts when it is the same person.
     setProfile(initialProfile && initialProfile.id === userId ? asPartnerProfile(initialProfile) : null);
     setError('');
-    fetchPartnerProfile(userId)
+    withDeadline(fetchPartnerProfile(userId), PARTNER_PROFILE_DEADLINE_MS)
       .then((next) => { if (active) setProfile(next); })
       .catch((cause) => { if (active && !initialProfile) setError(cause instanceof Error ? cause.message : t('partnerProfile.errors.load')); });
     return () => { active = false; };

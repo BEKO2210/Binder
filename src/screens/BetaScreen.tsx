@@ -27,7 +27,7 @@ export default function BetaScreen({ onClose }: { onClose: () => void }) {
 
   useEffect(() => {
     let active = true;
-    getBetaSettings().then((value) => { if (active) setSettings(value); }).catch((error: unknown) => { if (active) setMessage(error instanceof Error ? error.message : t('beta.errors.load')); }).finally(() => { if (active) setLoading(false); });
+    withDeadline(getBetaSettings(), BETA_DEADLINE_MS).then((value) => { if (active) setSettings(value); }).catch((error: unknown) => { if (active) setMessage(error instanceof Error ? error.message : t('beta.errors.load')); }).finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, []);
 
