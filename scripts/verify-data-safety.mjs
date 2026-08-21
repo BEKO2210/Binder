@@ -59,6 +59,34 @@ for (const [table, purpose] of Object.entries(PERSONAL_TABLES)) {
   }
 }
 
+// Whatever the Play form declares as a special category, the privacy policy has
+// to name in words. The form said Binder collects sexual orientation — true,
+// `user_preferences.interested_in` together with the profile gender — while the
+// policy listed only beliefs under Article 9 and never mentioned it. A person
+// reads the policy, not a CSV in a repository.
+const SPECIAL_CATEGORIES = {
+  PSL_SEXUAL_ORIENTATION_GENDER_IDENTITY: {
+    en: /sexual orientation/i,
+    de: /sexuelle Orientierung/i,
+  },
+  PSL_POLITICAL_RELIGIOUS: {
+    en: /religion or worldview/i,
+    de: /Religion oder (?:Weltanschauung|\u00dcberzeugung)/i,
+  },
+};
+
+const csv = readFileSync('docs/play-data-safety.csv', 'utf8');
+const policies = { en: readFileSync('site/privacy.html', 'utf8'), de: readFileSync('site/de/privacy.html', 'utf8') };
+for (const [type, patterns] of Object.entries(SPECIAL_CATEGORIES)) {
+  const declared = new RegExp(`PSL_DATA_TYPES_[A-Z_]+,${type},true`).test(csv);
+  if (!declared) continue;
+  for (const [locale, pattern] of Object.entries(patterns)) {
+    if (!pattern.test(policies[locale])) {
+      problems.push(`The Play form declares ${type}, but site/${locale === 'en' ? '' : `${locale}/`}privacy.html never names it (${pattern}). Article 13 GDPR asks for the words, not the checkbox.`);
+    }
+  }
+}
+
 // The declaration also names where the data leaves the device to.
 for (const claim of ['privacy.html', 'delete-account.html', 'dataSafety']) {
   if (!doc.includes(claim)) problems.push(`docs/play-datensicherheit.md no longer states ${claim}.`);
