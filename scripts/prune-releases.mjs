@@ -5,7 +5,9 @@ import { readdirSync, statSync, unlinkSync } from 'node:fs';
 import { join } from 'node:path';
 
 const dir = process.env.BINDER_RELEASE_DIR ?? `${process.env.HOME}/Binder-Release`;
-const KEEP_NEWEST = 20;
+// Wie viele Fassungen bleiben. Standard zwanzig; beim Aufraeumen des Servers
+// laesst sich die Zahl fuer einen Lauf senken, ohne die Vorgabe zu aendern.
+const KEEP_NEWEST = Number(process.env.BINDER_KEEP_RELEASES ?? 20);
 const dryRun = process.argv.includes('--check');
 
 const versionOf = (name) => Number(name.match(/vc(\d+)/)?.[1] ?? NaN);
