@@ -18,7 +18,7 @@ import { countDiscoveryCandidates, fetchDiscoveryBatch, loadAttributeFilterCount
 import { classifyEmptyDiscovery, filterValuesToCountWith, type EmptyDiscoveryKind } from '../lib/discoveryAvailability';
 import { deckIsCovered, discoveryLoadingVisible } from '../lib/discoveryOverlays';
 import { advanceDeck, decideSwipe, discoveryDeckPhysics, resistedTranslation, stampProgress, stampScale, type SwipeDirection } from '../lib/discoveryDeck';
-import { formatCount, formatDistanceKm } from '../lib/format';
+import { formatCount, formatDistanceKm, upperCase } from '../lib/format';
 import { listMyProfileMedia } from '../lib/media';
 import { matchCelebrationPhotoUrls } from '../lib/matchCelebrationAssets';
 import { interestEntry } from '../lib/interestCatalog';
@@ -647,7 +647,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
       {safetyOpen && profile ? (
         <View style={{ position: 'absolute', inset: 0, backgroundColor: theme.colors.overlay, justifyContent: 'flex-end' }}>
           <BinderCard style={{ maxHeight: '92%', borderBottomLeftRadius: 0, borderBottomRightRadius: 0, borderColor: theme.colors.borderStrong }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3 }}><BinderIcon name="safety" color={theme.semantic.destructive} /><View style={{ flex: 1 }}><BinderText variant="micro" tone="destructive">{t('discovery.safety.eyebrow', { name: profile.name.toUpperCase() })}</BinderText><BinderText variant="heading" style={{ marginTop: theme.spacing.x1 }}>{t('discovery.safety.title')}</BinderText></View><BinderIconButton name="close" accessibilityLabel={t('discovery.accessibility.closeSafetyOptions')} onPress={() => { setSafetyOpen(false); setSafetyReason(null); }} /></View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x3 }}><BinderIcon name="safety" color={theme.semantic.destructive} /><View style={{ flex: 1 }}><BinderText variant="micro" tone="destructive">{t('discovery.safety.eyebrow', { name: upperCase(profile.name, locale) })}</BinderText><BinderText variant="heading" style={{ marginTop: theme.spacing.x1 }}>{t('discovery.safety.title')}</BinderText></View><BinderIconButton name="close" accessibilityLabel={t('discovery.accessibility.closeSafetyOptions')} onPress={() => { setSafetyOpen(false); setSafetyReason(null); }} /></View>
             <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>{t('discovery.safety.message')}</BinderText>
             <ScrollView style={{ marginTop: theme.spacing.x4 }} contentContainerStyle={{ gap: theme.spacing.x2 }}>
               {reportReasons.map((reason) => (

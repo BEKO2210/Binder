@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 import { availableLocales, translate } from '../src/i18n/index.ts';
@@ -59,4 +60,14 @@ test('leaving the app keeps a take worth keeping and drops a stub', () => {
   assert.equal(interruptedTakeAction(30_000), 'keep');
   assert.equal(interruptedTakeAction(VOICE_MIN_DURATION_MS - 1), 'discard');
   assert.equal(interruptedTakeAction(0), 'discard');
+});
+
+test('a waveform is one silence to a screen reader, not thirty', () => {
+  // importantForAccessibility="no" hides the view and leaves its children
+  // announced: TalkBack read out thirty-odd unlabelled views between the play
+  // button and the duration. "no-hide-descendants" is the one that means what
+  // the name of the other one suggests.
+  const bubble = readFileSync(new URL('../src/components/VoiceMessageBubble.tsx', import.meta.url), 'utf8');
+  assert.match(bubble, /importantForAccessibility="no-hide-descendants"/);
+  assert.doesNotMatch(bubble, /importantForAccessibility="no"/);
 });

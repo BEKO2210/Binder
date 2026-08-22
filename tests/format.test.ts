@@ -3,7 +3,7 @@ process.env.TZ = 'UTC';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { formatCount, formatDayLabel, formatDistanceKm, formatTime } from '../src/lib/format.ts';
+import { firstLetter, formatCount, formatDayLabel, formatDistanceKm, formatTime, upperCase } from '../src/lib/format.ts';
 
 const now = new Date('2026-08-17T00:00:00Z');
 
@@ -33,4 +33,27 @@ test('metric distances localize only the number', () => {
 test('counts use locale grouping', () => {
   assert.equal(formatCount(1234, 'en'), '1,234');
   assert.equal(formatCount(1234, 'de'), '1.234');
+});
+
+test('a name is upper-cased by its own language’s rules', () => {
+  // Turkish writes the capital of "i" as "İ". `toUpperCase()` writes "I",
+  // which is a different letter with a different sound — a person's name in
+  // the safety sheet was somebody else's name.
+  assert.equal(upperCase('istanbul', 'tr'), 'İSTANBUL');
+  assert.equal(upperCase('istanbul', 'en'), 'ISTANBUL');
+  // A script without case comes back as it went in.
+  assert.equal(upperCase('مريم', 'ar'), 'مريم');
+  assert.equal(upperCase('さくら', 'ja'), 'さくら');
+});
+
+test('an avatar shows a letter, not half of one', () => {
+  // slice(0, 1) takes one UTF-16 code unit. Outside the basic plane that is
+  // half a character, and in Devanagari it cuts the vowel sign off the
+  // consonant it belongs to.
+  assert.equal(firstLetter('Ada', 'en'), 'A');
+  assert.equal(firstLetter('irem', 'tr'), 'İ');
+  assert.equal(firstLetter('मीरा', 'hi'), 'मी');
+  assert.equal(firstLetter('𝒥ane', 'en'), '𝒥');
+  assert.equal(firstLetter('  Leo', 'en'), 'L');
+  assert.equal(firstLetter('', 'en'), '');
 });

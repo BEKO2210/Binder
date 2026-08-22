@@ -76,7 +76,7 @@ export function VoiceMessageBubble({ messageId, audioPath, durationMs, mine, buc
         onPress={() => void toggle()}
         disabled={loading}
       />
-      <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 2, height: theme.spacing.x8 }} accessibilityElementsHidden importantForAccessibility="no">
+      <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 2, height: theme.spacing.x8 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
         {bars.map((height, index) => {
           const played = progress > 0 && index / BAR_COUNT < progress;
           return <View key={index} style={{ flex: 1, height: `${Math.round(height * 100)}%`, borderRadius: theme.radii.pill, backgroundColor: played ? barPlayedColor : barColor, opacity: played ? 1 : onAccent ? 0.55 : 0.6 }} />;
