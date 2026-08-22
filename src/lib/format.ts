@@ -56,13 +56,18 @@ export function upperCase(text: string, locale: string): string {
 export function firstLetter(name: string, locale: string): string {
   const trimmed = name.trim();
   if (!trimmed) return '';
-  let head = Array.from(trimmed)[0] ?? '';
+  // A whole code point to start with: slicing by one gives half a surrogate
+  // pair on anything outside the basic plane, which draws as a broken glyph.
+  // `trimmed` is not empty, so there is one.
+  let head = String.fromCodePoint(trimmed.codePointAt(0) as number);
   const segmenter = (Intl as { Segmenter?: new (locale: string, options: { granularity: string }) => { segment: (text: string) => Iterable<{ segment: string }> } }).Segmenter;
-  if (segmenter) {
-    try {
-      const first = [...new segmenter(resolvedLocale(locale), { granularity: 'grapheme' }).segment(trimmed)][0];
-      if (first?.segment) head = first.segment;
-    } catch { /* the code-point answer above stands */ }
-  }
+  try {
+    // A grapheme, where the engine can tell us what one is: in Devanagari the
+    // vowel sign belongs to the consonant in front of it. The code point is
+    // appended as the last candidate rather than guarded with a branch nothing
+    // can reach — a non-empty string always segments into at least one piece.
+    const parts = segmenter ? [...new segmenter(resolvedLocale(locale), { granularity: 'grapheme' }).segment(trimmed)] : [];
+    head = [...parts, { segment: head }][0]!.segment;
+  } catch { /* the code point stands */ }
   return upperCase(head, locale);
 }

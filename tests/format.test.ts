@@ -57,3 +57,27 @@ test('an avatar shows a letter, not half of one', () => {
   assert.equal(firstLetter('  Leo', 'en'), 'L');
   assert.equal(firstLetter('', 'en'), '');
 });
+
+test('an engine without Intl.Segmenter still gets a whole character', () => {
+  // Hermes ships Intl on Android, and "ships it" is not the same as "will
+  // always have it". Half a surrogate pair in an avatar is a broken glyph.
+  const original = (Intl as { Segmenter?: unknown }).Segmenter;
+  try {
+    delete (Intl as { Segmenter?: unknown }).Segmenter;
+    assert.equal(firstLetter('𝒥ane', 'en'), '𝒥');
+    assert.equal(firstLetter('ada', 'tr'), 'A');
+    assert.equal(firstLetter('irem', 'tr'), 'İ');
+  } finally {
+    (Intl as { Segmenter?: unknown }).Segmenter = original;
+  }
+});
+
+test('a segmenter that throws does not take the avatar with it', () => {
+  const original = (Intl as { Segmenter?: unknown }).Segmenter;
+  try {
+    (Intl as { Segmenter?: unknown }).Segmenter = function Broken() { throw new Error('no data'); };
+    assert.equal(firstLetter('Ada', 'en'), 'A');
+  } finally {
+    (Intl as { Segmenter?: unknown }).Segmenter = original;
+  }
+});
