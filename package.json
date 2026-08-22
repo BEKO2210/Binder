@@ -19,6 +19,7 @@
     "typecheck": "tsc --noEmit",
     "prebundlecheck": "node scripts/materialize-brand-assets.mjs",
     "bundlecheck": "expo export --platform android --output-dir dist",
+    "size:delivery": "node scripts/report-delivery-size.mjs",
     "mail:templates": "node scripts/build-email-templates.mjs",
     "verify:mail-templates": "node scripts/build-email-templates.mjs --check",
     "site:languages": "node scripts/build-site-languages.mjs",

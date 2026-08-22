@@ -166,7 +166,14 @@ console.log(`Signature verified against the upload key (${sha1.slice(0, 12)}…)
 mkdirSync(releaseDir, { recursive: true });
 const staged = [];
 stage(builtApk, `Binder-v${version}-vc${versionCode}.apk`);
-if (withBundle) stage(join(root, 'android/app/build/outputs/bundle/release/app-release.aab'), `Binder-v${version}-vc${versionCode}.aab`);
+if (withBundle) {
+  const stagedBundle = stage(join(root, 'android/app/build/outputs/bundle/release/app-release.aab'), `Binder-v${version}-vc${versionCode}.aab`);
+  // What a phone downloads, which is not what the bundle weighs: roughly half
+  // of it is debug symbols and the R8 mapping, which Play keeps and never
+  // ships, and the rest is split by ABI. Measured here so the number exists
+  // without a Play Console login.
+  execFileSync(process.execPath, [join(root, 'scripts/report-delivery-size.mjs'), stagedBundle, join(root, 'artifacts/delivery-size-report.json')], { stdio: 'inherit' });
+}
 // R8 renames everything, so a stack trace from the wild is unreadable without
 // the map that was used for exactly this build. Play reads it out of the AAB
 // by itself; this copy is for reading a crash locally with `retrace`, because
@@ -211,6 +218,7 @@ function stage(source, name) {
   const target = join(releaseDir, name);
   copyFileSync(source, target);
   staged.push(`${(statSync(target).size / 1024 / 1024).toFixed(2)} MB  ${target}`);
+  return target;
 }
 
 function bumpSemver(value, kind) {
