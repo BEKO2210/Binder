@@ -403,6 +403,7 @@
       "pending": "Message vocal · {time}",
       "uploading": "Envoi du message vocal…",
       "loadFailed": "Chargement impossible",
+      "retryUnavailable": "Cet enregistrement ne peut plus être envoyé. Réenregistre-le.",
       "permissionTitle": "Micro requis",
       "permissionBody": "Autorise le micro dans les réglages du système pour enregistrer des messages vocaux.",
       "accessibility": {

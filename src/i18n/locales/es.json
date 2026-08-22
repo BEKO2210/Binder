@@ -403,6 +403,7 @@
       "pending": "Mensaje de voz · {time}",
       "uploading": "Enviando mensaje de voz…",
       "loadFailed": "No se pudo cargar",
+      "retryUnavailable": "Esta grabación ya no se puede enviar. Grábala de nuevo.",
       "permissionTitle": "Se necesita el micrófono",
       "permissionBody": "Permite el micrófono en los ajustes del sistema para grabar mensajes de voz.",
       "accessibility": {

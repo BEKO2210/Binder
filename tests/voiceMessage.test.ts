@@ -71,3 +71,22 @@ test('a waveform is one silence to a screen reader, not thirty', () => {
   assert.match(bubble, /importantForAccessibility="no-hide-descendants"/);
   assert.doesNotMatch(bubble, /importantForAccessibility="no"/);
 });
+
+test('a retry that cannot succeed is not offered as one', () => {
+  // The old fallback was zero, and the server refuses anything under a second:
+  // the button offered a retry that could never work, for as long as somebody
+  // kept tapping it. If the length really is lost the recording cannot be sent
+  // at all, and saying so is the only honest answer.
+  const chat = readFileSync(new URL('../src/screens/ChatScreen.tsx', import.meta.url), 'utf8');
+  const retry = chat.slice(chat.indexOf('async function retryVoice'), chat.indexOf('const openMessageActions'));
+  assert.match(retry, /if \(durationMs < VOICE_MIN_DURATION_MS\)/);
+  assert.match(retry, /chat\.voice\.retryUnavailable/);
+  assert.doesNotMatch(retry, /attempt\.durationMs \?\? 0, attempt\.clientId/);
+});
+
+test('the sentence for it exists in every language', () => {
+  for (const locale of availableLocales()) {
+    const text = translate(locale.code, 'chat.voice.retryUnavailable');
+    assert.notEqual(text, 'chat.voice.retryUnavailable', locale.code);
+  }
+});

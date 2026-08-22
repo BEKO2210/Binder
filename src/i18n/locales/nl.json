@@ -399,6 +399,7 @@
       "pending": "Spraakbericht · {time}",
       "uploading": "Spraakbericht wordt verzonden…",
       "loadFailed": "Laden mislukt",
+      "retryUnavailable": "Deze opname kan niet meer worden verzonden. Neem hem opnieuw op.",
       "permissionTitle": "Microfoon nodig",
       "permissionBody": "Sta de microfoon toe in de systeeminstellingen om spraakberichten op te nemen.",
       "accessibility": {

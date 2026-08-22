@@ -399,6 +399,7 @@
       "pending": "ボイスメッセージ · {time}",
       "uploading": "ボイスメッセージを送信中…",
       "loadFailed": "読み込めませんでした",
+      "retryUnavailable": "この録音はもう送信できません。録音し直してください。",
       "permissionTitle": "マイクが必要です",
       "permissionBody": "ボイスメッセージを録音するには、システム設定でマイクを許可してください。",
       "accessibility": {

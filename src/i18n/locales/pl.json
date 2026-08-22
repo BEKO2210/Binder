@@ -407,6 +407,7 @@
       "pending": "Wiadomość głosowa · {time}",
       "uploading": "Wysyłanie wiadomości głosowej…",
       "loadFailed": "Nie udało się wczytać",
+      "retryUnavailable": "Tego nagrania nie da się już wysłać. Nagraj je jeszcze raz.",
       "permissionTitle": "Potrzebny mikrofon",
       "permissionBody": "Zezwól na mikrofon w ustawieniach systemu, aby nagrywać wiadomości głosowe.",
       "accessibility": {

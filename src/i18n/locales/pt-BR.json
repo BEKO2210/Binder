@@ -403,6 +403,7 @@
       "pending": "Mensagem de voz · {time}",
       "uploading": "Enviando mensagem de voz…",
       "loadFailed": "Falha ao carregar",
+      "retryUnavailable": "Esta gravação não pode mais ser enviada. Grave de novo.",
       "permissionTitle": "Microfone necessário",
       "permissionBody": "Permita o microfone nas configurações do sistema para gravar mensagens de voz.",
       "accessibility": {
@@ -1415,7 +1416,7 @@
       "use": "Usar horário silencioso",
       "start": "Início",
       "end": "Fim",
-      "invalid": "Use HH:MM",
+      "invalid": "Use HH:MM (por exemplo, 22:30)",
       "startPlaceholder": "22:00",
       "endPlaceholder": "08:00"
     },

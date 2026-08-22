@@ -399,6 +399,7 @@
       "pending": "Pesan suara · {time}",
       "uploading": "Mengirim pesan suara…",
       "loadFailed": "Gagal memuat",
+      "retryUnavailable": "Rekaman ini tidak bisa dikirim lagi. Rekam ulang.",
       "permissionTitle": "Perlu mikrofon",
       "permissionBody": "Izinkan mikrofon di pengaturan sistem untuk merekam pesan suara.",
       "accessibility": {

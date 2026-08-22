@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
 
 import { BinderButton, BinderCard, BinderIcon, BinderScreenHeader, BinderText } from '../components/ui';
@@ -33,6 +33,7 @@ const MENU_DEADLINE_MS = 15_000;
 export default function MenuScreen({ onOpenSettings, onOpenBeta, onOpenAbout }: Props) {
   const { theme, t } = useBinderTheme();
   const [busy, setBusy] = useState(false);
+  const signingOut = useRef(false);
   const [message, setMessage] = useState('');
 
   async function open(url: string) {
@@ -52,6 +53,13 @@ export default function MenuScreen({ onOpenSettings, onOpenBeta, onOpenAbout }: 
   }
 
   async function signOut() {
+    // Signing out takes a request, and a second tap starts a second one. The
+    // ref is checked synchronously because `busy` only reaches the button on
+    // the next render, and the button is what a person taps twice when the
+    // first tap looks like it did nothing.
+    if (signingOut.current) return;
+    signingOut.current = true;
+    setBusy(true);
     setMessage('');
     // Says "this one was on purpose", so Root does not treat it as a session
     // that expired on its own.
@@ -63,6 +71,8 @@ export default function MenuScreen({ onOpenSettings, onOpenBeta, onOpenAbout }: 
       // asking the server whether the session really ended.
       forgetIntentionalSignOut();
       setMessage(error.message);
+      signingOut.current = false;
+      setBusy(false);
       return;
     }
     // The device stops being addressable for this account. Otherwise the
@@ -81,6 +91,9 @@ export default function MenuScreen({ onOpenSettings, onOpenBeta, onOpenAbout }: 
     await clearPending();
     // The next person on this phone agreed to nothing.
     await forgetAcceptance();
+    // No reset on the way out: the session is gone and this screen goes with
+    // it. Giving the button back here would only let somebody sign out of
+    // nothing while the app is already leaving.
   }
 
   function confirmDeletion() {

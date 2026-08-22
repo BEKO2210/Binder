@@ -399,6 +399,7 @@
       "pending": "음성 메시지 · {time}",
       "uploading": "음성 메시지 전송 중…",
       "loadFailed": "불러오지 못했어요",
+      "retryUnavailable": "이 녹음은 더 이상 보낼 수 없습니다. 다시 녹음해 주세요.",
       "permissionTitle": "마이크 필요",
       "permissionBody": "음성 메시지를 녹음하려면 시스템 설정에서 마이크를 허용하세요.",
       "accessibility": {

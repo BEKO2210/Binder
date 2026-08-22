@@ -403,6 +403,7 @@
       "pending": "Messaggio vocale · {time}",
       "uploading": "Invio del messaggio vocale…",
       "loadFailed": "Caricamento non riuscito",
+      "retryUnavailable": "Questa registrazione non può più essere inviata. Registrala di nuovo.",
       "permissionTitle": "Serve il microfono",
       "permissionBody": "Consenti il microfono nelle impostazioni di sistema per registrare messaggi vocali.",
       "accessibility": {

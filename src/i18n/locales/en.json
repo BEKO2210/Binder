@@ -399,6 +399,7 @@
       "pending": "Voice message · {time}",
       "uploading": "Sending voice message…",
       "loadFailed": "Could not load",
+      "retryUnavailable": "This recording can no longer be sent. Record it again.",
       "permissionTitle": "Microphone needed",
       "permissionBody": "Allow the microphone in the system settings to record voice messages.",
       "accessibility": {

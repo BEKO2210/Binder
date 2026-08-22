@@ -399,6 +399,7 @@
       "pending": "Sprachnachricht · {time}",
       "uploading": "Sprachnachricht wird gesendet…",
       "loadFailed": "Laden fehlgeschlagen",
+      "retryUnavailable": "Diese Aufnahme lässt sich nicht mehr senden. Nimm sie neu auf.",
       "permissionTitle": "Mikrofon benötigt",
       "permissionBody": "Erlaube das Mikrofon in den Systemeinstellungen, um Sprachnachrichten aufzunehmen.",
       "accessibility": {

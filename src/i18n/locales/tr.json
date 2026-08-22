@@ -399,6 +399,7 @@
       "pending": "Sesli mesaj · {time}",
       "uploading": "Sesli mesaj gönderiliyor…",
       "loadFailed": "Yüklenemedi",
+      "retryUnavailable": "Bu kayıt artık gönderilemiyor. Yeniden kaydet.",
       "permissionTitle": "Mikrofon gerekli",
       "permissionBody": "Sesli mesaj kaydetmek için sistem ayarlarından mikrofona izin ver.",
       "accessibility": {

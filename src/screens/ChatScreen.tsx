@@ -9,7 +9,7 @@ import { forgetChat, recallAttempts, recallDraft, rememberAttempts, rememberDraf
 import { VoiceMessageBubble } from '../components/VoiceMessageBubble';
 import { VoiceRecorderBar } from '../components/VoiceRecorderBar';
 import { formatCount, formatTime } from '../lib/format';
-import { formatVoiceDuration } from '../lib/voiceMessage';
+import { VOICE_MIN_DURATION_MS, formatVoiceDuration } from '../lib/voiceMessage';
 import { announce } from '../lib/announce';
 import { confirmDestructive } from '../lib/confirmDestructive';
 import { conversationKeyboardPadding } from '../lib/chatKeyboardLayout';
@@ -530,9 +530,22 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
     if (sendingRef.current) return;
     // The upload may be what failed, in which case there is no path yet — the
     // recording is still on the phone and gets a second run at it.
-    // The recording's own length, not zero: the server refuses anything under
-    // a second, so a retry that forgot the duration could never succeed.
-    if (!attempt.voice && attempt.localUri) { await submitVoice(attempt.localUri, attempt.durationMs ?? 0, attempt.clientId); return; }
+    if (!attempt.voice && attempt.localUri) {
+      // The recording's own length. Zero was the old fallback, and zero is a
+      // length the server refuses: the retry could not succeed, and the button
+      // offered it anyway, for as long as the person kept tapping it. If the
+      // length is genuinely lost the recording cannot be sent at all, and
+      // saying so is the only honest answer.
+      const durationMs = attempt.durationMs ?? 0;
+      if (durationMs < VOICE_MIN_DURATION_MS) {
+        setAttempts((current) => current.map((entry) => entry.clientId === attempt.clientId
+          ? { ...entry, status: 'failed' as const, error: { kind: 'server-refusal', messageKey: 'chat.voice.retryUnavailable', recovery: 'report-problem', retryable: false } }
+          : entry));
+        return;
+      }
+      await submitVoice(attempt.localUri, durationMs, attempt.clientId);
+      return;
+    }
     if (!attempt.voice) return;
     setSending(true);
     sendingRef.current = true;

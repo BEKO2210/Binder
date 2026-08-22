@@ -151,7 +151,7 @@ export default function ProfileScreen({ userId, onEditProfile, onPreviewProfile,
 function HubRow({ icon, title, copy, onPress }: { icon: 'edit' | 'settings' | 'beta' | 'info'; title: string; copy: string; onPress: () => void }) {
   const { theme } = useBinderTheme();
   return (
-    <Pressable accessibilityRole="button" onPress={onPress} pressedSurface={false}>
+    <Pressable accessibilityRole="button" accessibilityLabel={title} accessibilityHint={copy} onPress={onPress} pressedSurface={false}>
       {({ pressed }) => <BinderCard style={{ backgroundColor: pressed ? theme.colors.surfacePressed : theme.colors.surface, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x4 }}>
         <View style={{ width: theme.layout.minimumTouchTarget, height: theme.layout.minimumTouchTarget, borderRadius: theme.radii.control, backgroundColor: theme.colors.surfaceElevated, alignItems: 'center', justifyContent: 'center' }}><BinderIcon name={icon} color={theme.accent.onSurface} /></View>
         <View style={{ flex: 1 }}><BinderText variant="label">{title}</BinderText><BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x1 }}>{copy}</BinderText></View>
