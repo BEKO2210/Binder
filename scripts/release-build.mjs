@@ -25,6 +25,33 @@ const withBundle = flags.has('--bundle');
 const appJsonPath = join(root, 'app.json');
 const packageJsonPath = join(root, 'package.json');
 const gradlePath = join(root, 'android/app/build.gradle');
+// A build is only worth anything if you can say which source produced it.
+//
+// The evidence records the commit and whether the tree was clean, and the last
+// one before this said `treeClean: false`: the artefact that would have gone to
+// Play was built from a commit plus an unknown pile of uncommitted edits, and
+// nothing anybody has can reproduce it. That is not a note to make on the way
+// past — it is a reason not to build.
+//
+// The version bump this script performs is itself a change, so it commits it:
+// otherwise the only way to a clean tree would be for the bump not to happen.
+function gitOutput(args) {
+  return execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
+}
+
+const allowDirty = flags.has('--allow-dirty');
+const dirtyAtStart = gitOutput(['status', '--porcelain'])
+  .split('\n')
+  .map((line) => line.trim())
+  .filter(Boolean);
+if (dirtyAtStart.length > 0 && !allowDirty) {
+  console.error('The working tree has uncommitted changes, so the build could not be reproduced from any commit:');
+  for (const line of dirtyAtStart.slice(0, 20)) console.error(`  ${line}`);
+  if (dirtyAtStart.length > 20) console.error(`  … and ${dirtyAtStart.length - 20} more`);
+  console.error('\nCommit them (or stash them) and run this again. `--allow-dirty` builds anyway and marks the evidence.');
+  process.exit(1);
+}
+
 const appJson = JSON.parse(readFileSync(appJsonPath, 'utf8'));
 
 const currentVersion = String(appJson.expo.version);
@@ -55,6 +82,17 @@ if (!keepVersion) {
   execFileSync(process.execPath, ['scripts/build-readme.mjs'], { stdio: 'inherit' });
 
   console.log(`Version ${currentVersion} (code ${currentCode}) → ${version} (code ${versionCode})`);
+
+  // The bump is committed here so the artefact has a commit of its own to
+  // point at. android/ is not in the repository, so only the four tracked
+  // files are added — naming them rather than adding everything, because a
+  // release build is the wrong moment to sweep up whatever else is lying
+  // around.
+  if (!allowDirty) {
+    execFileSync('git', ['add', 'app.json', 'package.json', 'README.md'], { cwd: root, stdio: 'inherit' });
+    execFileSync('git', ['commit', '-m', `Version ${version} (code ${versionCode})`], { cwd: root, stdio: 'inherit' });
+    console.log(`Committed the bump as ${gitOutput(['rev-parse', '--short', 'HEAD'])}`);
+  }
 } else console.log(`Keeping version ${version} (code ${versionCode})`);
 
 // android/app/build.gradle falls back to the *debug* key when
