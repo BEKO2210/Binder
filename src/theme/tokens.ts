@@ -99,25 +99,9 @@ export const motion = {
   stagger: motionStagger,
 } as const;
 
-export const fontFamilies = {
-  regular: 'Manrope_400Regular',
-  medium: 'Manrope_500Medium',
-  bold: 'Manrope_700Bold',
-  extraBold: 'Manrope_800ExtraBold',
-} as const;
+export { fontFamilies, typography, untrackedTypography } from './typographyTokens';
 
-export const typography = {
-  displayXL: { fontFamily: fontFamilies.extraBold, fontSize: 40, lineHeight: 44, letterSpacing: -1.4 },
-  displayL: { fontFamily: fontFamilies.extraBold, fontSize: 34, lineHeight: 38, letterSpacing: -1.0 },
-  heading: { fontFamily: fontFamilies.extraBold, fontSize: 26, lineHeight: 31, letterSpacing: -0.45 },
-  title: { fontFamily: fontFamilies.bold, fontSize: 20, lineHeight: 25, letterSpacing: -0.2 },
-  bodyL: { fontFamily: fontFamilies.medium, fontSize: 17, lineHeight: 25 },
-  body: { fontFamily: fontFamilies.regular, fontSize: 15, lineHeight: 22 },
-  label: { fontFamily: fontFamilies.bold, fontSize: 13, lineHeight: 17 },
-  caption: { fontFamily: fontFamilies.medium, fontSize: 11, lineHeight: 15 },
-  micro: { fontFamily: fontFamilies.extraBold, fontSize: 10, lineHeight: 13, letterSpacing: 1.2 },
-  eyebrow: { fontFamily: fontFamilies.extraBold, fontSize: 14, lineHeight: 19, letterSpacing: 1.1 },
-} as const;
+import { typography } from './typographyTokens';
 
 export type BinderTheme = {
   mode: 'dark' | 'light';

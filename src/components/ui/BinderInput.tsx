@@ -46,7 +46,7 @@ export function BinderInput({ label, error, helper, style, editable = true, inpu
             borderColor,
             borderRadius: theme.radii.control,
             paddingHorizontal: theme.spacing.x4,
-            paddingRight: revealToggle ? theme.spacing.x4 + theme.layout.minimumTouchTarget : theme.spacing.x4,
+            paddingEnd: revealToggle ? theme.spacing.x4 + theme.layout.minimumTouchTarget : theme.spacing.x4,
             paddingVertical: theme.spacing.x3,
             fontSize: theme.typography.body.fontSize,
             lineHeight: theme.typography.body.lineHeight,
@@ -63,7 +63,7 @@ export function BinderInput({ label, error, helper, style, editable = true, inpu
             hitSlop={theme.spacing.x2}
             style={({ pressed }) => ({
               position: 'absolute',
-              right: theme.spacing.x1,
+              end: theme.spacing.x1,
               width: theme.layout.minimumTouchTarget,
               height: theme.layout.minimumTouchTarget,
               borderRadius: theme.radii.pill,

@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { I18nManager, View } from 'react-native';
 
 import {
   attributeLabelKey,
@@ -15,7 +15,8 @@ type Props = {
 };
 
 /**
- * The attribute rows a visitor sees: label on the left, answer on the right.
+ * The attribute rows a visitor sees: label at the start of the row, answer
+ * at the end of it — which side that is depends on the language.
  *
  * Only answered attributes render — an attribute is an offer, and an empty
  * one is silence, not a row of dashes. Values that read alike on their own
@@ -45,7 +46,7 @@ export function ProfileAttributeList({ attributes, zodiac }: Props) {
       {rows.map((row) => (
         <View key={row.key} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: theme.spacing.x3 }}>
           <BinderText variant="caption" tone="secondary">{row.label}</BinderText>
-          <BinderText variant="label" style={{ flexShrink: 1, textAlign: 'right' }}>{row.value}</BinderText>
+          <BinderText variant="label" style={{ flexShrink: 1, textAlign: I18nManager.isRTL ? 'left' : 'right' }}>{row.value}</BinderText>
         </View>
       ))}
     </View>

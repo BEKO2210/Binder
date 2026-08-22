@@ -3,6 +3,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { AccessibilityInfo, useColorScheme } from 'react-native';
 
 import { availableLocales, resolveLocale, translate, type LocaleCode } from '../i18n';
+import { tracksLetters } from '../i18n/direction';
+import { applyTextDirection } from '../lib/textDirection';
 
 import {
   accentThemes,
@@ -15,6 +17,7 @@ import {
   radii,
   spacing,
   typography,
+  untrackedTypography,
   resolveAccentTheme,
   semanticPalettes,
   type AccentThemeId,
@@ -185,6 +188,17 @@ export function BinderThemeProvider({ children }: PropsWithChildren) {
     : settings.appearance === 'light' ? 'light'
     : systemScheme === 'light' ? 'light' : 'dark';
 
+  // The device language is read once from Intl, which Hermes ships with; no
+  // extra dependency for something this small.
+  const deviceLanguage = useMemo(() => {
+    try { return new Intl.DateTimeFormat().resolvedOptions().locale; } catch { return undefined; }
+  }, []);
+  const locale = resolveLocale(settings.language, deviceLanguage);
+  const t = useCallback((key: string, values?: Record<string, string | number>) => translate(locale, key, values), [locale]);
+  // Arabic letters join. The tracking in the scale pulls them apart, so a
+  // language written in a joining script gets the same scale without it.
+  const spacedLetters = tracksLetters(locale);
+
   const theme = useMemo<BinderTheme>(() => ({
     mode: resolvedMode,
     colors: resolvedMode === 'light' ? lightPalette : darkPalette,
@@ -193,19 +207,19 @@ export function BinderThemeProvider({ children }: PropsWithChildren) {
     spacing,
     radii,
     motion,
-    typography,
+    typography: spacedLetters ? typography : untrackedTypography,
     layout,
     feedback,
     elevation,
-  }), [resolvedMode, settings.accentTheme]);
+  }), [resolvedMode, settings.accentTheme, spacedLetters]);
 
-  // The device language is read once from Intl, which Hermes ships with; no
-  // extra dependency for something this small.
-  const deviceLanguage = useMemo(() => {
-    try { return new Intl.DateTimeFormat().resolvedOptions().locale; } catch { return undefined; }
-  }, []);
-  const locale = resolveLocale(settings.language, deviceLanguage);
-  const t = useCallback((key: string, values?: Record<string, string | number>) => translate(locale, key, values), [locale]);
+  // The language decides which way the layout runs, and React Native decides
+  // that once, at start. Changing it has to restart the app — once, and only
+  // when the layout and the language actually disagree.
+  useEffect(() => {
+    if (!hydrated) return;
+    void applyTextDirection(locale);
+  }, [hydrated, locale]);
 
   const value = useMemo<ThemeContextValue>(() => ({
     theme,
