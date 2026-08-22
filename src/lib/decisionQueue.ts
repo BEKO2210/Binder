@@ -15,6 +15,28 @@ export type PendingDecision = {
   decidedAt: number;
 };
 
+/**
+ * One queue, one writer at a time.
+ *
+ * Everything that changes the queue reads it from disk, changes it and writes
+ * it back, and every step of that is a promise. Two of them overlapping lose a
+ * decision: the flush read the queue, waited for the network, and wrote back
+ * what was left — over the swipe that had been queued in the meantime. The
+ * card was already gone from the screen, so the decision was gone with it, and
+ * nothing said so.
+ *
+ * The lock is per process, which is the whole of it: the queue is only ever
+ * touched by this app on this phone. Work runs in the order it asked, and a
+ * failure inside it does not stop what queued behind it.
+ */
+let queueTail: Promise<unknown> = Promise.resolve();
+
+export function withQueueLock<T>(work: () => Promise<T>): Promise<T> {
+  const run = queueTail.then(work, work);
+  queueTail = run.then(() => undefined, () => undefined);
+  return run;
+}
+
 export function addPending(queue: PendingDecision[], entry: PendingDecision): PendingDecision[] {
   // One decision per person: a retry writing a second copy would ask the server
   // the same question twice. The first answer wins — a profile can come back

@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { addPending, nextToSend, removePending, shouldKeepAfterFailure, type PendingDecision } from '../src/lib/decisionQueue.ts';
+import { addPending, nextToSend, removePending, shouldKeepAfterFailure, withQueueLock, type PendingDecision } from '../src/lib/decisionQueue.ts';
+import { readFileSync } from 'node:fs';
 import { classifyError, deadlineError } from '../src/lib/reliability.ts';
 
 const entry = (id: string, at: number, decision: 'bind' | 'pass' = 'bind'): PendingDecision => ({ targetUserId: id, decision, decidedAt: at });
@@ -74,4 +75,40 @@ test('different people still queue separately, oldest first', () => {
   queue = addPending(queue, { targetUserId: 'b', decision: 'pass', decidedAt: 20 });
   assert.equal(queue.length, 2);
   assert.equal(nextToSend(queue)?.targetUserId, 'a');
+});
+
+test('two changes to the queue never overlap', async () => {
+  // The lost update this exists for: read, await, write back. Overlapping, the
+  // second writer's read happens before the first writer's write, and one of
+  // the two decisions is gone — off a screen where the card had already left.
+  const events: string[] = [];
+  const change = (name: string) => withQueueLock(async () => {
+    events.push(`${name}:read`);
+    await new Promise((resolve) => setTimeout(resolve, 5));
+    events.push(`${name}:write`);
+  });
+  await Promise.all([change('a'), change('b')]);
+  assert.deepEqual(events, ['a:read', 'a:write', 'b:read', 'b:write']);
+});
+
+test('work that failed under the lock does not block what queued behind it', async () => {
+  // A write can fail — storage is full, the disk says no. The queue is retried
+  // later; what must not happen is the lock staying held for the session.
+  await assert.rejects(withQueueLock(async () => { throw new Error('disk'); }));
+  assert.equal(await withQueueLock(async () => 'through'), 'through');
+});
+
+const discovery = readFileSync(new URL('../src/screens/DiscoveryScreen.tsx', import.meta.url), 'utf8');
+const flush = discovery.slice(discovery.indexOf('const flushPending = useCallback'), discovery.indexOf('// Whatever waited from an earlier session'));
+
+test('the flush never carries the queue across the network', () => {
+  // It used to: it read the queue once, sent one decision, and wrote its own
+  // stale copy back — over the swipe that had been queued while it waited.
+  assert.match(flush, /withQueueLock\(async \(\) => nextToSend\(await loadPending\(\)\)\)/);
+  assert.match(flush, /removePending\(await loadPending\(\), entry\.targetUserId\)/);
+});
+
+test('a second flush waits for the first instead of sending twice', () => {
+  assert.match(flush, /if \(flushing\.current\) return;/);
+  assert.match(flush, /\} finally \{\s*flushing\.current = false;\s*\}/);
 });

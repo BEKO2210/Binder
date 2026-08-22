@@ -28,7 +28,7 @@ import { reportAndBlockDiscoveryProfile, type DiscoveryReportReason } from '../l
 import { supabase } from '../lib/supabase';
 import { classifyError, withDeadline, withRetry, type ReliabilityError } from '../lib/reliability';
 import { askFor, openGate, stillWaitingFor, stopWaiting } from '../lib/lateAnswer';
-import { addPending, loadPending, nextToSend, removePending, savePending, shouldKeepAfterFailure, type PendingDecision } from '../lib/decisionQueue';
+import { addPending, loadPending, nextToSend, removePending, savePending, shouldKeepAfterFailure, withQueueLock, type PendingDecision } from '../lib/decisionQueue';
 import { outcomeForConfirmation, outcomeForFailure, outcomeForQueueFailure, shouldReloadDeck, type DecisionOutcome } from '../lib/decisionOutcome';
 import PartnerProfileScreen from './PartnerProfileScreen';
 import { useBinderHaptics } from '../theme/haptics';
@@ -121,6 +121,7 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
   const celebrationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mounted = useRef(true);
   const discoveryReloadDeferred = useRef(false);
+  const flushing = useRef(false);
   const conversationGate = useRef(openGate());
   useEffect(() => () => {
     mounted.current = false;
@@ -398,8 +399,13 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
   }
 
   async function queueDecision(entry: PendingDecision) {
-    const queue = addPending(await loadPending(), entry);
-    await savePending(queue);
+    // Under the lock, because the flush is doing the same thing from the other
+    // side and the last writer would win.
+    const queue = await withQueueLock(async () => {
+      const next = addPending(await loadPending(), entry);
+      await savePending(next);
+      return next;
+    });
     setPendingCount(queue.length);
   }
 
@@ -407,24 +413,45 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
   // answers again — oldest first, so a later pass cannot overtake an earlier
   // bind on the same evening.
   const flushPending = useCallback(async () => {
-    let queue = await loadPending();
-    while (queue.length > 0) {
-      const entry = nextToSend(queue);
-      if (!entry) break;
-      try {
-        await withDeadline(recordDecision(entry.targetUserId, entry.decision), DISCOVERY_DEADLINE_MS);
-        queue = removePending(queue, entry.targetUserId);
-      } catch (cause) {
-        const failure = classifyError(cause);
-        if (shouldKeepAfterFailure(failure.kind)) break;
-        // A refusal is final; keeping it would retry forever.
-        queue = removePending(queue, entry.targetUserId);
+    // Two flushes sending the same decision twice is worse than one flush
+    // waiting: the server would be asked the same question under two requests.
+    if (flushing.current) return;
+    flushing.current = true;
+    try {
+      while (true) {
+        // Read under the lock and never hold the queue across the network. The
+        // flush used to keep its own copy while it waited for the server, and
+        // then wrote that copy back over a swipe queued in the meantime — the
+        // card was gone from the deck and the decision was never sent.
+        const entry = await withQueueLock(async () => nextToSend(await loadPending()));
+        if (!entry) break;
+        let keep = false;
+        try {
+          await withDeadline(recordDecision(entry.targetUserId, entry.decision), DISCOVERY_DEADLINE_MS);
+        } catch (cause) {
+          const failure = classifyError(cause);
+          // A refusal is final; keeping it would retry forever. Only a lost
+          // connection is worth waiting for.
+          keep = shouldKeepAfterFailure(failure.kind);
+        }
+        if (keep) break;
+        // Re-read, so whatever was queued while the request was in flight is
+        // still there afterwards.
+        const remaining = await withQueueLock(async () => {
+          const next = removePending(await loadPending(), entry.targetUserId);
+          await savePending(next);
+          return next;
+        }).catch(() => null);
+        // The server already has this decision; a failed write only means the
+        // queue is retried later, so it must not send it a second time now.
+        if (remaining === null) break;
+        setPendingCount(remaining.length);
       }
-      // The server already has this decision; a failed write only means the
-      // queue is retried later, so it must not stop the flush.
-      try { await savePending(queue); } catch { break; }
+      const left = await withQueueLock(async () => loadPending());
+      setPendingCount(left.length);
+    } finally {
+      flushing.current = false;
     }
-    setPendingCount(queue.length);
   }, []);
 
   // Whatever waited from an earlier session goes out as soon as this screen
