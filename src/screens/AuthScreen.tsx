@@ -62,18 +62,33 @@ export default function AuthScreen({ recovery = false, onRecoveryHandled }: { re
     setMessage('');
     // The Google sheet can be dismissed in ways that never come back to us;
     // without a ceiling the button stays busy for the rest of the session.
-    const outcome = await withDeadline(signInWithGoogle(), AUTH_DEADLINE_MS);
-    setGoogleBusy(false);
-    // A cancel is a decision, not an error: saying nothing is the right answer.
-    if (outcome.status === 'signed-in' || outcome.status === 'cancelled') return;
-    setMessageTone('destructive');
-    setMessage(t(outcome.status === 'unavailable'
-      ? 'auth.google.unavailable'
-      : outcome.reason === 'play-services'
-        ? 'auth.google.playServices'
-        : outcome.reason === 'signature'
-          ? 'auth.google.signature'
-          : 'auth.google.failed'));
+    //
+    // The ceiling itself used to do that: a deadline that runs out rejects, and
+    // the rejection walked past the line that gives the button back. It stayed
+    // disabled for the whole session, nothing said why, and the rejection went
+    // unhandled — at the very first screen of the app. The way out of a state
+    // may never be the control that is waiting, so the reset belongs in
+    // `finally` and the failure has to reach the screen.
+    try {
+      const outcome = await withDeadline(signInWithGoogle(), AUTH_DEADLINE_MS);
+      // A cancel is a decision, not an error: saying nothing is the right answer.
+      if (outcome.status === 'signed-in' || outcome.status === 'cancelled') return;
+      setMessageTone('destructive');
+      setMessage(t(outcome.status === 'unavailable'
+        ? 'auth.google.unavailable'
+        : outcome.reason === 'play-services'
+          ? 'auth.google.playServices'
+          : outcome.reason === 'signature'
+            ? 'auth.google.signature'
+            : 'auth.google.failed'));
+    } catch {
+      // The sheet never answered. Nothing is known about the account, so the
+      // only true thing to say is that it did not work and email still does.
+      setMessageTone('destructive');
+      setMessage(t('auth.google.failed'));
+    } finally {
+      setGoogleBusy(false);
+    }
   }
 
   const errors: AuthFieldErrors = useMemo(

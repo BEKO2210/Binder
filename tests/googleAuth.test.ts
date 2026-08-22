@@ -22,3 +22,25 @@ test('a cancelled sheet is never reported as a failure', () => {
 test('a missing id token never reaches Supabase as an empty credential', () => {
   assert.match(source, /if \(!idToken\) return \{ status: 'failed', reason: 'no-id-token' \}/);
 });
+
+const screen = readFileSync(new URL('../src/screens/AuthScreen.tsx', import.meta.url), 'utf8');
+const continueWithGoogle = screen.slice(
+  screen.indexOf('async function continueWithGoogle()'),
+  screen.indexOf('const errors: AuthFieldErrors'),
+);
+
+test('a deadline on the Google sheet gives the button back', () => {
+  // A deadline that runs out rejects. The reset used to sit on the happy path,
+  // so the rejection walked past it: the button stayed disabled for the rest
+  // of the session, at the first screen of the app, with nothing said.
+  assert.match(continueWithGoogle, /\} finally \{\s*setGoogleBusy\(false\);\s*\}/);
+  // Exactly once, and only there: a second reset on the happy path is the bug
+  // coming back for the case where the sheet does answer.
+  assert.equal((continueWithGoogle.match(/setGoogleBusy\(false\)/g) ?? []).length, 1);
+});
+
+test('a Google sign-in that never answers says so', () => {
+  // Silence is the one outcome a person cannot act on. Email still works, and
+  // that is what the message has to leave them with.
+  assert.match(continueWithGoogle, /\} catch \{[\s\S]*auth\.google\.failed[\s\S]*\} finally \{/);
+});
