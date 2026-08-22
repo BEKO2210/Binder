@@ -27,11 +27,18 @@ import { bytesEqual, fromHex, hmacSha256, toHex } from './hmac';
 const VERSION_PREFIX = 'v2';
 
 async function sha256(data: Uint8Array): Promise<Uint8Array> {
-  // A fresh buffer, because the digest signature wants one that is not shared
-  // and a slice of a larger array is not guaranteed to be either.
+  // The array itself, not its buffer. The native side takes a typed array and
+  // refuses a bare ArrayBuffer — "[digest] Cannot convert '[object
+  // ArrayBuffer]' to a Kotlin type" — which nothing on a development machine
+  // can catch, because expo-crypto has no implementation there at all. It
+  // showed up under the password field on a real phone: the session could not
+  // be written, so signing in got as far as the error and no further.
+  //
+  // A fresh array, because a slice of a larger one shares its buffer and the
+  // native side reads the whole of it.
   const copy = new Uint8Array(data.length);
   copy.set(data);
-  return new Uint8Array(await Crypto.digest(Crypto.CryptoDigestAlgorithm.SHA256, copy.buffer as ArrayBuffer));
+  return new Uint8Array(await Crypto.digest(Crypto.CryptoDigestAlgorithm.SHA256, copy));
 }
 
 export class LargeSecureStore {

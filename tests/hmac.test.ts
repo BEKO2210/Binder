@@ -70,3 +70,13 @@ test('a session that does not authenticate signs the person out', () => {
   const getItem = store.slice(store.indexOf('async getItem'), store.indexOf('async setItem'));
   assert.match(getItem, /if \(decrypted === null\) \{[\s\S]*await this\.removeItem\(key\);[\s\S]*return null;/);
 });
+
+test('the digest is handed a typed array, not a bare buffer', () => {
+  // expo-crypto's Android side takes a TypedArray and refuses an ArrayBuffer:
+  // "[digest] Cannot convert '[object ArrayBuffer]' to a Kotlin type". Nothing
+  // on a development machine can catch that — the module has no
+  // implementation there — and the consequence on a phone was that no session
+  // could be written at all, so signing in stopped at the error.
+  assert.match(store, /Crypto\.digest\(Crypto\.CryptoDigestAlgorithm\.SHA256, copy\)/);
+  assert.doesNotMatch(store, /Crypto\.digest\([^)]*\.buffer/);
+});
