@@ -12,7 +12,6 @@ const eas = JSON.parse(read('eas.json')) as { build: Record<string, { autoIncrem
 // exists, which is every machine that can actually build.
 const gradlePath = new URL('../android/app/build.gradle', import.meta.url);
 const gradle = existsSync(gradlePath) ? readFileSync(gradlePath, 'utf8') : null;
-const readme = read('README.md');
 
 test('one version, in every place that carries it', () => {
   // The release script writes all four. A mismatch means somebody edited one
@@ -23,7 +22,10 @@ test('one version, in every place that carries it', () => {
     assert.match(gradle, new RegExp(`versionName "${app.expo.version.replace(/\./g, '\\.')}"`));
     assert.match(gradle, new RegExp(`versionCode ${app.expo.android.versionCode}\\b`));
   }
-  assert.match(readme, new RegExp(`android-${app.expo.version.replace(/\./g, '\\.')}-`));
+  // The README is not compared here: it is generated, and it is generated
+  // after the version is written — running the tests from inside that
+  // generator would fail on the gap it is about to close. `verify:site` and
+  // the gate's own "readme matches its sources" check own that.
 });
 
 test('nothing raises the version behind the release script’s back', () => {
