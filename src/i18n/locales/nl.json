@@ -1326,6 +1326,9 @@
       "title": "Eén gratis product.",
       "copy": "Binder wordt gebouwd en beheerd als een onafhankelijk, niet-commercieel project. Geen advertenties, geen betaalde niveaus, geen datahandelaren."
     },
+    "imprint": {
+      "note": "De Duitse wet vereist deze gegevens, en vereist ze in het Duits."
+    },
     "policies": {
       "eyebrow": "BELEID",
       "terms": "Voorwaarden en communityregels",

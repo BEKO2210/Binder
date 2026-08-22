@@ -1331,6 +1331,9 @@
       "title": "Un unico prodotto gratuito.",
       "copy": "Binder è sviluppato e gestito come progetto indipendente e non commerciale. Nessuna pubblicità, nessun piano a pagamento, nessun intermediario di dati."
     },
+    "imprint": {
+      "note": "La legge tedesca richiede queste informazioni, e le richiede in tedesco."
+    },
     "policies": {
       "eyebrow": "INFORMATIVE",
       "terms": "Termini e Regole della community",

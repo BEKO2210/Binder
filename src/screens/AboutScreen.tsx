@@ -10,7 +10,11 @@ import { useBinderTheme } from '../theme/ThemeProvider';
 type Props = { onClose: () => void };
 
 // Legal identity of the product. The Impressum block is a German statutory
-// document and therefore stays in German; everything else follows app language.
+// document and therefore stays in German — § 5 DDG requires it in German
+// whatever language the interface is in. What does follow the app language is
+// the line that says so: a person reading Binder in Korean should be told why
+// the next paragraph is not in Korean, in Korean. Everything else on the
+// screen is translated as usual.
 export default function AboutScreen({ onClose }: Props) {
   const { theme, t } = useBinderTheme();
   const version = Constants.expoConfig?.version ?? '';
@@ -30,6 +34,10 @@ export default function AboutScreen({ onClose }: Props) {
 
       <BinderCard style={{ marginTop: theme.spacing.x6 }}>
         <BinderText variant="micro" tone="muted">IMPRESSUM · ANGABEN GEMÄSS § 5 DDG</BinderText>
+        {/* The block below is German because the law says so. Somebody reading
+            the app in Korean deserves to be told that, in Korean, rather than
+            meeting a wall of a language they did not choose. */}
+        <BinderText variant="caption" tone="muted" style={{ marginTop: theme.spacing.x2 }}>{t('about.imprint.note')}</BinderText>
         <BinderText variant="title" style={{ marginTop: theme.spacing.x3 }}>Belkis Aslani</BinderText>
         <BinderText variant="body" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>Vogelsangstraße 32{'\n'}71691 Freiberg am Neckar{'\n'}Deutschland</BinderText>
         <BinderText variant="body" tone="secondary" style={{ marginTop: theme.spacing.x3 }}>Kontakt: nullmesh@protonmail.com</BinderText>

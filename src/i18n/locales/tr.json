@@ -1326,6 +1326,9 @@
       "title": "Tek bir ücretsiz ürün.",
       "copy": "Binder bağımsız, ticari olmayan bir proje olarak geliştirilir ve işletilir. Reklam yok, ücretli plan yok, veri simsarı yok."
     },
+    "imprint": {
+      "note": "Alman yasaları bu bilgileri ister ve Almanca ister."
+    },
     "policies": {
       "eyebrow": "POLİTİKALAR",
       "terms": "Şartlar ve Topluluk Kuralları",

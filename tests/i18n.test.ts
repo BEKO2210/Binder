@@ -118,3 +118,18 @@ test('nothing a person reads is hard-coded outside the locale files', () => {
   }
   assert.deepEqual(offenders, []);
 });
+
+test('the German imprint says, in the reader’s language, why it is German', () => {
+  // § 5 DDG requires the Impressum in German whatever the interface language
+  // is, so it stays German. A reader who chose Korean still gets told why the
+  // next paragraph is not — in Korean.
+  const about = readFileSync(new URL('../src/screens/AboutScreen.tsx', import.meta.url), 'utf8');
+  assert.match(about, /t\('about\.imprint\.note'\)/);
+  for (const locale of availableLocales()) {
+    const note = translate(locale.code, 'about.imprint.note');
+    assert.notEqual(note, 'about.imprint.note', `${locale.code} has no imprint note`);
+    if (locale.code !== 'en' && locale.code !== 'de') {
+      assert.notEqual(note, translate('en', 'about.imprint.note'), `${locale.code} still reads the English note`);
+    }
+  }
+});

@@ -1326,6 +1326,9 @@
       "title": "One free product.",
       "copy": "Binder is built and run as an independent, non-commercial project. No ads, no paid tiers, no data brokers."
     },
+    "imprint": {
+      "note": "German law requires this notice, and requires it in German."
+    },
     "policies": {
       "eyebrow": "POLICIES",
       "terms": "Terms & Community Rules",

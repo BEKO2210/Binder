@@ -1326,6 +1326,9 @@
       "title": "Ein kostenloses Angebot.",
       "copy": "Binder wird als unabhängiges, nicht kommerzielles Projekt entwickelt und betrieben. Keine Werbung, keine Bezahlstufen, kein Datenhandel."
     },
+    "imprint": {
+      "note": "Deutsches Recht verlangt diese Angaben, und verlangt sie auf Deutsch."
+    },
     "policies": {
       "eyebrow": "RICHTLINIEN",
       "terms": "Nutzungsbedingungen und Community-Regeln",
