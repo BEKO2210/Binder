@@ -7,7 +7,10 @@ const CALLBACK_SCHEME = 'binder:';
 // for. Both callbacks carry a PKCE code and nothing else, and both are parsed
 // by the same strict rules — a second host must not mean a second, looser
 // parser.
-const CALLBACK_HOSTS: readonly AuthCallbackKind[] = ['reset-password', 'confirm-email'];
+// Exported because the Android manifest has to carry a filter for every one of
+// them: a callback this parser accepts and Android does not open is a link that
+// dies in a browser.
+export const AUTH_CALLBACK_KINDS: readonly AuthCallbackKind[] = ['reset-password', 'confirm-email'];
 const MAX_CALLBACK_URL_LENGTH = 8192;
 const MAX_TOKEN_LENGTH = 4096;
 const OPAQUE_PATTERN = /^[A-Za-z0-9._~-]+$/;
@@ -40,7 +43,7 @@ export function parseAuthCallback(rawUrl: string): AuthCallback | null {
 
   if (
     url.protocol !== CALLBACK_SCHEME
-    || !CALLBACK_HOSTS.includes(url.hostname as AuthCallbackKind)
+    || !AUTH_CALLBACK_KINDS.includes(url.hostname as AuthCallbackKind)
     || url.username
     || url.password
     || url.port

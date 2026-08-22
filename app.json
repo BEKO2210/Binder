@@ -63,13 +63,15 @@
           "microphonePermission": "Binder uses the microphone to record voice messages."
         }
       ],
-      "expo-build-properties",
       [
         "expo-build-properties",
         {
           "android": {
             "enableProguardInReleaseBuilds": true,
-            "enableShrinkResourcesInReleaseBuilds": true
+            "enableShrinkResourcesInReleaseBuilds": true,
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 36,
+            "buildToolsVersion": "36.0.0"
           }
         }
       ]
@@ -92,6 +94,20 @@
             {
               "scheme": "binder",
               "host": "reset-password"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        },
+        {
+          "action": "VIEW",
+          "autoVerify": false,
+          "data": [
+            {
+              "scheme": "binder",
+              "host": "confirm-email"
             }
           ],
           "category": [
