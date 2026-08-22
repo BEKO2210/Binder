@@ -257,7 +257,9 @@
       "safetyOptions": "Opsi keselamatan untuk {name}",
       "closeSafetyOptions": "Tutup opsi keselamatan",
       "bindProfile": "Bind profil",
+      "bindProfileHint": "Atau geser kartu ke kanan.",
       "passProfile": "Lewati profil",
+      "passProfileHint": "Atau geser kartu ke kiri.",
       "profileSummary": "{name}, {age}, berjarak {distance} kilometer"
     },
     "safety": {
@@ -1449,7 +1451,8 @@
       "position": "{name}, foto {current} dari {count}",
       "previous": "Foto sebelumnya dari {name}",
       "openProfile": "Buka profil lengkap {name}",
-      "next": "Foto berikutnya dari {name}"
+      "next": "Foto berikutnya dari {name}",
+      "swipeHint": "Geser ke samping untuk melihat foto lainnya."
     },
     "states": {
       "loading": "Memuat foto…"

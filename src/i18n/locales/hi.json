@@ -257,7 +257,9 @@
       "safetyOptions": "{name} के लिए सुरक्षा विकल्प",
       "closeSafetyOptions": "सुरक्षा विकल्प बंद करें",
       "bindProfile": "प्रोफ़ाइल को Bind करें",
+      "bindProfileHint": "या कार्ड को दाईं ओर स्वाइप करें।",
       "passProfile": "प्रोफ़ाइल को पास करें",
+      "passProfileHint": "या कार्ड को बाईं ओर स्वाइप करें।",
       "profileSummary": "{name}, {age}, {distance} किलोमीटर दूर"
     },
     "safety": {
@@ -1449,7 +1451,8 @@
       "position": "{name}, {count} में से फ़ोटो {current}",
       "previous": "{name} की पिछली फ़ोटो",
       "openProfile": "{name} की पूरी प्रोफ़ाइल खोलें",
-      "next": "{name} की अगली फ़ोटो"
+      "next": "{name} की अगली फ़ोटो",
+      "swipeHint": "बाकी तस्वीरें देखने के लिए बग़ल में स्वाइप करें।"
     },
     "states": {
       "loading": "फ़ोटो लोड हो रही है…"

@@ -257,7 +257,9 @@
       "safetyOptions": "{name}の安全オプション",
       "closeSafetyOptions": "安全オプションを閉じる",
       "bindProfile": "プロフィールをBind",
+      "bindProfileHint": "カードを右にスワイプしても同じです。",
       "passProfile": "プロフィールをパス",
+      "passProfileHint": "カードを左にスワイプしても同じです。",
       "profileSummary": "{name}、{age}歳、{distance}キロ先"
     },
     "safety": {
@@ -1449,7 +1451,8 @@
       "position": "{name}、{count}枚中{current}枚目",
       "previous": "{name}の前の写真",
       "openProfile": "{name}のプロフィール全体を開く",
-      "next": "{name}の次の写真"
+      "next": "{name}の次の写真",
+      "swipeHint": "横にスワイプすると他の写真が見られます。"
     },
     "states": {
       "loading": "写真を読み込み中…"

@@ -257,7 +257,9 @@
       "safetyOptions": "Veiligheidsopties voor {name}",
       "closeSafetyOptions": "Veiligheidsopties sluiten",
       "bindProfile": "Profiel Binden",
+      "bindProfileHint": "Of veeg de kaart naar rechts.",
       "passProfile": "Profiel overslaan",
+      "passProfileHint": "Of veeg de kaart naar links.",
       "profileSummary": "{name}, {age}, {distance} kilometer verderop"
     },
     "safety": {
@@ -1449,7 +1451,8 @@
       "position": "{name}, foto {current} van {count}",
       "previous": "Vorige foto van {name}",
       "openProfile": "Volledig profiel van {name} openen",
-      "next": "Volgende foto van {name}"
+      "next": "Volgende foto van {name}",
+      "swipeHint": "Veeg opzij om de andere foto’s te zien."
     },
     "states": {
       "loading": "Foto laden…"

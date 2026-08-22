@@ -257,7 +257,9 @@
       "safetyOptions": "{name} 的安全选项",
       "closeSafetyOptions": "关闭安全选项",
       "bindProfile": "对该资料选择 Bind",
+      "bindProfileHint": "也可以把卡片向右滑动。",
       "passProfile": "跳过该资料",
+      "passProfileHint": "也可以把卡片向左滑动。",
       "profileSummary": "{name}，{age} 岁，距离 {distance} 公里"
     },
     "safety": {
@@ -1449,7 +1451,8 @@
       "position": "{name}，第 {current} 张照片，共 {count} 张",
       "previous": "{name} 的上一张照片",
       "openProfile": "打开 {name} 的完整个人资料",
-      "next": "{name} 的下一张照片"
+      "next": "{name} 的下一张照片",
+      "swipeHint": "左右滑动可以看其他照片。"
     },
     "states": {
       "loading": "正在加载照片…"

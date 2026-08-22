@@ -257,7 +257,9 @@
       "safetyOptions": "{name}님의 안전 옵션",
       "closeSafetyOptions": "안전 옵션 닫기",
       "bindProfile": "프로필에 Bind 선택",
+      "bindProfileHint": "카드를 오른쪽으로 밀어도 됩니다.",
       "passProfile": "프로필 패스",
+      "passProfileHint": "카드를 왼쪽으로 밀어도 됩니다.",
       "profileSummary": "{name}, {age}세, {distance}킬로미터 거리"
     },
     "safety": {
@@ -1449,7 +1451,8 @@
       "position": "{name}, 사진 {current}/{count}",
       "previous": "{name}님의 이전 사진",
       "openProfile": "{name}님의 전체 프로필 열기",
-      "next": "{name}님의 다음 사진"
+      "next": "{name}님의 다음 사진",
+      "swipeHint": "옆으로 밀면 다른 사진을 볼 수 있습니다."
     },
     "states": {
       "loading": "사진 불러오는 중…"

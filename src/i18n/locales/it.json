@@ -260,7 +260,9 @@
       "safetyOptions": "Opzioni di sicurezza per {name}",
       "closeSafetyOptions": "Chiudi le opzioni di sicurezza",
       "bindProfile": "Scegli Bind per il profilo",
+      "bindProfileHint": "Oppure trascina la scheda verso destra.",
       "passProfile": "Passa questo profilo",
+      "passProfileHint": "Oppure trascina la scheda verso sinistra.",
       "profileSummary": "{name}, {age} anni, a {distance} chilometri di distanza"
     },
     "safety": {
@@ -1454,7 +1456,8 @@
       "position": "{name}, foto {current} di {count}",
       "previous": "Foto precedente di {name}",
       "openProfile": "Apri il profilo completo di {name}",
-      "next": "Foto successiva di {name}"
+      "next": "Foto successiva di {name}",
+      "swipeHint": "Trascina di lato per vedere le altre foto."
     },
     "states": {
       "loading": "Caricamento foto…"

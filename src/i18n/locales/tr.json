@@ -257,7 +257,9 @@
       "safetyOptions": "{name} için güvenlik seçenekleri",
       "closeSafetyOptions": "Güvenlik seçeneklerini kapat",
       "bindProfile": "Profili Bind et",
+      "bindProfileHint": "Ya da kartı sağa kaydır.",
       "passProfile": "Profili geç",
+      "passProfileHint": "Ya da kartı sola kaydır.",
       "profileSummary": "{name}, {age}, {distance} kilometre uzakta"
     },
     "safety": {
@@ -1449,7 +1451,8 @@
       "position": "{name}, {count} fotoğraftan {current}.",
       "previous": "{name} için önceki fotoğraf",
       "openProfile": "{name} için tam profili aç",
-      "next": "{name} için sonraki fotoğraf"
+      "next": "{name} için sonraki fotoğraf",
+      "swipeHint": "Diğer fotoğraflar için yana kaydır."
     },
     "states": {
       "loading": "Fotoğraf yükleniyor…"

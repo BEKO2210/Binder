@@ -150,6 +150,9 @@ export function PhotoPager({ photos, name, height = '100%', onOpen, interactive 
         });
       }}
       accessibilityLabel={count > 1 ? t('photoPager.accessibility.position', { name, current: index + 1, count }) : name}
+      // A gesture nobody can see is a gesture nobody knows about: the buttons
+      // over the photo are labelled, the swipe was not mentioned anywhere.
+      accessibilityHint={swipeable && count > 1 ? t('photoPager.accessibility.swipeHint') : undefined}
       accessibilityRole="image"
       accessibilityValue={count > 1 ? { min: 1, max: count, now: index + 1 } : undefined}
       style={{ width: '100%', height, backgroundColor: theme.colors.surfaceElevated, overflow: 'hidden' }}

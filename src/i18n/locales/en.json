@@ -257,7 +257,9 @@
       "safetyOptions": "Safety options for {name}",
       "closeSafetyOptions": "Close safety options",
       "bindProfile": "Bind profile",
+      "bindProfileHint": "Or swipe the card to the right.",
       "passProfile": "Pass profile",
+      "passProfileHint": "Or swipe the card to the left.",
       "profileSummary": "{name}, {age}, {distance} kilometers away"
     },
     "safety": {
@@ -1449,7 +1451,8 @@
       "position": "{name}, photo {current} of {count}",
       "previous": "Previous photo of {name}",
       "openProfile": "Open full profile for {name}",
-      "next": "Next photo of {name}"
+      "next": "Next photo of {name}",
+      "swipeHint": "Swipe sideways to see the other photos."
     },
     "states": {
       "loading": "Loading photo…"
