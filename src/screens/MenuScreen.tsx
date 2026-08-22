@@ -7,6 +7,7 @@ import { DELETE_ACCOUNT_URL, PRIVACY_URL, TERMS_URL, deleteCurrentAccount, openB
 import { forgetAllChats } from '../lib/chatDrafts';
 import { clearUnsent } from '../lib/unsentMessages';
 import { clearPending } from '../lib/decisionQueue';
+import { clearOnboardingDraft } from '../lib/onboardingDraftStore';
 import { forgetAcceptance } from '../lib/legalGateCache';
 import { disablePushNotifications } from '../lib/notifications';
 import { isDeadlineError, withDeadline } from '../lib/reliability';
@@ -89,6 +90,9 @@ export default function MenuScreen({ onOpenSettings, onOpenBeta, onOpenAbout }: 
     // account's decision: left on disk it would go out under whoever signs in
     // next, putting somebody else's binds on their profile.
     await clearPending();
+    // A signup somebody abandoned is a birth date, a name and a bio waiting on
+    // this phone for whoever opens the app next.
+    await clearOnboardingDraft();
     // The next person on this phone agreed to nothing.
     await forgetAcceptance();
     // No reset on the way out: the session is gone and this screen goes with
@@ -113,6 +117,7 @@ export default function MenuScreen({ onOpenSettings, onOpenBeta, onOpenAbout }: 
       forgetAllChats();
       await clearUnsent();
       await clearPending();
+      await clearOnboardingDraft();
     } catch (error) {
       // A deadline here does not mean nothing happened: the request keeps
       // running on the server, and the account may well be gone. Anything else
@@ -121,6 +126,7 @@ export default function MenuScreen({ onOpenSettings, onOpenBeta, onOpenAbout }: 
       forgetAllChats();
       await clearUnsent();
       await clearPending();
+      await clearOnboardingDraft();
       setMessage(error instanceof Error ? error.message : t('profile.errors.deleteAccount'));
       setBusy(false);
     }

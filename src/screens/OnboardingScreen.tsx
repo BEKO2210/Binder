@@ -14,7 +14,7 @@ import { hasErrors, onboardingPosition, ONBOARDING_STEPS, type OnboardingStep, v
 import { withDeadline } from '../lib/reliability';
 import { supabase } from '../lib/supabase';
 import { GENDERS, type Gender } from '../lib/validation';
-import { clearOnboardingDraft, loadOnboardingDraft, saveOnboardingDraft } from '../lib/onboardingDraft';
+import { clearOnboardingDraft, loadOnboardingDraft, saveOnboardingDraft } from '../lib/onboardingDraftStore';
 import { InterestPicker } from '../components/InterestPicker';
 import { useBinderTheme } from '../theme/ThemeProvider';
 

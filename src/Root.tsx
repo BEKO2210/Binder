@@ -227,6 +227,12 @@ function BinderApp() {
 
   useEffect(() => {
     let active = true;
+    // A cold start reaches this twice: the link is the initial URL *and*
+    // arrives as an event. A PKCE code may be exchanged once, so the second
+    // attempt failed and told the person their link was invalid — after the
+    // first one had already signed them in. The code is claimed here, before
+    // any await, so whichever path gets there first is the one that runs.
+    const handled = new Set<string>();
 
     async function handleUrl(rawUrl: string | null) {
       if (!active || !rawUrl) return;
@@ -235,6 +241,8 @@ function BinderApp() {
         safeLog('warn', 'auth_callback_rejected');
         return;
       }
+      if (handled.has(callback.code)) return;
+      handled.add(callback.code);
       const confirming = callback.kind === 'confirm-email';
       try {
         const { error } = await supabase.auth.exchangeCodeForSession(callback.code);

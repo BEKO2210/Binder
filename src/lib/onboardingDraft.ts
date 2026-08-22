@@ -1,5 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 // Signing up is five screens of answering personal questions. Until now none
 // of it existed anywhere until the very last step, so anybody who closed the
 // app, lost the connection or reflexively swiped back started again from the
@@ -9,7 +7,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // It is deliberately local: nothing here has been sent to the server, so it is
 // nobody's data but this person's, on this phone.
 
-const STORAGE_KEY = 'binder:onboarding-draft:v1';
+// The reading and writing live in onboardingDraftStore.ts, which talks to the
+// keystore. What is here is the shape and the sanitising, which is the part
+// worth testing on its own.
+export const DRAFT_STORAGE_KEY = 'binder:onboarding-draft:v1';
 
 export type OnboardingDraft = {
   step?: string;
@@ -23,34 +24,6 @@ export type OnboardingDraft = {
   maxAge?: number;
   distance?: number;
 };
-
-export async function loadOnboardingDraft(): Promise<OnboardingDraft> {
-  try {
-    const raw = await AsyncStorage.getItem(STORAGE_KEY);
-    if (!raw) return {};
-    const parsed: unknown = JSON.parse(raw);
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
-    return sanitize(parsed as Record<string, unknown>);
-  } catch {
-    return {};
-  }
-}
-
-export async function saveOnboardingDraft(draft: OnboardingDraft): Promise<void> {
-  try {
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
-  } catch {
-    // Nothing to do: the answers are still on screen, and refusing to continue
-    // because a cache write failed would be the worse outcome.
-  }
-}
-
-/** Once the account exists the draft has served its purpose. */
-export async function clearOnboardingDraft(): Promise<void> {
-  try {
-    await AsyncStorage.removeItem(STORAGE_KEY);
-  } catch { /* the account is created either way */ }
-}
 
 /**
  * A stored draft is untrusted input like anything else read back from disk:

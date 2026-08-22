@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 import { sanitize } from '../src/lib/onboardingDraft.ts';
@@ -34,4 +35,20 @@ test('an inverted age range is dropped rather than restored', () => {
 test('too many interests are cut to what the server accepts', () => {
   const draft = sanitize({ interests: Array.from({ length: 30 }, (_, index) => `i${index}`) });
   assert.equal(draft.interests?.length, 12);
+});
+
+test('the draft is kept the way the session is kept, and leaves the same way', () => {
+  // A birth date, a name and a bio, written down before an account exists, in
+  // plain text for as long as the app stayed installed on an abandoned signup.
+  const store = readFileSync(new URL('../src/lib/onboardingDraftStore.ts', import.meta.url), 'utf8');
+  assert.match(store, /new LargeSecureStore\(\)/);
+  assert.doesNotMatch(store, /from '@react-native-async-storage\/async-storage'/);
+
+  // And a half-written profile is exactly what the next person on a shared
+  // phone must not find.
+  const menu = readFileSync(new URL('../src/screens/MenuScreen.tsx', import.meta.url), 'utf8');
+  const signOut = menu.slice(menu.indexOf('async function signOut()'), menu.indexOf('function confirmDeletion()'));
+  const deletion = menu.slice(menu.indexOf('async function performDeletion()'), menu.indexOf('return (', menu.indexOf('async function performDeletion()')));
+  assert.match(signOut, /clearOnboardingDraft\(\)/);
+  assert.equal((deletion.match(/clearOnboardingDraft\(\)/g) ?? []).length, 2);
 });
