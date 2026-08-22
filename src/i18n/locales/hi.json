@@ -168,8 +168,10 @@
     "accessibility": {
       "startConversation": "{name} के साथ बातचीत शुरू करें",
       "openConversation": "{name} के साथ बातचीत खोलें",
-      "unreadOne": "{count} अपठित संदेश",
-      "unreadOther": "{count} अपठित संदेश"
+      "unread": {
+        "one": "{count} अपठित संदेश",
+        "other": "{count} अपठित संदेश"
+      }
     },
     "voiceMessage": "वॉइस मैसेज"
   },
@@ -193,8 +195,10 @@
       "closePhoto": "फ़ोटो बंद करें"
     },
     "loading": "प्रोफ़ाइल खोली जा रही है…",
-    "photosReviewedOne": "फ़ोटो की समीक्षा की गई",
-    "photosReviewedOther": "फ़ोटो की समीक्षा की गई",
+    "photosReviewed": {
+      "one": "फ़ोटो की समीक्षा की गई",
+      "other": "फ़ोटो की समीक्षा की गई"
+    },
     "away": "{distance} किमी दूर",
     "gallery": {
       "photoOf": "फ़ोटो {current} / {total}",
@@ -225,8 +229,10 @@
     "filters": {
       "summary": "{distance} किमी के भीतर {minAge}–{maxAge} खोज रहे हैं",
       "label": "आपकी खोज",
-      "moreOne": "{count} और फ़िल्टर",
-      "moreOther": "{count} और फ़िल्टर"
+      "more": {
+        "one": "{count} और फ़िल्टर",
+        "other": "{count} और फ़िल्टर"
+      }
     },
     "empty": {
       "filteredEyebrow": "फ़िल्टर आपकी सूची को सीमित कर रहे हैं",
@@ -646,8 +652,10 @@
       "unavailable": "गिनती उपलब्ध नहीं",
       "checking": "कौन मेल खाता है जाँचा जा रहा है…",
       "none": "अभी कोई मेल नहीं खाता",
-      "personOne": "अभी {count} व्यक्ति मेल खाता है",
-      "personOther": "अभी {count} लोग मेल खाते हैं",
+      "person": {
+        "one": "अभी {count} व्यक्ति मेल खाता है",
+        "other": "अभी {count} लोग मेल खाते हैं"
+      },
       "failed": "Binder अभी जाँच नहीं कर सका। फिर कोशिश करने के लिए कोई फ़िल्टर बदलें — आपकी सेटिंग्स लागू रहेंगी।",
       "likelyCause": "आपका {cause} संभावित कारण है। लागू करने से पहले इसे थोड़ा बढ़ाएँ।",
       "updates": "आपकी खोज बदलने के साथ यह संख्या अपडेट होती है।",

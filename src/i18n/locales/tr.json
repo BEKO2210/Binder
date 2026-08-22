@@ -168,8 +168,10 @@
     "accessibility": {
       "startConversation": "{name} ile konuşma başlat",
       "openConversation": "{name} ile konuşmayı aç",
-      "unreadOne": "{count} okunmamış mesaj",
-      "unreadOther": "{count} okunmamış mesaj"
+      "unread": {
+        "one": "{count} okunmamış mesaj",
+        "other": "{count} okunmamış mesaj"
+      }
     },
     "voiceMessage": "Sesli mesaj"
   },
@@ -193,8 +195,10 @@
       "closePhoto": "Fotoğrafı kapat"
     },
     "loading": "Profil açılıyor…",
-    "photosReviewedOne": "Fotoğraf incelendi",
-    "photosReviewedOther": "Fotoğraflar incelendi",
+    "photosReviewed": {
+      "one": "Fotoğraf incelendi",
+      "other": "Fotoğraflar incelendi"
+    },
     "away": "{distance} km uzakta",
     "gallery": {
       "photoOf": "Fotoğraf {current} / {total}",
@@ -225,8 +229,10 @@
     "filters": {
       "summary": "{distance} km içinde {minAge}–{maxAge} arıyorsun",
       "label": "Aramanız",
-      "moreOne": "{count} filtre daha",
-      "moreOther": "{count} filtre daha"
+      "more": {
+        "one": "{count} filtre daha",
+        "other": "{count} filtre daha"
+      }
     },
     "empty": {
       "filteredEyebrow": "FİLTRELER LİSTENİZİ DARALTIYOR",
@@ -646,8 +652,10 @@
       "unavailable": "Sayı kullanılamıyor",
       "checking": "Kimlerin uyduğu kontrol ediliyor…",
       "none": "Şu anda uyan kimse yok",
-      "personOne": "Şu anda {count} kişi uyuyor",
-      "personOther": "Şu anda {count} kişi uyuyor",
+      "person": {
+        "one": "Şu anda {count} kişi uyuyor",
+        "other": "Şu anda {count} kişi uyuyor"
+      },
       "failed": "Binder şu anda kontrol edemiyor. Tekrar denemek için bir filtreyi değiştirin — ayarlarınız uygulanmaya devam eder.",
       "likelyCause": "Muhtemel neden {cause}. Uygulamadan önce aralığı genişletin.",
       "updates": "Aramanızı şekillendirdikçe bu güncellenir.",

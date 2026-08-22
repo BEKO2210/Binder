@@ -31,6 +31,34 @@ function flatten(value, prefix = '', out = new Map()) {
 const dictionaries = new Map(codes.map((code) => [code, JSON.parse(readFileSync(join(localesDir, `${code}.json`), 'utf8'))]));
 const sourceKeys = flatten(dictionaries.get(source));
 
+// A count is not the same shape in every language. Polish has a form for 2–4,
+// Arabic has six including one for nothing at all — so a plural group is the
+// one place where a translation carries keys English does not have, and has to.
+const pluralCategories = ['zero', 'one', 'two', 'few', 'many', 'other'];
+
+/** Groups in the source whose children are all plural categories. */
+function pluralGroupsIn(value, prefix = '', out = new Set()) {
+  for (const [key, child] of Object.entries(value)) {
+    if (key === '$meta' || !child || typeof child !== 'object' || Array.isArray(child)) continue;
+    const path = prefix ? `${prefix}.${key}` : key;
+    const names = Object.keys(child);
+    if (names.length > 0 && names.every((name) => pluralCategories.includes(name)) && names.includes('other')) out.add(path);
+    else pluralGroupsIn(child, path, out);
+  }
+  return out;
+}
+
+const pluralGroups = pluralGroupsIn(dictionaries.get(source));
+
+function categoriesNeededBy(code) {
+  try {
+    const categories = new Intl.PluralRules(code).resolvedOptions().pluralCategories;
+    return categories.filter((category) => pluralCategories.includes(category));
+  } catch {
+    return ['one', 'other'];
+  }
+}
+
 const problems = [];
 const report = [];
 for (const code of codes) {
@@ -40,9 +68,27 @@ for (const code of codes) {
   if (!meta.endonym) problems.push(`${code}.json: $meta.endonym is missing — the picker needs the language's own name.`);
   const keys = flatten(dictionary);
   const missing = [...sourceKeys.keys()].filter((key) => !keys.has(key) || String(keys.get(key)).trim() === '');
-  const unknown = [...keys.keys()].filter((key) => !sourceKeys.has(key));
+  const unknown = [...keys.keys()].filter((key) => {
+    if (sourceKeys.has(key)) return false;
+    const group = key.slice(0, key.lastIndexOf('.'));
+    const category = key.slice(key.lastIndexOf('.') + 1);
+    // A plural form this language needs and English does not is the point.
+    return !(pluralGroups.has(group) && pluralCategories.includes(category));
+  });
   const untouched = [...keys.entries()].filter(([key, value]) => sourceKeys.get(key) === value).length;
   if (unknown.length) problems.push(`${code}.json: ${unknown.length} key(s) that do not exist in ${source}.json: ${unknown.slice(0, 5).join(', ')}`);
+  // Missing prose falls back to English and degrades. A missing plural form
+  // does not degrade — it reads as the wrong number, in a language where the
+  // difference between two and five is a different sentence.
+  const needed = categoriesNeededBy(code);
+  const missingForms = [];
+  for (const group of pluralGroups) {
+    for (const category of needed) {
+      const key = `${group}.${category}`;
+      if (!keys.has(key) || String(keys.get(key)).trim() === '') missingForms.push(key);
+    }
+  }
+  if (missingForms.length) problems.push(`${code}.json: ${missingForms.length} plural form(s) missing for a language that needs ${needed.join('/')}: ${missingForms.slice(0, 5).join(', ')}`);
   // Missing keys are allowed: they fall back to English rather than breaking.
   report.push(`${code}: ${keys.size - missing.length}/${sourceKeys.size} translated, ${missing.length} falling back to English, ${untouched} still identical to English`);
 }

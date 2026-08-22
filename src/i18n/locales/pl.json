@@ -168,8 +168,12 @@
     "accessibility": {
       "startConversation": "Rozpocznij rozmowę z {name}",
       "openConversation": "Otwórz rozmowę z {name}",
-      "unreadOne": "Nieprzeczytane wiadomości: {count}",
-      "unreadOther": "Nieprzeczytane wiadomości: {count}"
+      "unread": {
+        "one": "Nieprzeczytane wiadomości: {count}",
+        "few": "Nieprzeczytane wiadomości: {count}",
+        "many": "Nieprzeczytane wiadomości: {count}",
+        "other": "Nieprzeczytane wiadomości: {count}"
+      }
     },
     "voiceMessage": "Wiadomość głosowa"
   },
@@ -193,8 +197,12 @@
       "closePhoto": "Zamknij zdjęcie"
     },
     "loading": "Otwieranie profilu…",
-    "photosReviewedOne": "Zdjęcie sprawdzone",
-    "photosReviewedOther": "Zdjęcia sprawdzone",
+    "photosReviewed": {
+      "one": "Zdjęcie sprawdzone",
+      "few": "Zdjęcia sprawdzone",
+      "many": "Zdjęcia sprawdzone",
+      "other": "Zdjęcia sprawdzone"
+    },
     "away": "{distance} km stąd",
     "gallery": {
       "photoOf": "Zdjęcie {current} z {total}",
@@ -225,8 +233,12 @@
     "filters": {
       "summary": "Szukasz {minAge}–{maxAge} w promieniu {distance} km",
       "label": "Twoje wyszukiwanie",
-      "moreOne": "jeszcze {count} filtr",
-      "moreOther": "jeszcze {count} filtry"
+      "more": {
+        "one": "jeszcze {count} filtr",
+        "few": "jeszcze {count} filtry",
+        "many": "jeszcze {count} filtrów",
+        "other": "jeszcze {count} filtry"
+      }
     },
     "empty": {
       "filteredEyebrow": "FILTRY ZAWĘŻAJĄ TWOJĄ TALIĘ",
@@ -297,6 +309,8 @@
     },
     "pending": {
       "one": "1 decyzja czeka na połączenie",
+      "few": "{count} decyzje czekają na połączenie",
+      "many": "{count} decyzji czeka na połączenie",
       "other": "Decyzje czekające na połączenie: {count}"
     }
   },
@@ -646,8 +660,12 @@
       "unavailable": "Liczba niedostępna",
       "checking": "Sprawdzanie, kto pasuje…",
       "none": "Obecnie nikt nie pasuje",
-      "personOne": "Liczba obecnie pasujących osób: {count}",
-      "personOther": "Liczba obecnie pasujących osób: {count}",
+      "person": {
+        "one": "Liczba obecnie pasujących osób: {count}",
+        "few": "Liczba obecnie pasujących osób: {count}",
+        "many": "Liczba obecnie pasujących osób: {count}",
+        "other": "Liczba obecnie pasujących osób: {count}"
+      },
       "failed": "Binder nie może teraz sprawdzić. Zmień filtr, aby spróbować ponownie — ustawienia nadal obowiązują.",
       "likelyCause": "Prawdopodobną przyczyną jest: {cause}. Poszerz ten zakres przed zastosowaniem.",
       "updates": "Wynik aktualizuje się podczas zmiany wyszukiwania.",

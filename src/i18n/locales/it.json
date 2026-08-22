@@ -168,8 +168,11 @@
     "accessibility": {
       "startConversation": "Inizia una conversazione con {name}",
       "openConversation": "Apri la conversazione con {name}",
-      "unreadOne": "{count} messaggio non letto",
-      "unreadOther": "{count} messaggi non letti"
+      "unread": {
+        "one": "{count} messaggio non letto",
+        "many": "{count} messaggi non letti",
+        "other": "{count} messaggi non letti"
+      }
     },
     "voiceMessage": "Messaggio vocale"
   },
@@ -193,8 +196,11 @@
       "closePhoto": "Chiudi foto"
     },
     "loading": "Apertura del profilo…",
-    "photosReviewedOne": "Foto verificata",
-    "photosReviewedOther": "Foto verificate",
+    "photosReviewed": {
+      "one": "Foto verificata",
+      "many": "Foto verificate",
+      "other": "Foto verificate"
+    },
     "away": "A {distance} km di distanza",
     "gallery": {
       "photoOf": "Foto {current} di {total}",
@@ -225,8 +231,11 @@
     "filters": {
       "summary": "Cerchi {minAge}–{maxAge} entro {distance} km",
       "label": "La tua ricerca",
-      "moreOne": "{count} filtro in più",
-      "moreOther": "{count} filtri in più"
+      "more": {
+        "one": "{count} filtro in più",
+        "many": "{count} filtri in più",
+        "other": "{count} filtri in più"
+      }
     },
     "empty": {
       "filteredEyebrow": "I FILTRI STANNO LIMITANDO LA TUA SELEZIONE",
@@ -297,6 +306,7 @@
     },
     "pending": {
       "one": "1 decisione attende la connessione",
+      "many": "{count} decisioni attendono la connessione",
       "other": "{count} decisioni attendono la connessione"
     }
   },
@@ -646,8 +656,11 @@
       "unavailable": "Conteggio non disponibile",
       "checking": "Controllo delle persone compatibili…",
       "none": "Nessuna persona corrisponde al momento",
-      "personOne": "{count} persona corrisponde al momento",
-      "personOther": "{count} persone corrispondono al momento",
+      "person": {
+        "one": "{count} persona corrisponde al momento",
+        "many": "{count} persone corrispondono al momento",
+        "other": "{count} persone corrispondono al momento"
+      },
       "failed": "Binder non riesce a controllare in questo momento. Modifica un filtro per riprovare: le tue impostazioni restano applicate.",
       "likelyCause": "Il criterio {cause} è probabilmente la causa. Amplialo prima di applicare i filtri.",
       "updates": "Il conteggio si aggiorna mentre modifichi la ricerca.",

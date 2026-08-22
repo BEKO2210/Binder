@@ -168,8 +168,10 @@
     "accessibility": {
       "startConversation": "{name}と会話を始める",
       "openConversation": "{name}との会話を開く",
-      "unreadOne": "未読メッセージ {count}件",
-      "unreadOther": "未読メッセージ {count}件"
+      "unread": {
+        "one": "未読メッセージ {count}件",
+        "other": "未読メッセージ {count}件"
+      }
     },
     "voiceMessage": "ボイスメッセージ"
   },
@@ -193,8 +195,10 @@
       "closePhoto": "写真を閉じる"
     },
     "loading": "プロフィールを開いています…",
-    "photosReviewedOne": "写真確認済み",
-    "photosReviewedOther": "写真確認済み",
+    "photosReviewed": {
+      "one": "写真確認済み",
+      "other": "写真確認済み"
+    },
     "away": "{distance} km先",
     "gallery": {
       "photoOf": "写真 {current} / {total}",
@@ -225,8 +229,10 @@
     "filters": {
       "summary": "{distance} km 以内で {minAge}〜{maxAge} 歳を探しています",
       "label": "あなたの条件",
-      "moreOne": "他に {count} 件の条件",
-      "moreOther": "他に {count} 件の条件"
+      "more": {
+        "one": "他に {count} 件の条件",
+        "other": "他に {count} 件の条件"
+      }
     },
     "empty": {
       "filteredEyebrow": "フィルターで候補が絞られています",
@@ -646,8 +652,10 @@
       "unavailable": "人数を確認できません",
       "checking": "条件に合う人を確認中…",
       "none": "現在条件に合う人はいません",
-      "personOne": "現在{count}人が条件に合います",
-      "personOther": "現在{count}人が条件に合います",
+      "person": {
+        "one": "現在{count}人が条件に合います",
+        "other": "現在{count}人が条件に合います"
+      },
       "failed": "Binderは今確認できません。フィルターを変更して再試行してください。設定自体は引き続き有効です。",
       "likelyCause": "{cause}が主な原因の可能性があります。適用前に条件を広げてください。",
       "updates": "検索条件を調整すると、この人数も更新されます。",

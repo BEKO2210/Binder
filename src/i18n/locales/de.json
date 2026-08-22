@@ -168,8 +168,10 @@
     "accessibility": {
       "startConversation": "Unterhaltung mit {name} beginnen",
       "openConversation": "Unterhaltung mit {name} öffnen",
-      "unreadOne": "{count} ungelesene Nachricht",
-      "unreadOther": "{count} ungelesene Nachrichten"
+      "unread": {
+        "one": "{count} ungelesene Nachricht",
+        "other": "{count} ungelesene Nachrichten"
+      }
     },
     "voiceMessage": "Sprachnachricht"
   },
@@ -193,8 +195,10 @@
       "closePhoto": "Foto schließen"
     },
     "loading": "Profil wird geöffnet…",
-    "photosReviewedOne": "Foto geprüft",
-    "photosReviewedOther": "Fotos geprüft",
+    "photosReviewed": {
+      "one": "Foto geprüft",
+      "other": "Fotos geprüft"
+    },
     "away": "{distance} km entfernt",
     "gallery": {
       "photoOf": "Foto {current} von {total}",
@@ -225,8 +229,10 @@
     "filters": {
       "summary": "Suche {minAge}–{maxAge} im Umkreis von {distance} km",
       "label": "Deine Suche",
-      "moreOne": "{count} weiterer Filter",
-      "moreOther": "{count} weitere Filter"
+      "more": {
+        "one": "{count} weiterer Filter",
+        "other": "{count} weitere Filter"
+      }
     },
     "empty": {
       "filteredEyebrow": "FILTER SCHRÄNKEN DEIN DECK EIN",
@@ -646,8 +652,10 @@
       "unavailable": "Anzahl nicht verfügbar",
       "checking": "Passende Personen werden gesucht…",
       "none": "Derzeit passt niemand",
-      "personOne": "Derzeit passt {count} Person",
-      "personOther": "Derzeit passen {count} Personen",
+      "person": {
+        "one": "Derzeit passt {count} Person",
+        "other": "Derzeit passen {count} Personen"
+      },
       "failed": "Binder konnte die Anzahl gerade nicht prüfen. Ändere einen Filter und versuche es erneut – deine Einstellungen gelten trotzdem.",
       "likelyCause": "Wahrscheinlich liegt es an: {cause}. Erweitere diesen Filter vor dem Anwenden.",
       "updates": "Die Anzahl wird beim Anpassen deiner Suche aktualisiert.",

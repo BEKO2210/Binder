@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
 import { AccessibilityInfo, useColorScheme } from 'react-native';
 
-import { availableLocales, resolveLocale, translate, type LocaleCode } from '../i18n';
+import { availableLocales, resolveLocale, translate, translateCount, type LocaleCode } from '../i18n';
 import { tracksLetters } from '../i18n/direction';
 import { applyTextDirection } from '../lib/textDirection';
 
@@ -87,6 +87,11 @@ type ThemeContextValue = {
   locale: LocaleCode;
   /** Translate one key; missing strings fall back to English. */
   t: (key: string, values?: Record<string, string | number>) => string;
+  /**
+   * Translate a count. The key is a group — `one`, `few`, `many` and the rest
+   * live under it — and the language decides which of them this number takes.
+   */
+  tCount: (base: string, count: number, values?: Record<string, string | number>) => string;
   reduceMotion: boolean;
   updateSettings: (patch: Partial<AppSettings>) => Promise<void>;
   updateNotifications: (patch: Partial<NotificationPreferences>) => Promise<void>;
@@ -195,6 +200,7 @@ export function BinderThemeProvider({ children }: PropsWithChildren) {
   }, []);
   const locale = resolveLocale(settings.language, deviceLanguage);
   const t = useCallback((key: string, values?: Record<string, string | number>) => translate(locale, key, values), [locale]);
+  const tCount = useCallback((base: string, count: number, values?: Record<string, string | number>) => translateCount(locale, base, count, values), [locale]);
   // Arabic letters join. The tracking in the scale pulls them apart, so a
   // language written in a joining script gets the same scale without it.
   const spacedLetters = tracksLetters(locale);
@@ -227,12 +233,13 @@ export function BinderThemeProvider({ children }: PropsWithChildren) {
     hydrated,
     locale,
     t,
+    tCount,
     reduceMotion,
     updateSettings,
     updateNotifications,
     updateQuietHours,
     resetSettings,
-  }), [theme, settings, hydrated, locale, t, reduceMotion, updateSettings, updateNotifications, updateQuietHours, resetSettings]);
+  }), [theme, settings, hydrated, locale, t, tCount, reduceMotion, updateSettings, updateNotifications, updateQuietHours, resetSettings]);
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }

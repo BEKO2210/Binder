@@ -7,6 +7,7 @@
 //   half-finished translation degrades into English, it does not break a screen.
 // - The picker in App settings only appears when there is something to pick.
 import en from './locales/en.json' with { type: 'json' };
+import { pluralKey } from './plural.ts';
 import { registeredLocales, type LocaleCode } from './registry.ts';
 
 export type { LocaleCode };
@@ -60,6 +61,21 @@ export function translate(locale: LocaleCode, key: string, values?: Record<strin
   const text = lookup(dictionaries[locale], key) ?? lookup(dictionaries[SOURCE_LOCALE], key) ?? key;
   if (!values) return text;
   return text.replace(/\{(\w+)\}/g, (match, name: string) => (name in values ? String(values[name]) : match));
+}
+
+/**
+ * Whether this locale carries this key itself, before the fallback to English.
+ *
+ * Plural forms need this: Polish has a form for 2–4 that English does not, so
+ * "is there one" cannot be answered by asking English.
+ */
+export function hasTranslation(locale: LocaleCode, key: string): boolean {
+  return lookup(dictionaries[locale], key) !== undefined;
+}
+
+/** Translate a count, in the number the language uses for it. */
+export function translateCount(locale: LocaleCode, base: string, count: number, values?: Record<string, string | number>): string {
+  return translate(locale, pluralKey(base, locale, count, (key) => hasTranslation(locale, key)), values);
 }
 
 export function resolveLocale(preference: 'system' | LocaleCode, deviceLanguage: string | undefined): LocaleCode {

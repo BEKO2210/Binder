@@ -168,8 +168,10 @@
     "accessibility": {
       "startConversation": "Mulai percakapan dengan {name}",
       "openConversation": "Buka percakapan dengan {name}",
-      "unreadOne": "{count} pesan belum dibaca",
-      "unreadOther": "{count} pesan belum dibaca"
+      "unread": {
+        "one": "{count} pesan belum dibaca",
+        "other": "{count} pesan belum dibaca"
+      }
     },
     "voiceMessage": "Pesan suara"
   },
@@ -193,8 +195,10 @@
       "closePhoto": "Tutup foto"
     },
     "loading": "Membuka profil…",
-    "photosReviewedOne": "Foto ditinjau",
-    "photosReviewedOther": "Foto ditinjau",
+    "photosReviewed": {
+      "one": "Foto ditinjau",
+      "other": "Foto ditinjau"
+    },
     "away": "Berjarak {distance} km",
     "gallery": {
       "photoOf": "Foto {current} dari {total}",
@@ -225,8 +229,10 @@
     "filters": {
       "summary": "Mencari {minAge}–{maxAge} dalam {distance} km",
       "label": "Pencarianmu",
-      "moreOne": "{count} filter lagi",
-      "moreOther": "{count} filter lagi"
+      "more": {
+        "one": "{count} filter lagi",
+        "other": "{count} filter lagi"
+      }
     },
     "empty": {
       "filteredEyebrow": "FILTER MEMPERSEMPIT PILIHAN ANDA",
@@ -646,8 +652,10 @@
       "unavailable": "Jumlah tidak tersedia",
       "checking": "Memeriksa siapa yang cocok…",
       "none": "Saat ini tidak ada yang cocok",
-      "personOne": "Saat ini {count} orang cocok",
-      "personOther": "Saat ini {count} orang cocok",
+      "person": {
+        "one": "Saat ini {count} orang cocok",
+        "other": "Saat ini {count} orang cocok"
+      },
       "failed": "Binder tidak dapat memeriksa sekarang. Ubah filter untuk mencoba lagi — pengaturan Anda tetap berlaku.",
       "likelyCause": "{cause} Anda kemungkinan penyebabnya. Perluas sebelum menerapkan.",
       "updates": "Ini diperbarui saat Anda membentuk pencarian.",

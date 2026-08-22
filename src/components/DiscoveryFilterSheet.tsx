@@ -148,10 +148,10 @@ export default function DiscoveryFilterSheet({ initialValues, onClose, onApplied
 }
 
 function CountConsequence({ count, loading, failed, cause }: { count: number | null; loading: boolean; failed: boolean; cause: 'audience' | 'age' | 'distance' }) {
-  const { theme, locale, t } = useBinderTheme();
+  const { theme, locale, t, tCount } = useBinderTheme();
   const causeCopy = cause === 'audience' ? t('discoveryFilterSheet.count.causes.audience') : cause === 'age' ? t('discoveryFilterSheet.count.causes.age') : t('discoveryFilterSheet.count.causes.distance');
   return <View accessibilityLiveRegion="polite" style={{ marginTop: theme.spacing.x8 }}>
-    <BinderText variant="title">{failed && !loading ? t('discoveryFilterSheet.count.unavailable') : loading || count === null ? t('discoveryFilterSheet.count.checking') : count === 0 ? t('discoveryFilterSheet.count.none') : t(count === 1 ? 'discoveryFilterSheet.count.personOne' : 'discoveryFilterSheet.count.personOther', { count: formatCount(count, locale) })}</BinderText>
+    <BinderText variant="title">{failed && !loading ? t('discoveryFilterSheet.count.unavailable') : loading || count === null ? t('discoveryFilterSheet.count.checking') : count === 0 ? t('discoveryFilterSheet.count.none') : tCount('discoveryFilterSheet.count.person', count, { count: formatCount(count, locale) })}</BinderText>
     {failed && !loading ? <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>{t('discoveryFilterSheet.count.failed')}</BinderText>
       : count === 0 && !loading ? <BinderText variant="caption" tone="destructive" style={{ marginTop: theme.spacing.x2 }}>{t('discoveryFilterSheet.count.likelyCause', { cause: causeCopy })}</BinderText>
       : <BinderText variant="caption" tone="secondary" style={{ marginTop: theme.spacing.x2 }}>{t('discoveryFilterSheet.count.updates')}</BinderText>}

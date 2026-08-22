@@ -168,8 +168,10 @@
     "accessibility": {
       "startConversation": "{name}님과 대화 시작",
       "openConversation": "{name}님과의 대화 열기",
-      "unreadOne": "읽지 않은 메시지 {count}개",
-      "unreadOther": "읽지 않은 메시지 {count}개"
+      "unread": {
+        "one": "읽지 않은 메시지 {count}개",
+        "other": "읽지 않은 메시지 {count}개"
+      }
     },
     "voiceMessage": "음성 메시지"
   },
@@ -193,8 +195,10 @@
       "closePhoto": "사진 닫기"
     },
     "loading": "프로필을 여는 중…",
-    "photosReviewedOne": "사진 검토 완료",
-    "photosReviewedOther": "사진 검토 완료",
+    "photosReviewed": {
+      "one": "사진 검토 완료",
+      "other": "사진 검토 완료"
+    },
     "away": "{distance}km 거리",
     "gallery": {
       "photoOf": "사진 {current} / {total}",
@@ -225,8 +229,10 @@
     "filters": {
       "summary": "{distance} km 이내 {minAge}–{maxAge}세를 찾는 중",
       "label": "내 검색 조건",
-      "moreOne": "필터 {count}개 더",
-      "moreOther": "필터 {count}개 더"
+      "more": {
+        "one": "필터 {count}개 더",
+        "other": "필터 {count}개 더"
+      }
     },
     "empty": {
       "filteredEyebrow": "필터가 추천 범위를 좁히고 있습니다",
@@ -646,8 +652,10 @@
       "unavailable": "인원 수를 확인할 수 없음",
       "checking": "조건에 맞는 사람을 확인 중…",
       "none": "현재 조건에 맞는 사람이 없습니다",
-      "personOne": "현재 {count}명이 조건에 맞습니다",
-      "personOther": "현재 {count}명이 조건에 맞습니다",
+      "person": {
+        "one": "현재 {count}명이 조건에 맞습니다",
+        "other": "현재 {count}명이 조건에 맞습니다"
+      },
       "failed": "Binder가 지금 확인할 수 없습니다. 필터를 변경해 다시 시도하세요. 설정은 계속 적용됩니다.",
       "likelyCause": "{cause}이(가) 원인일 가능성이 큽니다. 적용하기 전에 범위를 넓혀보세요.",
       "updates": "검색 조건을 조정하면 이 숫자도 업데이트됩니다.",

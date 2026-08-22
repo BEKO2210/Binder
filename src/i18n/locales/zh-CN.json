@@ -168,8 +168,10 @@
     "accessibility": {
       "startConversation": "与 {name} 开始聊天",
       "openConversation": "打开与 {name} 的聊天",
-      "unreadOne": "{count} 条未读消息",
-      "unreadOther": "{count} 条未读消息"
+      "unread": {
+        "one": "{count} 条未读消息",
+        "other": "{count} 条未读消息"
+      }
     },
     "voiceMessage": "语音消息"
   },
@@ -193,8 +195,10 @@
       "closePhoto": "关闭照片"
     },
     "loading": "正在打开个人资料…",
-    "photosReviewedOne": "照片已审核",
-    "photosReviewedOther": "照片已审核",
+    "photosReviewed": {
+      "one": "照片已审核",
+      "other": "照片已审核"
+    },
     "away": "距离 {distance} 公里",
     "gallery": {
       "photoOf": "第 {current} / {total} 张照片",
@@ -225,8 +229,10 @@
     "filters": {
       "summary": "在 {distance} 公里内寻找 {minAge}–{maxAge} 岁",
       "label": "你的搜索",
-      "moreOne": "另有 {count} 个筛选",
-      "moreOther": "另有 {count} 个筛选"
+      "more": {
+        "one": "另有 {count} 个筛选",
+        "other": "另有 {count} 个筛选"
+      }
     },
     "empty": {
       "filteredEyebrow": "筛选条件正在缩小推荐范围",
@@ -646,8 +652,10 @@
       "unavailable": "人数不可用",
       "checking": "正在检查符合条件的人…",
       "none": "当前没有符合条件的人",
-      "personOne": "当前有 {count} 人符合条件",
-      "personOther": "当前有 {count} 人符合条件",
+      "person": {
+        "one": "当前有 {count} 人符合条件",
+        "other": "当前有 {count} 人符合条件"
+      },
       "failed": "Binder 目前无法检查。更改一个筛选条件后可重试——你的设置仍会生效。",
       "likelyCause": "你的“{cause}”可能是主要原因。应用前请放宽该条件。",
       "updates": "人数会随着你调整搜索条件而更新。",

@@ -17,7 +17,7 @@ import { useBinderTheme } from '../theme/ThemeProvider';
 const MATCHES_DEADLINE_MS = 12_000;
 
 export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery, onSessionExpired }: { refreshKey: number; onOpenMatch: (match: MatchSummary) => void; onOpenDiscovery: () => void; onSessionExpired: () => void }) {
-  const { theme, settings, updateNotifications, reduceMotion, locale, t } = useBinderTheme();
+  const { theme, settings, updateNotifications, reduceMotion, locale, t, tCount } = useBinderTheme();
   const haptic = useBinderHaptics();
   const [matches, setMatches] = useState<MatchSummary[]>([]);
   const [loading, setLoading] = useState(true);
@@ -162,7 +162,7 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
                       <BinderText variant="label" tone={item.unreadCount > 0 ? 'primary' : 'secondary'} numberOfLines={1} style={{ flex: 1 }}>{item.firstName}, {formatCount(item.age, locale)}</BinderText>
                       {item.lastMessageAt ? <BinderText variant="caption" tone={item.unreadCount > 0 ? 'secondary' : 'muted'}>{(() => { const label = previewTimeLabel(item.lastMessageAt, locale); return label === 'today' ? t('chat.day.today') : label === 'yesterday' ? t('chat.day.yesterday') : label; })()}</BinderText> : null}
                     </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, marginTop: theme.spacing.x2 }}>{item.unreadCount > 0 ? <View accessibilityLabel={t(item.unreadCount === 1 ? 'matches.accessibility.unreadOne' : 'matches.accessibility.unreadOther', { count: formatCount(item.unreadCount, locale) })} style={{ minWidth: theme.spacing.x5, height: theme.spacing.x5, paddingHorizontal: theme.spacing.x1, borderRadius: theme.radii.pill, backgroundColor: theme.accent.accent, alignItems: 'center', justifyContent: 'center' }}><ChangingNumber value={item.unreadCount} variant="caption" /></View> : null}<BinderText variant={item.unreadCount > 0 ? 'label' : 'caption'} tone={item.unreadCount > 0 ? 'primary' : 'muted'} numberOfLines={1} style={{ flex: 1 }}>{item.lastMessageKind === 'voice' ? t('matches.voiceMessage') : item.lastMessageBody}</BinderText></View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.x2, marginTop: theme.spacing.x2 }}>{item.unreadCount > 0 ? <View accessibilityLabel={tCount('matches.accessibility.unread', item.unreadCount, { count: formatCount(item.unreadCount, locale) })} style={{ minWidth: theme.spacing.x5, height: theme.spacing.x5, paddingHorizontal: theme.spacing.x1, borderRadius: theme.radii.pill, backgroundColor: theme.accent.accent, alignItems: 'center', justifyContent: 'center' }}><ChangingNumber value={item.unreadCount} variant="caption" /></View> : null}<BinderText variant={item.unreadCount > 0 ? 'label' : 'caption'} tone={item.unreadCount > 0 ? 'primary' : 'muted'} numberOfLines={1} style={{ flex: 1 }}>{item.lastMessageKind === 'voice' ? t('matches.voiceMessage') : item.lastMessageBody}</BinderText></View>
                   </View>
                 </BinderCard>
               )}

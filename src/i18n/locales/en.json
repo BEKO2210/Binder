@@ -168,8 +168,10 @@
     "accessibility": {
       "startConversation": "Start a conversation with {name}",
       "openConversation": "Open conversation with {name}",
-      "unreadOne": "{count} unread message",
-      "unreadOther": "{count} unread messages"
+      "unread": {
+        "one": "{count} unread message",
+        "other": "{count} unread messages"
+      }
     },
     "voiceMessage": "Voice message"
   },
@@ -193,8 +195,10 @@
       "closePhoto": "Close photo"
     },
     "loading": "Opening profile…",
-    "photosReviewedOne": "Photo reviewed",
-    "photosReviewedOther": "Photos reviewed",
+    "photosReviewed": {
+      "one": "Photo reviewed",
+      "other": "Photos reviewed"
+    },
     "away": "{distance} km away",
     "gallery": {
       "photoOf": "Photo {current} of {total}",
@@ -225,8 +229,10 @@
     "filters": {
       "summary": "Looking for {minAge}–{maxAge} within {distance} km",
       "label": "Your search",
-      "moreOne": "{count} more filter",
-      "moreOther": "{count} more filters"
+      "more": {
+        "one": "{count} more filter",
+        "other": "{count} more filters"
+      }
     },
     "empty": {
       "filteredEyebrow": "FILTERS ARE NARROWING YOUR DECK",
@@ -646,8 +652,10 @@
       "unavailable": "Count unavailable",
       "checking": "Checking who fits…",
       "none": "No one currently fits",
-      "personOne": "{count} person currently fit",
-      "personOther": "{count} people currently fit",
+      "person": {
+        "one": "{count} person currently fit",
+        "other": "{count} people currently fit"
+      },
       "failed": "Binder could not check right now. Change a filter to try again — your settings still apply.",
       "likelyCause": "Your {cause} is the likely cause. Widen it before applying.",
       "updates": "This updates as you shape your search.",

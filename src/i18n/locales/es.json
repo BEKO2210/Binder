@@ -168,8 +168,11 @@
     "accessibility": {
       "startConversation": "Iniciar una conversación con {name}",
       "openConversation": "Abrir conversación con {name}",
-      "unreadOne": "{count} mensaje sin leer",
-      "unreadOther": "{count} mensajes sin leer"
+      "unread": {
+        "one": "{count} mensaje sin leer",
+        "many": "{count} mensajes sin leer",
+        "other": "{count} mensajes sin leer"
+      }
     },
     "voiceMessage": "Mensaje de voz"
   },
@@ -193,8 +196,11 @@
       "closePhoto": "Cerrar foto"
     },
     "loading": "Abriendo perfil…",
-    "photosReviewedOne": "Foto revisada",
-    "photosReviewedOther": "Fotos revisadas",
+    "photosReviewed": {
+      "one": "Foto revisada",
+      "many": "Fotos revisadas",
+      "other": "Fotos revisadas"
+    },
     "away": "A {distance} km",
     "gallery": {
       "photoOf": "Foto {current} de {total}",
@@ -225,8 +231,11 @@
     "filters": {
       "summary": "Buscas {minAge}–{maxAge} a {distance} km",
       "label": "Tu búsqueda",
-      "moreOne": "{count} filtro más",
-      "moreOther": "{count} filtros más"
+      "more": {
+        "one": "{count} filtro más",
+        "many": "{count} filtros más",
+        "other": "{count} filtros más"
+      }
     },
     "empty": {
       "filteredEyebrow": "LOS FILTROS ESTÁN REDUCIENDO TU SELECCIÓN",
@@ -297,6 +306,7 @@
     },
     "pending": {
       "one": "1 decisión espera conexión",
+      "many": "{count} decisiones esperan conexión",
       "other": "{count} decisiones esperan conexión"
     }
   },
@@ -646,8 +656,11 @@
       "unavailable": "Recuento no disponible",
       "checking": "Comprobando quién encaja…",
       "none": "Ahora mismo nadie encaja",
-      "personOne": "Actualmente encaja {count} persona",
-      "personOther": "Actualmente encajan {count} personas",
+      "person": {
+        "one": "Actualmente encaja {count} persona",
+        "many": "Actualmente encajan {count} personas",
+        "other": "Actualmente encajan {count} personas"
+      },
       "failed": "Binder no puede comprobarlo ahora. Cambia un filtro para volver a intentarlo; tus ajustes siguen aplicándose.",
       "likelyCause": "Tu criterio de {cause} es probablemente la causa. Amplíalo antes de aplicar.",
       "updates": "Esto se actualiza mientras ajustas tu búsqueda.",

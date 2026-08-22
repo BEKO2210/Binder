@@ -168,8 +168,10 @@
     "accessibility": {
       "startConversation": "Start een gesprek met {name}",
       "openConversation": "Open gesprek met {name}",
-      "unreadOne": "{count} ongelezen bericht",
-      "unreadOther": "{count} ongelezen berichten"
+      "unread": {
+        "one": "{count} ongelezen bericht",
+        "other": "{count} ongelezen berichten"
+      }
     },
     "voiceMessage": "Spraakbericht"
   },
@@ -193,8 +195,10 @@
       "closePhoto": "Foto sluiten"
     },
     "loading": "Profiel openen…",
-    "photosReviewedOne": "Foto beoordeeld",
-    "photosReviewedOther": "Foto's beoordeeld",
+    "photosReviewed": {
+      "one": "Foto beoordeeld",
+      "other": "Foto's beoordeeld"
+    },
     "away": "{distance} km verderop",
     "gallery": {
       "photoOf": "Foto {current} van {total}",
@@ -225,8 +229,10 @@
     "filters": {
       "summary": "Zoekt {minAge}–{maxAge} binnen {distance} km",
       "label": "Jouw zoekopdracht",
-      "moreOne": "nog {count} filter",
-      "moreOther": "nog {count} filters"
+      "more": {
+        "one": "nog {count} filter",
+        "other": "nog {count} filters"
+      }
     },
     "empty": {
       "filteredEyebrow": "FILTERS VERKLEINEN JE SELECTIE",
@@ -646,8 +652,10 @@
       "unavailable": "Aantal niet beschikbaar",
       "checking": "Controleren wie past…",
       "none": "Niemand past momenteel",
-      "personOne": "Momenteel past {count} persoon",
-      "personOther": "Momenteel passen {count} mensen",
+      "person": {
+        "one": "Momenteel past {count} persoon",
+        "other": "Momenteel passen {count} mensen"
+      },
       "failed": "Binder kan dit nu niet controleren. Wijzig een filter om opnieuw te proberen — je instellingen blijven actief.",
       "likelyCause": "Je {cause} is waarschijnlijk de oorzaak. Maak die ruimer voordat je toepast.",
       "updates": "Dit wordt bijgewerkt terwijl je je zoekopdracht aanpast.",
