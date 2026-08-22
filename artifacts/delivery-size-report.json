@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "archiveBytes": 102478731,
+  "strippedBytes": 48249827,
+  "sharedBytes": 10401835,
+  "devices": [
+    {
+      "abi": "x86",
+      "nativeBytes": 11915307,
+      "downloadBytes": 22317142
+    },
+    {
+      "abi": "x86_64",
+      "nativeBytes": 11367991,
+      "downloadBytes": 21769826
+    },
+    {
+      "abi": "arm64-v8a",
+      "nativeBytes": 11045699,
+      "downloadBytes": 21447534
+    },
+    {
+      "abi": "armeabi-v7a",
+      "nativeBytes": 9498072,
+      "downloadBytes": 19899907
+    }
+  ],
+  "largestDownloadBytes": 22317142,
+  "bundle": "Binder-v1.0.10-vc107.aab"
+}

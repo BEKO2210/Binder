@@ -45,6 +45,11 @@ artifacts/*
 # The performance baseline is a promise, like the coverage floors: raising it
 # has to be arguable in a diff.
 !artifacts/performance-baseline.json
+# What a phone actually downloads, measured from the last bundle. A test holds
+# it under the size where downloads start to hurt, and a test that reads a file
+# only some machines have is not a test — it passed here and failed on a fresh
+# checkout, which is the whole reason this line exists.
+!artifacts/delivery-size-report.json
 
 
 # The code map belongs in the repo so any agent can find its way; the browser
