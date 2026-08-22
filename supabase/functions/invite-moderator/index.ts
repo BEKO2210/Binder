@@ -13,11 +13,18 @@ function firstKey(raw: string | undefined): string | null {
   }
 }
 
+// A page on localhost could ask this function to invite a moderator with the
+// browser's own credentials, and the browser would let it because the function
+// said the origin was fine. It is fine while somebody is building the admin
+// page on their own machine and nowhere else, so it is off unless the
+// deployment says otherwise — and production never says otherwise.
+const ALLOW_LOCAL_ADMIN = Deno.env.get("BINDER_ADMIN_ALLOW_LOCALHOST") === "true";
+
 function allowedOrigin(req: Request): string | null {
   const origin = req.headers.get("Origin");
   if (!origin) return PRODUCTION_ORIGIN;
   if (origin === PRODUCTION_ORIGIN) return origin;
-  if (/^http:\/\/(localhost|127\.0\.0\.1)(:\d{2,5})?$/.test(origin)) return origin;
+  if (ALLOW_LOCAL_ADMIN && /^http:\/\/(localhost|127\.0\.0\.1)(:\d{2,5})?$/.test(origin)) return origin;
   return null;
 }
 

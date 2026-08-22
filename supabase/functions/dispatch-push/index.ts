@@ -225,6 +225,30 @@ async function checkReceipts(client: SupabaseClient, workerId: string, accessTok
   return { claimed: claims.length, delivered, failed, pending };
 }
 
+/**
+ * The shared secret, compared without leaking where it stops matching.
+ *
+ * `!==` on strings returns as soon as two bytes differ. Over enough requests
+ * the time that takes is the secret, one character at a time. This is the one
+ * comparison in the system where that matters: everything else behind this
+ * header is the whole push queue.
+ */
+function secretMatches(presented: string | null, expected: string): boolean {
+  if (!presented) return false;
+  const encoder = new TextEncoder();
+  const a = encoder.encode(presented);
+  const b = encoder.encode(expected);
+  // The length itself is not a secret, and comparing different lengths byte by
+  // byte would read past the end of one of them. Both sides are still walked
+  // in full so a wrong length costs the same as a wrong byte.
+  let difference = a.length ^ b.length;
+  const length = Math.max(a.length, b.length);
+  for (let index = 0; index < length; index += 1) {
+    difference |= (a[index] ?? 0) ^ (b[index] ?? 0);
+  }
+  return difference === 0;
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method !== "POST") return Response.json({ error: "Method not allowed" }, { status: 405 });
 
@@ -234,7 +258,7 @@ Deno.serve(async (req: Request) => {
   } catch {
     return Response.json({ error: "Dispatcher configuration unavailable" }, { status: 500 });
   }
-  if (req.headers.get("x-binder-dispatch-secret") !== environment.dispatchSecret) {
+  if (!secretMatches(req.headers.get("x-binder-dispatch-secret"), environment.dispatchSecret)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 

@@ -1,0 +1,62 @@
+# The parts of the local stack and the deployed functions that are decisions
+# rather than defaults.
+#
+# This file did not exist, which meant `verify_jwt` — whether the platform
+# checks a token before the function runs at all — was whatever the dashboard
+# happened to be set to, changeable by anybody with access and invisible in
+# review. It is a security setting; it belongs in the repository with
+# everything else that decides who may call what.
+
+project_id = "Binder"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 17
+
+[studio]
+enabled = true
+port = 54323
+
+[local_smtp]
+enabled = true
+port = 54324
+
+[auth]
+enabled = true
+site_url = "https://beko2210.github.io/Binder/"
+additional_redirect_urls = ["binder://reset-password", "binder://confirm-email"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+
+[auth.email]
+enable_signup = true
+# An address nobody proved they own is an address somebody else owns.
+enable_confirmations = true
+double_confirm_changes = true
+# The client refuses anything shorter, and a client is not a rule.
+# Supabase's own minimum has to say the same thing.
+minimum_password_length = 8
+
+# The dispatcher is called by a scheduled job, not by a person: there is no
+# user token to verify. It authenticates itself with the shared secret, in
+# constant time, and refuses everything else.
+[functions.dispatch-push]
+verify_jwt = false
+
+# Both of these act for the person calling them and read the session from the
+# Authorization header themselves. The platform check in front is the cheaper
+# half of the same rule: a request with no valid token never reaches the code.
+[functions.delete-account]
+verify_jwt = true
+
+[functions.invite-moderator]
+verify_jwt = true
