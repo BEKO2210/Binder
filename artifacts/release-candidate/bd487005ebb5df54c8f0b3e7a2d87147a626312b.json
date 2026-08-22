@@ -14,7 +14,7 @@
     {
       "name": "quality gate",
       "verdict": "STALE",
-      "detail": "PASS but for d53fe8c1"
+      "detail": "PASS but for 6301d800"
     },
     {
       "name": "release artefacts hashed",
@@ -49,7 +49,7 @@
     {
       "name": "database suites",
       "verdict": "STALE",
-      "detail": "PASS but for a7687f38"
+      "detail": "PASS but for 28a01f38"
     },
     {
       "name": "black-box journeys",
