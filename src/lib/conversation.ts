@@ -2,6 +2,7 @@ import * as Crypto from 'expo-crypto';
 
 import { recordBetaEvent } from './beta';
 import { abortable, throwIfAborted } from './reliability';
+import { SIGNED_URL_SECONDS } from './signedUrlLifetime';
 import { supabase } from './supabase';
 import { voiceObjectPath } from './voiceMessage.ts';
 import type { Database } from '../types/database';
@@ -38,7 +39,7 @@ async function signProfilePhoto(storagePath: string | null | undefined, signal?:
 
   const { data, error } = await abortable(supabase.storage
     .from('profile-media')
-    .createSignedUrl(storagePath, 60 * 60), signal);
+    .createSignedUrl(storagePath, SIGNED_URL_SECONDS), signal);
 
   if (error) throw error;
   return data.signedUrl;
@@ -186,7 +187,7 @@ export async function sendVoiceMessage(
 /** A short-lived playback URL; players fetch it on first play. The intro
  * lives in its own bucket, so the bucket travels with the call. */
 export async function signedVoiceUrl(audioPath: string, options: RequestOptions & { bucket?: 'voice-media' | 'profile-voice' } = {}): Promise<string> {
-  const { data, error } = await abortable(supabase.storage.from(options.bucket ?? 'voice-media').createSignedUrl(audioPath, 60 * 60), options.signal);
+  const { data, error } = await abortable(supabase.storage.from(options.bucket ?? 'voice-media').createSignedUrl(audioPath, SIGNED_URL_SECONDS), options.signal);
   if (error) throw error;
   return data.signedUrl;
 }

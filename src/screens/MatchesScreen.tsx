@@ -12,6 +12,7 @@ import { enablePushNotifications, getNotificationPermissionStatus, openSystemNot
 import { bannerOffersEnable, bannerStateAfterRegistration, initialBannerState, type PushBannerState } from '../lib/pushBanner';
 import { classifyError, isAbortError, type ReliabilityError, withDeadline, withRetry } from '../lib/reliability';
 import { useBinderHaptics } from '../theme/haptics';
+import { useFreshSignedMedia } from '../lib/signedMedia';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
 const MATCHES_DEADLINE_MS = 12_000;
@@ -58,6 +59,11 @@ export default function MatchesScreen({ refreshKey, onOpenMatch, onOpenDiscovery
   }, [onSessionExpired]);
 
   useEffect(() => { void load(); }, [load, refreshKey]);
+
+  // A phone in a pocket comes back to links that have expired. Nothing on the
+  // list said so — the avatars were simply grey, and the only way to ask for
+  // them again was leaving the screen and coming back.
+  useFreshSignedMedia(() => { void load(); });
   const { newMatches, conversations } = splitConversationPreviews(matches);
 
   useEffect(() => {

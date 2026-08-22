@@ -19,6 +19,7 @@ import { interestLabel } from '../lib/validation';
 import { resolveSpring } from '../lib/motionPolicy';
 import { withDeadline } from '../lib/reliability';
 import { useBinderHaptics } from '../theme/haptics';
+import { useFreshSignedMedia } from '../lib/signedMedia';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
 // The same twelve seconds every read in the app gets: long enough for a slow
@@ -47,6 +48,10 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose, in
   const dismissThreshold = height * discoveryDeckPhysics.distanceRatio;
 
   const [viewerIndex, setViewerIndex] = useState<number | null>(null);
+  // Bumped when the photo links this screen is holding have expired, which
+  // re-runs the fetch below with the same person and fresh links.
+  const [reloadKey, setReloadKey] = useState(0);
+  useFreshSignedMedia(() => setReloadKey((value) => value + 1));
 
   useEffect(() => {
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -72,7 +77,7 @@ export default function PartnerProfileScreen({ userId, fallbackName, onClose, in
       .then((next) => { if (active) setProfile(next); })
       .catch((cause) => { if (active && !initialProfile) setError(cause instanceof Error ? cause.message : t('partnerProfile.errors.load')); });
     return () => { active = false; };
-  }, [initialProfile, userId]);
+  }, [initialProfile, userId, reloadKey]);
 
   // Tapping a photograph opens it on its own, the way every gallery works.
   // Until now a tap did nothing here: the picture was decoration under a

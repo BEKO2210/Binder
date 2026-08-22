@@ -38,6 +38,7 @@ import { useBinderHaptics } from '../theme/haptics';
 // Both stamps therefore take the dark palette and carry their own backing,
 // the same rule the card's name and bio already follow.
 import { darkPalette, semanticPalettes } from '../theme/tokens';
+import { useFreshSignedMedia } from '../lib/signedMedia';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
 
@@ -473,6 +474,10 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
     });
     return () => subscription.remove();
   }, [flushPending]);
+
+  // The deck holds signed links to photos. Coming back to an expired one is a
+  // card of grey rectangles that cannot be decided on honestly.
+  useFreshSignedMedia(() => { void loadDiscovery(false); });
 
   // And while something is still waiting, ask again without being asked. The
   // app is not told when the connection returns; a person standing still with

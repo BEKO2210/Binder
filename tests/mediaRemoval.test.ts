@@ -27,8 +27,11 @@ test('signed photo URLs stay short-lived', () => {
   // A signed URL is a bearer token: it keeps working until it expires, whatever
   // happens to the block list behind it. Stretching it to four hours to spare
   // people a stale picture handed a blocked person four hours of access — the
-  // same hole that was just closed for voice messages.
-  assert.match(source, /const SIGNED_URL_SECONDS = 60 \* 30;/);
+  // same hole that was just closed for voice messages. The number moved to
+  // src/lib/signedUrlLifetime.ts, where every bucket reads the same one; this
+  // file only insists that nothing here signs its own.
+  assert.match(source, /createSignedUrl\(path, SIGNED_URL_SECONDS\)/);
+  assert.doesNotMatch(source, /createSignedUrl\([^,]+,\s*\d/);
 });
 
 test('the media library throws codes, not English sentences', () => {

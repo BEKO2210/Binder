@@ -14,6 +14,7 @@ import { classifyError, isAbortError, type ReliabilityError, withDeadline } from
 import { fetchMySafetyNotice } from '../lib/safety';
 import { prepareSafetyNotice, type SafetyNotice } from '../lib/safetyNotice';
 import { supabase } from '../lib/supabase';
+import { useFreshSignedMedia } from '../lib/signedMedia';
 import { useBinderTheme } from '../theme/ThemeProvider';
 
 type Props = {
@@ -44,6 +45,9 @@ export default function ProfileScreen({ userId, onEditProfile, onPreviewProfile,
     void load(controller.signal);
     return () => controller.abort();
   }, [userId]);
+
+  // Somebody's own photos expire exactly like everybody else's.
+  useFreshSignedMedia(() => { void load(); });
 
   async function load(signal?: AbortSignal) {
     const startedAt = Date.now();

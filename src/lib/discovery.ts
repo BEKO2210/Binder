@@ -3,6 +3,7 @@ import * as Location from 'expo-location';
 import { recordBetaEvent } from './beta';
 import { mapDiscoveryPreferences, type DiscoveryPreferencesRow } from './discoveryPreferences';
 import { activeFilterCount, parseStoredFilters } from './attributeFilters';
+import { SIGNED_URL_SECONDS } from './signedUrlLifetime';
 import { supabase } from './supabase';
 import type { DiscoveryPreferenceValues } from '../components/DiscoveryPreferences';
 
@@ -138,7 +139,7 @@ export async function fetchDiscoveryBatch(limit = 20): Promise<DiscoveryProfile[
         const signedPhotos = await Promise.all(paths.map(async (path) => {
           const { data: signed, error: signedError } = await supabase.storage
             .from('profile-media')
-            .createSignedUrl(path, 60 * 60);
+            .createSignedUrl(path, SIGNED_URL_SECONDS);
 
           if (signedError) return null;
           return signed.signedUrl;
@@ -147,7 +148,7 @@ export async function fetchDiscoveryBatch(limit = 20): Promise<DiscoveryProfile[
         if (photoUrls.length === 0) {
           const { data: signed, error: signedError } = await supabase.storage
             .from('profile-media')
-            .createSignedUrl(candidate.primary_photo_path, 60 * 60);
+            .createSignedUrl(candidate.primary_photo_path, SIGNED_URL_SECONDS);
           if (signedError) throw signedError;
           photoUrls.push(signed.signedUrl);
         }

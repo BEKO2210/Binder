@@ -3,6 +3,7 @@ import { File } from 'expo-file-system';
 import type { PostgrestError } from '@supabase/supabase-js';
 
 import type { PreparedImage } from './images';
+import { SIGNED_URL_SECONDS } from './signedUrlLifetime';
 import { supabase } from './supabase';
 
 const MAX_UPLOAD_BYTES = 3 * 1024 * 1024;
@@ -132,16 +133,8 @@ export async function removeProfileMedia(mediaId: string): Promise<void> {
   await supabase.storage.from('profile-media').remove(paths);
 }
 
-// Half an hour, deliberately short.
-//
-// A signed URL is a bearer token: it keeps working until it expires, whatever
-// happens to the block list or the moderation state behind it. Stretching it to
-// four hours to spare people a stale photo also gave a blocked person four
-// hours of access to pictures their app had already fetched — the same hole
-// this week closed for voice messages. A picture that goes blank after half an
-// hour is a nuisance; the other way round is a safety promise that does not
-// hold.
-const SIGNED_URL_SECONDS = 60 * 30;
+// The lifetime, and the rule for refreshing what is holding one, live in
+// src/lib/signedMedia.ts — every bucket signs for the same half hour.
 
 export async function signedProfileImageUrl(path: string): Promise<string> {
   const { data, error } = await supabase.storage.from('profile-media').createSignedUrl(path, SIGNED_URL_SECONDS);
