@@ -21,17 +21,27 @@ export function composeBirthDate(day: string, month: string, year: string): stri
   return iso;
 }
 
-// Age in completed years on the given reference date (defaults to now).
+/**
+ * Age in completed years on the given reference date (defaults to now).
+ *
+ * Counted against the calendar the person is standing in, not UTC. A birthday
+ * is a date on a wall calendar, and the two disagree for up to a day: read in
+ * UTC, somebody in UTC-12 turned eighteen half a day before their birthday and
+ * somebody in UTC+14 was still seventeen on the morning of it. The server's
+ * gate holds either way — it is the number on this screen that was wrong, and
+ * it is the number a person is shown before they are let in or turned away.
+ */
 export function ageOn(isoBirthDate: string, reference: Date = new Date()): number | null {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(isoBirthDate);
   if (!match) return null;
   const canonical = composeBirthDate(match[3]!, match[2]!, match[1]!);
   if (canonical !== isoBirthDate) return null;
-  const birth = new Date(`${isoBirthDate}T00:00:00Z`);
-  if (Number.isNaN(birth.getTime())) return null;
-  let age = reference.getUTCFullYear() - birth.getUTCFullYear();
-  const beforeBirthday = reference.getUTCMonth() < birth.getUTCMonth()
-    || (reference.getUTCMonth() === birth.getUTCMonth() && reference.getUTCDate() < birth.getUTCDate());
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  let age = reference.getFullYear() - year;
+  const beforeBirthday = reference.getMonth() + 1 < month
+    || (reference.getMonth() + 1 === month && reference.getDate() < day);
   if (beforeBirthday) age -= 1;
   return age;
 }

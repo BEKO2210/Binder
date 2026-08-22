@@ -3,7 +3,10 @@ import { test } from 'node:test';
 
 import { ageOn, assessBirthDate, composeBirthDate, sanitizeDigits } from '../src/lib/birthdate.ts';
 
-const ref = new Date('2026-08-16T12:00:00Z');
+// Midday on the sixteenth, on the phone's own calendar. An instant in UTC
+// would make these assertions depend on where the machine running them is,
+// which is the whole of what the age rule got wrong.
+const ref = new Date(2026, 7, 16, 12, 0);
 
 test('segments accept digits only and clip to their length', () => {
   assert.equal(sanitizeDigits('1a9b9c5d', 4), '1995');
@@ -34,4 +37,18 @@ test('assessment walks incomplete, invalid, underage and ok', () => {
 
 test('a century-old date is treated as implausible input', () => {
   assert.equal(assessBirthDate('01', '01', '1920', ref).kind, 'implausible');
+});
+
+test('age is counted on the calendar the person is standing in', () => {
+  // Read in UTC, a birthday moves by up to a day: in UTC-12 somebody turned
+  // eighteen half a day early, in UTC+14 they were still seventeen on the
+  // morning of it. The server refuses either way; this is the number the
+  // person is shown before they are let in or turned away.
+  const local = (year: number, month: number, day: number, hour: number, minute: number) => new Date(year, month - 1, day, hour, minute);
+  // The evening before an eighteenth birthday, wherever the phone is.
+  assert.equal(ageOn('2008-08-17', local(2026, 8, 16, 23, 30)), 17);
+  // And the first minute of it.
+  assert.equal(ageOn('2008-08-17', local(2026, 8, 17, 0, 1)), 18);
+  assert.equal(assessBirthDate('17', '08', '2008', local(2026, 8, 16, 23, 30)).kind, 'underage');
+  assert.equal(assessBirthDate('17', '08', '2008', local(2026, 8, 17, 0, 1)).kind, 'ok');
 });
