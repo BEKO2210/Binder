@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { BackHandler, Image, PixelRatio, ScrollView, useWindowDimensions, View } from 'react-native';
+import { AppState, BackHandler, Image, PixelRatio, ScrollView, View, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { Extrapolation, FadeIn, FadeOut, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 
@@ -55,6 +55,10 @@ import { useBinderTheme } from '../theme/ThemeProvider';
 const HEADER_TEXT_CAP = 1.3;
 const HEADER_COPY_MAX_FONT_SCALE = 1.5;
 
+// The network coming back is not something this app is told about, so while a
+// decision is still waiting it asks again on its own. Long enough to be free,
+// short enough that a bind made in a tunnel is out before the evening is over.
+const PENDING_RETRY_MS = 30_000;
 const DISCOVERY_DEADLINE_MS = 12_000;
 // Refreshing the location is not a query: it asks for a permission and then
 // waits for a position fix, and a cold fix on a phone that has just been
@@ -445,10 +449,10 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
         // The server already has this decision; a failed write only means the
         // queue is retried later, so it must not send it a second time now.
         if (remaining === null) break;
-        setPendingCount(remaining.length);
+        if (mounted.current) setPendingCount(remaining.length);
       }
       const left = await withQueueLock(async () => loadPending());
-      setPendingCount(left.length);
+      if (mounted.current) setPendingCount(left.length);
     } finally {
       flushing.current = false;
     }
@@ -457,6 +461,27 @@ export default function DiscoveryScreen({ onOpenMatch, onSessionExpired }: { onO
   // Whatever waited from an earlier session goes out as soon as this screen
   // is alive again.
   useEffect(() => { void flushPending(); }, [flushPending]);
+
+  // Mounting was the only thing that ever sent the queue. Somebody who swipes
+  // in a tunnel and stays on this screen kept their decisions on the phone for
+  // as long as they stayed — the offline queue only worked if they happened to
+  // change tabs. Coming back to the app is the moment the network is most
+  // likely to be there again.
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') void flushPending();
+    });
+    return () => subscription.remove();
+  }, [flushPending]);
+
+  // And while something is still waiting, ask again without being asked. The
+  // app is not told when the connection returns; a person standing still with
+  // the screen open would otherwise wait for a tab change that never comes.
+  useEffect(() => {
+    if (pendingCount === 0) return undefined;
+    const timer = setInterval(() => { void flushPending(); }, PENDING_RETRY_MS);
+    return () => clearInterval(timer);
+  }, [pendingCount, flushPending]);
 
   function keepDiscoveringAfterMatch() {
     dismissMatch();

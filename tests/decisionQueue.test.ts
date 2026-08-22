@@ -112,3 +112,18 @@ test('a second flush waits for the first instead of sending twice', () => {
   assert.match(flush, /if \(flushing\.current\) return;/);
   assert.match(flush, /\} finally \{\s*flushing\.current = false;\s*\}/);
 });
+
+test('a decision made offline does not wait for a tab change', () => {
+  // Mounting was the only thing that ever sent the queue. Somebody who swiped
+  // in a tunnel and stayed on the deck kept their binds on the phone for as
+  // long as they stayed, which is not what an offline queue is for.
+  assert.match(discovery, /AppState\.addEventListener\('change', \(state\) => \{\s*if \(state === 'active'\) void flushPending\(\);/);
+  assert.match(discovery, /subscription\.remove\(\)/);
+});
+
+test('something still waiting is retried without being asked', () => {
+  // The app is not told when the connection comes back.
+  assert.match(discovery, /if \(pendingCount === 0\) return undefined;/);
+  assert.match(discovery, /setInterval\(\(\) => \{ void flushPending\(\); \}, PENDING_RETRY_MS\)/);
+  assert.match(discovery, /clearInterval\(timer\)/);
+});
