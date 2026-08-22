@@ -46,11 +46,13 @@ double_confirm_changes = true
 # Supabase's own minimum has to say the same thing.
 minimum_password_length = 8
 
-# The dispatcher is called by a scheduled job, not by a person: there is no
-# user token to verify. It authenticates itself with the shared secret, in
-# constant time, and refuses everything else.
+# The dispatcher is called by a scheduled job rather than by a person, which
+# was nearly an argument for turning the platform check off. The job sends both
+# a token and the shared secret, so the check costs nothing and stops every
+# request that has neither before it reaches the function. Two locks; the
+# constant-time comparison inside is the second one, not the only one.
 [functions.dispatch-push]
-verify_jwt = false
+verify_jwt = true
 
 # Both of these act for the person calling them and read the session from the
 # Authorization header themselves. The platform check in front is the cheaper

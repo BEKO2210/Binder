@@ -10,7 +10,12 @@ test('who may call a function is written down, not left to a dashboard', () => {
   // verify_jwt decides whether the platform checks a token before the function
   // runs at all. Without this file it was whatever somebody last clicked,
   // changeable by anybody with access and invisible in review.
-  assert.match(config, /\[functions\.dispatch-push\]\s*\nverify_jwt = false/);
+  // Every one of them, including the dispatcher: the scheduled job sends a
+  // token as well as the shared secret, so the platform check costs nothing
+  // and stops everything that has neither before the function runs. The file
+  // used to say false here, which would have been a deployment quietly
+  // relaxing what production already does.
+  assert.match(config, /\[functions\.dispatch-push\]\s*\nverify_jwt = true/);
   assert.match(config, /\[functions\.delete-account\]\s*\nverify_jwt = true/);
   assert.match(config, /\[functions\.invite-moderator\]\s*\nverify_jwt = true/);
 });
