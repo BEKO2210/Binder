@@ -6,6 +6,7 @@ import { MotionPressable as Pressable } from '../components/ui';
 import { DELETE_ACCOUNT_URL, PRIVACY_URL, TERMS_URL, deleteCurrentAccount, openBinderUrl } from '../lib/safety';
 import { forgetAllChats } from '../lib/chatDrafts';
 import { clearUnsent } from '../lib/unsentMessages';
+import { clearPending } from '../lib/decisionQueue';
 import { forgetAcceptance } from '../lib/legalGateCache';
 import { disablePushNotifications } from '../lib/notifications';
 import { isDeadlineError, withDeadline } from '../lib/reliability';
@@ -74,6 +75,10 @@ export default function MenuScreen({ onOpenSettings, onOpenBeta, onOpenAbout }: 
     // app on this phone must not find a half-written message to somebody.
     forgetAllChats();
     await clearUnsent();
+    // A decision made offline is still waiting to be sent. It was this
+    // account's decision: left on disk it would go out under whoever signs in
+    // next, putting somebody else's binds on their profile.
+    await clearPending();
     // The next person on this phone agreed to nothing.
     await forgetAcceptance();
   }
@@ -94,6 +99,7 @@ export default function MenuScreen({ onOpenSettings, onOpenBeta, onOpenAbout }: 
       await withDeadline(deleteCurrentAccount(), MENU_DEADLINE_MS);
       forgetAllChats();
       await clearUnsent();
+      await clearPending();
     } catch (error) {
       // A deadline here does not mean nothing happened: the request keeps
       // running on the server, and the account may well be gone. Anything else
@@ -101,6 +107,7 @@ export default function MenuScreen({ onOpenSettings, onOpenBeta, onOpenAbout }: 
       if (!isDeadlineError(error)) forgetIntentionalSignOut();
       forgetAllChats();
       await clearUnsent();
+      await clearPending();
       setMessage(error instanceof Error ? error.message : t('profile.errors.deleteAccount'));
       setBusy(false);
     }

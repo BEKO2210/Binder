@@ -72,3 +72,15 @@ export async function savePending(queue: PendingDecision[]): Promise<void> {
   if (queue.length === 0) await AsyncStorage.removeItem(STORAGE_KEY);
   else await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(queue));
 }
+
+/**
+ * Drops everything waiting, for good.
+ *
+ * A queued decision belongs to the account that made it. Signing out or
+ * deleting the account ends that account's claim on this phone: what is left
+ * on disk would otherwise be sent under the next person's session, putting
+ * somebody else's binds on their profile and quietly filtering their deck.
+ */
+export async function clearPending(): Promise<void> {
+  await AsyncStorage.removeItem(STORAGE_KEY);
+}

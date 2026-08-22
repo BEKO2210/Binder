@@ -40,3 +40,17 @@ test('signing out forgets what this phone agreed to', () => {
   // conversations. It belongs to the person who gave it, and leaves with them.
   assert.match(source, /forgetAcceptance\(\)/);
 });
+
+test('signing out takes the queued decisions with it', () => {
+  // Offline binds and passes ride on disk until the server confirms them.
+  // They belong to the account that made them: left behind, the next person to
+  // sign in on this phone sends somebody else's decisions under their session.
+  assert.match(signOut, /clearPending\(\)/);
+});
+
+test('deleting an account leaves no decision waiting on the phone', () => {
+  // Both ways out of the request: the account is gone either way, so nothing
+  // it decided may still be waiting to be sent.
+  const clears = deletion.match(/clearPending\(\)/g) ?? [];
+  assert.equal(clears.length, 2, 'the success path and the failure path both clear the queue');
+});
