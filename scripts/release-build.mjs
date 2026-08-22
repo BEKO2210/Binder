@@ -122,6 +122,28 @@ if (!flags.has('--skip-gate')) {
   console.log('Quality gate skipped — this build carries no gate evidence.');
 }
 
+// Gradle needs more room than the generated project gives it.
+//
+// android/gradle.properties comes out of `expo prebuild` with 2 GB of heap and
+// 512 MB of metaspace, and the release build does not fit: KSP and the lint
+// analysis load enough classes that the daemon dies with
+// "java.lang.OutOfMemoryError: Metaspace", takes the build with it, and then
+// sits there refusing the next one. The file is generated, so it cannot simply
+// be edited and committed — the numbers live here, next to the build that
+// needs them, and are written in before every run.
+const gradleProperties = join(root, 'android/gradle.properties');
+const memorySettings = { 'org.gradle.jvmargs': '-Xmx4096m -XX:MaxMetaspaceSize=2048m' };
+{
+  let properties = readFileSync(gradleProperties, 'utf8');
+  for (const [key, value] of Object.entries(memorySettings)) {
+    const line = `${key}=${value}`;
+    const pattern = new RegExp(`^${key.replace(/\./g, '\\.')}=.*$`, 'm');
+    properties = pattern.test(properties) ? properties.replace(pattern, line) : `${properties.trimEnd()}\n${line}\n`;
+  }
+  writeFileSync(gradleProperties, properties);
+  console.log(`Gradle memory: ${memorySettings['org.gradle.jvmargs']}`);
+}
+
 // Gradle kept a JavaScript bundle it should have rebuilt: a release built
 // minutes after a locale file changed still shipped the old German strings, and
 // the phone proved it while the source said otherwise. The bundle is a few
