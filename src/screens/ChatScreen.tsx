@@ -478,7 +478,11 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   async function submitMessage(retryClientId?: string) {
     const retried = retryClientId ? attempts.find((attempt) => attempt.clientId === retryClientId) : null;
     const body = retried ? retried.body : validComposer;
-    if (!body || sending) return;
+    // The ref, not the state: `sending` only reaches this function after the
+    // next render, and two taps beat a render. The second tap made its own
+    // client id, so the server's idempotency had nothing to match on and the
+    // same sentence arrived twice.
+    if (!body || sendingRef.current) return;
     const clientId = retried ? retried.clientId : createClientMessageId();
     setSending(true);
     sendingRef.current = true;
@@ -501,6 +505,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   }
 
   async function submitVoice(localUri: string, durationMs: number, retryClientId?: string) {
+    if (sendingRef.current) return;
     setRecordingVoice(false);
     const clientId = retryClientId ?? createClientMessageId();
     setAttempts((current) => [...current, { clientId, body: '', localUri, status: 'sending' as const }]);
@@ -522,7 +527,7 @@ export default function ChatScreen({ match, currentUserId, onClose, onConversati
   }
 
   async function retryVoice(attempt: LocalAttempt) {
-    if (sending) return;
+    if (sendingRef.current) return;
     // The upload may be what failed, in which case there is no path yet — the
     // recording is still on the phone and gets a second run at it.
     // The recording's own length, not zero: the server refuses anything under

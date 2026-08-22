@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 import { outcomeForDelivery, outcomeForSendFailure } from '../src/lib/messageOutcome.ts';
@@ -49,4 +50,26 @@ test('a bug in our own code is not treated as a tunnel', () => {
   const outcome = outcomeForSendFailure(new TypeError('undefined is not an object'), mounted);
   assert.equal(outcome.error?.kind, 'unknown');
   assert.equal(outcome.keepAsFailed, true);
+});
+
+const chat = readFileSync(new URL('../src/screens/ChatScreen.tsx', import.meta.url), 'utf8');
+const sendPaths = ['async function submitMessage', 'async function submitVoice', 'async function retryVoice'];
+
+test('no send is gated on a state that arrives a render too late', () => {
+  // `sending` reaches the function after the next render, and two taps beat a
+  // render. Each tap made its own client message id, so the server's
+  // idempotency had nothing to match on: the same sentence, twice, in a
+  // conversation with somebody the person had just matched with.
+  for (const start of sendPaths) {
+    const from = chat.indexOf(start);
+    assert.ok(from > 0, start);
+    const body = chat.slice(from, chat.indexOf('sendingRef.current = true;', from));
+    assert.match(body, /sendingRef\.current\) return;/, `${start} does not check the ref before sending`);
+    assert.doesNotMatch(body, /\|\| sending\)|\(sending\)/, `${start} still gates on the render-late state`);
+  }
+});
+
+test('every send path gives the guard back, however it ends', () => {
+  const releases = chat.match(/\} finally \{ sendingRef\.current = false;/g) ?? [];
+  assert.equal(releases.length, sendPaths.length);
 });

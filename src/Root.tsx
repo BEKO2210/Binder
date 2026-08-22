@@ -457,7 +457,11 @@ function BinderApp() {
     // notification tap never opened the chat. The route clears in finally,
     // whose re-run exits at the guard above.
     let active = true;
-    void fetchMatches().then((matches) => {
+    // With a ceiling on it. A request that never answers left the route
+    // pending for the rest of the session: the tap on the notification did
+    // nothing, no chat, no list, no message, and tapping it again hit the
+    // guard above and did nothing either.
+    void withDeadline(fetchMatches(), STARTUP_DEADLINE_MS).then((matches) => {
       if (!active) return;
       const target = matches.find((match) => match.matchId === route.matchId);
       if (target) setActiveMatch(target);
@@ -467,8 +471,12 @@ function BinderApp() {
         setMatchesRefreshKey((value) => value + 1);
       }
     }).catch(() => {
+      // Whatever went wrong, the list is the honest place to land: it says
+      // what it knows and can be pulled again.
       if (!active) return;
+      setActiveMatch(null);
       setTab('matches');
+      setMatchesRefreshKey((value) => value + 1);
     }).finally(() => {
       if (active) setPendingNotificationRoute(null);
     });

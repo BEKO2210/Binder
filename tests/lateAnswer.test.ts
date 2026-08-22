@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 import { askFor, openGate, stillWaitingFor, stopWaiting } from '../src/lib/lateAnswer.ts';
@@ -25,4 +26,18 @@ test('a second request makes the first one stale', () => {
   const second = askFor(gate);
   assert.equal(stillWaitingFor(gate, first), false);
   assert.equal(stillWaitingFor(gate, second), true);
+});
+
+const root = readFileSync(new URL('../src/Root.tsx', import.meta.url), 'utf8');
+
+test('a tapped notification never waits forever', () => {
+  // The route stays set while the chat target resolves, which is right — and
+  // is exactly why the request needs an end. A fetch that never answered left
+  // the route pending for the rest of the session: the tap did nothing, and
+  // tapping again hit the guard and did nothing either.
+  const from = root.indexOf('// Keep the pending route set while the chat target resolves');
+  assert.ok(from > 0, 'the notification route effect moved');
+  const effect = root.slice(from, root.indexOf('return () => { active = false; };', from));
+  assert.match(effect, /withDeadline\(fetchMatches\(\), STARTUP_DEADLINE_MS\)/);
+  assert.match(effect, /\.finally\(\(\) => \{\s*if \(active\) setPendingNotificationRoute\(null\);/);
 });
