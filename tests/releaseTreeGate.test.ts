@@ -39,3 +39,27 @@ test('the build gives Gradle enough room to finish', () => {
   const gradle = build.indexOf("execFileSync('./gradlew'");
   assert.ok(write > 0 && gradle > write, 'the memory is set before Gradle runs');
 });
+
+test('the release build type is wired to the upload key, not the debug key', () => {
+  // React Native's template signs the release build with the debug key, and
+  // `expo prebuild --clean` writes that back every time. A debug-signed
+  // release installs, looks finished, is rejected by Play, and carries a
+  // certificate Google does not match for sign-in. The certificate check after
+  // the build catches it — ten minutes too late to be the only guard.
+  assert.match(build, /if \(!gradle\.includes\('signingConfigs\.release'\)\)/);
+  assert.match(build, /keystoreProperties\.load\(new FileInputStream\(rootProject\.file\('keystore\.properties'\)\)\)/);
+  // The first `release {` in the file is the signing config itself, so the
+  // replacement has to be anchored past buildTypes or it rewrites the debug
+  // build type instead.
+  assert.match(build, /const releaseTypeAt = gradle\.indexOf\('release \{', buildTypesAt\);/);
+  const wire = build.indexOf("signingConfig signingConfigs.release'");
+  const gradleRun = build.indexOf("execFileSync('./gradlew'");
+  assert.ok(wire > 0 && gradleRun > wire, 'the signing config is written before Gradle runs');
+});
+
+test('the certificate is still read back out of the finished artefact', () => {
+  // Configuring the right key and producing an artefact signed with it are two
+  // claims. The second one is the one that ships.
+  assert.match(build, /const uploadKeySha1 = '[0-9a-f]{40}';/);
+  assert.match(build, /The APK is signed with \$\{sha1 \?\? 'an unreadable certificate'\}, not the upload key/);
+});

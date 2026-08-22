@@ -122,6 +122,58 @@ if (!flags.has('--skip-gate')) {
   console.log('Quality gate skipped — this build carries no gate evidence.');
 }
 
+// The generated project signs its release build with the debug key.
+//
+// That is what React Native's template says, and `expo prebuild --clean`
+// writes it back every time: `release { signingConfig signingConfigs.debug }`.
+// A debug-signed release installs, looks finished, is rejected by Play, and
+// carries a certificate Google does not match for sign-in. The check below
+// reads the certificate out of the finished APK and refuses to stage it — but
+// only after ten minutes of building, which is the wrong place to find out.
+//
+// So the signing config is written into the generated file before Gradle runs,
+// from android/keystore.properties, which is not in the repository and holds
+// the passwords. Same reasoning as the memory settings: android/ is generated,
+// so the script owns what has to be true in it.
+const appGradlePath = join(root, 'android/app/build.gradle');
+{
+  let gradle = readFileSync(appGradlePath, 'utf8');
+  if (!gradle.includes('signingConfigs.release')) {
+    const releaseSigningConfig = `        release {
+            def keystoreProperties = new Properties()
+            keystoreProperties.load(new FileInputStream(rootProject.file('keystore.properties')))
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+        }
+    }`;
+    const configsClosed = /\n(\s*)\}\n(\s*)buildTypes \{/;
+    if (!configsClosed.test(gradle)) {
+      console.error(`${appGradlePath} does not look like the generated project — its signingConfigs block was not found.`);
+      process.exit(1);
+    }
+    gradle = gradle.replace(configsClosed, `\n${releaseSigningConfig}\n$2buildTypes {`);
+    // Only the release build type: the first `release {` in the file is the
+    // signing config that was just written, and the first
+    // `signingConfigs.debug` after it belongs to the *debug* build type.
+    const buildTypesAt = gradle.indexOf('buildTypes {');
+    const releaseTypeAt = gradle.indexOf('release {', buildTypesAt);
+    const debugSigningAt = gradle.indexOf('signingConfig signingConfigs.debug', releaseTypeAt);
+    if (buildTypesAt < 0 || releaseTypeAt < 0 || debugSigningAt < 0) {
+      console.error(`${appGradlePath}: the release build type's signing config was not found.`);
+      process.exit(1);
+    }
+    gradle = `${gradle.slice(0, debugSigningAt)}signingConfig signingConfigs.release${gradle.slice(debugSigningAt + 'signingConfig signingConfigs.debug'.length)}`;
+    if (!gradle.includes('signingConfig signingConfigs.release')) {
+      console.error(`${appGradlePath}: the release build type still points at the debug signing config.`);
+      process.exit(1);
+    }
+    writeFileSync(appGradlePath, gradle);
+    console.log('Signing: release build type wired to the upload key from android/keystore.properties');
+  }
+}
+
 // Gradle needs more room than the generated project gives it.
 //
 // android/gradle.properties comes out of `expo prebuild` with 2 GB of heap and
