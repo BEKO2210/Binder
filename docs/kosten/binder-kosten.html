@@ -1,0 +1,263 @@
+<title>Was Binder pro Monat kostet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --grund: #f2f4f1;
+    --flaeche: #ffffff;
+    --linie: #d8ded6;
+    --linie-stark: #b6c0b2;
+    --text: #14170f;
+    --text-leise: #5c6356;
+    --akzent: #4a6b12;
+    --akzent-flaeche: #eaf2d8;
+    --gut: #2f6b3a;
+    --schrift: 'Manrope', system-ui, -apple-system, sans-serif;
+    --zahl: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --grund: #0b0d08;
+      --flaeche: #14180f;
+      --linie: #262c1e;
+      --linie-stark: #3a4230;
+      --text: #eef2e6;
+      --text-leise: #98a08c;
+      --akzent: #c7ff4a;
+      --akzent-flaeche: #1b2410;
+      --gut: #8fd66a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --grund: #0b0d08; --flaeche: #14180f; --linie: #262c1e; --linie-stark: #3a4230;
+    --text: #eef2e6; --text-leise: #98a08c; --akzent: #c7ff4a; --akzent-flaeche: #1b2410; --gut: #8fd66a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--grund); color: var(--text);
+    font-family: var(--schrift); font-size: 16px; line-height: 1.6;
+    -webkit-text-size-adjust: 100%;
+  }
+  .blatt { max-width: 62rem; margin: 0 auto; padding: 2.5rem 1.25rem 5rem; display: flex; flex-direction: column; gap: 2.75rem; }
+  header { display: flex; flex-direction: column; gap: 0.75rem; }
+  .marke { font-family: var(--zahl); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-leise); }
+  h1 { font-size: clamp(1.9rem, 6vw, 2.9rem); line-height: 1.12; font-weight: 800; letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
+  .lead { font-size: 1.075rem; color: var(--text-leise); max-width: 46ch; margin: 0; }
+  h2 { font-size: 1.2rem; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 0.9rem; }
+  h2 .nr { font-family: var(--zahl); font-size: 0.72rem; color: var(--text-leise); margin-right: 0.6rem; letter-spacing: 0.1em; }
+  p { margin: 0 0 0.9rem; max-width: 66ch; }
+  section > p:last-child { margin-bottom: 0; }
+  .kernzahl { background: var(--akzent-flaeche); border: 1px solid var(--linie); border-radius: 2px; padding: 1.25rem 1.35rem; display: flex; flex-direction: column; gap: 0.35rem; }
+  .kernzahl b { font-family: var(--zahl); font-size: clamp(1.6rem, 5vw, 2.1rem); font-weight: 500; color: var(--akzent); letter-spacing: -0.02em; }
+  .kernzahl span { color: var(--text-leise); font-size: 0.95rem; }
+  .rollen { overflow-x: auto; border: 1px solid var(--linie); border-radius: 2px; background: var(--flaeche); }
+  table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+  caption { text-align: left; padding: 0.9rem 1rem 0; color: var(--text-leise); font-size: 0.85rem; }
+  th, td { padding: 0.62rem 0.9rem; text-align: right; border-bottom: 1px solid var(--linie); white-space: nowrap; }
+  thead th { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-leise); font-weight: 500; border-bottom: 1px solid var(--linie-stark); }
+  tbody th[scope="row"] { text-align: left; font-weight: 500; white-space: normal; min-width: 11rem; }
+  thead th:first-child { text-align: left; }
+  td { font-family: var(--zahl); font-size: 0.92rem; }
+  tbody tr:last-child th, tbody tr:last-child td { border-bottom: none; }
+  .d { display: block; }
+  .e { display: block; font-size: 0.78rem; color: var(--text-leise); }
+  .save { color: var(--gut); font-weight: 500; }
+  .null { color: var(--text-leise); }
+  tr.sum th, tr.sum td { border-top: 1px solid var(--linie-stark); font-weight: 700; }
+  tr.sum td { font-size: 1rem; }
+  tr.per td, tr.per th { color: var(--text-leise); }
+  .zwei { display: grid; gap: 1.25rem; }
+  @media (min-width: 46rem) { .zwei { grid-template-columns: 1fr 1fr; } }
+  .karte { border: 1px solid var(--linie); border-radius: 2px; padding: 1.1rem 1.2rem; background: var(--flaeche); }
+  .karte h3 { margin: 0 0 0.5rem; font-size: 1rem; font-weight: 700; }
+  .karte p { font-size: 0.94rem; color: var(--text-leise); margin: 0; }
+  .karte b { color: var(--gut); font-family: var(--zahl); font-weight: 500; }
+  dl { margin: 0; display: grid; gap: 0.55rem; }
+  dl div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.75rem; align-items: baseline; border-bottom: 1px dotted var(--linie); padding-bottom: 0.5rem; }
+  dt { color: var(--text-leise); font-size: 0.94rem; }
+  dd { margin: 0; font-family: var(--zahl); font-size: 0.9rem; white-space: nowrap; }
+  ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.45rem; }
+  li { max-width: 64ch; }
+  footer { color: var(--text-leise); font-size: 0.85rem; border-top: 1px solid var(--linie); padding-top: 1.25rem; }
+  code { font-family: var(--zahl); font-size: 0.88em; background: var(--akzent-flaeche); padding: 0.1em 0.35em; border-radius: 2px; }
+</style>
+
+<div class="blatt">
+  <header>
+    <div class="marke">Binder · Betriebskosten · 23. August 2026</div>
+    <h1>Was Binder pro Monat kostet</h1>
+    <p class="lead">Gerechnet für sechs Größen, aus den Preisen von Supabase, Expo und Cloudflare und aus dem, was der Code dieser App tatsächlich überträgt.</p>
+  </header>
+
+  <div class="kernzahl">
+    <b>2,5 bis 3,9 Cent</b>
+    <span>pro aktivem Nutzer und Monat, über alle Größen hinweg — solange die Fotos so ausgeliefert werden wie heute. Mit den beiden Hebeln unten wird daraus rund ein Cent.</span>
+  </div>
+
+  <section>
+    <h2><span class="nr">01</span>Die drei Wege im Vergleich</h2>
+    <p>Dieselbe App, dieselben Nutzer, drei Arten, die Bilder auszuliefern. Der Unterschied ist nicht klein: ab zehntausend Nutzern zahlt der erste Weg das Doppelte bis Dreifache.</p>
+    <div class="rollen">
+      <table>
+        <thead><tr><th scope="col">Nutzer</th><th scope="col">Wie gebaut</th><th scope="col">Mit Bild-Cache</th><th scope="col">Cache + R2</th><th scope="col">Ersparnis</th></tr></thead>
+        <tbody><tr>
+  <th scope="row">1.000</th>
+  <td><span class="d">$25</span><span class="e">23 €</span></td><td><span class="d">$25</span><span class="e">23 €</span></td><td><span class="d">$25</span><span class="e">23 €</span></td>
+  <td class="save">–</td>
+</tr>
+<tr>
+  <th scope="row">10.000</th>
+  <td><span class="d">$388</span><span class="e">357 €</span></td><td><span class="d">$318</span><span class="e">293 €</span></td><td><span class="d">$235</span><span class="e">216 €</span></td>
+  <td class="save">39 %</td>
+</tr>
+<tr>
+  <th scope="row">100.000</th>
+  <td><span class="d">$2.450</span><span class="e">2.254 €</span></td><td><span class="d">$1.750</span><span class="e">1.610 €</span></td><td><span class="d">$698</span><span class="e">642 €</span></td>
+  <td class="save">72 %</td>
+</tr>
+<tr>
+  <th scope="row">500.000</th>
+  <td><span class="d">$13.353</span><span class="e">12.284 €</span></td><td><span class="d">$9.851</span><span class="e">9.063 €</span></td><td><span class="d">$4.520</span><span class="e">4.158 €</span></td>
+  <td class="save">66 %</td>
+</tr>
+<tr>
+  <th scope="row">1.000.000</th>
+  <td><span class="d">$26.824</span><span class="e">24.678 €</span></td><td><span class="d">$19.821</span><span class="e">18.235 €</span></td><td><span class="d">$9.157</span><span class="e">8.424 €</span></td>
+  <td class="save">66 %</td>
+</tr>
+<tr>
+  <th scope="row">5.000.000</th>
+  <td><span class="d">$127.324</span><span class="e">117.138 €</span></td><td><span class="d">$92.305</span><span class="e">84.920 €</span></td><td><span class="d">$38.977</span><span class="e">35.859 €</span></td>
+  <td class="save">69 %</td>
+</tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="nr">02</span>Wohin das Geld geht</h2>
+    <p>Aufgeschlüsselt für den Weg, wie die App heute gebaut ist. Ein Strich heißt: unter einem halben Dollar oder im Freikontingent.</p>
+    <div class="rollen">
+      <table>
+        <thead><tr><th scope="col">Posten</th><th scope="col">1.000</th><th scope="col">10.000</th><th scope="col">100.000</th><th scope="col">500.000</th><th scope="col">1 Mio.</th><th scope="col">5 Mio.</th></tr></thead>
+        <tbody><tr>
+  <th scope="row">Supabase Pro</th>
+  <td>$25</td><td>$25</td><td>$25</td><td>$25</td><td>$25</td><td>$25</td>
+</tr>
+<tr>
+  <th scope="row">Compute über dem Guthaben</th>
+  <td><span class="null">–</span></td><td>$5</td><td>$100</td><td>$400</td><td>$950</td><td>$1.860</td>
+</tr>
+<tr>
+  <th scope="row">Aktive Nutzer</th>
+  <td><span class="null">–</span></td><td><span class="null">–</span></td><td><span class="null">–</span></td><td>$1.300</td><td>$2.925</td><td>$15.925</td>
+</tr>
+<tr>
+  <th scope="row">Datenbank</th>
+  <td><span class="null">–</span></td><td>$1</td><td>$23</td><td>$120</td><td>$241</td><td>$1.208</td>
+</tr>
+<tr>
+  <th scope="row">Dateispeicher</th>
+  <td><span class="null">–</span></td><td>$2</td><td>$35</td><td>$182</td><td>$365</td><td>$1.834</td>
+</tr>
+<tr>
+  <th scope="row">Datenverkehr</th>
+  <td><span class="null">–</span></td><td>$156</td><td>$1.766</td><td>$8.920</td><td>$17.862</td><td>$89.399</td>
+</tr>
+<tr>
+  <th scope="row">Realtime-Nachrichten</th>
+  <td><span class="null">–</span></td><td><span class="null">–</span></td><td>$33</td><td>$213</td><td>$438</td><td>$2.238</td>
+</tr>
+<tr>
+  <th scope="row">Realtime-Verbindungen</th>
+  <td><span class="null">–</span></td><td><span class="null">–</span></td><td>$20</td><td>$120</td><td>$245</td><td>$1.245</td>
+</tr>
+<tr>
+  <th scope="row">Edge Functions</th>
+  <td><span class="null">–</span></td><td><span class="null">–</span></td><td><span class="null">–</span></td><td><span class="null">–</span></td><td><span class="null">–</span></td><td>$16</td>
+</tr>
+<tr>
+  <th scope="row">Expo EAS (Updates)</th>
+  <td><span class="null">–</span></td><td>$199</td><td>$449</td><td>$2.074</td><td>$3.774</td><td>$13.574</td>
+</tr><tr class="sum">
+  <th scope="row">Summe pro Monat</th>
+  <td>$25</td><td>$388</td><td>$2.450</td><td>$13.353</td><td>$26.824</td><td>$127.324</td>
+</tr>
+<tr class="per">
+  <th scope="row">Pro Nutzer</th>
+  <td>0,025 $</td><td>0,039 $</td><td>0,025 $</td><td>0,027 $</td><td>0,027 $</td><td>0,025 $</td>
+</tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="nr">03</span>Was dahinter an Menge steckt</h2>
+    <div class="rollen">
+      <table>
+        <thead><tr><th scope="col">Größe</th><th scope="col">1.000</th><th scope="col">10.000</th><th scope="col">100.000</th><th scope="col">500.000</th><th scope="col">1 Mio.</th><th scope="col">5 Mio.</th></tr></thead>
+        <tbody><tr><th scope="row">Datenverkehr</th><td>199 GB</td><td>1.987 GB</td><td>19.872 GB</td><td>99.358 GB</td><td>198.715 GB</td><td>993.576 GB</td></tr>
+<tr><th scope="row">Dateispeicher</th><td>17 GB</td><td>172 GB</td><td>1.724 GB</td><td>8.621 GB</td><td>17.242 GB</td><td>86.212 GB</td></tr>
+<tr><th scope="row">Datenbank</th><td>2 GB</td><td>19 GB</td><td>193 GB</td><td>967 GB</td><td>1.934 GB</td><td>9.668 GB</td></tr>
+<tr><th scope="row">Gleichzeitig am Netz</th><td>25</td><td>250</td><td>2.500</td><td>12.500</td><td>25.000</td><td>125.000</td></tr>
+<tr><th scope="row">Datenbank-Instanz</th><td>Micro</td><td>Small</td><td>Large</td><td>2XL</td><td>4XL</td><td>8XL</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="nr">04</span>Die zwei Hebel</h2>
+    <div class="zwei">
+      <div class="karte">
+        <h3>Bilder auf der Platte behalten</h3>
+        <p>Die App lädt jedes Foto neu, sobald sein signierter Link abgelaufen ist. Im Deck hilft kein Cache — dort sind die Gesichter neu. In der Trefferliste, im Chat und im eigenen Profil sind es immer dieselben. Das sind rund <b>40 %</b> aller Abrufe.</p>
+      </div>
+      <div class="karte">
+        <h3>Medien auf Cloudflare R2</h3>
+        <p>Supabase berechnet 9 Cent je Gigabyte Datenverkehr. R2 berechnet für ausgehenden Verkehr <b>nichts</b> und für Speicher 1,5 Cent je Gigabyte. Bei einer Million Nutzern ist das der Unterschied zwischen 17.900 und rund 400 Dollar im Monat.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="nr">05</span>Woher die Zahlen kommen</h2>
+    <p>Aus dem Code gemessen, nicht angenommen:</p>
+    <dl>
+      <div><dt>Foto nach der Aufbereitung — längste Kante, Format, Qualität</dt><dd>1080 px · WebP · 0,8</dd></div>
+      <div><dt>Angesetzte Fotogröße (sechs Demo-Porträts bei 720×900 liegen zwischen 35 und 61 KB)</dt><dd>200 KB</dd></div>
+      <div><dt>Harte Obergrenze pro Foto im Upload</dt><dd>3 MB</dd></div>
+      <div><dt>Sprachnachricht — AAC, 44,1 kHz, stereo</dt><dd>128 kbit/s</dd></div>
+      <div><dt>Längste Sprachnachricht</dt><dd>60 s</dd></div>
+      <div><dt>Lebensdauer eines signierten Links</dt><dd>30 min</dd></div>
+      <div><dt>Kandidaten je Deck-Runde</dt><dd>20</dd></div>
+      <div><dt>Dispatcher-Aufrufe im Monat, unabhängig von der Nutzerzahl</dt><dd>43.800</dd></div>
+    </dl>
+    <p style="margin-top:1.25rem">Geschätzt — und damit die Stellschrauben, an denen sich die ganze Rechnung dreht:</p>
+    <dl>
+      <div><dt>Karten im Deck pro Nutzer und Tag</dt><dd>25</dd></div>
+      <div><dt>Volle Profile geöffnet pro Tag, je drei weitere Fotos</dt><dd>3</dd></div>
+      <div><dt>Fotos pro Konto</dt><dd>4 von 6</dd></div>
+      <div><dt>Textnachrichten pro Nutzer und Tag</dt><dd>3</dd></div>
+      <div><dt>Sprachnachrichten pro Nutzer und Monat</dt><dd>6 à 15 s</dd></div>
+      <div><dt>Gleichzeitig am Netz, Spitze</dt><dd>2,5 %</dd></div>
+      <div><dt>Bestand, über den die Datenbank wächst</dt><dd>12 Monate</dd></div>
+    </dl>
+    <p style="margin-top:1.25rem">Die Rechnung liegt als <code>docs/kosten/kostenmodell.mjs</code> im Repository. Wer eine Annahme für falsch hält, ändert sie dort und lässt sie neu laufen — deshalb steht sie als Skript da und nicht als Tabelle.</p>
+  </section>
+
+  <section>
+    <h2><span class="nr">06</span>Was hier nicht drinsteht</h2>
+    <ul>
+      <li><b>Moderation.</b> Ab einigen zehntausend Nutzern ist das der größte Posten einer Dating-App, und es sind Menschen, keine Server. Die Werkzeuge dafür stehen; die Stunden nicht.</li>
+      <li><b>Google Play.</b> Einmalig 25 Dollar für das Entwicklerkonto. Keine laufende Gebühr, solange nichts verkauft wird.</li>
+      <li><b>iOS.</b> Die App ist Android-first gebaut. Ein zweiter Store bedeutet 99 Dollar im Jahr und teurere Builds.</li>
+      <li><b>Read Replicas, Backups auf fremder Infrastruktur, Log-Aufbewahrung.</b> Ab einer halben Million Nutzer gehört an diese Stelle eine Messung statt einer Schätzung.</li>
+      <li><b>Steuern und Wechselkurs.</b> Euro-Beträge zum Kurs 0,92 gerundet.</li>
+    </ul>
+  </section>
+
+  <footer>
+    Preise abgelesen am 23. August 2026 von supabase.com/pricing, expo.dev/pricing und developers.cloudflare.com/r2/pricing. Supabase Pro mit 25 $ Grundpreis, Expo im Production-Plan mit 199 $, weil erst der ein Hotfix ohne Store-Prüfung für mehr als tausend Nutzer trägt.
+  </footer>
+</div>
