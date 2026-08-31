@@ -98,13 +98,13 @@
     "react-native-url-polyfill": "^3.0.0"
   },
   "devDependencies": {
-    "@types/node": "^26.2.0",
+    "@types/node": "^26.4.0",
     "@types/react": "~19.2.2",
-    "eslint": "9.36.0",
-    "eslint-plugin-react-hooks": "5.2.0",
-    "pngjs": "3.4.0",
-    "typescript": "~6.0.3",
-    "typescript-eslint": "8.67.0",
+    "eslint": "10.9.1",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "pngjs": "7.0.0",
+    "typescript": "~7.0.2",
+    "typescript-eslint": "8.68.0",
     "wawoff2": "2.0.1"
   },
   "license": "SEE LICENSE IN LICENSE",
