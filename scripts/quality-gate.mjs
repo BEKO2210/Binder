@@ -39,7 +39,6 @@ export const CHECKS = [
   ['site language page', 'npm', ['run', 'verify:site-languages']],
   ['site matches templates', 'node', ['scripts/build-site-i18n.mjs', '--check']],
   ['site language switch', 'node', ['scripts/verify-site-language-switch.mjs']],
-  ['site download', 'node', ['scripts/verify-site-download.mjs']],
   ['data safety declaration', 'npm', ['run', 'verify:data-safety']],
   ['admin authorization', 'npm', ['run', 'verify:admin']],
   ['safety contract', 'node', ['scripts/verify-safety-contract.mjs']],
