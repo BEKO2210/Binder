@@ -45,9 +45,9 @@
 - 368 node tests over pure product logic — deck physics, chat timeline shaping, reliability classification, dial geometry, unsent-message queue, design-token contrast in both schemes
 - 453 pgTAP assertions in 29 suites across identity, matching, conversation, safety, moderation and push, replayed from an empty database
 - Concurrency suites: reciprocal likes, send-versus-unmatch races, sender-wide rate limits, gallery races, dispatcher claims
-- One release gate with 34 checks — the same list for CI, for the production workflow and for a local release build:
+- One release gate with 33 checks — the same list for CI, for the production workflow and for a local release build:
 
-  `entrypoint` · `pinned toolchain` · `no credentials in the index` · `guards catch their own fixtures` · `native branding` · `public site` · `mail templates` · `site language page` · `site matches templates` · `site language switch` · `site download` · `data safety declaration` · `admin authorization` · `safety contract` · `beta contract` · `visual system` · `settings contract` · `media path` · `push and communication` · `design contract` · `worklet contract` · `request deadlines` · `locale registry` · `localization coverage` · `push copy` · `lint (behaviour rules)` · `typescript (app)` · `typescript (tests)` · `unit tests` · `branch coverage floors` · `readme matches its sources` · `android prebuild` · `android bundle` · `export size budget`
+  `entrypoint` · `pinned toolchain` · `no credentials in the index` · `guards catch their own fixtures` · `native branding` · `public site` · `mail templates` · `site language page` · `site matches templates` · `site language switch` · `data safety declaration` · `admin authorization` · `safety contract` · `beta contract` · `visual system` · `settings contract` · `media path` · `push and communication` · `design contract` · `worklet contract` · `request deadlines` · `locale registry` · `localization coverage` · `push copy` · `lint (behaviour rules)` · `typescript (app)` · `typescript (tests)` · `unit tests` · `branch coverage floors` · `readme matches its sources` · `android prebuild` · `android bundle` · `export size budget`
 
 **On real devices, because a screenshot or it did not happen**
 
