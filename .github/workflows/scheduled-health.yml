@@ -70,3 +70,25 @@ jobs:
           node scripts/verify-site.mjs
           node scripts/build-site-languages.mjs --check
           node scripts/build-push-copy.mjs --check
+
+  # Everything above checks the code. This checks production as a signed-in
+  # user would see it — the one thing that was broken for two days in
+  # September while every step above stayed green.
+  live-auth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '22.13.1'
+          package-manager-cache: false
+
+      - name: Signed-in request against production
+        env:
+          BINDER_PROBE_EMAIL: ${{ secrets.BINDER_PROBE_EMAIL }}
+          BINDER_PROBE_PASSWORD: ${{ secrets.BINDER_PROBE_PASSWORD }}
+        run: node scripts/probe-live-auth.mjs
